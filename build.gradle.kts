@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.5.30"
+
     `java-gradle-plugin`
     `maven-publish`
 }
@@ -7,12 +8,16 @@ plugins {
 repositories {
     mavenCentral()
     gradlePluginPortal()
+    google()
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(gradleApi())
+
+    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30")
+    compileOnly("com.android.tools.build:gradle:4.2.2")
 }
 
 java {
@@ -54,7 +59,6 @@ gradlePlugin {
             implementationClass = "kotlinx.kover.KoverPlugin"
             displayName = "Kotlin Code Coverage Plugin"
             description = "Evaluate code coverage for projects written in Kotlin"
-            dependencies
         }
     }
 }
