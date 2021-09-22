@@ -34,14 +34,14 @@ for `build.gradle.kts`
 ```
 plugins {
     // ... other plugins
-    id("kotlinx-kover") version "0.2.0"
+    id("kotlinx-kover") version "0.2.2"
 }
 ```
 for `build.gradle`
 ```
 plugins {
     // ... other plugins
-    id 'kotlinx-kover' version '0.2.0'
+    id 'kotlinx-kover' version '0.2.2'
 }
 ```
 # Customize settings

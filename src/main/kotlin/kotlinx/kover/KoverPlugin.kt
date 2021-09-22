@@ -21,6 +21,11 @@ class KoverPlugin : Plugin<Project> {
         target.repositories.maven {
             it.url = target.uri("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
         }
+        // hotfix for reporter XML: version 0.255 placed in coverage repository
+        // TODO remove after fixing reporter
+        target.repositories.maven {
+            it.url = target.uri("https://maven.pkg.jetbrains.space/public/p/jb-coverage/maven")
+        }
 
         val koverExtension = target.extensions.create("kover", KoverExtension::class.java, target.objects)
         koverExtension.intellijAgentVersion.set("1.0.608")
@@ -45,11 +50,17 @@ class KoverPlugin : Plugin<Project> {
                 .any { !(it.extensions.findByName("kover") as KoverTaskExtension).useJacoco }
 
             if (usedIntellijAgent) {
+                val agentVersion = koverExtension.intellijAgentVersion.get()
                 dependencies.add(
-                    this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-agent:${koverExtension.intellijAgentVersion.get()}")
+                    this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-agent:$agentVersion")
                 )
+
+                // hotfix for reporter XML: version 1.0.608 not generate INSTRUCTION counter, hotfixed in 0.255
+                // TODO remove after fixing reporter
+                val reporterVersion = if (agentVersion == "1.0.608") "0.255" else agentVersion
+
                 dependencies.add(
-                    this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-reporter:${koverExtension.intellijAgentVersion.get()}")
+                    this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-reporter:$reporterVersion")
                 )
             }
         }
