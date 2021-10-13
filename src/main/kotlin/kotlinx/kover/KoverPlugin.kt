@@ -6,7 +6,9 @@ package kotlinx.kover
 
 import groovy.lang.Closure
 import groovy.lang.GroovyObject
+import kotlinx.kover.VerificationValueType.*
 import kotlinx.kover.adapters.collectDirs
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -14,6 +16,8 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.testing.Test
 import org.gradle.process.CommandLineArgumentProvider
 import java.io.File
+import java.math.BigDecimal
+import java.util.*
 import javax.inject.Inject
 
 class KoverPlugin : Plugin<Project> {
@@ -101,25 +105,28 @@ class KoverPlugin : Plugin<Project> {
         jvmArgumentProviders.add(CoverageArgumentProvider(taskExtension, reader, intellijConfig))
 
         doLast {
-            if (!(taskExtension.isEnabled && (taskExtension.generateXml || taskExtension.generateHtml))) {
+
+            taskExtension.generateXml = taskExtension.generateXml
+                    // turn on XML report for intellij agent if verification rules are defined
+                    || (coverageEngine == CoverageEngine.INTELLIJ && taskExtension.rules.isNotEmpty())
+
+            if (!(taskExtension.isEnabled && (taskExtension.xmlReport || taskExtension.htmlReport))) {
                 return@doLast
             }
 
             if (taskExtension.coverageEngine == CoverageEngine.JACOCO) {
-                it.jacocoReport(taskExtension, jacocoConfig)
+                val builder = it.jacocoAntBuilder(jacocoConfig)
+                it.jacocoReport(builder, taskExtension)
+                it.jacocoVerification(builder, taskExtension)
             } else {
                 it.intellijReport(taskExtension, intellijConfig)
+                it.intellijVerification(taskExtension)
             }
         }
     }
 }
 
-private fun Task.jacocoReport(
-    extension: KoverTaskExtension,
-    configuration: Configuration
-) {
-    val dirs = project.collectDirs()
-
+private fun Task.jacocoAntBuilder(configuration: Configuration): GroovyObject {
     val builder = ant as GroovyObject
     builder.invokeMethod(
         "taskdef",
@@ -129,6 +136,15 @@ private fun Task.jacocoReport(
             "classpath" to configuration.asPath
         )
     )
+    return builder
+}
+
+private fun Task.callJacocoAntReportTask(
+    builder: GroovyObject,
+    extension: KoverTaskExtension,
+    block: GroovyObject.() -> Unit
+) {
+    val dirs = project.collectDirs()
 
     builder.invokeWithBody("jacocoReport") {
         invokeWithBody("executiondata") {
@@ -143,7 +159,12 @@ private fun Task.jacocoReport(
                 project.files(dirs.first).addToAntBuilder(this, "resources")
             }
         }
+        block()
+    }
+}
 
+private fun Task.jacocoReport(builder: GroovyObject, extension: KoverTaskExtension) {
+    callJacocoAntReportTask(builder, extension) {
         if (extension.generateXml) {
             val xmlFile = extension.xmlReportFile.get()
             xmlFile.parentFile.mkdirs()
@@ -153,6 +174,48 @@ private fun Task.jacocoReport(
             val htmlDir = extension.htmlReportDir.get().asFile
             htmlDir.mkdirs()
             invokeMethod("html", mapOf("destdir" to htmlDir))
+        }
+    }
+}
+
+
+fun Task.jacocoVerification(builder: GroovyObject, extension: KoverTaskExtension) {
+    if (extension.rules.isEmpty()) {
+        return
+    }
+
+    callJacocoAntReportTask(builder, extension) {
+        invokeWithBody("check", mapOf("failonviolation" to "true", "violationsproperty" to "jacocoErrors")) {
+            extension.rules.forEach {
+                invokeWithBody("rule", mapOf("element" to "BUNDLE")) {
+                    val limitArgs = mutableMapOf("counter" to "LINE")
+                    var min: BigDecimal? = it.minValue?.toBigDecimal()
+                    var max: BigDecimal? = it.maxValue?.toBigDecimal()
+                    when (it.valueType) {
+                        COVERED_LINES_COUNT -> {
+                            limitArgs["value"] = "COVEREDCOUNT"
+                        }
+                        MISSED_LINES_COUNT -> {
+                            limitArgs["value"] = "MISSEDCOUNT"
+                        }
+                        COVERED_LINES_PERCENTAGE -> {
+                            limitArgs["value"] = "COVEREDRATIO"
+                            min = min?.divide(BigDecimal(100))
+                            max = max?.divide(BigDecimal(100))
+                        }
+                    }
+
+                    if (min != null) {
+                        limitArgs["minimum"] = min.toPlainString()
+                    }
+
+                    if (max != null) {
+                        limitArgs["maximum"] = max.toPlainString()
+                    }
+                    invokeMethod("limit", limitArgs)
+                }
+            }
+
         }
     }
 }
@@ -187,6 +250,64 @@ private fun Task.intellijReport(
         e.mainClass.set("com.intellij.rt.coverage.report.Main")
         e.classpath = configuration
         e.args = args
+    }
+}
+
+fun Task.intellijVerification(extension: KoverTaskExtension) {
+    val counters = readCounterValuesFromXml(extension.xmlReportFile.get())
+    val violations = extension.rules.mapNotNull { checkRule(counters, it) }
+
+    if (violations.isNotEmpty()) {
+        throw GradleException(violations.joinToString("\n"))
+    }
+}
+
+
+private fun readCounterValuesFromXml(file: File): Map<VerificationValueType, Int> {
+    val scanner = Scanner(file)
+    var lineCounterLine: String? = null
+
+    while (scanner.hasNextLine()) {
+        val line = scanner.nextLine()
+        if (line.startsWith("<counter type=\"LINE\"")) {
+            lineCounterLine = line
+        }
+    }
+    scanner.close()
+
+    lineCounterLine ?: throw GradleException("No LINE counter in XML report")
+
+    val coveredCount = lineCounterLine.substringAfter("covered=\"").substringBefore("\"").toInt()
+    val missedCount = lineCounterLine.substringAfter("missed=\"").substringBefore("\"").toInt()
+    val percentage = 100 * coveredCount / (coveredCount + missedCount)
+
+    return mapOf(
+        COVERED_LINES_COUNT to coveredCount,
+        MISSED_LINES_COUNT to missedCount,
+        COVERED_LINES_PERCENTAGE to percentage
+    )
+}
+
+
+private fun checkRule(counters: Map<VerificationValueType, Int>, rule: VerificationRule): String? {
+    val minValue = rule.minValue
+    val maxValue = rule.maxValue
+
+    val value = counters[rule.valueType] ?: throw GradleException("Not found value for counter `${rule.valueType}`")
+
+    val ruleName = if (rule.name != null) "`${rule.name}` " else ""
+    val valueTypeName = when (rule.valueType) {
+        COVERED_LINES_COUNT -> "covered lines count"
+        MISSED_LINES_COUNT -> "missed lines count"
+        COVERED_LINES_PERCENTAGE -> "covered lines percentage"
+    }
+
+    return if (minValue != null && minValue > value) {
+        "Rule ${ruleName}violated: $valueTypeName is $value, but expected minimum is $minValue"
+    } else if (maxValue != null && maxValue < value) {
+        "Rule ${ruleName}violated: $valueTypeName is $value, but expected maximum is $maxValue"
+    } else {
+        null
     }
 }
 
@@ -261,7 +382,7 @@ private class CoverageArgumentProvider(
         val binary = extension.binaryReportFile.get()
         binary.parentFile.mkdirs()
         val binaryPath = binary.canonicalPath
-        return "\"$binaryPath\" false false false false true \"$binaryPath.smap\"$includesString$excludesString"
+        return "\"$binaryPath\" false true false false true \"$binaryPath.smap\"$includesString$excludesString"
     }
 
     private fun jacocoAgent(): MutableList<String> {
