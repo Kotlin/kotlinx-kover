@@ -29,13 +29,13 @@ pluginManagement {
 For `build.gradle.kts`
 ```
 plugins {
-     id("kotlinx-kover") version "0.2.2"
+     id("kotlinx-kover") version "0.3.0"
 }
 ```
 For `build.gradle`
 ```
 plugins {
-    id 'kotlinx-kover' version '0.2.2'
+    id 'kotlinx-kover' version '0.3.0'
 }
 ```
 
