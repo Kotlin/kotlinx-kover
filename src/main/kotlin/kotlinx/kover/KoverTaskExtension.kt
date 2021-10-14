@@ -17,8 +17,7 @@ import java.io.File
  */
 open class KoverTaskExtension(objects: ObjectFactory) {
     /**
-     * Specifies whether the plugin is enabled and
-     * configures test task to collect and generate coverage data.
+     * Specifies whether the plugin is applied to the test task and configures it to collect and generate coverage data.
      */
     public var isEnabled: Boolean = true
 

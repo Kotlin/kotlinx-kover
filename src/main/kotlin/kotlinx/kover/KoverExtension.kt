@@ -9,12 +9,12 @@ import org.gradle.api.provider.Property
 
 open class KoverExtension(objects: ObjectFactory) {
     /**
-     * Specifies the version of Intellij-coverage dependency
+     * Specifies the version of Intellij-coverage dependency.
      */
     val intellijEngineVersion: Property<String> = objects.property(String::class.java)
 
     /**
-     * Specifies the version of JaCoCo dependency
+     * Specifies the version of JaCoCo dependency.
      */
     val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
 }
