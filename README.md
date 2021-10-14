@@ -63,7 +63,7 @@ For `build.gradle.kts`
 
 ```kotlin
 plugins {
-    id("kotlinx-kover") version "0.2.2"
+    id("kotlinx-kover") version "0.3.0"
 }
 ```
 </details>
@@ -75,7 +75,7 @@ For `build.gradle`
 
 ```groovy
 plugins {
-    id 'kotlinx-kover' version '0.2.2'
+    id 'kotlinx-kover' version '0.3.0'
 }
 ```
 </details>
