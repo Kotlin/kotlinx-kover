@@ -47,7 +47,7 @@ verifying set validation rules and optionally producing XML or HTML reports.
 For `build.gradle.kts`
 ```
 tasks.test {
-    extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
         generateXml = true
         generateHtml = false
         coverageEngine = CoverageEngine.INTELLIJ
@@ -81,7 +81,63 @@ tasks.test {
 For both `build.gradle.kts` and `build.gradle`
 ```
 kover {
-    intellijEngineVersion.set("1.0.608")
+    intellijEngineVersion.set("1.0.611")
     jacocoEngineVersion.set("0.8.7")
 }
 ```
+
+###### Verification
+For each test task, you can specify one or more rules that check the values of the code coverage counters.
+
+Validation rules work for both types of agents.
+
+*The plugin currently only supports line counter values.*
+
+for `build.gradle.kts`
+```
+tasks.test {
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+        verificationRule {
+            name = "The project doesn't have to be big"
+            maxValue = 100000
+            valueType = kotlinx.kover.api.VerificationValueType.COVERED_LINES_COUNT
+        }
+        verificationRule {
+            // rule without custom name
+            minValue = 1
+            maxValue = 1000
+            valueType = kotlinx.kover.api.VerificationValueType.MISSED_LINES_COUNT
+        }
+        verificationRule {
+            name = "Minimal line coverage rate in percents"
+            minValue = 50
+            // valueType is kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE by default
+        }
+    }
+}
+```
+
+for `build.gradle`
+```
+tasks.test {
+    kover {
+        verificationRule {
+            name = "The project doesn't have to be big"
+            maxValue = 100000
+            valueType = 'COVERED_LINES_COUNT'
+        }
+        verificationRule {
+            // rule without custom name
+            minValue = 1
+            maxValue = 1000
+            valueType = 'MISSED_LINES_COUNT'
+        }
+        verificationRule {
+            name = "Minimal line coverage rate in percents"
+            minValue = 50
+            // valueType is 'COVERED_LINES_PERCENTAGE' by default
+        }
+    }
+}
+```
+

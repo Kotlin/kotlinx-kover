@@ -1,7 +1,7 @@
 package kotlinx.kover.adapters.api
 
-import org.gradle.api.Project
-import java.io.File
+import org.gradle.api.*
+import java.io.*
 
 interface CompilationPluginAdapter {
     fun findDirs(project: Project): PluginDirs
