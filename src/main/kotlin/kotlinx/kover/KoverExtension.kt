@@ -11,10 +11,10 @@ open class KoverExtension(objects: ObjectFactory) {
     /**
      * Specifies the version of Intellij-coverage dependency
      */
-    val intellijAgentVersion: Property<String> = objects.property(String::class.java)
+    val intellijEngineVersion: Property<String> = objects.property(String::class.java)
 
     /**
      * Specifies the version of JaCoCo dependency
      */
-    val jacocoAgentVersion: Property<String> = objects.property(String::class.java)
+    val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
 }

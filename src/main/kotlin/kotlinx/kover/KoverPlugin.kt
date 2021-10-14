@@ -23,8 +23,8 @@ class KoverPlugin : Plugin<Project> {
         }
 
         val koverExtension = target.extensions.create("kover", KoverExtension::class.java, target.objects)
-        koverExtension.intellijAgentVersion.set("1.0.611")
-        koverExtension.jacocoAgentVersion.set("0.8.7")
+        koverExtension.intellijEngineVersion.set("1.0.611")
+        koverExtension.jacocoEngineVersion.set("0.8.7")
 
         val intellijConfig = target.createIntellijConfig(koverExtension)
         val jacocoConfig = target.createJacocoConfig(koverExtension)
@@ -42,10 +42,10 @@ class KoverPlugin : Plugin<Project> {
 
         config.defaultDependencies { dependencies ->
             val usedIntellijAgent = tasks.withType(Test::class.java)
-                .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageAgent == CoverageAgent.INTELLIJ }
+                .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageEngine == CoverageEngine.INTELLIJ }
 
             if (usedIntellijAgent) {
-                val agentVersion = koverExtension.intellijAgentVersion.get()
+                val agentVersion = koverExtension.intellijEngineVersion.get()
                 dependencies.add(
                     this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-agent:$agentVersion")
                 )
@@ -66,14 +66,14 @@ class KoverPlugin : Plugin<Project> {
 
         config.defaultDependencies { dependencies ->
             val used = tasks.withType(Test::class.java)
-                .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageAgent == CoverageAgent.JACOCO }
+                .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageEngine == CoverageEngine.JACOCO }
 
             if (used) {
                 dependencies.add(
-                    this.dependencies.create("org.jacoco:org.jacoco.agent:${koverExtension.jacocoAgentVersion.get()}")
+                    this.dependencies.create("org.jacoco:org.jacoco.agent:${koverExtension.jacocoEngineVersion.get()}")
                 )
                 dependencies.add(
-                    this.dependencies.create("org.jacoco:org.jacoco.ant:${koverExtension.jacocoAgentVersion.get()}")
+                    this.dependencies.create("org.jacoco:org.jacoco.ant:${koverExtension.jacocoEngineVersion.get()}")
                 )
             }
         }
@@ -92,7 +92,7 @@ class KoverPlugin : Plugin<Project> {
         })
 
         taskExtension.binaryReportFile.set(this.project.provider {
-            val suffix = if (taskExtension.coverageAgent == CoverageAgent.JACOCO) ".exec" else ".ic"
+            val suffix = if (taskExtension.coverageEngine == CoverageEngine.JACOCO) ".exec" else ".ic"
             project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
         })
 
@@ -105,7 +105,7 @@ class KoverPlugin : Plugin<Project> {
                 return@doLast
             }
 
-            if (taskExtension.coverageAgent == CoverageAgent.JACOCO) {
+            if (taskExtension.coverageEngine == CoverageEngine.JACOCO) {
                 it.jacocoReport(taskExtension, jacocoConfig)
             } else {
                 it.intellijReport(taskExtension, intellijConfig)
@@ -237,7 +237,7 @@ private class CoverageArgumentProvider(
             return mutableListOf()
         }
 
-        return if (extension.coverageAgent == CoverageAgent.JACOCO) {
+        return if (extension.coverageEngine == CoverageEngine.JACOCO) {
             jacocoAgent()
         } else {
             intellijAgent()

@@ -50,7 +50,7 @@ tasks.test {
     extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
         generateXml = true
         generateHtml = false
-        coverageAgent = CoverageAgent.INTELLIJ
+        coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
         binaryFile.set(file("$buildDir/custom/result.bin"))
@@ -66,7 +66,7 @@ tasks.test {
     kover {
         generateXml = true
         generateHtml = false
-        coverageAgent = CoverageAgent.INTELLIJ
+        coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
         binaryFile.set(file("$buildDir/custom/result.bin"))
@@ -81,7 +81,7 @@ tasks.test {
 For both `build.gradle.kts` and `build.gradle`
 ```
 kover {
-    intellijAgentVersion.set("1.0.608")
-    jacocoAgentVersion.set("0.8.7")
+    intellijEngineVersion.set("1.0.608")
+    jacocoEngineVersion.set("0.8.7")
 }
 ```
