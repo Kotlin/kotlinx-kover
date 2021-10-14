@@ -1,11 +1,8 @@
 package kotlinx.kover.adapters
 
-import kotlinx.kover.adapters.api.CompilationPluginAdapter
-import kotlinx.kover.adapters.api.PluginDirs
-import kotlinx.kover.adapters.api.safe
-import org.gradle.api.Project
-import org.gradle.api.tasks.SourceSet
-import org.gradle.api.tasks.SourceSetContainer
+import kotlinx.kover.adapters.api.*
+import org.gradle.api.*
+import org.gradle.api.tasks.*
 
 class OldJavaPluginAdapter : CompilationPluginAdapter {
 

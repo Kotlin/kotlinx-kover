@@ -4,22 +4,12 @@
 
 package kotlinx.kover
 
-import kotlinx.kover.api.CoverageEngine
-import kotlinx.kover.api.KoverExtension
-import kotlinx.kover.api.KoverTaskExtension
-import kotlinx.kover.engines.intellij.IntellijAgent
-import kotlinx.kover.engines.intellij.createIntellijConfig
-import kotlinx.kover.engines.intellij.intellijReport
-import kotlinx.kover.engines.intellij.intellijVerification
+import kotlinx.kover.api.*
+import kotlinx.kover.engines.intellij.*
 import kotlinx.kover.engines.jacoco.*
-import kotlinx.kover.engines.jacoco.JacocoAgent
-import kotlinx.kover.engines.jacoco.jacocoAntBuilder
-import kotlinx.kover.engines.jacoco.jacocoReport
-import kotlinx.kover.engines.jacoco.jacocoVerification
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.tasks.testing.Test
-import org.gradle.process.CommandLineArgumentProvider
+import org.gradle.api.*
+import org.gradle.api.tasks.testing.*
+import org.gradle.process.*
 
 class KoverPlugin : Plugin<Project> {
     private val defaultIntellijVersion = "1.0.611"
@@ -77,7 +67,7 @@ class KoverPlugin : Plugin<Project> {
                 it.jacocoVerification(builder, taskExtension)
             } else {
                 it.intellijReport(taskExtension, intellijAgent.config)
-                intellijVerification(taskExtension)
+                it.intellijVerification(taskExtension)
             }
         }
     }

@@ -1,17 +1,12 @@
 package kotlinx.kover.engines.jacoco
 
-import groovy.lang.Closure
-import groovy.lang.GroovyObject
-import kotlinx.kover.api.KoverExtension
-import kotlinx.kover.adapters.collectDirs
-import kotlinx.kover.api.CoverageEngine
-import kotlinx.kover.api.KoverTaskExtension
-import kotlinx.kover.api.VerificationValueType
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.testing.Test
-import java.math.BigDecimal
+import groovy.lang.*
+import kotlinx.kover.adapters.*
+import kotlinx.kover.api.*
+import org.gradle.api.*
+import org.gradle.api.artifacts.*
+import org.gradle.api.tasks.testing.*
+import java.math.*
 
 
 internal fun Project.createJacocoConfig(koverExtension: KoverExtension): Configuration {
@@ -130,6 +125,7 @@ internal fun Task.jacocoVerification(builder: GroovyObject, extension: KoverTask
     }
 }
 
+@Suppress("UNUSED_PARAMETER")
 private inline fun GroovyObject.invokeWithBody(
     name: String,
     args: Map<String, String> = emptyMap(),

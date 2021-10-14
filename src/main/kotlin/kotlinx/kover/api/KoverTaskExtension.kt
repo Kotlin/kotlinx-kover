@@ -6,11 +6,11 @@
 
 package kotlinx.kover.api
 
-import org.gradle.api.Action
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
-import java.io.File
+import org.gradle.api.*
+import org.gradle.api.file.*
+import org.gradle.api.model.*
+import org.gradle.api.provider.*
+import java.io.*
 
 /**
  * Extension for Kover plugin that additionally configures test tasks and

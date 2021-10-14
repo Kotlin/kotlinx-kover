@@ -1,7 +1,7 @@
 package kotlinx.kover.engines.intellij
 
-import kotlinx.kover.api.KoverTaskExtension
-import org.gradle.api.artifacts.Configuration
+import kotlinx.kover.api.*
+import org.gradle.api.artifacts.*
 
 internal class IntellijAgent(val config: Configuration) {
     private val trackingPerTest = false // a flag to enable tracking per test coverage

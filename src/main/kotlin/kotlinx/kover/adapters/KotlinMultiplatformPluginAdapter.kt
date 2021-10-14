@@ -1,12 +1,9 @@
 package kotlinx.kover.adapters
 
-import kotlinx.kover.adapters.api.CompilationPluginAdapter
-import kotlinx.kover.adapters.api.PluginDirs
-import kotlinx.kover.adapters.api.safe
-import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
+import kotlinx.kover.adapters.api.*
+import org.gradle.api.*
+import org.jetbrains.kotlin.gradle.dsl.*
+import org.jetbrains.kotlin.gradle.plugin.*
 
 class KotlinMultiplatformPluginAdapter : CompilationPluginAdapter {
 

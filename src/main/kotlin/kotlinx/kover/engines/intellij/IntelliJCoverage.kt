@@ -1,13 +1,11 @@
 package kotlinx.kover.engines.intellij
 
-import kotlinx.kover.adapters.collectDirs
+import kotlinx.kover.adapters.*
 import kotlinx.kover.api.*
-import org.gradle.api.GradleException
-import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.tasks.testing.Test
-import java.io.File
+import org.gradle.api.*
+import org.gradle.api.artifacts.*
+import org.gradle.api.tasks.testing.*
+import java.io.*
 import java.util.*
 
 internal fun Project.createIntellijConfig(koverExtension: KoverExtension): Configuration {
@@ -67,7 +65,7 @@ internal fun Task.intellijReport(
     }
 }
 
-internal fun intellijVerification(extension: KoverTaskExtension) {
+internal fun Task.intellijVerification(extension: KoverTaskExtension) {
     if (extension.rules.isEmpty()) {
         return
     }
@@ -106,7 +104,7 @@ private fun readCounterValuesFromXml(file: File): Map<VerificationValueType, Int
 }
 
 
-private fun checkRule(counters: Map<VerificationValueType, Int>, rule: VerificationRule): String? {
+private fun Task.checkRule(counters: Map<VerificationValueType, Int>, rule: VerificationRule): String? {
     val minValue = rule.minValue
     val maxValue = rule.maxValue
 
@@ -120,9 +118,9 @@ private fun checkRule(counters: Map<VerificationValueType, Int>, rule: Verificat
     }
 
     return if (minValue != null && minValue > value) {
-        "Rule ${ruleName}violated: $valueTypeName is $value, but expected minimum is $minValue"
+        "Rule ${ruleName}violated for `${project.name}`: $valueTypeName is $value, but expected minimum is $minValue"
     } else if (maxValue != null && maxValue < value) {
-        "Rule ${ruleName}violated: $valueTypeName is $value, but expected maximum is $maxValue"
+        "Rule ${ruleName}violated for `${project.name}`: $valueTypeName is $value, but expected maximum is $maxValue"
     } else {
         null
     }

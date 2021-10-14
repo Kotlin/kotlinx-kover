@@ -1,10 +1,8 @@
 package kotlinx.kover.adapters
 
-import com.android.build.gradle.BaseExtension
-import kotlinx.kover.adapters.api.CompilationPluginAdapter
-import kotlinx.kover.adapters.api.PluginDirs
-import kotlinx.kover.adapters.api.safe
-import org.gradle.api.Project
+import com.android.build.gradle.*
+import kotlinx.kover.adapters.api.*
+import org.gradle.api.*
 
 class AndroidPluginAdapter : CompilationPluginAdapter {
 
