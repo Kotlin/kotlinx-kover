@@ -47,7 +47,7 @@ verifying set validation rules and optionally producing XML or HTML reports.
 For `build.gradle.kts`
 ```
 tasks.test {
-    extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
         generateXml = true
         generateHtml = false
         coverageEngine = CoverageEngine.INTELLIJ
@@ -81,7 +81,7 @@ tasks.test {
 For both `build.gradle.kts` and `build.gradle`
 ```
 kover {
-    intellijEngineVersion.set("1.0.608")
+    intellijEngineVersion.set("1.0.611")
     jacocoEngineVersion.set("0.8.7")
 }
 ```
@@ -96,22 +96,22 @@ Validation rules work for both types of agents.
 for `build.gradle.kts`
 ```
 tasks.test {
-    extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
         verificationRule {
             name = "The project doesn't have to be big"
             maxValue = 100000
-            valueType = kotlinx.kover.VerificationValueType.COVERED_LINES_COUNT
+            valueType = kotlinx.kover.api.VerificationValueType.COVERED_LINES_COUNT
         }
         verificationRule {
             // rule without custom name
             minValue = 1
             maxValue = 1000
-            valueType = kotlinx.kover.VerificationValueType.MISSED_LINES_COUNT
+            valueType = kotlinx.kover.api.VerificationValueType.MISSED_LINES_COUNT
         }
         verificationRule {
             name = "Minimal line coverage rate in percents"
             minValue = 50
-            // valueType is kotlinx.kover.VerificationValueType.COVERED_LINES_PERCENTAGE by default
+            // valueType is kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE by default
         }
     }
 }
