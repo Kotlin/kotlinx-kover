@@ -1,26 +1,21 @@
-**Kover** - Gradle plugin for Kotlin code coverage agents
+# Kotlinx-Kover
 
-# Main features of the plugin
-* uses IntelliJ or JaCoCo agent to collect the code coverage for JVM test tasks
-* uses IntelliJ or JaCoCo reporter to generate XML and HTML reports
-* allows to specify the version of the IntelliJ and JaCoCo agents
-* works with Kotlin/JVM and Kotlin Multiplatform sources
-* supports the work with Kotlin Android sources without dividing them into build types and flavours
-* supports custom filtering instrumented classes
+**Kover** - Gradle plugin for Kotlin code coverage agents: [IntelliJ](https://github.com/JetBrains/intellij-coverage)
+and [JaCoCo](https://github.com/jacoco/jacoco).
 
-###### features of the IntelliJ Coverage
-* supports Kotlin/JVM projects
-* supports Kotlin Multiplatform projects
-* supports `inline` functions, including those declared in multiplatform sources or called from tests
-* generates test coverage HTML report
-* generates test coverage XML report compatible with JaCoCo's XML
-* supports custom filtering instrumented classes by RegExp
+## Features
 
+* Collecting the code coverage for JVM test tasks
+* XML and HTML reports generation
+* Support of Kotlin/JVM, Kotlin Multiplatform and mixed Kotlin-Java sources with zero additional configuration
+* Kotlin Android support without dividing them into build types and flavours
+* Customizable filters for instrumented classes
 
-# Basic Gradle Setup
+## Quickstart
 
-###### Add repository
-for `settings.gradle`
+### Add repository
+
+For `settings.gradle`
 ```
 pluginManagement {
     repositories {
@@ -29,30 +24,33 @@ pluginManagement {
     }
 }
 ```
-###### Apply plugin to project
-for `build.gradle.kts`
+### Apply plugin to project
+
+For `build.gradle.kts`
 ```
 plugins {
-    // ... other plugins
-    id("kotlinx-kover") version "0.2.2"
+     id("kotlinx-kover") version "0.2.2"
 }
 ```
-for `build.gradle`
+For `build.gradle`
 ```
 plugins {
-    // ... other plugins
     id 'kotlinx-kover' version '0.2.2'
 }
 ```
-# Customize settings
 
-for `build.gradle.kts`
+The plugin automatically inserted into `check` tasks pipeline and collects coverage during test run,
+verifying set validation rules and optionally producing XML or HTML reports.
+
+## Plugin configuration
+
+For `build.gradle.kts`
 ```
 tasks.test {
     extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
-        useJacoco = false
-        xmlReport = true
-        htmlReport = false
+        generateXml = true
+        generateHtml = false
+        coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
         binaryFile.set(file("$buildDir/custom/result.bin"))
@@ -62,13 +60,13 @@ tasks.test {
 }
 ```
 
-for `build.gradle`
+For `build.gradle`
 ```
 tasks.test {
     kover {
-        useJacoco = false
-        xmlReport = true
-        htmlReport = false
+        generateXml = true
+        generateHtml = false
+        coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
         binaryFile.set(file("$buildDir/custom/result.bin"))
@@ -78,11 +76,12 @@ tasks.test {
 }
 ```
 
-###### Change version of agents
-for `build.gradle.kts` and `build.gradle`
+### Explicit version of coverage agent
+
+For both `build.gradle.kts` and `build.gradle`
 ```
 kover {
-    intellijAgentVersion.set("1.0.608")
-    jacocoAgentVersion.set("0.8.7")
+    intellijEngineVersion.set("1.0.608")
+    jacocoEngineVersion.set("0.8.7")
 }
 ```

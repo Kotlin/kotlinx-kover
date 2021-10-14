@@ -21,15 +21,10 @@ class KoverPlugin : Plugin<Project> {
         target.repositories.maven {
             it.url = target.uri("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
         }
-        // hotfix for reporter XML: version 0.255 placed in coverage repository
-        // TODO remove after fixing reporter
-        target.repositories.maven {
-            it.url = target.uri("https://maven.pkg.jetbrains.space/public/p/jb-coverage/maven")
-        }
 
         val koverExtension = target.extensions.create("kover", KoverExtension::class.java, target.objects)
-        koverExtension.intellijAgentVersion.set("1.0.608")
-        koverExtension.jacocoAgentVersion.set("0.8.7")
+        koverExtension.intellijEngineVersion.set("1.0.611")
+        koverExtension.jacocoEngineVersion.set("0.8.7")
 
         val intellijConfig = target.createIntellijConfig(koverExtension)
         val jacocoConfig = target.createJacocoConfig(koverExtension)
@@ -47,20 +42,16 @@ class KoverPlugin : Plugin<Project> {
 
         config.defaultDependencies { dependencies ->
             val usedIntellijAgent = tasks.withType(Test::class.java)
-                .any { !(it.extensions.findByName("kover") as KoverTaskExtension).useJacoco }
+                .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageEngine == CoverageEngine.INTELLIJ }
 
             if (usedIntellijAgent) {
-                val agentVersion = koverExtension.intellijAgentVersion.get()
+                val agentVersion = koverExtension.intellijEngineVersion.get()
                 dependencies.add(
                     this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-agent:$agentVersion")
                 )
 
-                // hotfix for reporter XML: version 1.0.608 not generate INSTRUCTION counter, hotfixed in 0.255
-                // TODO remove after fixing reporter
-                val reporterVersion = if (agentVersion == "1.0.608") "0.255" else agentVersion
-
                 dependencies.add(
-                    this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-reporter:$reporterVersion")
+                    this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-reporter:$agentVersion")
                 )
             }
         }
@@ -75,14 +66,14 @@ class KoverPlugin : Plugin<Project> {
 
         config.defaultDependencies { dependencies ->
             val used = tasks.withType(Test::class.java)
-                .any { (it.extensions.findByName("kover") as KoverTaskExtension).useJacoco }
+                .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageEngine == CoverageEngine.JACOCO }
 
             if (used) {
                 dependencies.add(
-                    this.dependencies.create("org.jacoco:org.jacoco.agent:${koverExtension.jacocoAgentVersion.get()}")
+                    this.dependencies.create("org.jacoco:org.jacoco.agent:${koverExtension.jacocoEngineVersion.get()}")
                 )
                 dependencies.add(
-                    this.dependencies.create("org.jacoco:org.jacoco.ant:${koverExtension.jacocoAgentVersion.get()}")
+                    this.dependencies.create("org.jacoco:org.jacoco.ant:${koverExtension.jacocoEngineVersion.get()}")
                 )
             }
         }
@@ -100,8 +91,8 @@ class KoverPlugin : Plugin<Project> {
             project.layout.buildDirectory.get().dir("reports/kover/html/$name")
         })
 
-        taskExtension.binaryFile.set(this.project.provider {
-            val suffix = if (taskExtension.useJacoco) ".exec" else ".ic"
+        taskExtension.binaryReportFile.set(this.project.provider {
+            val suffix = if (taskExtension.coverageEngine == CoverageEngine.JACOCO) ".exec" else ".ic"
             project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
         })
 
@@ -110,11 +101,11 @@ class KoverPlugin : Plugin<Project> {
         jvmArgumentProviders.add(CoverageArgumentProvider(taskExtension, reader, intellijConfig))
 
         doLast {
-            if (!(taskExtension.enabled && (taskExtension.xmlReport || taskExtension.htmlReport))) {
+            if (!(taskExtension.isEnabled && (taskExtension.generateXml || taskExtension.generateHtml))) {
                 return@doLast
             }
 
-            if (taskExtension.useJacoco) {
+            if (taskExtension.coverageEngine == CoverageEngine.JACOCO) {
                 it.jacocoReport(taskExtension, jacocoConfig)
             } else {
                 it.intellijReport(taskExtension, intellijConfig)
@@ -141,7 +132,7 @@ private fun Task.jacocoReport(
 
     builder.invokeWithBody("jacocoReport") {
         invokeWithBody("executiondata") {
-            val binaries = project.files(extension.binaryFile.get())
+            val binaries = project.files(extension.binaryReportFile.get())
             binaries.addToAntBuilder(this, "resources")
         }
         invokeWithBody("structure", mapOf("name" to project.name)) {
@@ -153,12 +144,12 @@ private fun Task.jacocoReport(
             }
         }
 
-        if (extension.xmlReport) {
+        if (extension.generateXml) {
             val xmlFile = extension.xmlReportFile.get()
             xmlFile.parentFile.mkdirs()
             invokeMethod("xml", mapOf("destfile" to xmlFile))
         }
-        if (extension.htmlReport) {
+        if (extension.generateHtml) {
             val htmlDir = extension.htmlReportDir.get().asFile
             htmlDir.mkdirs()
             invokeMethod("html", mapOf("destdir" to htmlDir))
@@ -170,7 +161,7 @@ private fun Task.intellijReport(
     extension: KoverTaskExtension,
     configuration: Configuration
 ) {
-    val binary = extension.binaryFile.get()
+    val binary = extension.binaryReportFile.get()
 
     val dirs = project.collectDirs()
     val output = dirs.second.joinToString(",") { file -> file.canonicalPath }
@@ -180,12 +171,12 @@ private fun Task.intellijReport(
         "output=$output"
     )
 
-    if (extension.xmlReport) {
+    if (extension.generateXml) {
         val xmlFile = extension.xmlReportFile.get()
         xmlFile.parentFile.mkdirs()
         args += "xml=${xmlFile.canonicalPath}"
     }
-    if (extension.htmlReport) {
+    if (extension.generateHtml) {
         val htmlDir = extension.htmlReportDir.get().asFile
         htmlDir.mkdirs()
         args += "html=${htmlDir.canonicalPath}"
@@ -242,11 +233,11 @@ private class CoverageArgumentProvider(
 ) : CommandLineArgumentProvider {
 
     override fun asArguments(): MutableIterable<String> {
-        if (!extension.enabled) {
+        if (!extension.isEnabled) {
             return mutableListOf()
         }
 
-        return if (extension.useJacoco) {
+        return if (extension.coverageEngine == CoverageEngine.JACOCO) {
             jacocoAgent()
         } else {
             intellijAgent()
@@ -267,7 +258,7 @@ private class CoverageArgumentProvider(
         val includesString = extension.includes.joinToString(" ", " ")
         val excludesString = extension.excludes.let { if (it.isNotEmpty()) it.joinToString(" ", " -exclude ") else "" }
 
-        val binary = extension.binaryFile.get()
+        val binary = extension.binaryReportFile.get()
         binary.parentFile.mkdirs()
         val binaryPath = binary.canonicalPath
         return "\"$binaryPath\" false false false false true \"$binaryPath.smap\"$includesString$excludesString"
@@ -278,7 +269,7 @@ private class CoverageArgumentProvider(
     }
 
     private fun jacocoAgentArgs(): String {
-        val binary = extension.binaryFile.get()
+        val binary = extension.binaryReportFile.get()
         binary.parentFile.mkdirs()
 
         return listOf(
@@ -290,5 +281,4 @@ private class CoverageArgumentProvider(
             "jmx=false"
         ).joinToString(",")
     }
-
 }
