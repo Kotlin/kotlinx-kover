@@ -1,10 +1,8 @@
 package kotlinx.kover.adapters
 
-import kotlinx.kover.adapters.api.CompilationPluginAdapter
-import kotlinx.kover.adapters.api.PluginDirs
-import kotlinx.kover.adapters.api.safe
-import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+import kotlinx.kover.adapters.api.*
+import org.gradle.api.*
+import org.jetbrains.kotlin.gradle.dsl.*
 
 class KotlinAndroidPluginAdapter : CompilationPluginAdapter {
 

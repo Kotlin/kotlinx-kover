@@ -12,8 +12,6 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation(kotlin("stdlib-jdk8"))
     implementation(gradleApi())
 
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30")
@@ -25,11 +23,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks {
-    compileTestKotlin {
-        kotlinOptions {
-            languageVersion = "1.8"
-        }
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    kotlinOptions {
+        languageVersion = "1.5"
+
+        allWarningsAsErrors = true
+        // Suppress the warning about kotlin-reflect 1.3 and kotlin-stdlib 1.4 in the classpath.
+        // It's incorrect in this case because we're limiting API version to 1.3 anyway.
+        freeCompilerArgs = freeCompilerArgs + "-Xskip-runtime-version-check"
     }
 }
 

@@ -1,8 +1,8 @@
 package kotlinx.kover.adapters
 
-import kotlinx.kover.adapters.api.CompilationPluginAdapter
-import org.gradle.api.Project
-import java.io.File
+import kotlinx.kover.adapters.api.*
+import org.gradle.api.*
+import java.io.*
 
 private fun createAdapters(): List<CompilationPluginAdapter> {
     return listOf(

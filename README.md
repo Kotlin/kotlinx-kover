@@ -1,38 +1,34 @@
-**Kover** - Gradle plugin for Kotlin code coverage agents
+# Kotlinx-Kover
+
+**Kover** - Gradle plugin for Kotlin code coverage agents: [IntelliJ](https://github.com/JetBrains/intellij-coverage)
+and [JaCoCo](https://github.com/jacoco/jacoco).
 
 ## Table of content
-- [Main features of the plugin](#main-features-of-the-plugin)
-  - [Features of the IntelliJ Coverage](#features-of-the-intellij-coverage)
-- [Basic Gradle Setup](#basic-gradle-setup)
-  - [Add repository](#add-repository)
-  - [Apply plugin to project](#apply-plugin-to-project)
-- [Customize settings](#customize-settings)
+- [Features](#features)
+- [Quickstart](#quickstart)
+    - [Add repository](#add-repository)
+    - [Apply plugin to project](#apply-plugin-to-project)
+- [Plugin configuration](#plugin-configuration)
+  - [Explicit version of coverage agent](#explicit-version-of-coverage-agent)
+    - [Verification](#verification)
 
-# Main features of the plugin
-* Uses IntelliJ or `JaCoCo` agent to collect the code coverage for JVM test tasks
-* Uses IntelliJ or `JaCoCo` reporter to generate XML and HTML reports
-* Allows to specify the version of the IntelliJ and `JaCoCo` agents
-* Works with `Kotlin/JVM` and `Kotlin Multiplatform` sources
-* Supports the work with `Kotlin` `Android` sources without dividing them into build types and flavours
-* Supports custom filtering instrumented classes
+## Features
 
-### Features of the IntelliJ Coverage
-* Supports `Kotlin/JVM` projects
-* Supports `Kotlin Multiplatform` projects
-* Supports `inline` functions, including those declared in multiplatform sources or called from tests
-* Generates test coverage `HTML` report
-* Generates test coverage `XML` report compatible with `JaCoCo`'s `XML`
-* Supports custom filtering instrumented classes by `RegExp`
+* Collecting the code coverage for `JVM` test tasks
+* `XML` and `HTML` reports generation
+* Support of `Kotlin/JVM`, `Kotlin Multiplatform` and mixed `Kotlin-Java` sources with zero additional configuration
+* `Kotlin Android` support without dividing them into build types and flavours
+* Customizable filters for instrumented classes
 
-
-# Basic Gradle Setup
+## Quickstart
 
 ### Add repository
-in `settings.gradle.kts` or `settings.gradle`
+
+For `settings.gradle.kts`
 
 <details open>
 <summary>Kotlin</summary>
-    
+
 ```kotlin
 pluginManagement {
     repositories {
@@ -43,9 +39,11 @@ pluginManagement {
 ```
 </details>
 
+For `settings.gradle`
+
 <details>
 <summary>Groovy</summary>
-    
+
 ```groovy
 pluginManagement {
     repositories {
@@ -57,42 +55,47 @@ pluginManagement {
 </details>
 
 ### Apply plugin to project
-in `build.gradle.kts` or `build.gradle`
+
+For `build.gradle.kts`
 
 <details open>
 <summary>Kotlin</summary>
-    
+
 ```kotlin
 plugins {
-    // ... other plugins
     id("kotlinx-kover") version "0.2.2"
 }
 ```
 </details>
+
+For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
 
 ```groovy
 plugins {
-    // ... other plugins
     id 'kotlinx-kover' version '0.2.2'
 }
 ```
 </details>
-   
-# Customize settings
-in `build.gradle.kts` or `build.gradle`
+
+The plugin automatically inserted into `check` tasks pipeline and collects coverage during test run,
+verifying set validation rules and optionally producing `XML` or `HTML` reports.
+
+## Plugin configuration
+
+For `build.gradle.kts`
 
 <details open>
 <summary>Kotlin</summary>
-    
+
 ```kotlin
 tasks.test {
-    extensions.configure(kotlinx.kover.KoverTaskExtension::class) {
-        useJacoco = false
-        xmlReport = true
-        htmlReport = false
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+        generateXml = true
+        generateHtml = false
+        coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
         binaryFile.set(file("$buildDir/custom/result.bin"))
@@ -103,15 +106,17 @@ tasks.test {
 ```
 </details>
 
+For `build.gradle`
+
 <details>
 <summary>Groovy</summary>
-    
+
 ```groovy
 tasks.test {
     kover {
-        useJacoco = false
-        xmlReport = true
-        htmlReport = false
+        generateXml = true
+        generateHtml = false
+        coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
         binaryFile.set(file("$buildDir/custom/result.bin"))
@@ -122,27 +127,95 @@ tasks.test {
 ```
 </details>
 
-### Change version of agents
-in `build.gradle.kts` or `build.gradle`
+### Explicit version of coverage agent
+
+For `build.gradle.kts`
 
 <details open>
 <summary>Kotlin</summary>
-    
+
 ```kotlin
 kover {
-    intellijAgentVersion.set("1.0.608")
+    intellijAgentVersion.set("1.0.611")
     jacocoAgentVersion.set("0.8.7")
 }
 ```
 </details>
 
+For `build.gradle`
+
 <details>
 <summary>Groovy</summary>
-    
+
 ```groovy
 kover {
-    intellijAgentVersion.set("1.0.608")
+    intellijAgentVersion.set("1.0.611")
     jacocoAgentVersion.set("0.8.7")
+}
+```
+</details>
+
+###### Verification
+For each test task, you can specify one or more rules that check the values of the code coverage counters.
+
+Validation rules work for both types of agents.
+
+*The plugin currently only supports line counter values.*
+
+For `build.gradle.kts`
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+tasks.test {
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+        verificationRule {
+            name = "The project doesn't have to be big"
+            maxValue = 100000
+            valueType = kotlinx.kover.api.VerificationValueType.COVERED_LINES_COUNT
+        }
+        verificationRule {
+            // rule without custom name
+            minValue = 1
+            maxValue = 1000
+            valueType = kotlinx.kover.api.VerificationValueType.MISSED_LINES_COUNT
+        }
+        verificationRule {
+            name = "Minimal line coverage rate in percents"
+            minValue = 50
+            // valueType is kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE by default
+        }
+    }
+}
+```
+</details>
+
+For `build.gradle`
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
+tasks.test {
+    kover {
+        verificationRule {
+            name = "The project doesn't have to be big"
+            maxValue = 100000
+            valueType = 'COVERED_LINES_COUNT'
+        }
+        verificationRule {
+            // rule without custom name
+            minValue = 1
+            maxValue = 1000
+            valueType = 'MISSED_LINES_COUNT'
+        }
+        verificationRule {
+            name = "Minimal line coverage rate in percents"
+            minValue = 50
+            // valueType is 'COVERED_LINES_PERCENTAGE' by default
+        }
+    }
 }
 ```
 </details>
