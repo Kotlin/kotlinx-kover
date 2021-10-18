@@ -12,35 +12,106 @@ and [JaCoCo](https://github.com/jacoco/jacoco).
 * Customizable filters for instrumented classes
 
 ## Quickstart
-
-### Add repository
-
-For `settings.gradle`
-```
-pluginManagement {
-    repositories {
-        // ... other dependencies
-        maven { url 'https://maven.pkg.jetbrains.space/public/p/jb-coverage/maven' }
-    }
-}
-```
 ### Apply plugin to project
-
+#### Applying plugins with the plugins DSL
 For `build.gradle.kts`
 ```
 plugins {
-     id("kotlinx-kover") version "0.3.0"
+     id("org.jetbrains.kotlinx.kover") version "0.3.0"
 }
 ```
 For `build.gradle`
 ```
 plugins {
-    id 'kotlinx-kover' version '0.3.0'
+    id 'org.jetbrains.kotlinx.kover' version '0.3.0'
 }
+```
+
+#### Legacy Plugin Application: applying plugins with the buildscript block
+For `build.gradle.kts`
+```
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlinx:kover:0.3.0")
+    }
+}
+
+apply(plugin = "kover")
+```
+
+For `build.gradle`
+```
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.jetbrains.kotlinx:kover:0.3.0'
+    }
+}
+  
+apply plugin: 'kover'    
 ```
 
 The plugin automatically inserted into `check` tasks pipeline and collects coverage during test run,
 verifying set validation rules and optionally producing XML or HTML reports.
+
+### Multi-module projects
+There is currently no full support for multi-module projects, you need to apply a plugin for each module.
+You can add the plugin to the `build.gradle` or `build.gradle.kts` files in each module, or add this code to the root module
+
+*Cross-module tests are not supported in reports and validation yet. For each test, only the classpath belonging to the current module is taken.*
+
+#### apply plugin for all modules 
+For `build.gradle.kts`
+```
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.3.0"
+}
+
+
+allprojects {
+    apply(plugin = "kover")
+}
+```
+
+For `build.gradle`
+```
+plugins {
+    id 'org.jetbrains.kotlinx.kover' version '0.3.0'
+}
+
+
+allprojects {
+    apply plugin: 'kover'
+}
+```
+
+#### apply plugin only for submodules
+For `build.gradle.kts`
+```
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.3.0" apply false
+}
+
+subprojects {
+    apply(plugin = "kover")
+}
+```
+For `build.gradle`
+```
+plugins {
+    id 'org.jetbrains.kotlinx.kover' version '0.3.0' apply(false)
+}
+
+subprojects {
+    apply plugin: 'kover'
+}
+```
 
 ## Plugin configuration
 
@@ -81,6 +152,14 @@ tasks.test {
 For both `build.gradle.kts` and `build.gradle`
 ```
 kover {
+    intellijEngineVersion.set("1.0.611")
+    jacocoEngineVersion.set("0.8.7")
+}
+```
+
+If you are using `build.gradle.kts` file and applying plugins with the buildscript block the code above won't work, it can be rewritten like this:
+```
+extensions.configure<kotlinx.kover.api.KoverExtension>{
     intellijEngineVersion.set("1.0.611")
     jacocoEngineVersion.set("0.8.7")
 }
@@ -140,4 +219,3 @@ tasks.test {
     }
 }
 ```
-

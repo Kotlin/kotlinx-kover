@@ -3,6 +3,7 @@ plugins {
 
     `java-gradle-plugin`
     `maven-publish`
+    signing
 }
 
 repositories {
@@ -34,29 +35,31 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     }
 }
 
+// override version in deploy
+properties["DeployVersion"]?.let { version = it }
+
+
 publishing {
-    repositories {
-        maven {
-            url = uri(properties["mavenUri"]?:"default")
-            credentials {
-                username = properties["mavenUsername"]?.toString()
-                password = properties["mavenPassword"]?.toString()
-            }
+    publications {
+        // `pluginMaven` - standard name for the publication task of the `java-gradle-plugin`
+        create<MavenPublication>("pluginMaven") {
+            // `java` component will be added by the `java-gradle-plugin` later
+            createMavenArtifacts(project, project.sourceSets.main.get().allSource)
         }
     }
 
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-        }
+    addMavenRepository(project)
+    addMavenMetadata()
+    publications.withType(MavenPublication::class).all {
+        signPublicationIfKeyPresent(project)
     }
 }
 
 
 gradlePlugin {
     plugins {
-        create("kotlinx-kover") {
-            id = "kotlinx-kover"
+        create("Kover") {
+            id = "org.jetbrains.kotlinx.kover"
             implementationClass = "kotlinx.kover.KoverPlugin"
             displayName = "Kotlin Code Coverage Plugin"
             description = "Evaluate code coverage for projects written in Kotlin"
