@@ -50,7 +50,7 @@ class KoverPlugin : Plugin<Project> {
             project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
         })
 
-        jvmArgumentProviders.add(CoverageArgumentProvider(jacocoAgent, intellijAgent, taskExtension))
+        jvmArgumentProviders.add(CoverageArgumentProvider(jacocoAgent, intellijAgent, taskExtension, this))
 
         doLast {
             taskExtension.generateXml = taskExtension.generateXml
@@ -66,7 +66,7 @@ class KoverPlugin : Plugin<Project> {
                 it.jacocoReport(builder, taskExtension)
                 it.jacocoVerification(builder, taskExtension)
             } else {
-                it.intellijReport(taskExtension, intellijAgent.config)
+                it.intellijReport(taskExtension, intellijAgent.config, this)
                 it.intellijVerification(taskExtension)
             }
         }
@@ -76,7 +76,8 @@ class KoverPlugin : Plugin<Project> {
 private class CoverageArgumentProvider(
     private val jacocoAgent: JacocoAgent,
     private val intellijAgent: IntellijAgent,
-    private val extension: KoverTaskExtension
+    private val extension: KoverTaskExtension,
+    private val task: Task
 ) : CommandLineArgumentProvider {
     override fun asArguments(): MutableIterable<String> {
         if (!extension.isEnabled) {
@@ -84,7 +85,7 @@ private class CoverageArgumentProvider(
         }
 
         return if (extension.coverageEngine == CoverageEngine.INTELLIJ) {
-            intellijAgent.buildCommandLineArgs(extension)
+            intellijAgent.buildCommandLineArgs(extension, task)
         } else {
             jacocoAgent.buildCommandLineArgs(extension)
         }

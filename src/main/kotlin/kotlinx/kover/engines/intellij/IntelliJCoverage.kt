@@ -34,34 +34,45 @@ internal fun Project.createIntellijConfig(koverExtension: KoverExtension): Confi
 
 internal fun Task.intellijReport(
     extension: KoverTaskExtension,
-    configuration: Configuration
+    configuration: Configuration,
+    task: Task
 ) {
     val binary = extension.binaryReportFile.get()
-
     val dirs = project.collectDirs()
-    val output = dirs.second.joinToString(",") { file -> file.canonicalPath }
-
-    val args = mutableListOf(
-        "reports=\"${binary.canonicalPath}\":\"${binary.canonicalPath}.smap\"",
-        "output=$output"
-    )
-
-    if (extension.generateXml) {
+    val sources = dirs.first
+    val outputs = dirs.second
+    val xmlFile = if (extension.generateXml) {
         val xmlFile = extension.xmlReportFile.get()
         xmlFile.parentFile.mkdirs()
-        args += "xml=${xmlFile.canonicalPath}"
+        xmlFile.canonicalPath
+    } else {
+        ""
     }
-    if (extension.generateHtml) {
+    val htmlDirPath = if (extension.generateHtml) {
         val htmlDir = extension.htmlReportDir.get().asFile
         htmlDir.mkdirs()
-        args += "html=${htmlDir.canonicalPath}"
-        args += dirs.first.joinToString(",", "sources=") { file -> file.canonicalPath }
+        htmlDir.canonicalPath
+    } else {
+        ""
+    }
+
+    val argsFile = File(task.temporaryDir, "intellijreport.args")
+    argsFile.printWriter().use { pw ->
+        pw.appendLine(binary.canonicalPath)
+        pw.appendLine("${binary.canonicalPath}.smap")
+        pw.appendLine()
+        sources.forEach { src -> pw.appendLine(src.canonicalPath) }
+        pw.appendLine()
+        outputs.forEach { out -> pw.appendLine(out.canonicalPath) }
+        pw.appendLine()
+        pw.appendLine(xmlFile)
+        pw.appendLine(htmlDirPath)
     }
 
     project.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.report.Main")
         e.classpath = configuration
-        e.args = args
+        e.args = mutableListOf(argsFile.canonicalPath)
     }
 }
 
