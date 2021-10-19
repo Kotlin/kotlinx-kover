@@ -12,7 +12,6 @@ import org.gradle.api.tasks.testing.*
 import org.gradle.process.*
 
 class KoverPlugin : Plugin<Project> {
-    private val defaultIntellijVersion = "1.0.611"
     private val defaultJacocoVersion = "0.8.7"
 
     override fun apply(target: Project) {
@@ -21,7 +20,7 @@ class KoverPlugin : Plugin<Project> {
         }
 
         val koverExtension = target.extensions.create("kover", KoverExtension::class.java, target.objects)
-        koverExtension.intellijEngineVersion.set(defaultIntellijVersion)
+        koverExtension.intellijEngineVersion.set(defaultIntellijVersion.toString())
         koverExtension.jacocoEngineVersion.set(defaultJacocoVersion)
 
         val intellijConfig = target.createIntellijConfig(koverExtension)

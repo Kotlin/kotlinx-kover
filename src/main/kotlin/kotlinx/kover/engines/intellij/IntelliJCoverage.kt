@@ -18,8 +18,12 @@ internal fun Project.createIntellijConfig(koverExtension: KoverExtension): Confi
         val usedIntellijAgent = tasks.withType(Test::class.java)
             .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageEngine == CoverageEngine.INTELLIJ }
 
+        val agentVersion = koverExtension.intellijEngineVersion.get()
+        IntellijEngineVersion.parseOrNull(agentVersion)?.let {
+            if (it < minimalIntellijVersion) throw GradleException("IntelliJ engine version $it is too low, minimal version is $minimalIntellijVersion")
+        }
+
         if (usedIntellijAgent) {
-            val agentVersion = koverExtension.intellijEngineVersion.get()
             dependencies.add(
                 this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-agent:$agentVersion")
             )
