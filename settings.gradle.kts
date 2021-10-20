@@ -1,2 +1,2 @@
-rootProject.name = "kotlinx-kover"
+rootProject.name = "kover"
 

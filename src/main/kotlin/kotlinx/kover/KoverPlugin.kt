@@ -12,7 +12,6 @@ import org.gradle.api.tasks.testing.*
 import org.gradle.process.*
 
 class KoverPlugin : Plugin<Project> {
-    private val defaultIntellijVersion = "1.0.611"
     private val defaultJacocoVersion = "0.8.7"
 
     override fun apply(target: Project) {
@@ -21,7 +20,7 @@ class KoverPlugin : Plugin<Project> {
         }
 
         val koverExtension = target.extensions.create("kover", KoverExtension::class.java, target.objects)
-        koverExtension.intellijEngineVersion.set(defaultIntellijVersion)
+        koverExtension.intellijEngineVersion.set(defaultIntellijVersion.toString())
         koverExtension.jacocoEngineVersion.set(defaultJacocoVersion)
 
         val intellijConfig = target.createIntellijConfig(koverExtension)
@@ -50,7 +49,7 @@ class KoverPlugin : Plugin<Project> {
             project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
         })
 
-        jvmArgumentProviders.add(CoverageArgumentProvider(jacocoAgent, intellijAgent, taskExtension))
+        jvmArgumentProviders.add(CoverageArgumentProvider(jacocoAgent, intellijAgent, taskExtension, this))
 
         doLast {
             taskExtension.generateXml = taskExtension.generateXml
@@ -66,7 +65,7 @@ class KoverPlugin : Plugin<Project> {
                 it.jacocoReport(builder, taskExtension)
                 it.jacocoVerification(builder, taskExtension)
             } else {
-                it.intellijReport(taskExtension, intellijAgent.config)
+                it.intellijReport(taskExtension, intellijAgent.config, this)
                 it.intellijVerification(taskExtension)
             }
         }
@@ -76,7 +75,8 @@ class KoverPlugin : Plugin<Project> {
 private class CoverageArgumentProvider(
     private val jacocoAgent: JacocoAgent,
     private val intellijAgent: IntellijAgent,
-    private val extension: KoverTaskExtension
+    private val extension: KoverTaskExtension,
+    private val task: Task
 ) : CommandLineArgumentProvider {
     override fun asArguments(): MutableIterable<String> {
         if (!extension.isEnabled) {
@@ -84,7 +84,7 @@ private class CoverageArgumentProvider(
         }
 
         return if (extension.coverageEngine == CoverageEngine.INTELLIJ) {
-            intellijAgent.buildCommandLineArgs(extension)
+            intellijAgent.buildCommandLineArgs(extension, task)
         } else {
             jacocoAgent.buildCommandLineArgs(extension)
         }
