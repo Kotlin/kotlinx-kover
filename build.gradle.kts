@@ -44,7 +44,7 @@ publishing {
         // `pluginMaven` - standard name for the publication task of the `java-gradle-plugin`
         create<MavenPublication>("pluginMaven") {
             // `java` component will be added by the `java-gradle-plugin` later
-            createMavenArtifacts(project, project.sourceSets.main.get().allSource)
+            addExtraMavenArtifacts(project, project.sourceSets.main.get().allSource)
         }
     }
 

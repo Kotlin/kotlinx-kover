@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.publish.*
@@ -10,27 +14,23 @@ fun PublishingExtension.addMavenRepository(project: Project) {
         maven {
             url = project.uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
             credentials {
-                username = project.getSensitiveProperty("libs.sonatype.user")
-                password = project.getSensitiveProperty("libs.sonatype.password")
+                username = project.acquireProperty("libs.sonatype.user")
+                password = project.acquireProperty("libs.sonatype.password")
             }
         }
     }
 }
 
 fun MavenPublication.signPublicationIfKeyPresent(project: Project) {
-    val keyId = project.getSensitiveProperty("libs.sign.key.id")
-    val signingKey = project.getSensitiveProperty("libs.sign.key.private")
-    val signingKeyPassphrase = project.getSensitiveProperty("libs.sign.passphrase")
+    val keyId = project.acquireProperty("libs.sign.key.id")
+    val signingKey = project.acquireProperty("libs.sign.key.private")
+    val signingKeyPassphrase = project.acquireProperty("libs.sign.passphrase")
     if (!signingKey.isNullOrBlank()) {
         project.extensions.configure<SigningExtension>("signing") {
             useInMemoryPgpKeys(keyId, signingKey, signingKeyPassphrase)
             sign(this@signPublicationIfKeyPresent)
         }
     }
-}
-
-fun Project.getSensitiveProperty(name: String): String? {
-    return project.findProperty(name) as? String ?: System.getenv(name)
 }
 
 fun PublishingExtension.addMavenMetadata() {
@@ -63,7 +63,7 @@ fun PublishingExtension.addMavenMetadata() {
     }
 }
 
-fun MavenPublication.createMavenArtifacts(project: Project, sources: SourceDirectorySet) {
+fun MavenPublication.addExtraMavenArtifacts(project: Project, sources: SourceDirectorySet) {
     val sourcesJar by project.tasks.creating(org.gradle.jvm.tasks.Jar::class) {
         archiveClassifier.set("sources")
         from(sources)
@@ -74,4 +74,8 @@ fun MavenPublication.createMavenArtifacts(project: Project, sources: SourceDirec
     }
     artifact(sourcesJar)
     artifact(javadocJar)
+}
+
+private fun Project.acquireProperty(name: String): String? {
+    return project.findProperty(name) as? String ?: System.getenv(name)
 }
