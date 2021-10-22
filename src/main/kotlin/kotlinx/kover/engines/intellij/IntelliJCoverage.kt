@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.engines.intellij
 
 import kotlinx.kover.adapters.*
@@ -18,8 +22,12 @@ internal fun Project.createIntellijConfig(koverExtension: KoverExtension): Confi
         val usedIntellijAgent = tasks.withType(Test::class.java)
             .any { (it.extensions.findByName("kover") as KoverTaskExtension).coverageEngine == CoverageEngine.INTELLIJ }
 
+        val agentVersion = koverExtension.intellijEngineVersion.get()
+        IntellijEngineVersion.parseOrNull(agentVersion)?.let {
+            if (it < minimalIntellijVersion) throw GradleException("IntelliJ engine version $it is too low, minimal version is $minimalIntellijVersion")
+        }
+
         if (usedIntellijAgent) {
-            val agentVersion = koverExtension.intellijEngineVersion.get()
             dependencies.add(
                 this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-agent:$agentVersion")
             )
@@ -34,34 +42,45 @@ internal fun Project.createIntellijConfig(koverExtension: KoverExtension): Confi
 
 internal fun Task.intellijReport(
     extension: KoverTaskExtension,
-    configuration: Configuration
+    configuration: Configuration,
+    task: Task
 ) {
     val binary = extension.binaryReportFile.get()
-
     val dirs = project.collectDirs()
-    val output = dirs.second.joinToString(",") { file -> file.canonicalPath }
-
-    val args = mutableListOf(
-        "reports=\"${binary.canonicalPath}\":\"${binary.canonicalPath}.smap\"",
-        "output=$output"
-    )
-
-    if (extension.generateXml) {
+    val sources = dirs.first
+    val outputs = dirs.second
+    val xmlFile = if (extension.generateXml) {
         val xmlFile = extension.xmlReportFile.get()
         xmlFile.parentFile.mkdirs()
-        args += "xml=${xmlFile.canonicalPath}"
+        xmlFile.canonicalPath
+    } else {
+        ""
     }
-    if (extension.generateHtml) {
+    val htmlDirPath = if (extension.generateHtml) {
         val htmlDir = extension.htmlReportDir.get().asFile
         htmlDir.mkdirs()
-        args += "html=${htmlDir.canonicalPath}"
-        args += dirs.first.joinToString(",", "sources=") { file -> file.canonicalPath }
+        htmlDir.canonicalPath
+    } else {
+        ""
+    }
+
+    val argsFile = File(task.temporaryDir, "intellijreport.args")
+    argsFile.printWriter().use { pw ->
+        pw.appendLine(binary.canonicalPath)
+        pw.appendLine("${binary.canonicalPath}.smap")
+        pw.appendLine()
+        sources.forEach { src -> pw.appendLine(src.canonicalPath) }
+        pw.appendLine()
+        outputs.forEach { out -> pw.appendLine(out.canonicalPath) }
+        pw.appendLine()
+        pw.appendLine(xmlFile)
+        pw.appendLine(htmlDirPath)
     }
 
     project.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.report.Main")
         e.classpath = configuration
-        e.args = args
+        e.args = mutableListOf(argsFile.canonicalPath)
     }
 }
 

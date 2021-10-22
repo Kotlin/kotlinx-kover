@@ -6,8 +6,12 @@ and [JaCoCo](https://github.com/jacoco/jacoco).
 ## Table of content
 - [Features](#features)
 - [Quickstart](#quickstart)
-    - [Add repository](#add-repository)
     - [Apply plugin to project](#apply-plugin-to-project)
+        - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
+        - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
+    - [Multi-module projects](#multi-module-projects)
+        - [Apply plugin for all modules](#apply-plugin-for-all-modules)
+        - [Apply plugin only for submodules](#apply-plugin-only-for-submodules)
 - [Plugin configuration](#plugin-configuration)
   - [Explicit version of coverage agent](#explicit-version-of-coverage-agent)
     - [Verification](#verification)
@@ -21,41 +25,8 @@ and [JaCoCo](https://github.com/jacoco/jacoco).
 * Customizable filters for instrumented classes
 
 ## Quickstart
-
-### Add repository
-
-For `settings.gradle.kts`
-
-<details open>
-<summary>Kotlin</summary>
-
-```kotlin
-pluginManagement {
-    repositories {
-        // ... other dependencies
-        maven("https://maven.pkg.jetbrains.space/public/p/jb-coverage/maven")
-    }
-}
-```
-</details>
-
-For `settings.gradle`
-
-<details>
-<summary>Groovy</summary>
-
-```groovy
-pluginManagement {
-    repositories {
-        // ... other dependencies
-        maven { url 'https://maven.pkg.jetbrains.space/public/p/jb-coverage/maven' }
-    }
-}
-```
-</details>
-
 ### Apply plugin to project
-
+#### Applying plugins with the plugins DSL
 For `build.gradle.kts`
 
 <details open>
@@ -63,7 +34,7 @@ For `build.gradle.kts`
 
 ```kotlin
 plugins {
-    id("kotlinx-kover") version "0.3.0"
+     id("org.jetbrains.kotlinx.kover") version "0.3.0"
 }
 ```
 </details>
@@ -75,13 +46,127 @@ For `build.gradle`
 
 ```groovy
 plugins {
-    id 'kotlinx-kover' version '0.3.0'
+    id 'org.jetbrains.kotlinx.kover' version '0.3.0'
 }
+```
+</details>
+
+#### Legacy Plugin Application: applying plugins with the buildscript block
+For `build.gradle.kts`
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlinx:kover:0.3.0")
+    }
+}
+
+apply(plugin = "kover")
+```
+</details>
+
+For `build.gradle`
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.jetbrains.kotlinx:kover:0.3.0'
+    }
+}
+  
+apply plugin: 'kover'    
 ```
 </details>
 
 The plugin automatically inserted into `check` tasks pipeline and collects coverage during test run,
 verifying set validation rules and optionally producing `XML` or `HTML` reports.
+
+### Multi-module projects
+There is currently no full support for multi-module projects, you need to apply a plugin for each module.
+You can add the plugin to the `build.gradle` or `build.gradle.kts` files in each module, or add this code to the root module
+
+*Cross-module tests are not supported in reports and validation yet. For each test, only the classpath belonging to the current module is taken.*
+
+#### Apply plugin for all modules 
+For `build.gradle.kts`
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.3.0"
+}
+
+
+allprojects {
+    apply(plugin = "kover")
+}
+```
+</details>
+
+For `build.gradle`
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
+plugins {
+    id 'org.jetbrains.kotlinx.kover' version '0.3.0'
+}
+
+
+allprojects {
+    apply plugin: 'kover'
+}
+```
+</details>
+
+#### Apply plugin only for submodules
+For `build.gradle.kts`
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.3.0" apply false
+}
+
+subprojects {
+    apply(plugin = "kover")
+}
+```
+</details>
+
+For `build.gradle`
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
+plugins {
+    id 'org.jetbrains.kotlinx.kover' version '0.3.0' apply(false)
+}
+
+subprojects {
+    apply plugin: 'kover'
+}
+```
+</details>
 
 ## Plugin configuration
 
@@ -98,7 +183,7 @@ tasks.test {
         coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
-        binaryFile.set(file("$buildDir/custom/result.bin"))
+        binaryReportFile.set(file("$buildDir/custom/result.bin"))
         includes = listOf("com\\.example\\..*")
         excludes = listOf("com\\.example\\.subpackage\\..*")
     }
@@ -116,10 +201,10 @@ tasks.test {
     kover {
         generateXml = true
         generateHtml = false
-        coverageEngine = CoverageEngine.INTELLIJ
+        coverageEngine = 'INTELLIJ'
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
-        binaryFile.set(file("$buildDir/custom/result.bin"))
+        binaryReportFile.set(file("$buildDir/custom/result.bin"))
         includes = ['com\\.example\\..*']
         excludes = ['com\\.example\\.subpackage\\..*']
     }
@@ -135,9 +220,9 @@ For `build.gradle.kts`
 <summary>Kotlin</summary>
 
 ```kotlin
-kover {
-    intellijAgentVersion.set("1.0.611")
-    jacocoAgentVersion.set("0.8.7")
+extensions.configure<kotlinx.kover.api.KoverExtension>{
+    intellijEngineVersion.set("1.0.611")
+    jacocoEngineVersion.set("0.8.7")
 }
 ```
 </details>
@@ -149,8 +234,8 @@ For `build.gradle`
 
 ```groovy
 kover {
-    intellijAgentVersion.set("1.0.611")
-    jacocoAgentVersion.set("0.8.7")
+    intellijEngineVersion.set("1.0.611")
+    jacocoEngineVersion.set("0.8.7")
 }
 ```
 </details>
