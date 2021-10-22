@@ -124,7 +124,7 @@ tasks.test {
         coverageEngine = CoverageEngine.INTELLIJ
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
-        binaryFile.set(file("$buildDir/custom/result.bin"))
+        binaryReportFile.set(file("$buildDir/custom/result.bin"))
         includes = listOf("com\\.example\\..*")
         excludes = listOf("com\\.example\\.subpackage\\..*")
     }
@@ -137,10 +137,10 @@ tasks.test {
     kover {
         generateXml = true
         generateHtml = false
-        coverageEngine = CoverageEngine.INTELLIJ
+        coverageEngine = 'INTELLIJ'
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
-        binaryFile.set(file("$buildDir/custom/result.bin"))
+        binaryReportFile.set(file("$buildDir/custom/result.bin"))
         includes = ['com\\.example\\..*']
         excludes = ['com\\.example\\.subpackage\\..*']
     }
