@@ -27,7 +27,7 @@ and [JaCoCo](https://github.com/jacoco/jacoco).
 ## Quickstart
 ### Apply plugin to project
 #### Applying plugins with the plugins DSL
-For `build.gradle.kts`
+In top level build file
 
 <details open>
 <summary>Kotlin</summary>
@@ -38,8 +38,6 @@ plugins {
 }
 ```
 </details>
-
-For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
@@ -52,7 +50,7 @@ plugins {
 </details>
 
 #### Legacy Plugin Application: applying plugins with the buildscript block
-For `build.gradle.kts`
+In top level build file
 
 <details open>
 <summary>Kotlin</summary>
@@ -71,8 +69,6 @@ buildscript {
 apply(plugin = "kover")
 ```
 </details>
-
-For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
@@ -101,7 +97,7 @@ You can add the plugin to the `build.gradle` or `build.gradle.kts` files in each
 *Cross-module tests are not supported in reports and validation yet. For each test, only the classpath belonging to the current module is taken.*
 
 #### Apply plugin for all modules 
-For `build.gradle.kts`
+In top level build file
 
 <details open>
 <summary>Kotlin</summary>
@@ -117,8 +113,6 @@ allprojects {
 }
 ```
 </details>
-
-For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
@@ -136,7 +130,7 @@ allprojects {
 </details>
 
 #### Apply plugin only for submodules
-For `build.gradle.kts`
+In top level build file
 
 <details open>
 <summary>Kotlin</summary>
@@ -151,8 +145,6 @@ subprojects {
 }
 ```
 </details>
-
-For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
@@ -169,8 +161,7 @@ subprojects {
 </details>
 
 ## Plugin configuration
-
-For `build.gradle.kts`
+In top level build file
 
 <details open>
 <summary>Kotlin</summary>
@@ -190,8 +181,6 @@ tasks.test {
 }
 ```
 </details>
-
-For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
@@ -213,8 +202,7 @@ tasks.test {
 </details>
 
 ### Explicit version of coverage agent
-
-For `build.gradle.kts`
+In top level build file
 
 <details open>
 <summary>Kotlin</summary>
@@ -226,8 +214,6 @@ extensions.configure<kotlinx.kover.api.KoverExtension>{
 }
 ```
 </details>
-
-For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
@@ -247,7 +233,7 @@ Validation rules work for both types of agents.
 
 *The plugin currently only supports line counter values.*
 
-For `build.gradle.kts`
+In top level build file
 
 <details open>
 <summary>Kotlin</summary>
@@ -275,8 +261,6 @@ tasks.test {
 }
 ```
 </details>
-
-For `build.gradle`
 
 <details>
 <summary>Groovy</summary>
