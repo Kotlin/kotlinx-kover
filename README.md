@@ -3,33 +3,59 @@
 **Kover** - Gradle plugin for Kotlin code coverage agents: [IntelliJ](https://github.com/JetBrains/intellij-coverage)
 and [JaCoCo](https://github.com/jacoco/jacoco).
 
+## Table of content
+- [Features](#features)
+- [Quickstart](#quickstart)
+    - [Apply plugin to project](#apply-plugin-to-project)
+        - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
+        - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
+    - [Multi-module projects](#multi-module-projects)
+        - [Apply plugin for all modules](#apply-plugin-for-all-modules)
+        - [Apply plugin only for submodules](#apply-plugin-only-for-submodules)
+- [Plugin configuration](#plugin-configuration)
+  - [Explicit version of coverage agent](#explicit-version-of-coverage-agent)
+    - [Verification](#verification)
+
 ## Features
 
-* Collecting the code coverage for JVM test tasks
-* XML and HTML reports generation
-* Support of Kotlin/JVM, Kotlin Multiplatform and mixed Kotlin-Java sources with zero additional configuration
-* Kotlin Android support without dividing them into build types and flavours
+* Collecting the code coverage for `JVM` test tasks
+* `XML` and `HTML` reports generation
+* Support of `Kotlin/JVM`, `Kotlin Multiplatform` and mixed `Kotlin-Java` sources with zero additional configuration
+* `Kotlin Android` support without dividing them into build types and flavours
 * Customizable filters for instrumented classes
 
 ## Quickstart
 ### Apply plugin to project
 #### Applying plugins with the plugins DSL
-For `build.gradle.kts`
-```
+In top level build file
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
 plugins {
      id("org.jetbrains.kotlinx.kover") version "0.3.0"
 }
 ```
-For `build.gradle`
-```
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
 plugins {
     id 'org.jetbrains.kotlinx.kover' version '0.3.0'
 }
 ```
+</details>
 
 #### Legacy Plugin Application: applying plugins with the buildscript block
-For `build.gradle.kts`
-```
+In top level build file
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
 buildscript {
     repositories {
         mavenCentral()
@@ -42,9 +68,12 @@ buildscript {
 
 apply(plugin = "kover")
 ```
+</details>
 
-For `build.gradle`
-```
+<details>
+<summary>Groovy</summary>
+
+```groovy
 buildscript {
     repositories {
         mavenCentral()
@@ -56,9 +85,10 @@ buildscript {
   
 apply plugin: 'kover'    
 ```
+</details>
 
 The plugin automatically inserted into `check` tasks pipeline and collects coverage during test run,
-verifying set validation rules and optionally producing XML or HTML reports.
+verifying set validation rules and optionally producing `XML` or `HTML` reports.
 
 ### Multi-module projects
 There is currently no full support for multi-module projects, you need to apply a plugin for each module.
@@ -66,9 +96,13 @@ You can add the plugin to the `build.gradle` or `build.gradle.kts` files in each
 
 *Cross-module tests are not supported in reports and validation yet. For each test, only the classpath belonging to the current module is taken.*
 
-#### apply plugin for all modules 
-For `build.gradle.kts`
-```
+#### Apply plugin for all modules 
+In top level build file
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
 plugins {
      id("org.jetbrains.kotlinx.kover") version "0.3.0"
 }
@@ -78,9 +112,12 @@ allprojects {
     apply(plugin = "kover")
 }
 ```
+</details>
 
-For `build.gradle`
-```
+<details>
+<summary>Groovy</summary>
+
+```groovy
 plugins {
     id 'org.jetbrains.kotlinx.kover' version '0.3.0'
 }
@@ -90,10 +127,15 @@ allprojects {
     apply plugin: 'kover'
 }
 ```
+</details>
 
-#### apply plugin only for submodules
-For `build.gradle.kts`
-```
+#### Apply plugin only for submodules
+In top level build file
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
 plugins {
      id("org.jetbrains.kotlinx.kover") version "0.3.0" apply false
 }
@@ -102,8 +144,12 @@ subprojects {
     apply(plugin = "kover")
 }
 ```
-For `build.gradle`
-```
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
 plugins {
     id 'org.jetbrains.kotlinx.kover' version '0.3.0' apply(false)
 }
@@ -112,11 +158,15 @@ subprojects {
     apply plugin: 'kover'
 }
 ```
+</details>
 
 ## Plugin configuration
+In top level build file
 
-For `build.gradle.kts`
-```
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
 tasks.test {
     extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
         generateXml = true
@@ -130,9 +180,12 @@ tasks.test {
     }
 }
 ```
+</details>
 
-For `build.gradle`
-```
+<details>
+<summary>Groovy</summary>
+
+```groovy
 tasks.test {
     kover {
         generateXml = true
@@ -146,24 +199,32 @@ tasks.test {
     }
 }
 ```
+</details>
 
 ### Explicit version of coverage agent
+In top level build file
 
-For both `build.gradle.kts` and `build.gradle`
-```
-kover {
-    intellijEngineVersion.set("1.0.611")
-    jacocoEngineVersion.set("0.8.7")
-}
-```
+<details open>
+<summary>Kotlin</summary>
 
-If you are using `build.gradle.kts` file and applying plugins with the buildscript block the code above won't work, it can be rewritten like this:
-```
+```kotlin
 extensions.configure<kotlinx.kover.api.KoverExtension>{
     intellijEngineVersion.set("1.0.611")
     jacocoEngineVersion.set("0.8.7")
 }
 ```
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
+kover {
+    intellijEngineVersion.set("1.0.611")
+    jacocoEngineVersion.set("0.8.7")
+}
+```
+</details>
 
 ###### Verification
 For each test task, you can specify one or more rules that check the values of the code coverage counters.
@@ -172,8 +233,12 @@ Validation rules work for both types of agents.
 
 *The plugin currently only supports line counter values.*
 
-for `build.gradle.kts`
-```
+In top level build file
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
 tasks.test {
     extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
         verificationRule {
@@ -195,9 +260,12 @@ tasks.test {
     }
 }
 ```
+</details>
 
-for `build.gradle`
-```
+<details>
+<summary>Groovy</summary>
+
+```groovy
 tasks.test {
     kover {
         verificationRule {
@@ -219,3 +287,4 @@ tasks.test {
     }
 }
 ```
+</details>
