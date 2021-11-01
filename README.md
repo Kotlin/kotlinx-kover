@@ -62,7 +62,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover:0.3.0")
+        classpath("org.jetbrains.kotlinx:kover:0.3.1")
     }
 }
 
@@ -79,7 +79,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover:0.3.0'
+        classpath 'org.jetbrains.kotlinx:kover:0.3.1'
     }
 }
   
@@ -108,7 +108,7 @@ tasks.test {
     extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
         generateXml = true
         generateHtml = false
-        coverageEngine = CoverageEngine.INTELLIJ
+        
         xmlReportFile.set(file("$buildDir/custom/report.xml"))
         htmlReportDir.set(file("$buildDir/custom/html"))
         binaryReportFile.set(file("$buildDir/custom/result.bin"))
@@ -125,11 +125,7 @@ tasks.test {
 ```groovy
 tasks.test {
     kover {
-        generateXml = true
-        generateHtml = false
-        coverageEngine = 'INTELLIJ'
-        xmlReportFile.set(file("$buildDir/custom/report.xml"))
-        htmlReportDir.set(file("$buildDir/custom/html"))
+        isEnabled.set(true)
         binaryReportFile.set(file("$buildDir/custom/result.bin"))
         includes = ['com\\.example\\..*']
         excludes = ['com\\.example\\.subpackage\\..*']
@@ -176,24 +172,28 @@ In top level build file
 <summary>Kotlin</summary>
 
 ```kotlin
-tasks.test {
-    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-        verificationRule {
-            name = "The project doesn't have to be big"
+tasks.koverVerify {
+    rule {
+        name = "The project doesn't have to be big"
+        bound {
             maxValue = 100000
             valueType = kotlinx.kover.api.VerificationValueType.COVERED_LINES_COUNT
         }
-        verificationRule {
-            // rule without custom name
+    }
+    rule {
+        // rule without custom name
+        bound {
             minValue = 1
             maxValue = 1000
             valueType = kotlinx.kover.api.VerificationValueType.MISSED_LINES_COUNT
         }
-        verificationRule {
-            name = "Minimal line coverage rate in percents"
+    }
+    rule {
+        name = "Minimal line coverage rate in percents"
+        bound {
             minValue = 50
             // valueType is kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE by default
-        }
+       }
     }
 }
 ```
@@ -203,21 +203,25 @@ tasks.test {
 <summary>Groovy</summary>
 
 ```groovy
-tasks.test {
-    kover {
-        verificationRule {
-            name = "The project doesn't have to be big"
+tasks.koverVerify {
+    rule {
+        name = "The project doesn't have to be big"
+        bound {
             maxValue = 100000
             valueType = 'COVERED_LINES_COUNT'
         }
-        verificationRule {
-            // rule without custom name
+    }
+    rule {
+        // rule without custom name
+        bound {
             minValue = 1
             maxValue = 1000
             valueType = 'MISSED_LINES_COUNT'
         }
-        verificationRule {
-            name = "Minimal line coverage rate in percents"
+    }
+    rule {
+        name = "Minimal line coverage rate in percents"
+        bound {
             minValue = 50
             // valueType is 'COVERED_LINES_PERCENTAGE' by default
         }
@@ -225,3 +229,29 @@ tasks.test {
 }
 ```
 </details>
+
+### Drafts
+#### Disable instrumentation of all tests
+```
+kover {
+    isEnabled.set(false)
+}
+```
+
+#### Change coverage engine
+```
+kover {
+    coverageEngine.set(kotlinx.kover.api.CoverageEngine.JACOCO)
+}
+```
+#### Do not generate report on `check` task
+```
+kover {
+    generateReportOnCheck.set(false)
+}
+```
+
+#### Collect reports from all submodules in root's build directory
+```
+gradle clean koverReport koverCollectReports
+```
