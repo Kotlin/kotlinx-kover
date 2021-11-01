@@ -7,7 +7,13 @@ package kotlinx.kover.engines.jacoco
 import kotlinx.kover.api.*
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
+import org.gradle.api.file.*
 import java.io.*
+
+internal fun Project.createJacocoAgent(koverExtension: KoverExtension): JacocoAgent {
+    val jacocoConfig = createJacocoConfig(koverExtension)
+    return JacocoAgent(jacocoConfig, this)
+}
 
 internal class JacocoAgent(val config: Configuration, private val project: Project) {
     fun buildCommandLineArgs(extension: KoverTaskExtension): MutableList<String> {
@@ -32,4 +38,21 @@ internal class JacocoAgent(val config: Configuration, private val project: Proje
             "jmx=false"
         ).joinToString(",")
     }
+}
+
+private fun Project.createJacocoConfig(koverExtension: KoverExtension): Configuration {
+    val config = project.configurations.create("JacocoKoverConfig")
+    config.isVisible = false
+    config.isTransitive = true
+    config.description = "Kotlin Kover Plugin configuration for JaCoCo agent and reporter"
+
+    config.defaultDependencies { dependencies ->
+        dependencies.add(
+            this.dependencies.create("org.jacoco:org.jacoco.agent:${koverExtension.jacocoEngineVersion.get()}")
+        )
+        dependencies.add(
+            this.dependencies.create("org.jacoco:org.jacoco.ant:${koverExtension.jacocoEngineVersion.get()}")
+        )
+    }
+    return config
 }

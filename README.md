@@ -34,7 +34,7 @@ In top level build file
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.3.0"
+     id("org.jetbrains.kotlinx.kover") version "0.3.1"
 }
 ```
 </details>
@@ -44,7 +44,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.3.0'
+    id 'org.jetbrains.kotlinx.kover' version '0.3.1'
 }
 ```
 </details>
@@ -87,78 +87,15 @@ apply plugin: 'kover'
 ```
 </details>
 
-The plugin automatically inserted into `check` tasks pipeline and collects coverage during test run,
-verifying set validation rules and optionally producing `XML` or `HTML` reports.
+
+
+The plugin automatically applied to all modules in the project. It creates tasks `koverReport`, `koverCollectReports`, `koverXmlReport`, `koverHtmlReport`, `koverVerify` and collects coverage during test run.
+By default, tasks `koverVerify` (verifying) and `koverReport` (`XML` and `HTML` reports) run together with `check` task.
 
 ### Multi-module projects
-There is currently no full support for multi-module projects, you need to apply a plugin for each module.
-You can add the plugin to the `build.gradle` or `build.gradle.kts` files in each module, or add this code to the root module
+The plugin applied to all modules, but there is no dependency between modules, tasks work independently.
 
 *Cross-module tests are not supported in reports and validation yet. For each test, only the classpath belonging to the current module is taken.*
-
-#### Apply plugin for all modules 
-In top level build file
-
-<details open>
-<summary>Kotlin</summary>
-
-```kotlin
-plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.3.0"
-}
-
-
-allprojects {
-    apply(plugin = "kover")
-}
-```
-</details>
-
-<details>
-<summary>Groovy</summary>
-
-```groovy
-plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.3.0'
-}
-
-
-allprojects {
-    apply plugin: 'kover'
-}
-```
-</details>
-
-#### Apply plugin only for submodules
-In top level build file
-
-<details open>
-<summary>Kotlin</summary>
-
-```kotlin
-plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.3.0" apply false
-}
-
-subprojects {
-    apply(plugin = "kover")
-}
-```
-</details>
-
-<details>
-<summary>Groovy</summary>
-
-```groovy
-plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.3.0' apply(false)
-}
-
-subprojects {
-    apply plugin: 'kover'
-}
-```
-</details>
 
 ## Plugin configuration
 In top level build file
@@ -209,7 +146,7 @@ In top level build file
 
 ```kotlin
 extensions.configure<kotlinx.kover.api.KoverExtension>{
-    intellijEngineVersion.set("1.0.611")
+    intellijEngineVersion.set("1.0.612")
     jacocoEngineVersion.set("0.8.7")
 }
 ```
@@ -220,7 +157,7 @@ extensions.configure<kotlinx.kover.api.KoverExtension>{
 
 ```groovy
 kover {
-    intellijEngineVersion.set("1.0.611")
+    intellijEngineVersion.set("1.0.612")
     jacocoEngineVersion.set("0.8.7")
 }
 ```
