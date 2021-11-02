@@ -81,7 +81,7 @@ private fun readCounterValuesFromXml(file: File): Map<VerificationValueType, Int
 
     val coveredCount = lineCounterLine.substringAfter("covered=\"").substringBefore("\"").toInt()
     val missedCount = lineCounterLine.substringAfter("missed=\"").substringBefore("\"").toInt()
-    val percentage = 100 * coveredCount / (coveredCount + missedCount)
+    val percentage = if ((coveredCount + missedCount) > 0) 100 * coveredCount / (coveredCount + missedCount) else 0
 
     return mapOf(
         VerificationValueType.COVERED_LINES_COUNT to coveredCount,

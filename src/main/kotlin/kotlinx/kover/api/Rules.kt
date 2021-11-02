@@ -12,7 +12,7 @@ import javax.annotation.*
  * Simple verification rule for code coverage.
  * Works only with lines counter.
  */
-interface VerificationRule {
+public interface VerificationRule {
     /**
      * Custom name of the rule.
      */
@@ -31,7 +31,7 @@ interface VerificationRule {
     public fun bound(configureBound: Action<VerificationBound>)
 }
 
-interface VerificationBound {
+public interface VerificationBound {
     /**
      * Minimal value to compare with counter value.
      */

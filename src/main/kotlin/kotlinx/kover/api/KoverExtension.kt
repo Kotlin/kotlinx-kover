@@ -12,12 +12,12 @@ open class KoverExtension(objects: ObjectFactory) {
     /**
      * Specifies whether the plugin is applied to the test task and configures it to collect and generate coverage data.
      */
-    public val isEnabled: Property<Boolean> = objects.property(Boolean::class.java)
+    public var isEnabled: Boolean = true
 
     /**
      * Specifies the coverage engine to be used to collect execution data.
      */
-    public var coverageEngine: Property<CoverageEngine> = objects.property(CoverageEngine::class.java)
+    public val coverageEngine: Property<CoverageEngine> = objects.property(CoverageEngine::class.java)
 
     /**
      * Specifies the version of Intellij-coverage dependency.

@@ -42,10 +42,10 @@ class KoverPlugin : Plugin<Project> {
     }
 
     private fun Project.createCollectingTask() {
-        tasks.register(COLLECT_TASK_NAME, Copy::class.java) {
+        tasks.create(COLLECT_TASK_NAME, Copy::class.java) {
             it.group = VERIFICATION_GROUP
             it.description = "Collects reports from all submodules in one directory."
-            subprojects { sub ->
+            allprojects { sub ->
                 val xmlReportTask = sub.tasks.withType(KoverXmlReportTask::class.java).getByName(XML_REPORT_TASK_NAME)
                 val htmlReportTask =
                     sub.tasks.withType(KoverHtmlReportTask::class.java).getByName(HTML_REPORT_TASK_NAME)
@@ -53,14 +53,16 @@ class KoverPlugin : Plugin<Project> {
                 it.mustRunAfter(xmlReportTask)
                 it.mustRunAfter(htmlReportTask)
 
-                it.from(xmlReportTask.xmlReportFile)
+                it.from(xmlReportTask.xmlReportFile) { sp ->
+                    sp.rename { "${sub.name}.xml" }
+                }
 
                 it.from(htmlReportTask.htmlReportDir) { sp ->
                     sp.into("html/${sub.name}/")
                 }
-
-                it.into(layout.buildDirectory.dir("reports/kover"))
             }
+
+            it.into(layout.buildDirectory.dir("reports/kover-all"))
         }
     }
 
@@ -144,7 +146,7 @@ class KoverPlugin : Plugin<Project> {
             // process binary report only from tasks with enabled cover
             val files = tasks.withType(Test::class.java)
                 .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
-                .filter { e -> e.isEnabled.get() }
+                .filter { e -> e.isEnabled }
                 .map { e -> e.binaryReportFile.get() }
             files(files)
         }
@@ -154,7 +156,7 @@ class KoverPlugin : Plugin<Project> {
 
         val enabledTestsProvider = provider {
             tasks.withType(Test::class.java)
-                .filter { t -> t.extensions.getByType(KoverTaskExtension::class.java).isEnabled.get() }
+                .filter { t -> t.extensions.getByType(KoverTaskExtension::class.java).isEnabled }
         }
         xmlReportTask.dependsOn(enabledTestsProvider)
         htmlReportTask.dependsOn(enabledTestsProvider)
@@ -190,7 +192,7 @@ class KoverPlugin : Plugin<Project> {
 
     private fun Project.createKoverExtension(): KoverExtension {
         val extension = extensions.create(ROOT_EXTENSION_NAME, KoverExtension::class.java, objects)
-        extension.isEnabled.set(true)
+        extension.isEnabled = true
         extension.coverageEngine.set(CoverageEngine.INTELLIJ)
         extension.intellijEngineVersion.set(defaultIntellijVersion.toString())
         extension.jacocoEngineVersion.set(defaultJacocoVersion)
@@ -205,13 +207,13 @@ class KoverPlugin : Plugin<Project> {
     ): KoverTaskExtension {
         val taskExtension = extensions.create(TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
 
-        taskExtension.isEnabled.set(true)
+        taskExtension.isEnabled = true
         taskExtension.binaryReportFile.set(this.project.provider {
             val suffix = if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) ".ic" else ".exec"
             project.layout.buildDirectory.get().file("kover/${project.name}/$name$suffix").asFile
         })
         jvmArgumentProviders.add {
-            if (!taskExtension.isEnabled.get() || !koverExtension.isEnabled.get()) {
+            if (!taskExtension.isEnabled || !koverExtension.isEnabled) {
                 return@add listOf()
             }
 

@@ -18,12 +18,12 @@ open class KoverTaskExtension(objects: ObjectFactory) {
     /**
      * Specifies whether the plugin is applied to the test task and configures it to collect and generate coverage data.
      */
-    public var isEnabled: Property<Boolean> = objects.property(Boolean::class.java)
+    public var isEnabled: Boolean = true
 
     /**
      * Specifies file path of generated binary file with coverage data.
      */
-    public var binaryReportFile: Property<File> = objects.property(File::class.java)
+    public val binaryReportFile: Property<File> = objects.property(File::class.java)
 
     /**
      * Specifies inclusion rules coverage engine.

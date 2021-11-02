@@ -71,7 +71,7 @@ open class KoverVerificationTask : KoverCommonTask() {
 
 }
 
-private open class VerificationRuleImpl : VerificationRule {
+private class VerificationRuleImpl : VerificationRule {
     override var name: String? = null
     override val bounds: MutableList<VerificationBound> = mutableListOf()
     override fun bound(configureBound: Action<VerificationBound>) {
@@ -79,7 +79,7 @@ private open class VerificationRuleImpl : VerificationRule {
     }
 }
 
-private open class VerificationBoundImpl : VerificationBound {
+private class VerificationBoundImpl : VerificationBound {
     override var minValue: Int? = null
     override var maxValue: Int? = null
     override var valueType: VerificationValueType = VerificationValueType.COVERED_LINES_PERCENTAGE
