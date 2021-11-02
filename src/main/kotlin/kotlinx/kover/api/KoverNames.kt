@@ -3,7 +3,6 @@ package kotlinx.kover.api
 public object KoverNames {
     public const val CHECK_TASK_NAME = "check"
     public const val VERIFICATION_GROUP = "verification"
-    public const val TASK_GROUP = "kover"
 
     public const val ROOT_EXTENSION_NAME = "kover"
     public const val TASK_EXTENSION_NAME = "kover"

@@ -94,11 +94,11 @@ private fun readCounterValuesFromXml(file: File): Map<VerificationValueType, Int
 private fun Task.checkRule(counters: Map<VerificationValueType, Int>, rule: VerificationRule): String? {
     val boundsViolations = rule.bounds.mapNotNull { it.check(counters) }
 
-    val ruleName = if (rule.name != null) "`${rule.name}` " else ""
+    val ruleName = if (rule.name != null) "'${rule.name}' " else ""
     return if (boundsViolations.size > 1) {
-        "Rule ${ruleName}violated for `${project.name}`:" + boundsViolations.joinToString("\n  ", "\n  ")
+        "Rule ${ruleName}violated for '${project.name}':" + boundsViolations.joinToString("\n  ", "\n  ")
     } else if (boundsViolations.size == 1) {
-        "Rule ${ruleName}violated for `${project.name}`: ${boundsViolations[0]}"
+        "Rule ${ruleName}violated for '${project.name}': ${boundsViolations[0]}"
     } else {
         null
     }
@@ -109,7 +109,7 @@ private fun VerificationBound.check(counters: Map<VerificationValueType, Int>): 
     val maxValue = this.maxValue
     val valueType = this.valueType
 
-    val value = counters[valueType] ?: throw GradleException("Not found value for counter `${valueType}`")
+    val value = counters[valueType] ?: throw GradleException("Not found value for counter '${valueType}'")
 
     val valueTypeName = when (valueType) {
         VerificationValueType.COVERED_LINES_COUNT -> "covered lines count"

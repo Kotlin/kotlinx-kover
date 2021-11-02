@@ -41,6 +41,6 @@ open class KoverHtmlReportTask : KoverCommonTask() {
                 htmlDirFile,
             )
         }
-        project.logger.lifecycle("Kover: HTML report for `${project.name}` file://${htmlDirFile.canonicalPath}/index.html")
+        project.logger.lifecycle("Kover: HTML report for '${project.name}' file://${htmlDirFile.canonicalPath}/index.html")
     }
 }

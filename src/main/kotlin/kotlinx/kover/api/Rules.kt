@@ -19,9 +19,15 @@ interface VerificationRule {
     public var name: String?
         @Input @Nullable @Optional get
 
+    /**
+     * Added constraints on the values of code coverage metrics.
+     */
     public val bounds: List<VerificationBound>
         @Input get
 
+    /**
+     * Add a constraint on the value of the code coverage metric.
+     */
     public fun bound(configureBound: Action<VerificationBound>)
 }
 

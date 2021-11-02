@@ -174,14 +174,14 @@ In top level build file
 ```kotlin
 tasks.koverVerify {
     rule {
-        name = "The project doesn't have to be big"
+        name = "The project has upper limit on lines covered"
         bound {
             maxValue = 100000
             valueType = kotlinx.kover.api.VerificationValueType.COVERED_LINES_COUNT
         }
     }
     rule {
-        // rule without custom name
+        // rule without a custom name
         bound {
             minValue = 1
             maxValue = 1000
@@ -205,14 +205,14 @@ tasks.koverVerify {
 ```groovy
 tasks.koverVerify {
     rule {
-        name = "The project doesn't have to be big"
+        name = "The project doesn't has upper limit on lines covered"
         bound {
             maxValue = 100000
             valueType = 'COVERED_LINES_COUNT'
         }
     }
     rule {
-        // rule without custom name
+        // rule without a custom name
         bound {
             minValue = 1
             maxValue = 1000

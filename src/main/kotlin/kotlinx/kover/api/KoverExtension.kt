@@ -30,7 +30,7 @@ open class KoverExtension(objects: ObjectFactory) {
     val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
 
     /**
-     * TODO fdsg
+     * Specifies whether the reports will be generated within 'check' task execution.
      */
     val generateReportOnCheck: Property<Boolean> = objects.property(Boolean::class.java)
 }

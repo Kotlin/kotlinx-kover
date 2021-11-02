@@ -31,7 +31,8 @@ internal class IntellijAgent(val config: Configuration) {
             "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
             "-Didea.coverage.check.inline.signatures=true",
             "-Didea.new.sampling.coverage=true",
-            "-Didea.new.tracing.coverage=true"
+            "-Didea.new.tracing.coverage=true",
+            "-Didea.coverage.log.level=error"
         )
     }
 

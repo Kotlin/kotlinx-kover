@@ -12,7 +12,6 @@ import kotlinx.kover.api.KoverNames.HTML_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.ROOT_EXTENSION_NAME
 import kotlinx.kover.api.KoverNames.TASK_EXTENSION_NAME
-import kotlinx.kover.api.KoverNames.TASK_GROUP
 import kotlinx.kover.api.KoverNames.VERIFICATION_GROUP
 import kotlinx.kover.api.KoverNames.VERIFY_TASK_NAME
 import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
@@ -44,7 +43,8 @@ class KoverPlugin : Plugin<Project> {
 
     private fun Project.createCollectingTask() {
         tasks.register(COLLECT_TASK_NAME, Copy::class.java) {
-            it.group = TASK_GROUP
+            it.group = VERIFICATION_GROUP
+            it.description = "Collects reports from all submodules in one directory."
             subprojects { sub ->
                 val xmlReportTask = sub.tasks.withType(KoverXmlReportTask::class.java).getByName(XML_REPORT_TASK_NAME)
                 val htmlReportTask =
@@ -108,11 +108,11 @@ class KoverPlugin : Plugin<Project> {
 
         val koverReportTask = tasks.create(REPORT_TASK_NAME) {
             it.group = VERIFICATION_GROUP
+            it.description = "Generates code coverage HTML and XML reports for all module's test tasks."
             it.dependsOn(xmlReportTask)
             it.dependsOn(htmlReportTask)
         }
 
-        // evaluate after because need to wait execution of plugins in subprojects
         tasks.configureEach {
             if (it.name == CHECK_TASK_NAME) {
                 it.dependsOn(verificationTask)
@@ -159,6 +159,10 @@ class KoverPlugin : Plugin<Project> {
         xmlReportTask.dependsOn(enabledTestsProvider)
         htmlReportTask.dependsOn(enabledTestsProvider)
         verificationTask.dependsOn(enabledTestsProvider)
+
+        xmlReportTask.description = "Generates code coverage XML report for all module's test tasks."
+        htmlReportTask.description = "Generates code coverage HTML report for all module's test tasks."
+        verificationTask.description = "Verifies code coverage metrics based on specified rules."
     }
 
 
