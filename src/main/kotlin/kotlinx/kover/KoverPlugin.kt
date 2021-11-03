@@ -62,7 +62,7 @@ class KoverPlugin : Plugin<Project> {
                 }
             }
 
-            it.into(layout.buildDirectory.dir("reports/kover-all"))
+            it.into(layout.buildDirectory.dir("reports/kover/all"))
         }
     }
 
@@ -80,7 +80,7 @@ class KoverPlugin : Plugin<Project> {
             jacocoAgent
         ) {
             it.xmlReportFile.set(provider {
-                layout.buildDirectory.get().file("reports/kover/${name}.xml")
+                layout.buildDirectory.get().file("reports/kover/report.xml")
             })
         }
 
@@ -92,7 +92,7 @@ class KoverPlugin : Plugin<Project> {
             jacocoAgent
         ) {
             it.htmlReportDir.set(it.project.provider {
-                it.project.layout.buildDirectory.get().dir("reports/kover/html/${it.project.name}")
+                it.project.layout.buildDirectory.get().dir("reports/kover/html")
             })
         }
 

@@ -303,5 +303,5 @@ The plugin, when applied, automatically creates tasks for the module (all module
 - `koverXmlReport` - Generates code coverage XML report for all module's test tasks.
 - `koverHtmlReport` - Generates code coverage HTML report for all module's test tasks.
 - `koverReport` - Generates code coverage HTML and XML reports for all module's test tasks.
-- `koverCollectReports` - Collects reports from all submodules in one directory. Main directory is `$buildDir/reports/kover-all`, names for XML reports and dirs for HTML is a projects names.
+- `koverCollectReports` - Collects reports from all submodules in one directory. Main directory is `$buildDir/reports/kover/all`, names for XML reports and dirs for HTML is a projects names.
 - `koverVerify` - Verifies code coverage metrics based on specified rules. Always executes before `check` task.
