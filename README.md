@@ -150,10 +150,12 @@ If you need to change the name of the XML report file or HTML directory, you may
 
 ```kotlin
 tasks.koverHtmlReport {
+    isEnabled = true                        // false to disable report generation
     htmlReportDir.set(layout.buildDirectory.dir("my-reports/html-result"))
 }
 
 tasks.koverXmlReport {
+    isEnabled = true                        // false to disable report generation
     xmlReportFile.set(layout.buildDirectory.file("my-reports/result.xml"))
 }
 ```
@@ -164,10 +166,12 @@ tasks.koverXmlReport {
 
 ```groovy
 tasks.koverHtmlReport {
+    enabled = true                          // false to disable report generation
     htmlReportDir.set(layout.buildDirectory.dir("my-reports/html-result"))
 }
 
 tasks.koverXmlReport {
+    enabled = true                          // false to disable report generation
     xmlReportFile.set(layout.buildDirectory.file("my-reports/result.xml"))
 }
 ```
@@ -302,6 +306,6 @@ tasks.koverVerify {
 The plugin, when applied, automatically creates tasks for the module (all modules, if the project is multi-module, and it applied in root build script):
 - `koverXmlReport` - Generates code coverage XML report for all module's test tasks.
 - `koverHtmlReport` - Generates code coverage HTML report for all module's test tasks.
-- `koverReport` - Generates code coverage HTML and XML reports for all module's test tasks.
+- `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.
 - `koverCollectReports` - Collects reports from all submodules in one directory. Main directory is `$buildDir/reports/kover/all`, names for XML reports and dirs for HTML is a projects names.
 - `koverVerify` - Verifies code coverage metrics based on specified rules. Always executes before `check` task.

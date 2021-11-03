@@ -11,8 +11,10 @@ import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
 import kotlinx.kover.engines.intellij.*
 import kotlinx.kover.engines.jacoco.*
 import org.gradle.api.*
+import org.gradle.api.model.*
 import org.gradle.api.tasks.*
 import java.io.*
+import javax.inject.*
 
 open class KoverVerificationTask : KoverCommonTask() {
     private val rulesInternal: MutableList<VerificationRule> = mutableListOf()
@@ -27,7 +29,8 @@ open class KoverVerificationTask : KoverCommonTask() {
      * Add new coverage verification rule to check after test task execution.
      */
     public fun rule(configureRule: Action<VerificationRule>) {
-        rulesInternal += VerificationRuleImpl().also { configureRule.execute(it) }
+        rulesInternal += project.objects.newInstance(VerificationRuleImpl::class.java, project.objects)
+            .also { configureRule.execute(it) }
     }
 
     @TaskAction
@@ -71,15 +74,15 @@ open class KoverVerificationTask : KoverCommonTask() {
 
 }
 
-private class VerificationRuleImpl : VerificationRule {
+private open class VerificationRuleImpl @Inject constructor(private val objects: ObjectFactory) : VerificationRule {
     override var name: String? = null
     override val bounds: MutableList<VerificationBound> = mutableListOf()
     override fun bound(configureBound: Action<VerificationBound>) {
-        bounds += VerificationBoundImpl().also { configureBound.execute(it) }
+        bounds += objects.newInstance(VerificationBoundImpl::class.java).also { configureBound.execute(it) }
     }
 }
 
-private class VerificationBoundImpl : VerificationBound {
+private open class VerificationBoundImpl : VerificationBound {
     override var minValue: Int? = null
     override var maxValue: Int? = null
     override var valueType: VerificationValueType = VerificationValueType.COVERED_LINES_PERCENTAGE
