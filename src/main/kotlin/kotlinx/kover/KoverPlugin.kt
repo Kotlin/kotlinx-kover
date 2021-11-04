@@ -21,6 +21,7 @@ import kotlinx.kover.tasks.*
 import org.gradle.api.*
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
+import org.gradle.process.*
 import kotlin.reflect.*
 
 class KoverPlugin : Plugin<Project> {
@@ -212,18 +213,36 @@ class KoverPlugin : Plugin<Project> {
             val suffix = if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) ".ic" else ".exec"
             project.layout.buildDirectory.get().file("kover/${project.name}/$name$suffix").asFile
         })
-        jvmArgumentProviders.add {
-            if (!taskExtension.isEnabled || !koverExtension.isEnabled) {
-                return@add listOf()
-            }
-
-            return@add if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) {
-                intellijAgent.buildCommandLineArgs(taskExtension, this)
-            } else {
-                jacocoAgent.buildCommandLineArgs(taskExtension)
-            }
-        }
+        jvmArgumentProviders.add(
+            CoverageArgumentProvider(
+                jacocoAgent,
+                intellijAgent,
+                koverExtension,
+                taskExtension,
+                this
+            )
+        )
 
         return taskExtension
+    }
+}
+
+private class CoverageArgumentProvider(
+    private val jacocoAgent: JacocoAgent,
+    private val intellijAgent: IntellijAgent,
+    private val koverExtension: KoverExtension,
+    private val taskExtension: KoverTaskExtension,
+    private val task: Task
+) : CommandLineArgumentProvider {
+    override fun asArguments(): MutableIterable<String> {
+        if (!taskExtension.isEnabled || !koverExtension.isEnabled) {
+            return mutableListOf()
+        }
+
+        return if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) {
+            intellijAgent.buildCommandLineArgs(taskExtension, task)
+        } else {
+            jacocoAgent.buildCommandLineArgs(taskExtension)
+        }
     }
 }
