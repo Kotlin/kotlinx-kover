@@ -6,6 +6,7 @@ package kotlinx.kover.adapters
 
 import kotlinx.kover.adapters.api.*
 import org.gradle.api.*
+import org.gradle.api.file.*
 import java.io.*
 
 private fun createAdapters(): List<CompilationPluginAdapter> {
@@ -17,7 +18,7 @@ private fun createAdapters(): List<CompilationPluginAdapter> {
     )
 }
 
-fun Project.collectDirs(): Pair<List<File>, List<File>> {
+fun Project.collectDirs(): Pair<FileCollection, FileCollection> {
     val srcDirs = HashMap<String, File>()
     val outDirs = HashMap<String, File>()
 
@@ -30,5 +31,5 @@ fun Project.collectDirs(): Pair<List<File>, List<File>> {
     val src = srcDirs.asSequence().map { it.value }.filter { it.exists() && it.isDirectory }.toList()
     val out = outDirs.asSequence().map { it.value }.filter { it.exists() && it.isDirectory }.toList()
 
-    return src to out
+    return files(src) to files(out)
 }

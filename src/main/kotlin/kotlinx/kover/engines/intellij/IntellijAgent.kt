@@ -7,7 +7,14 @@ package kotlinx.kover.engines.intellij
 import kotlinx.kover.api.*
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
+import org.gradle.api.file.*
 import java.io.*
+
+
+internal fun Project.createIntellijAgent(koverExtension: KoverExtension): IntellijAgent {
+    val intellijConfig = createIntellijConfig(koverExtension)
+    return IntellijAgent(intellijConfig)
+}
 
 internal class IntellijAgent(val config: Configuration) {
     private val trackingPerTest = false // a flag to enable tracking per test coverage
@@ -24,7 +31,8 @@ internal class IntellijAgent(val config: Configuration) {
             "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
             "-Didea.coverage.check.inline.signatures=true",
             "-Didea.new.sampling.coverage=true",
-            "-Didea.new.tracing.coverage=true"
+            "-Didea.new.tracing.coverage=true",
+            "-Didea.coverage.log.level=error"
         )
     }
 
@@ -54,4 +62,27 @@ internal class IntellijAgent(val config: Configuration) {
             }
         }
     }
+}
+
+private fun Project.createIntellijConfig(koverExtension: KoverExtension): Configuration {
+    val config = project.configurations.create("IntellijKoverConfig")
+    config.isVisible = false
+    config.isTransitive = true
+    config.description = "Kotlin Kover Plugin configuration for IntelliJ agent and reporter"
+
+    config.defaultDependencies { dependencies ->
+        val agentVersion = koverExtension.intellijEngineVersion.get()
+        IntellijEngineVersion.parseOrNull(agentVersion)?.let {
+            if (it < minimalIntellijVersion) throw GradleException("IntelliJ engine version $it is too low, minimal version is $minimalIntellijVersion")
+        }
+
+        dependencies.add(
+            this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-agent:$agentVersion")
+        )
+
+        dependencies.add(
+            this.dependencies.create("org.jetbrains.intellij.deps:intellij-coverage-reporter:$agentVersion")
+        )
+    }
+    return config
 }
