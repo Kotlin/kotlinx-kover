@@ -38,7 +38,7 @@ In top level build file
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.4.0"
+     id("org.jetbrains.kotlinx.kover") version "0.4.1"
 }
 ```
 </details>
@@ -48,7 +48,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.4.0'
+    id 'org.jetbrains.kotlinx.kover' version '0.4.1'
 }
 ```
 </details>
@@ -66,7 +66,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover:0.4.0")
+        classpath("org.jetbrains.kotlinx:kover:0.4.1")
     }
 }
 
@@ -83,7 +83,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover:0.4.0'
+        classpath 'org.jetbrains.kotlinx:kover:0.4.1'
     }
 }
   
@@ -141,6 +141,31 @@ tasks.test {
 </details>
 
 **For other platforms (Android, Kotlin-Multiplatform) the name may differ, you may also have several test tasks, so you first need to determine the name of the required task.**
+
+Example of configuring test task for build type `debug` in Android:
+<details>
+<summary>Groovy</summary>
+
+```groovy
+android {
+    // other Android declarations
+
+    testOptions {
+        unitTests.all {
+            if (name == "testDebugUnitTest") {
+                kover {
+                    enabled = true
+                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
+                    includes = ['com\\.example\\..*']
+                    excludes = ['com\\.example\\.subpackage\\..*']
+                }
+            }
+        }
+    }
+}
+```
+</details>
+
 
 ### Configuring reports
 If you need to change the name of the XML report file or HTML directory, you may configure the corresponding tasks
