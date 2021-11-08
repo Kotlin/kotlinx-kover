@@ -17,8 +17,8 @@ Minimal supported `Gradle` version: `6.4`.
   - [Configuring reports](#configuring-reports)
   - [Configuring reports collecting](#configuring-reports-collecting)
   - [Configuring entire plugin](#configuring-entire-plugin)
-    - [Verification](#verification)
-    - [Tasks](#tasks)
+ - [Verification](#verification)
+ - [Tasks](#tasks)
 
 ## Features
 
