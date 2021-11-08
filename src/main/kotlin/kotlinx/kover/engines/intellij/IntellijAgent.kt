@@ -32,7 +32,8 @@ internal class IntellijAgent(val config: Configuration) {
             "-Didea.coverage.check.inline.signatures=true",
             "-Didea.new.sampling.coverage=true",
             "-Didea.new.tracing.coverage=true",
-            "-Didea.coverage.log.level=error"
+            "-Didea.coverage.log.level=error",
+            "-Dcoverage.ignore.private.constructor.util.class=true"
         )
     }
 
