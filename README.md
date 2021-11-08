@@ -3,22 +3,22 @@
 **Kover** - Gradle plugin for Kotlin code coverage agents: [IntelliJ](https://github.com/JetBrains/intellij-coverage)
 and [JaCoCo](https://github.com/jacoco/jacoco).
 
-Minimal supported Gradle version: `6.4`. 
+Minimal supported `Gradle` version: `6.4`. 
 
 ## Table of content
 - [Features](#features)
 - [Quickstart](#quickstart)
-    - [Apply plugin to single-module project](#apply-plugin-to-single-module-project)
-        - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
-        - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
-    - [Apply plugin to multi-module project](#apply-plugin-to-multi-module-project)
+  - [Apply plugin to single-module project](#apply-plugin-to-single-module-project)
+    - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
+    - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
+  - [Apply plugin to multi-module project](#apply-plugin-to-multi-module-project)
 - [Configuration](#configuration)
-  - [JVM test task](#configuring-jvm-test-task)
-  - [Reports](#configuring-reports)
-  - [Reports collecting](#configuring-reports-collecting)
-  - [Entire plugin](#configuring-entire-plugin)
-- [Verification](#verification)
-- [Tasks](#tasks)
+  - [Configuring JVM test task](#configuring-jvm-test-task)
+  - [Configuring reports](#configuring-reports)
+  - [Configuring reports collecting](#configuring-reports-collecting)
+  - [Configuring entire plugin](#configuring-entire-plugin)
+ - [Verification](#verification)
+ - [Tasks](#tasks)
 
 ## Features
 
@@ -143,6 +143,30 @@ tasks.test {
 **For other platforms (Android, Kotlin-Multiplatform) the name may differ, you may also have several test tasks, so you first need to determine the name of the required task.**
 
 Example of configuring test task for build type `debug` in Android:
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+android {
+    // other Android declarations
+
+    testOptions {
+        unitTests.all {
+            if (it.name == "testDebugUnitTest") {
+                extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+                    isEnabled = true
+                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
+                    includes = listOf("com\\.example\\..*")
+                    excludes = listOf("com\\.example\\.subpackage\\..*")
+                }
+            }
+        }
+    }
+}
+```
+    
+</details>
+
 <details>
 <summary>Groovy</summary>
 
