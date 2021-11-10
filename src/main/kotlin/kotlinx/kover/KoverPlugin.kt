@@ -149,6 +149,7 @@ class KoverPlugin : Plugin<Project> {
                 .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
                 .filter { e -> e.isEnabled }
                 .map { e -> e.binaryReportFile.get() }
+                .filter { f -> f.exists() }
             files(files)
         }
         xmlReportTask.binaryReportFiles.set(binariesProvider)
@@ -185,7 +186,7 @@ class KoverPlugin : Plugin<Project> {
                 if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) intellijAgent.config else jacocoAgent.config
             })
 
-            it.onlyIf { t -> (t as KoverCommonTask).binaryReportFiles.get().files.any { f -> f.exists() } }
+            it.onlyIf { t -> !(t as KoverCommonTask).binaryReportFiles.get().isEmpty }
 
             block(it)
         }
