@@ -43,27 +43,22 @@ class KoverPlugin : Plugin<Project> {
     }
 
     private fun Project.createCollectingTask() {
-        tasks.create(COLLECT_TASK_NAME, Copy::class.java) {
+        tasks.create(COLLECT_TASK_NAME, KoverCollectingTask::class.java) {
             it.group = VERIFICATION_GROUP
             it.description = "Collects reports from all submodules in one directory."
-            allprojects { sub ->
-                val xmlReportTask = sub.tasks.withType(KoverXmlReportTask::class.java).getByName(XML_REPORT_TASK_NAME)
+            it.outputDir.set(project.layout.buildDirectory.dir("reports/kover/all"))
+
+            allprojects { p ->
+                val xmlReportTask = p.tasks.withType(KoverXmlReportTask::class.java).getByName(XML_REPORT_TASK_NAME)
                 val htmlReportTask =
-                    sub.tasks.withType(KoverHtmlReportTask::class.java).getByName(HTML_REPORT_TASK_NAME)
+                    p.tasks.withType(KoverHtmlReportTask::class.java).getByName(HTML_REPORT_TASK_NAME)
 
                 it.mustRunAfter(xmlReportTask)
                 it.mustRunAfter(htmlReportTask)
 
-                it.from(xmlReportTask.xmlReportFile) { sp ->
-                    sp.rename { "${sub.name}.xml" }
-                }
-
-                it.from(htmlReportTask.htmlReportDir) { sp ->
-                    sp.into("html/${sub.name}/")
-                }
+                it.xmlFiles[p.name] = xmlReportTask.xmlReportFile
+                it.htmlDirs[p.name] = htmlReportTask.htmlReportDir
             }
-
-            it.into(layout.buildDirectory.dir("reports/kover/all"))
         }
     }
 
