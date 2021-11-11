@@ -38,7 +38,7 @@ In top level build file
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.4.1"
+     id("org.jetbrains.kotlinx.kover") version "0.4.2"
 }
 ```
 </details>
@@ -48,7 +48,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.4.1'
+    id 'org.jetbrains.kotlinx.kover' version '0.4.2'
 }
 ```
 </details>
@@ -66,7 +66,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover:0.4.1")
+        classpath("org.jetbrains.kotlinx:kover:0.4.2")
     }
 }
 
@@ -83,7 +83,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover:0.4.1'
+        classpath 'org.jetbrains.kotlinx:kover:0.4.2'
     }
 }
   
