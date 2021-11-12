@@ -13,7 +13,7 @@ import org.gradle.api.tasks.*
 @CacheableTask
 open class KoverHtmlReportTask : KoverCommonTask() {
     /**
-     * Specifies file path of generated XML report file with coverage data.
+     * Specifies directory path of generated HTML report.
      */
     val htmlReportDir: DirectoryProperty = project.objects.directoryProperty()
         @OutputDirectory get
