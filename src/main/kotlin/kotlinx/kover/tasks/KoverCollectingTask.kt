@@ -28,7 +28,11 @@ open class KoverCollectingTask : DefaultTask() {
             }
         }
 
+
         htmlDirs.forEach { (p, d) ->
+            // delete directory for HTML reports so that the old reports do not overlap with the new ones
+            project.delete(outputDir.dir("html/$p"))
+
             project.copy {
                 it.from(d)
                 it.into(outputDir.dir("html/$p"))

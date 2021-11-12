@@ -47,17 +47,19 @@ class KoverPlugin : Plugin<Project> {
             it.group = VERIFICATION_GROUP
             it.description = "Collects reports from all submodules in one directory."
             it.outputDir.set(project.layout.buildDirectory.dir("reports/kover/all"))
+            // disable UP-TO-DATE check for task: it will be executed every time
+            it.outputs.upToDateWhen { false }
 
-            allprojects { p ->
-                val xmlReportTask = p.tasks.withType(KoverXmlReportTask::class.java).getByName(XML_REPORT_TASK_NAME)
+            allprojects { proj ->
+                val xmlReportTask = proj.tasks.withType(KoverXmlReportTask::class.java).getByName(XML_REPORT_TASK_NAME)
                 val htmlReportTask =
-                    p.tasks.withType(KoverHtmlReportTask::class.java).getByName(HTML_REPORT_TASK_NAME)
+                    proj.tasks.withType(KoverHtmlReportTask::class.java).getByName(HTML_REPORT_TASK_NAME)
 
                 it.mustRunAfter(xmlReportTask)
                 it.mustRunAfter(htmlReportTask)
 
-                it.xmlFiles[p.name] = xmlReportTask.xmlReportFile
-                it.htmlDirs[p.name] = htmlReportTask.htmlReportDir
+                it.xmlFiles[proj.name] = xmlReportTask.xmlReportFile
+                it.htmlDirs[proj.name] = htmlReportTask.htmlReportDir
             }
         }
     }
@@ -206,7 +208,7 @@ class KoverPlugin : Plugin<Project> {
         taskExtension.isEnabled = true
         taskExtension.binaryReportFile.set(this.project.provider {
             val suffix = if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) ".ic" else ".exec"
-            project.layout.buildDirectory.get().file("kover/${project.name}/$name$suffix").asFile
+            project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
         })
         jvmArgumentProviders.add(
             CoverageArgumentProvider(
