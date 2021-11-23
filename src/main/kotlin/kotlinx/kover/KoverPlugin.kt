@@ -19,7 +19,6 @@ import kotlinx.kover.engines.intellij.*
 import kotlinx.kover.engines.jacoco.*
 import kotlinx.kover.tasks.*
 import org.gradle.api.*
-import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.process.*
 import kotlin.reflect.*
@@ -28,10 +27,6 @@ class KoverPlugin : Plugin<Project> {
     private val defaultJacocoVersion = "0.8.7"
 
     override fun apply(target: Project) {
-        target.repositories.maven {
-            it.url = target.uri("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies")
-        }
-
         val koverExtension = target.createKoverExtension()
         val intellijAgent = target.createIntellijAgent(koverExtension)
         val jacocoAgent = target.createJacocoAgent(koverExtension)

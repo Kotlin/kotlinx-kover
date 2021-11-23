@@ -18,32 +18,17 @@ internal fun Task.intellijReport(
     htmlDir: File?,
     classpath: FileCollection
 ) {
-    val xmlFilePath = if (xmlFile != null) {
+    xmlFile?.let {
         xmlFile.parentFile.mkdirs()
-        xmlFile.canonicalPath
-    } else {
-        ""
-    }
-    val htmlDirPath = if (htmlDir != null) {
-        htmlDir.mkdirs()
-        htmlDir.canonicalPath
-    } else {
-        ""
     }
 
-    val argsFile = File(temporaryDir, "intellijreport.args")
+    htmlDir?.let {
+        htmlDir.mkdirs()
+    }
+
+    val argsFile = File(temporaryDir, "intellijreport.json")
     argsFile.printWriter().use { pw ->
-        for (binary in binaryReportFiles) {
-            pw.appendLine(binary.canonicalPath)
-            pw.appendLine("${binary.canonicalPath}.smap")
-        }
-        pw.appendLine()
-        sources.forEach { src -> pw.appendLine(src.canonicalPath) }
-        pw.appendLine()
-        outputs.forEach { out -> pw.appendLine(out.canonicalPath) }
-        pw.appendLine()
-        pw.appendLine(xmlFilePath)
-        pw.appendLine(htmlDirPath)
+        pw.writeModuleReportJson(binaryReportFiles, sources, outputs, xmlFile, htmlDir)
     }
 
     project.javaexec { e ->
@@ -51,6 +36,86 @@ internal fun Task.intellijReport(
         e.classpath = classpath
         e.args = mutableListOf(argsFile.canonicalPath)
     }
+}
+
+
+/*
+JSON format:
+```
+{
+  "modules": [
+    { "reports": [
+        {"ic": "path to ic binary file", "smap": "path to source map file"}
+      ] [OPTIONAL, absence means that all classes were not covered],
+      "output": ["outputRoot1", "outputRoot2"],
+      "sources": ["sourceRoot1", "sourceRoot2"]
+    }
+  ],
+  "xml": "path to xml file" [OPTIONAL],
+  "html": "path to html directory" [OPTIONAL]
+}
+```
+
+
+JSON example:
+```
+{
+  "html": "/path/to/html",
+  "modules": [
+    { "reports": [
+        {"ic": "/path/to/binary/report/result.ic", "smap": "/path/to/binary/report/result.ic.smap"}
+      ],
+      "output": [
+        "/build/output"
+      ],
+      "sources": [
+        "/sources/java",
+        "/sources/kotlin"
+      ]
+    }
+  ]
+}
+```
+ */
+private fun Writer.writeModuleReportJson(
+    binaryReportFiles: Iterable<File>,
+    sources: Iterable<File>,
+    outputs: Iterable<File>,
+    xmlFile: File?,
+    htmlDir: File?
+) {
+    appendLine("{")
+
+    xmlFile?.also {
+        appendLine("""  "xml": "${it.safePath()}",""")
+    }
+    htmlDir?.also {
+        appendLine("""  "html": "${it.safePath()}",""")
+    }
+    appendLine("""  "modules": [""")
+    appendLine("""    { "reports": [ """)
+
+    appendLine(binaryReportFiles.joinToString(",\n        ", "        ") { f ->
+        """{"ic": "${f.safePath()}", "smap": "${f.safePath()}.smap"}"""
+    })
+
+    appendLine("""      ], """)
+    appendLine("""      "output": [""")
+    appendLine(
+        outputs.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+    appendLine("""      ],""")
+    appendLine("""      "sources": [""")
+
+    appendLine(
+        sources.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+    appendLine("""      ]""")
+    appendLine("""    }""")
+    appendLine("""  ]""")
+    appendLine("}")
+}
+
+private fun File.safePath(): String {
+    return canonicalPath.replace("\"", "\\\"")
 }
 
 internal fun Task.intellijVerification(

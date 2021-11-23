@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.5.30"
+    kotlin("jvm") version "1.5.31"
 
     `java-gradle-plugin`
     `maven-publish`
@@ -15,7 +15,7 @@ repositories {
 dependencies {
     implementation(gradleApi())
 
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30")
+    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
     compileOnly("com.android.tools.build:gradle:4.2.2")
 }
 
