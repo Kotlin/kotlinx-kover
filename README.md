@@ -17,8 +17,9 @@ Minimal supported `Gradle` version: `6.4`.
   - [Configuring reports](#configuring-reports)
   - [Configuring reports collecting](#configuring-reports-collecting)
   - [Configuring entire plugin](#configuring-entire-plugin)
- - [Verification](#verification)
- - [Tasks](#tasks)
+- [Verification](#verification)
+- [Tasks](#tasks)
+- [Implicit plugin dependencies](#implicit-plugin-dependencies)
 
 ## Features
 
@@ -259,7 +260,7 @@ In the module in which the plugin is applied, you need to add code:
 kover {
     isEnabled = true                        // false to disable instrumentation of all test tasks in all modules
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
-    intellijEngineVersion.set("1.0.622")    // change version of IntelliJ agent and reporter
+    intellijEngineVersion.set("1.0.637")    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
 }
@@ -273,14 +274,14 @@ kover {
 kover {
     enabled = true                          // false to disable instrumentation of all test tasks in all modules
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
-    intellijEngineVersion.set('1.0.622')    // change version of IntelliJ agent and reporter
+    intellijEngineVersion.set('1.0.637')    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set('0.8.7')        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
 }
 ```
 </details>
 
-###### Verification
+## Verification
 For all test task of module, you can specify one or more rules that check the values of the code coverage counters.
 
 Validation rules work for both types of agents.
@@ -351,10 +352,36 @@ tasks.koverVerify {
 ```
 </details>
 
-###### Tasks
+## Tasks
 The plugin, when applied, automatically creates tasks for the module (all modules, if the project is multi-module, and it applied in root build script):
 - `koverXmlReport` - Generates code coverage XML report for all module's test tasks.
 - `koverHtmlReport` - Generates code coverage HTML report for all module's test tasks.
 - `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.
 - `koverCollectReports` - Collects reports from all submodules in one directory. Default directory is `$buildDir/reports/kover/all`, names for XML reports and dirs for HTML are projects names. Executing this task does not run `koverXmlReport` or `koverHtmlReport`, it only copies previously created reports if they exist to the output directory.
 - `koverVerify` - Verifies code coverage metrics based on specified rules. Always executes before `check` task.
+
+
+## Implicit plugin dependencies
+During the applying of the plugin, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
+
+For the plugin to work correctly, you need to make sure that the `mavenCentral` or its mirror is added to the list by the repository of the module in which the plugin is applied (usually this is the root module of the project) and add it if necessary.
+
+<details open>
+<summary>Kotlin</summary>
+
+```kotlin
+repositories {
+    mavenCentral()
+}
+```
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+```groovy
+repositories {
+  mavenCentral()
+}
+```
+</details>
