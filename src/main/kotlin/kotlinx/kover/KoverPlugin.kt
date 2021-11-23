@@ -178,8 +178,6 @@ class KoverPlugin : Plugin<Project> {
                 if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) intellijAgent.config else jacocoAgent.config
             })
 
-            it.onlyIf { t -> !(t as KoverCommonTask).binaryReportFiles.get().isEmpty }
-
             block(it)
         }
     }
