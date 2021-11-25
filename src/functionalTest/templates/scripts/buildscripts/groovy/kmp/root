@@ -1,0 +1,19 @@
+plugins {
+    id 'org.jetbrains.kotlin.multiplatform' version '1.5.31'
+    id 'org.jetbrains.kotlinx.kover' version '//PLUGIN_VERSION'
+}
+
+repositories {
+    mavenCentral()//REPOSITORIES
+}
+
+kotlin {
+    jvm() {
+        withJava()
+    }
+
+    dependencies {
+        commonTestImplementation 'org.jetbrains.kotlin:kotlin-test'
+    }
+}
+//KOVER//SCRIPTS//VERIFICATIONS

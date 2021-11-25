@@ -1,0 +1,13 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
+    id 'org.jetbrains.kotlinx.kover' version '//PLUGIN_VERSION'
+}
+
+repositories {
+    mavenCentral()//REPOSITORIES
+}
+
+dependencies {//DEPENDENCIES
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+//KOVER//SCRIPTS//VERIFICATIONS
