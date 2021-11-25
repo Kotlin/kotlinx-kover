@@ -14,6 +14,9 @@ abstract class KoverCommonTask : DefaultTask() {
     val binaryReportFiles: Property<FileCollection> = project.objects.property(FileCollection::class.java)
         @InputFiles @PathSensitive(PathSensitivity.ABSOLUTE) get
 
+    val smapFiles: Property<FileCollection> = project.objects.property(FileCollection::class.java)
+        @InputFiles @PathSensitive(PathSensitivity.ABSOLUTE) get
+
     val srcDirs: Property<FileCollection> = project.objects.property(FileCollection::class.java)
         @InputFiles @PathSensitive(PathSensitivity.ABSOLUTE) get
 
@@ -23,6 +26,6 @@ abstract class KoverCommonTask : DefaultTask() {
     internal val coverageEngine: Property<CoverageEngine> = project.objects.property(CoverageEngine::class.java)
         @Input get
 
-    internal val classpath: Property<FileCollection> =  project.objects.property(FileCollection::class.java)
+    internal val classpath: Property<FileCollection> = project.objects.property(FileCollection::class.java)
         @Classpath get
 }

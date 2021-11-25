@@ -24,6 +24,7 @@ open class KoverXmlReportTask : KoverCommonTask() {
         if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
             intellijReport(
                 binaryReportFiles.get(),
+                smapFiles.get(),
                 srcDirs.get(),
                 outputDirs.get(),
                 xmlReportFile.get().asFile,

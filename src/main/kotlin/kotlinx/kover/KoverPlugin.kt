@@ -19,8 +19,10 @@ import kotlinx.kover.engines.intellij.*
 import kotlinx.kover.engines.jacoco.*
 import kotlinx.kover.tasks.*
 import org.gradle.api.*
+import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.process.*
+import java.io.*
 import kotlin.reflect.*
 
 class KoverPlugin : Plugin<Project> {
@@ -148,6 +150,24 @@ class KoverPlugin : Plugin<Project> {
         htmlReportTask.binaryReportFiles.set(binariesProvider)
         verificationTask.binaryReportFiles.set(binariesProvider)
 
+        val smapProvider = provider {
+            val files = tasks.withType(Test::class.java)
+                .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
+                .filter { e -> e.isEnabled }
+                .map { e -> e.smapFile.orNull }
+                /*
+                 Binary reports and SMAP files have same ordering for IntelliJ engine:
+                    * SMAP file is null if coverage engine is a JaCoCo by default - in this case property is unused
+                    * SMAP file not creates by JaCoCo - property is unused
+                    * test task have no sources - in this case binary report and SMAP file not exists
+                 */
+                .filter { f -> f?.exists() == true }
+            files(files)
+        }
+        xmlReportTask.smapFiles.set(smapProvider)
+        htmlReportTask.smapFiles.set(smapProvider)
+        verificationTask.smapFiles.set(smapProvider)
+
         val enabledTestsProvider = provider {
             tasks.withType(Test::class.java)
                 .filter { t -> t.extensions.getByType(KoverTaskExtension::class.java).isEnabled }
@@ -204,13 +224,19 @@ class KoverPlugin : Plugin<Project> {
             val suffix = if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) ".ic" else ".exec"
             project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
         })
+        taskExtension.smapFile.set(this.project.provider {
+            if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ)
+                File(taskExtension.binaryReportFile.get().canonicalPath + ".smap")
+            else
+                null
+        })
         jvmArgumentProviders.add(
             CoverageArgumentProvider(
                 jacocoAgent,
                 intellijAgent,
+                this,
                 koverExtension,
-                taskExtension,
-                this
+                taskExtension
             )
         )
 
@@ -221,10 +247,20 @@ class KoverPlugin : Plugin<Project> {
 private class CoverageArgumentProvider(
     private val jacocoAgent: JacocoAgent,
     private val intellijAgent: IntellijAgent,
-    private val koverExtension: KoverExtension,
-    private val taskExtension: KoverTaskExtension,
-    private val task: Task
-) : CommandLineArgumentProvider {
+    private val task: Task,
+    koverExtension: KoverExtension,
+    taskExtension: KoverTaskExtension
+) : CommandLineArgumentProvider, Named {
+    val koverExtension: KoverExtension = koverExtension
+        @Nested get
+    val taskExtension: KoverTaskExtension = taskExtension
+        @Nested get
+
+    @Internal
+    override fun getName(): String {
+        return "koverArgumentsProvider"
+    }
+
     override fun asArguments(): MutableIterable<String> {
         if (!taskExtension.isEnabled || !koverExtension.isEnabled) {
             return mutableListOf()
