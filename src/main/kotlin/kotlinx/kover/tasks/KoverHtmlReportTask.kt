@@ -25,6 +25,7 @@ open class KoverHtmlReportTask : KoverCommonTask() {
         if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
             intellijReport(
                 binaryReportFiles.get(),
+                smapFiles.get(),
                 srcDirs.get(),
                 outputDirs.get(),
                 null,

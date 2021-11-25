@@ -12,6 +12,7 @@ import java.util.*
 
 internal fun Task.intellijReport(
     binaryReportFiles: Iterable<File>,
+    smapFiles: Iterable<File>,
     sources: Iterable<File>,
     outputs: Iterable<File>,
     xmlFile: File?,
@@ -28,7 +29,7 @@ internal fun Task.intellijReport(
 
     val argsFile = File(temporaryDir, "intellijreport.json")
     argsFile.printWriter().use { pw ->
-        pw.writeModuleReportJson(binaryReportFiles, sources, outputs, xmlFile, htmlDir)
+        pw.writeModuleReportJson(binaryReportFiles, smapFiles, sources, outputs, xmlFile, htmlDir)
     }
 
     project.javaexec { e ->
@@ -79,6 +80,7 @@ JSON example:
  */
 private fun Writer.writeModuleReportJson(
     binaryReportFiles: Iterable<File>,
+    smapFiles: Iterable<File>,
     sources: Iterable<File>,
     outputs: Iterable<File>,
     xmlFile: File?,
@@ -95,8 +97,9 @@ private fun Writer.writeModuleReportJson(
     appendLine("""  "modules": [""")
     appendLine("""    { "reports": [ """)
 
+    val smapIterator = smapFiles.iterator()
     appendLine(binaryReportFiles.joinToString(",\n        ", "        ") { f ->
-        """{"ic": "${f.safePath()}", "smap": "${f.safePath()}.smap"}"""
+        """{"ic": "${f.safePath()}", "smap": "${smapIterator.next().safePath()}"}"""
     })
 
     appendLine("""      ], """)

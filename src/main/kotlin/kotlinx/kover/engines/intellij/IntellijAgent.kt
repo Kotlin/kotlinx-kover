@@ -42,6 +42,10 @@ internal class IntellijAgent(val config: Configuration) {
         binary.parentFile.mkdirs()
         val binaryPath = binary.canonicalPath
 
+        val smap = extension.smapFile.get()
+        smap.parentFile.mkdirs()
+        val smapPath = smap.canonicalPath
+
         printWriter().use { pw ->
             pw.appendLine(binaryPath)
             pw.appendLine(trackingPerTest.toString())
@@ -49,7 +53,7 @@ internal class IntellijAgent(val config: Configuration) {
             pw.appendLine(appendToDataFile.toString())
             pw.appendLine(samplingMode.toString())
             pw.appendLine(generateSmapFile.toString())
-            pw.appendLine("$binaryPath.smap")
+            pw.appendLine(smapPath)
             extension.includes.forEach { i ->
                 pw.appendLine(i)
             }

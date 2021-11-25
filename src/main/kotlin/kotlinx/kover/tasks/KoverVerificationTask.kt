@@ -52,6 +52,7 @@ open class KoverVerificationTask : KoverCommonTask() {
             xmlFile = File(temporaryDir, "counters.xml")
             intellijReport(
                 xmlReport.binaryReportFiles.get(),
+                xmlReport.smapFiles.get(),
                 xmlReport.srcDirs.get(),
                 xmlReport.outputDirs.get(),
                 xmlFile,
