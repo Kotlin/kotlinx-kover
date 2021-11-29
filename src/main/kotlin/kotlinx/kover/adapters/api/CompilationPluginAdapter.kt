@@ -17,12 +17,13 @@ data class PluginDirs(val sources: List<File>, val output: List<File>)
 internal inline fun safe(project: Project, block: Project.() -> PluginDirs): PluginDirs {
     return try {
         project.block()
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
         when (e) {
-            is NoSuchMethodError, is NoSuchFieldError, is ClassNotFoundException ->
+            is NoSuchMethodError, is NoSuchFieldError, is ClassNotFoundException, is NoClassDefFoundError -> {
+                project.logger.info("Problem occurred in Kover source set adapter", e)
                 PluginDirs(emptyList(), emptyList())
-            else ->
-                throw e
+            }
+            else -> throw e
         }
     }
 }
