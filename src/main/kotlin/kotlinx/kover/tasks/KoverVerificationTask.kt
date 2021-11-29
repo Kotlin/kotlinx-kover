@@ -22,8 +22,9 @@ open class KoverVerificationTask : KoverCommonTask() {
     /**
      * Added verification rules for test task.
      */
+    @get:Nested
     public val rules: List<VerificationRule>
-        @Nested get() = rulesInternal
+        get() = rulesInternal
 
     /**
      * Add new coverage verification rule to check after test task execution.

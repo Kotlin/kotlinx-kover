@@ -15,8 +15,8 @@ open class KoverHtmlReportTask : KoverCommonTask() {
     /**
      * Specifies directory path of generated HTML report.
      */
+    @get:OutputDirectory
     val htmlReportDir: DirectoryProperty = project.objects.directoryProperty()
-        @OutputDirectory get
 
     @TaskAction
     fun generate() {

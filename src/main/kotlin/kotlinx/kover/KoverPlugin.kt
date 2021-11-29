@@ -248,13 +248,9 @@ private class CoverageArgumentProvider(
     private val jacocoAgent: JacocoAgent,
     private val intellijAgent: IntellijAgent,
     private val task: Task,
-    koverExtension: KoverExtension,
-    taskExtension: KoverTaskExtension
+    @get:Nested val koverExtension: KoverExtension,
+    @get:Nested val taskExtension: KoverTaskExtension
 ) : CommandLineArgumentProvider, Named {
-    val koverExtension: KoverExtension = koverExtension
-        @Nested get
-    val taskExtension: KoverTaskExtension = taskExtension
-        @Nested get
 
     @Internal
     override fun getName(): String {
