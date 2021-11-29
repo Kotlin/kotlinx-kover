@@ -161,7 +161,7 @@ class KoverPlugin : Plugin<Project> {
                     * SMAP file not creates by JaCoCo - property is unused
                     * test task have no sources - in this case binary report and SMAP file not exists
                  */
-                .filter { f -> f?.exists() == true }
+                .filter { f -> f?.exists() ?: true }
             files(files)
         }
         xmlReportTask.smapFiles.set(smapProvider)

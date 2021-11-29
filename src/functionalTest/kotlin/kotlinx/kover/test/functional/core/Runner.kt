@@ -33,6 +33,7 @@ private class ProjectRunnerImpl(val rootDir: File) : ProjectRunner {
     private var intellijVersion: String? = null
     private var jacocoVersion: String? = null
     private var pluginEnabled: Boolean? = null
+    private var projects: MutableMap<ProjectSlice, File> = mutableMapOf()
 
     private val languages: MutableSet<GradleScriptLanguage> = mutableSetOf()
     private val types: MutableSet<ProjectType> = mutableSetOf()
@@ -47,45 +48,53 @@ private class ProjectRunnerImpl(val rootDir: File) : ProjectRunner {
     private val testSources: MutableMap<String, String> = mutableMapOf()
     private val submodules: MutableMap<String, SubmoduleBuilderImpl> = mutableMapOf()
 
-    override fun case(description: String): ProjectRunnerImpl {
+    override fun case(description: String) = configure {
         this.description = description
-        return this
     }
 
-    override fun languages(vararg languages: GradleScriptLanguage): ProjectRunnerImpl {
+    override fun languages(vararg languages: GradleScriptLanguage) = configure {
         this.languages += languages
-        return this
     }
 
-    override fun engines(vararg engines: CoverageEngine): ProjectRunnerImpl {
+    override fun engines(vararg engines: CoverageEngine) = configure {
         this.engines += engines
-        return this
     }
 
-    override fun types(vararg types: ProjectType): ProjectRunnerImpl {
+    override fun types(vararg types: ProjectType) = configure {
         this.types += types
-        return this
     }
 
-    override fun setIntellijVersion(version: String): ProjectRunnerImpl {
+    override fun setIntellijVersion(version: String) = configure {
         this.intellijVersion = version
-        return this
     }
 
-    override fun setJacocoVersion(version: String): ProjectRunnerImpl {
+    override fun setJacocoVersion(version: String) = configure {
         this.jacocoVersion = version
-        return this
     }
 
-    override fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit) {
+    override fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit) = configure {
         submodules[name] = SubmoduleBuilderImpl().apply(builder)
     }
 
-    override fun kover(rootExtensionScript: String) {
+    override fun kover(rootExtensionScript: String) = configure {
         koverConfigs += rootExtensionScript
     }
 
-    override fun sources(template: String): ProjectRunner {
+    override fun verification(rules: Iterable<VerificationRule>) = configure {
+        this.rules += rules
+    }
+
+    override fun config(script: String) = configure {
+        kotlinScripts += script
+        groovyScripts += script
+    }
+
+    override fun config(kotlin: String, groovy: String) = configure {
+        kotlinScripts += kotlin
+        groovyScripts += groovy
+    }
+
+    override fun sources(template: String) = configure {
         fun File.processDir(result: MutableMap<String, String>, path: String = "") {
             listFiles()?.forEach { file ->
                 val filePath = "$path/${file.name}"
@@ -102,37 +111,26 @@ private class ProjectRunnerImpl(val rootDir: File) : ProjectRunner {
         return this
     }
 
-    override fun verification(rules: Iterable<VerificationRule>): ProjectRunner {
-        this.rules += rules
-        return this
-    }
-
-    override fun config(script: String): ProjectRunner {
-        kotlinScripts += script
-        groovyScripts += script
-        return this
-    }
-
-    override fun config(kotlin: String, groovy: String): ProjectRunner {
-        kotlinScripts += kotlin
-        groovyScripts += groovy
-        return this
-    }
-
-    override fun check(vararg args: String, block: RunResult.() -> Unit) {
-        setDefaults()
-        initialized = true
+    override fun check(vararg args: String, block: RunResult.() -> Unit): ProjectRunner {
+        if (!initialized) {
+            initialize()
+            initialized = true
+        }
 
         languages.forEach { language ->
             types.forEach { type ->
                 engines.forEach { engine ->
-                    createProject(language, type, engine).run(listOf(*args), block)
+                    val slice = ProjectSlice(language, type, engine ?: CoverageEngine.INTELLIJ)
+                    projects[slice]?.run(listOf(*args), block)
+                        ?: throw IllegalStateException("Internal runner error: no project was created for the $slice slice during initialization")
                 }
             }
         }
+
+        return this
     }
 
-    private fun setDefaults() {
+    private fun initialize() {
         if (languages.isEmpty()) {
             languages += GradleScriptLanguage.KOTLIN
         }
@@ -145,6 +143,24 @@ private class ProjectRunnerImpl(val rootDir: File) : ProjectRunner {
         if (pluginVersion == null) {
             pluginVersion = "0.4.2" // TODO read from properties
         }
+
+        languages.forEach { language ->
+            types.forEach { type ->
+                engines.forEach { engine ->
+                    projects[ProjectSlice(language, type, engine ?: CoverageEngine.INTELLIJ)] =
+                        createProject(language, type, engine)
+                }
+            }
+        }
+    }
+
+
+    private inline fun configure(block: ProjectRunnerImpl.() -> Unit): ProjectRunnerImpl {
+        if (initialized) {
+            throw IllegalStateException("Runner can't be configured after first build")
+        }
+        block()
+        return this
     }
 
     private fun File.run(args: List<String>, block: RunResult.() -> Unit) {
@@ -260,6 +276,8 @@ private class ProjectRunnerImpl(val rootDir: File) : ProjectRunner {
         }
     }
 }
+
+private data class ProjectSlice(val language: GradleScriptLanguage, val type: ProjectType, val engine: CoverageEngine)
 
 private class SubmoduleBuilderImpl : ModuleBuilder<SubmoduleBuilderImpl> {
     override fun verification(rules: Iterable<VerificationRule>): SubmoduleBuilderImpl {
