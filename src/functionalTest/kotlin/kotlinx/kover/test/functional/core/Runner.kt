@@ -141,7 +141,7 @@ private class ProjectRunnerImpl(val rootDir: File) : ProjectRunner {
             engines += null
         }
         if (pluginVersion == null) {
-            pluginVersion = "0.4.3" // TODO read from properties
+            pluginVersion = "0.4.4" // TODO read from properties
         }
 
         languages.forEach { language ->

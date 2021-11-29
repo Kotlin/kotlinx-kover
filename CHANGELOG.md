@@ -1,3 +1,9 @@
+v0.4.4 / 2021-11-29
+===================
+
+### Bugfixes
+* Fixed escape characters in intellijreport.json (#82)
+
 v0.4.3 / 2021-11-29
 ===================
 
