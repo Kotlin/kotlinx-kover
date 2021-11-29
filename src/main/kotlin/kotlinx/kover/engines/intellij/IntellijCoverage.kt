@@ -118,7 +118,7 @@ private fun Writer.writeModuleReportJson(
 }
 
 private fun File.safePath(): String {
-    return canonicalPath.replace("\"", "\\\"")
+    return canonicalPath.replace("\\","\\\\").replace("\"", "\\\"")
 }
 
 internal fun Task.intellijVerification(
