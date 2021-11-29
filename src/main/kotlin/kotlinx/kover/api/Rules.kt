@@ -16,14 +16,16 @@ public interface VerificationRule {
     /**
      * Custom name of the rule.
      */
+    @get:Input
+    @get:Nullable
+    @get:Optional
     public var name: String?
-        @Input @Nullable @Optional get
 
     /**
      * Added constraints on the values of code coverage metrics.
      */
+    @get:Input
     public val bounds: List<VerificationBound>
-        @Input get
 
     /**
      * Add a constraint on the value of the code coverage metric.
@@ -35,21 +37,25 @@ public interface VerificationBound {
     /**
      * Minimal value to compare with counter value.
      */
+    @get:Input
+    @get:Nullable
+    @get:Optional
     public var minValue: Int?
-        @Input @Nullable @Optional get
 
     /**
      * Maximal value to compare with counter value.
      */
+    @get:Input
+    @get:Nullable
+    @get:Optional
     public var maxValue: Int?
-        @Input @Nullable @Optional get
 
     /**
      * Type of lines counter value to compare with minimal and maximal values if them defined.
      * Default is [VerificationValueType.COVERED_LINES_PERCENTAGE]
      */
+    @get:Input
     public var valueType: VerificationValueType
-        @Input get
 }
 
 /**

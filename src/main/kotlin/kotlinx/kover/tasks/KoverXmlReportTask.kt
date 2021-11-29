@@ -16,8 +16,8 @@ open class KoverXmlReportTask : KoverCommonTask() {
     /**
      * Specifies file path of generated XML report file with coverage data.
      */
+    @get:OutputFile
     val xmlReportFile: RegularFileProperty = project.objects.fileProperty()
-        @OutputFile get
 
     @TaskAction
     fun generate() {

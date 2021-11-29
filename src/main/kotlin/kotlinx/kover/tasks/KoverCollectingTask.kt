@@ -8,14 +8,15 @@ open class KoverCollectingTask : DefaultTask() {
     /**
      * Specifies directory path for collecting of all XML and HTML reports from all modules.
      */
+    @get:OutputDirectory
     val outputDir: DirectoryProperty = project.objects.directoryProperty()
-        @OutputDirectory get
 
+    @get:Internal
     internal var xmlFiles: MutableMap<String, RegularFileProperty> = mutableMapOf()
-        @Internal get
 
+    @get:Internal
     internal var htmlDirs: MutableMap<String, DirectoryProperty> = mutableMapOf()
-        @Internal get
+
 
     @TaskAction
     fun collect() {
