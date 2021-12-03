@@ -119,8 +119,8 @@ tasks.test {
     extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
         isEnabled = true
         binaryReportFile.set(file("$buildDir/custom/result.bin"))
-        includes = listOf("com\\.example\\..*")
-        excludes = listOf("com\\.example\\.subpackage\\..*")
+        includes = listOf("com.example.*")
+        excludes = listOf("com.example.subpackage.*")
     }
 }
 ```
@@ -134,8 +134,8 @@ tasks.test {
     kover {
         enabled = true
         binaryReportFile.set(file("$buildDir/custom/result.bin"))
-        includes = ['com\\.example\\..*']
-        excludes = ['com\\.example\\.subpackage\\..*']
+        includes = ['com.example.*']
+        excludes = ['com.example.subpackage.*']
     }
 }
 ```
@@ -157,8 +157,8 @@ android {
                 extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
                     isEnabled = true
                     binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
-                    includes = listOf("com\\.example\\..*")
-                    excludes = listOf("com\\.example\\.subpackage\\..*")
+                    includes = listOf("com.example.*")
+                    excludes = listOf("com.example.subpackage.*")
                 }
             }
         }
@@ -181,8 +181,8 @@ android {
                 kover {
                     enabled = true
                     binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
-                    includes = ['com\\.example\\..*']
-                    excludes = ['com\\.example\\.subpackage\\..*']
+                    includes = ['com.example.*']
+                    excludes = ['com.example.subpackage.*']
                 }
             }
         }

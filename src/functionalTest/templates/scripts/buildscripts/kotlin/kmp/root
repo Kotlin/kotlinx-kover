@@ -16,4 +16,4 @@ kotlin {
         commonTestImplementation(kotlin("test"))
     }
 }
-//KOVER//SCRIPTS//VERIFICATIONS
+//KOVER//SCRIPTS//TEST_TASK//VERIFICATIONS

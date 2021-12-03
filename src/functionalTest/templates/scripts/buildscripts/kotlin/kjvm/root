@@ -10,4 +10,4 @@ repositories {
 dependencies {//DEPENDENCIES
     testImplementation(kotlin("test"))
 }
-//KOVER//SCRIPTS//VERIFICATIONS
+//KOVER//SCRIPTS//TEST_TASK//VERIFICATIONS

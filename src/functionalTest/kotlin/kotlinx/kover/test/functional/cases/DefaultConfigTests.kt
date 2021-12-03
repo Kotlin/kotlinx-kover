@@ -7,12 +7,13 @@ import kotlin.test.*
 internal class DefaultConfigTests : BaseGradleScriptTest() {
     @Test
     fun testImplicitConfigsJvm() {
-        runner()
+        builder()
             .case("Test default setting for Kotlin/JVM")
             .languages(GradleScriptLanguage.GROOVY, GradleScriptLanguage.KOTLIN)
             .types(ProjectType.KOTLIN_JVM)
-            .sources("simple-single")
-            .check("build") {
+            .sources("simple")
+            .build()
+            .run("build") {
                 checkIntellijBinaryReport(DEFAULT_INTELLIJ_KJVM_BINARY, DEFAULT_INTELLIJ_KJVM_SMAP)
                 checkReports(DEFAULT_XML, DEFAULT_HTML)
             }
@@ -20,12 +21,13 @@ internal class DefaultConfigTests : BaseGradleScriptTest() {
 
     @Test
     fun testImplicitConfigsKmp() {
-        runner()
+        builder()
             .case("Test default setting for Kotlin Multi-Platform")
             .languages(GradleScriptLanguage.GROOVY, GradleScriptLanguage.KOTLIN)
             .types(ProjectType.KOTLIN_MULTIPLATFORM)
-            .sources("simple-single")
-            .check("build") {
+            .sources("simple")
+            .build()
+            .run("build") {
                 checkIntellijBinaryReport(DEFAULT_INTELLIJ_KMP_BINARY, DEFAULT_INTELLIJ_KMP_SMAP)
                 checkReports(DEFAULT_XML, DEFAULT_HTML)
             }

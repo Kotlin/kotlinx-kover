@@ -7,7 +7,6 @@ package kotlinx.kover.engines.jacoco
 import kotlinx.kover.api.*
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
-import org.gradle.api.file.*
 import java.io.*
 
 internal fun Project.createJacocoAgent(koverExtension: KoverExtension): JacocoAgent {
@@ -29,15 +28,22 @@ internal class JacocoAgent(val config: Configuration, private val project: Proje
         val binary = extension.binaryReportFile.get()
         binary.parentFile.mkdirs()
 
-        return listOf(
+        return listOfNotNull(
             "destfile=${binary.canonicalPath}",
             "append=false", // Kover don't support parallel execution of one task
             "inclnolocationclasses=false",
             "dumponexit=true",
             "output=file",
-            "jmx=false"
+            "jmx=false",
+            extension.includes.filterString("includes"),
+            extension.excludes.filterString("excludes")
         ).joinToString(",")
     }
+}
+
+private fun List<String>.filterString(name: String): String? {
+    if (isEmpty()) return null
+    return name + "=" + joinToString(":")
 }
 
 private fun Project.createJacocoConfig(koverExtension: KoverExtension): Configuration {

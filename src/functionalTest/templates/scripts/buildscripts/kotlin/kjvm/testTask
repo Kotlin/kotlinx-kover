@@ -1,0 +1,5 @@
+tasks.test {
+    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+        //KOVER_TEST_CONFIG
+    }
+}
