@@ -10,8 +10,7 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
 
     @Test
     fun testExclude() {
-        builder()
-            .case("Test exclusion of classes from instrumentation")
+        builder("Test exclusion of classes from instrumentation")
             .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
@@ -22,17 +21,16 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(DEFAULT_XML) {
+                xml(defaultXmlReport()) {
                     assertCounterExcluded(classCounter("org.jetbrains.ExampleClass"), this@run.engine)
-                    assertCounterCoveredAndIncluded(classCounter("org.jetbrains.SecondClass"))
+                    assertCounterCovered(classCounter("org.jetbrains.SecondClass"))
                 }
             }
     }
 
     @Test
     fun testExcludeInclude() {
-        builder()
-            .case("Test inclusion and exclusion of classes in instrumentation")
+        builder("Test inclusion and exclusion of classes in instrumentation")
             .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
@@ -47,10 +45,10 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(DEFAULT_XML) {
+                xml(defaultXmlReport()) {
                     assertCounterExcluded(classCounter("org.jetbrains.ExampleClass"), this@run.engine)
                     assertCounterExcluded(classCounter("org.jetbrains.Unused"), this@run.engine)
-                    assertCounterCoveredAndIncluded(classCounter("org.jetbrains.SecondClass"))
+                    assertCounterCovered(classCounter("org.jetbrains.SecondClass"))
                 }
             }
     }

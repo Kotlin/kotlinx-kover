@@ -17,17 +17,19 @@ internal interface ModuleBuilder<B : ModuleBuilder<B>> {
 
     fun config(script: String): B
     fun config(kotlin: String, groovy: String): B
+
+    fun dependency(script: String): B
+    fun dependency(kotlin: String, groovy: String): B
 }
 
 internal interface ProjectBuilder : ModuleBuilder<ProjectBuilder> {
-    fun case(description: String): ProjectBuilder
     fun languages(vararg languages: GradleScriptLanguage): ProjectBuilder
     fun engines(vararg engines: CoverageEngine): ProjectBuilder
     fun types(vararg types: ProjectType): ProjectBuilder
 
     fun configKover(config: KoverRootConfig.() -> Unit): ProjectBuilder
 
-    fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit): ModuleBuilder<*>
+    fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit): ProjectBuilder
 
     fun build(): ProjectRunner
 }
@@ -49,11 +51,14 @@ internal data class KoverRootConfig(
 }
 
 internal interface ProjectRunner {
-    fun run(vararg args: String, checker: RunResult.() -> Unit): ProjectRunner
+    fun run(vararg args: String, checker: RunResult.() -> Unit = {}): ProjectRunner
 }
 
 internal interface RunResult {
     val engine: CoverageEngine
+    val projectType: ProjectType
+
+    fun submodule(name: String, checker: RunResult.() -> Unit)
 
     fun output(checker: String.() -> Unit)
 

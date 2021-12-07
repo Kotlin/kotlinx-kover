@@ -1,6 +1,5 @@
 plugins {
-    id 'org.jetbrains.kotlin.multiplatform' version '1.5.31'
-    id 'org.jetbrains.kotlinx.kover' version '//PLUGIN_VERSION'
+    kotlin("multiplatform")
 }
 
 repositories {
@@ -13,11 +12,11 @@ kotlin {
     }
 
     dependencies {
-        commonTestImplementation 'org.jetbrains.kotlin:kotlin-test'
+        commonTestImplementation(kotlin("test"))
     }
 
     sourceSets {
-        jvmMain {
+        val jvmMain by getting {
             dependencies {//DEPENDENCIES
             }
         }

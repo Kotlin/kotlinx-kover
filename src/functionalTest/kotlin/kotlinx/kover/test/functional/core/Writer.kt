@@ -17,14 +17,26 @@ internal fun ProjectBuilderState.createProject(rootDir: File, slice: ProjectSlic
         .processRootBuildScript(this, slice)
         .processModuleBuildScript(rootModule, slice)
 
-    val settings = buildSettings(slice)
-
     File(projectDir, "build.$extension").writeText(buildScript)
-    File(projectDir, "settings.$extension").writeText(settings)
+    File(projectDir, "settings.$extension").writeText(buildSettings(slice))
 
     rootModule.writeSources(projectDir, slice)
 
+    submodules.forEach { (name, state) -> state.writeSubmodule(File(projectDir, name), slice) }
+
     return projectDir
+}
+
+private fun ModuleBuilderState.writeSubmodule(directory: File, slice: ProjectSlice) {
+    directory.mkdirs()
+
+    val extension = slice.scriptExtension
+
+    val buildScript = loadScriptTemplate(false, slice).processModuleBuildScript(this, slice)
+
+    File(directory, "build.$extension").writeText(buildScript)
+
+    writeSources(directory, slice)
 }
 
 
@@ -56,7 +68,7 @@ private fun String.processRootBuildScript(state: ProjectBuilderState, slice: Pro
 
 private fun String.processModuleBuildScript(state: ModuleBuilderState, slice: ProjectSlice): String {
     return replace("//REPOSITORIES", "")
-        .replace("//DEPENDENCIES", "")
+        .replace("//DEPENDENCIES", state.buildDependencies(slice))
         .replace("//SCRIPTS", state.buildScripts(slice))
         .replace("//TEST_TASK", state.buildTestTask(slice))
         .replace("//VERIFICATIONS", state.buildVerifications(slice))
@@ -136,13 +148,12 @@ private fun ProjectBuilderState.buildRootExtension(slice: ProjectSlice): String 
     return builder.toString()
 }
 
-@Suppress("UNUSED_PARAMETER")
 private fun ModuleBuilderState.buildTestTask(slice: ProjectSlice): String {
-    val configs = if (slice.language == GradleScriptLanguage.KOTLIN) testKotlinScripts else testGroovyScripts
-
-    if (configs.isEmpty()) {
+    if (testScripts.isEmpty()) {
         return ""
     }
+
+    val configs = testScripts.map { if (slice.language == GradleScriptLanguage.KOTLIN) it.kotlin else it.groovy }
 
     return loadTestTaskTemplate(slice).replace("//KOVER_TEST_CONFIG", configs.joinToString("\n"))
 }
@@ -158,13 +169,19 @@ private fun ProjectBuilderState.buildSettings(slice: ProjectSlice): String {
 }
 
 private fun ModuleBuilderState.buildScripts(slice: ProjectSlice): String {
-    val scripts = if (slice.language == GradleScriptLanguage.KOTLIN) kotlinScripts else groovyScripts
-
-    return if (scripts.isNotEmpty()) {
-        scripts.joinToString("\n", "\n", "\n")
-    } else {
-        ""
+    if (scripts.isEmpty()) {
+        return ""
     }
+    val configs = scripts.map { if (slice.language == GradleScriptLanguage.KOTLIN) it.kotlin else it.groovy }
+    return configs.joinToString("\n", "\n", "\n")
+}
+
+private fun ModuleBuilderState.buildDependencies(slice: ProjectSlice): String {
+    if (dependencies.isEmpty()) {
+        return ""
+    }
+    val configs = dependencies.map { if (slice.language == GradleScriptLanguage.KOTLIN) it.kotlin else it.groovy }
+    return configs.joinToString("\n", "\n", "\n")
 }
 
 
@@ -173,7 +190,7 @@ private fun loadSettingsTemplate(slice: ProjectSlice): String {
 }
 
 private fun loadScriptTemplate(root: Boolean, slice: ProjectSlice): String {
-    val filename = if (root) "root" else "child"
+    val filename = if (root) "root" else "submodule"
     return File("${slice.scriptPath()}/$filename").readText()
 }
 

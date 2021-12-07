@@ -1,0 +1,12 @@
+plugins {
+    kotlin("jvm")
+}
+
+repositories {
+    mavenCentral()//REPOSITORIES
+}
+
+dependencies {//DEPENDENCIES
+    testImplementation(kotlin("test"))
+}
+//KOVER//SCRIPTS//TEST_TASK//VERIFICATIONS

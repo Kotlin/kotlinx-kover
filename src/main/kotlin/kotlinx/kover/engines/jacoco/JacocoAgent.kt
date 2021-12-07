@@ -5,17 +5,24 @@
 package kotlinx.kover.engines.jacoco
 
 import kotlinx.kover.api.*
+import kotlinx.kover.engines.commons.*
+import kotlinx.kover.engines.commons.CoverageAgent
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
+import org.gradle.api.file.*
 import java.io.*
 
-internal fun Project.createJacocoAgent(koverExtension: KoverExtension): JacocoAgent {
+internal fun Project.createJacocoAgent(koverExtension: KoverExtension): CoverageAgent {
     val jacocoConfig = createJacocoConfig(koverExtension)
     return JacocoAgent(jacocoConfig, this)
 }
 
-internal class JacocoAgent(val config: Configuration, private val project: Project) {
-    fun buildCommandLineArgs(extension: KoverTaskExtension): MutableList<String> {
+private class JacocoAgent(private val config: Configuration, private val project: Project): CoverageAgent {
+    override val engine: CoverageEngine = CoverageEngine.JACOCO
+
+    override val classpath: FileCollection = config
+
+    override fun buildCommandLineArgs(task: Task, extension: KoverTaskExtension): MutableList<String> {
         return mutableListOf("-javaagent:${getJacocoJar().canonicalPath}=${agentArgs(extension)}")
     }
 
