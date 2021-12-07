@@ -31,7 +31,7 @@ internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) 
 private fun GradleRunner.addPluginTestRuntimeClasspath() = apply {
     val classpathFile = File(System.getProperty("plugin-classpath"))
     if (!classpathFile.exists()) {
-        throw IllegalStateException("Could not find classpath resource")
+        throw IllegalStateException("Could not find classpath resource $classpathFile")
     }
 
     val pluginClasspath = pluginClasspath + classpathFile.readLines().map { File(it) }

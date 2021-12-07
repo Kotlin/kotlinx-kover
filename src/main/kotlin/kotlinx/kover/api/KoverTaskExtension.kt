@@ -39,8 +39,8 @@ open class KoverTaskExtension(objects: ObjectFactory) {
     /**
      * Specifies class inclusion rules coverage engine.
      *
-     * Inclusion rules are represented as set of fully-qualified names of the classes being instrumented
-     * that also supports `*` and `?` wildcards.
+     * Inclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
+     * It's possible to use `*` and `?` wildcards.
      */
     @get:Input
     public var includes: List<String> = emptyList()
@@ -48,8 +48,8 @@ open class KoverTaskExtension(objects: ObjectFactory) {
     /**
      * Specifies class exclusion rules for coverage engine.
      *
-     * Inclusion rules are represented as set of fully-qualified names of the classes being instrumented
-     * that also supports `*` and `?` wildcards.
+     * Exclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
+     * It's possible to use `*` and `?` wildcards.
      */
     @get:Input
     public var excludes: List<String> = emptyList()
