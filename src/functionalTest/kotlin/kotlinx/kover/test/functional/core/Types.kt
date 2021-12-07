@@ -32,7 +32,11 @@ internal interface ProjectBuilder : ModuleBuilder<ProjectBuilder> {
     fun build(): ProjectRunner
 }
 
-internal data class ProjectSlice(val language: GradleScriptLanguage, val type: ProjectType, val engine: CoverageEngine?)
+internal data class ProjectSlice(val language: GradleScriptLanguage, val type: ProjectType, val engine: CoverageEngine?) {
+    fun encodedString(): String {
+        return "${language.ordinal}_${type.ordinal}_${engine?.ordinal?:"default"}"
+    }
+}
 
 internal data class KoverRootConfig(
     var disabled: Boolean? = null,
@@ -49,6 +53,8 @@ internal interface ProjectRunner {
 }
 
 internal interface RunResult {
+    val engine: CoverageEngine
+
     fun output(checker: String.() -> Unit)
 
     fun file(name: String, checker: File.() -> Unit)

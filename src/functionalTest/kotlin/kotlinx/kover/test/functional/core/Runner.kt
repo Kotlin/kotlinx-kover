@@ -1,5 +1,6 @@
 package kotlinx.kover.test.functional.core
 
+import kotlinx.kover.api.*
 import org.gradle.testkit.runner.*
 import org.w3c.dom.*
 import java.io.*
@@ -11,12 +12,12 @@ internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) 
     override fun run(vararg args: String, checker: RunResult.() -> Unit): ProjectRunnerImpl {
         val argsList = listOf(*args)
 
-        projects.forEach { (_, project) -> project.runGradle(argsList, checker) }
+        projects.forEach { (slice, project) -> project.runGradle(argsList, slice, checker) }
 
         return this
     }
 
-    private fun File.runGradle(args: List<String>, checker: RunResult.() -> Unit) {
+    private fun File.runGradle(args: List<String>, slice: ProjectSlice, checker: RunResult.() -> Unit) {
         val buildResult = GradleRunner.create()
             .withProjectDir(this)
             .withPluginClasspath()
@@ -24,7 +25,11 @@ internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) 
             .withArguments(args)
             .build()
 
-        RunResultImpl(buildResult, this).apply(checker)
+        try {
+            RunResultImpl(buildResult, slice, this).apply(checker)
+        } catch (e: Throwable) {
+            throw AssertionError("Assertion error occurred in test for project $slice", e)
+        }
     }
 }
 
@@ -39,8 +44,10 @@ private fun GradleRunner.addPluginTestRuntimeClasspath() = apply {
 }
 
 
-private class RunResultImpl(private val result: BuildResult, dir: File) : RunResult {
+private class RunResultImpl(private val result: BuildResult, private val slice: ProjectSlice, dir: File) : RunResult {
     val buildDir: File = File(dir, "build")
+
+    override val engine: CoverageEngine = slice.engine ?: CoverageEngine.INTELLIJ
 
     override fun output(checker: String.() -> Unit) {
         result.output.checker()

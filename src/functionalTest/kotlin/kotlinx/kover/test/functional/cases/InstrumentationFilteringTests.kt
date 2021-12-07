@@ -9,12 +9,12 @@ import kotlin.test.*
 internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
 
     @Test
-    fun testExcludeIntellij() {
+    fun testExclude() {
         builder()
-            .case("Test exclusion of classes from instrumentation for IntelliJ coverage agent")
+            .case("Test exclusion of classes from instrumentation")
             .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
-            .engines(CoverageEngine.INTELLIJ)
+            .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("simple")
             .configTest(
                 """excludes = listOf("org.jetbrains.*Exa?ple*")""",
@@ -23,20 +23,24 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             .build()
             .run("build") {
                 xml(DEFAULT_XML) {
-                    assertNull(classCounter("org.jetbrains.ExampleClass"))
-                    assertNotNull(classCounter("org.jetbrains.UnusedClass"))
+                    assertCounterExcluded(classCounter("org.jetbrains.ExampleClass"), this@run.engine)
+                    assertCounterCoveredAndIncluded(classCounter("org.jetbrains.SecondClass"))
                 }
             }
     }
 
     @Test
-    fun testExcludeJaCoCo() {
+    fun testExcludeInclude() {
         builder()
-            .case("Test exclusion of classes from instrumentation for JaCoCo coverage agent")
+            .case("Test inclusion and exclusion of classes in instrumentation")
             .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
-            .engines(CoverageEngine.JACOCO)
+            .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("simple")
+            .configTest(
+                """includes = listOf("org.jetbrains.*Cla?s")""",
+                """includes = ['org.jetbrains.*Cla?s']"""
+            )
             .configTest(
                 """excludes = listOf("org.jetbrains.*Exa?ple*")""",
                 """excludes = ['org.jetbrains.*Exa?ple*']"""
@@ -44,8 +48,9 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             .build()
             .run("build") {
                 xml(DEFAULT_XML) {
-                    assertEquals(0, classCounter("org.jetbrains.ExampleClass")!!.covered)
-                    assertNotNull(classCounter("org.jetbrains.UnusedClass"))
+                    assertCounterExcluded(classCounter("org.jetbrains.ExampleClass"), this@run.engine)
+                    assertCounterExcluded(classCounter("org.jetbrains.Unused"), this@run.engine)
+                    assertCounterCoveredAndIncluded(classCounter("org.jetbrains.SecondClass"))
                 }
             }
     }

@@ -9,7 +9,7 @@ private const val SETTINGS_PATH = "$TEMPLATES_PATH/scripts/settings"
 private const val SOURCES_PATH = "$TEMPLATES_PATH/sources"
 
 internal fun ProjectBuilderState.createProject(rootDir: File, slice: ProjectSlice): File {
-    val projectDir = File(rootDir, System.currentTimeMillis().toString()).also { it.mkdirs() }
+    val projectDir = File(rootDir, slice.encodedString()).also { it.mkdirs() }
 
     val extension = slice.scriptExtension
 
@@ -149,7 +149,6 @@ private fun ModuleBuilderState.buildTestTask(slice: ProjectSlice): String {
 
 @Suppress("UNUSED_PARAMETER")
 private fun ModuleBuilderState.buildVerifications(slice: ProjectSlice): String {
-    println(slice)
     return ""
 }
 

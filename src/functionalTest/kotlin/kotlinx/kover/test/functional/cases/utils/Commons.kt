@@ -1,5 +1,7 @@
 package kotlinx.kover.test.functional.cases.utils
 
+import kotlinx.kover.api.*
+import kotlinx.kover.test.functional.core.*
 import kotlinx.kover.test.functional.core.RunResult
 import kotlin.test.*
 
@@ -54,5 +56,18 @@ internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist
             assertFalse { exists() }
         }
     }
+}
 
+internal fun assertCounterExcluded(counter: Counter?, engine: CoverageEngine) {
+    if (engine == CoverageEngine.INTELLIJ) {
+        assertNull(counter)
+    } else {
+        assertNotNull(counter)
+        assertEquals(0, counter.covered)
+    }
+}
+
+internal fun assertCounterCoveredAndIncluded(counter: Counter?) {
+    assertNotNull(counter)
+    assertTrue { counter.covered > 0 }
 }

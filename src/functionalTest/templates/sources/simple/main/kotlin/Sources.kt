@@ -10,7 +10,13 @@ class ExampleClass {
     }
 }
 
-class UnusedClass {
+class SecondClass {
+    fun anotherUsed(value: Int): Int {
+        return value + 1
+    }
+}
+
+class Unused {
     fun functionInUsedClass() {
         println("unused")
     }
