@@ -68,6 +68,7 @@ internal class IntellijAgent(val config: Configuration) {
     }
 
     private fun String.replaceWildcards(): String {
+        // in most cases, the characters `*` or `.` will be present therefore, we increase the capacity in advance
         val builder = StringBuilder(length * 2)
 
         forEach { char ->

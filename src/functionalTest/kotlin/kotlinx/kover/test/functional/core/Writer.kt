@@ -159,17 +159,14 @@ private fun ProjectBuilderState.buildSettings(slice: ProjectSlice): String {
 }
 
 private fun ModuleBuilderState.buildScripts(slice: ProjectSlice): String {
-//        val scripts = if (language == GradleScriptLanguage.KOTLIN) kotlinScripts else groovyScripts
-//
-//        return if (scripts.isNotEmpty()) {
-//            scripts.joinToString("\n", "\n", "\n")
-//        } else {
-//            ""
-//        }
-    println(slice)
-    return ""
-}
+    val scripts = if (slice.language == GradleScriptLanguage.KOTLIN) kotlinScripts else groovyScripts
 
+    return if (scripts.isNotEmpty()) {
+        scripts.joinToString("\n", "\n", "\n")
+    } else {
+        ""
+    }
+}
 
 
 private fun loadSettingsTemplate(slice: ProjectSlice): String {
