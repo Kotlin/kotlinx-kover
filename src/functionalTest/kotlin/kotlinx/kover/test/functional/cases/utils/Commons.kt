@@ -1,38 +1,73 @@
 package kotlinx.kover.test.functional.cases.utils
 
+import kotlinx.kover.api.*
+import kotlinx.kover.test.functional.core.*
 import kotlinx.kover.test.functional.core.RunResult
 import kotlin.test.*
 
 internal fun RunResult.checkIntellijBinaryReport(binary: String, smap: String, mustExists: Boolean = true) {
     if (mustExists) {
-        assertTrue { file(binary).exists() }
-        assertTrue { file(binary).length() > 0 }
-        assertTrue { file(smap).exists() }
-        assertTrue { file(smap).length() > 0 }
+        file(binary) {
+            assertTrue { exists() }
+            assertTrue { length() > 0 }
+        }
+        file(smap) {
+            assertTrue { exists() }
+            assertTrue { length() > 0 }
+        }
     } else {
-        assertFalse { file(binary).exists() }
-        assertFalse { file(smap).exists() }
+        file(binary) {
+            assertFalse { exists() }
+        }
+        file(smap) {
+            assertFalse { exists() }
+        }
     }
 }
 
 internal fun RunResult.checkJacocoBinaryReport(binary: String, mustExists: Boolean = true) {
     if (mustExists) {
-        assertTrue { file(binary).exists() }
-        assertTrue { file(binary).length() > 0 }
+        file(binary) {
+            assertTrue { exists() }
+            assertTrue { length() > 0 }
+        }
     } else {
-        assertFalse { file(binary).exists() }
+        file(binary) {
+            assertFalse { exists() }
+        }
     }
 }
 
 internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExists: Boolean = true) {
     if (mustExists) {
-        assertTrue { file(xmlPath).exists() }
-        assertTrue { file(xmlPath).length() > 0 }
-        assertTrue { file(htmlPath).exists() }
-        assertTrue { file(htmlPath).isDirectory }
+        file(xmlPath) {
+            assertTrue { exists() }
+            assertTrue { length() > 0 }
+        }
+        file(htmlPath) {
+            assertTrue { exists() }
+            assertTrue { isDirectory }
+        }
     } else {
-        assertFalse { file(xmlPath).exists() }
-        assertFalse { file(htmlPath).exists() }
+        file(xmlPath) {
+            assertFalse { exists() }
+        }
+        file(htmlPath) {
+            assertFalse { exists() }
+        }
     }
+}
 
+internal fun assertCounterExcluded(counter: Counter?, engine: CoverageEngine) {
+    if (engine == CoverageEngine.INTELLIJ) {
+        assertNull(counter)
+    } else {
+        assertNotNull(counter)
+        assertEquals(0, counter.covered)
+    }
+}
+
+internal fun assertCounterCoveredAndIncluded(counter: Counter?) {
+    assertNotNull(counter)
+    assertTrue { counter.covered > 0 }
 }

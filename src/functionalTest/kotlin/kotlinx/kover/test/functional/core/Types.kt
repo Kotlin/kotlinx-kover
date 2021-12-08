@@ -8,36 +8,68 @@ internal enum class GradleScriptLanguage { KOTLIN, GROOVY }
 
 internal enum class ProjectType { KOTLIN_JVM, KOTLIN_MULTIPLATFORM, ANDROID }
 
-internal interface ModuleBuilder<S : ModuleBuilder<S>> {
-    fun sources(template: String): S
-    fun verification(rules: Iterable<VerificationRule>): S
-    fun config(script: String): S
-    fun config(kotlin: String, groovy: String): S
+internal interface ModuleBuilder<B : ModuleBuilder<B>> {
+    fun sources(template: String): B
+    fun verification(rules: Iterable<VerificationRule>): B
+
+    fun configTest(script: String): B
+    fun configTest(kotlin: String, groovy: String): B
+
+    fun config(script: String): B
+    fun config(kotlin: String, groovy: String): B
 }
 
-internal interface ProjectRunner : ModuleBuilder<ProjectRunner> {
-    fun case(description: String): ProjectRunner
-    fun languages(vararg languages: GradleScriptLanguage): ProjectRunner
-    fun engines(vararg engines: CoverageEngine): ProjectRunner
-    fun types(vararg types: ProjectType): ProjectRunner
-    fun setIntellijVersion(version: String): ProjectRunner
-    fun setJacocoVersion(version: String): ProjectRunner
-    fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit): ProjectRunner
-    fun kover(rootExtensionScript: String): ProjectRunner
-    fun check(vararg args: String, block: RunResult.() -> Unit): ProjectRunner
+internal interface ProjectBuilder : ModuleBuilder<ProjectBuilder> {
+    fun case(description: String): ProjectBuilder
+    fun languages(vararg languages: GradleScriptLanguage): ProjectBuilder
+    fun engines(vararg engines: CoverageEngine): ProjectBuilder
+    fun types(vararg types: ProjectType): ProjectBuilder
+
+    fun configKover(config: KoverRootConfig.() -> Unit): ProjectBuilder
+
+    fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit): ModuleBuilder<*>
+
+    fun build(): ProjectRunner
 }
 
-internal class RunResult(private val result: BuildResult, private val dir: File) {
-    val buildDir: File = File(dir, "build")
-
-    val output = result.output
-
-    fun file(name: String): File {
-        return File(buildDir, name)
+internal data class ProjectSlice(val language: GradleScriptLanguage, val type: ProjectType, val engine: CoverageEngine?) {
+    fun encodedString(): String {
+        return "${language.ordinal}_${type.ordinal}_${engine?.ordinal?:"default"}"
     }
+}
 
-    fun outcome(taskPath: String): TaskOutcome {
-        return result.task(taskPath)?.outcome
-            ?: throw IllegalArgumentException("Task '$taskPath' not found in build result")
-    }
+internal data class KoverRootConfig(
+    var disabled: Boolean? = null,
+    var intellijVersion: String? = null,
+    var jacocoVersion: String? = null,
+    var generateReportOnCheck: Boolean? = null
+) {
+    val isDefault =
+        disabled == null && intellijVersion == null && jacocoVersion == null && generateReportOnCheck == null
+}
+
+internal interface ProjectRunner {
+    fun run(vararg args: String, checker: RunResult.() -> Unit): ProjectRunner
+}
+
+internal interface RunResult {
+    val engine: CoverageEngine
+
+    fun output(checker: String.() -> Unit)
+
+    fun file(name: String, checker: File.() -> Unit)
+
+    fun xml(filename: String, checker: XmlReport.() -> Unit)
+
+    fun outcome(taskPath: String, checker: TaskOutcome.() -> Unit)
+}
+
+
+internal class Counter(val type: String, val missed: Int, val covered: Int) {
+    val isEmpty: Boolean
+        get() = missed == 0 && covered == 0
+}
+
+internal interface XmlReport {
+    fun classCounter(className: String, type: String = "INSTRUCTION"): Counter?
 }

@@ -1,0 +1,5 @@
+tasks.jvmTest {
+    kover {
+        //KOVER_TEST_CONFIG
+    }
+}

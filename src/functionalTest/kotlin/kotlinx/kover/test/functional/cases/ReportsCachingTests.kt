@@ -9,48 +9,50 @@ import kotlin.test.*
 internal class ReportsCachingTests : BaseGradleScriptTest() {
     @Test
     fun testCachingForIntellij() {
-        runner()
+        builder()
             .case("Test caching reports for IntelliJ Coverage Engine")
             .engines(CoverageEngine.INTELLIJ)
-            .sources("simple-single")
-            .check("build", "--build-cache") {
+            .sources("simple")
+            .build()
+            .run("build", "--build-cache") {
                 checkIntellijBinaryReport(DEFAULT_INTELLIJ_KJVM_BINARY, DEFAULT_INTELLIJ_KJVM_SMAP)
                 checkReports(DEFAULT_XML, DEFAULT_HTML)
             }
-            .check("clean", "--build-cache") {
+            .run("clean", "--build-cache") {
                 checkIntellijBinaryReport(DEFAULT_INTELLIJ_KJVM_BINARY, DEFAULT_INTELLIJ_KJVM_SMAP, false)
                 checkReports(DEFAULT_XML, DEFAULT_HTML, false)
             }
-            .check("build", "--build-cache") {
+            .run("build", "--build-cache") {
                 checkIntellijBinaryReport(DEFAULT_INTELLIJ_KJVM_BINARY, DEFAULT_INTELLIJ_KJVM_SMAP)
                 checkReports(DEFAULT_XML, DEFAULT_HTML)
-                assertEquals(TaskOutcome.FROM_CACHE, outcome(":test"))
-                assertEquals(TaskOutcome.FROM_CACHE, outcome(":koverXmlReport"))
-                assertEquals(TaskOutcome.FROM_CACHE, outcome(":koverHtmlReport"))
+                outcome(":test") { assertEquals(TaskOutcome.FROM_CACHE, this)}
+                outcome(":koverXmlReport") { assertEquals(TaskOutcome.FROM_CACHE, this)}
+                outcome(":koverHtmlReport") { assertEquals(TaskOutcome.FROM_CACHE, this)}
             }
     }
 
     @Test
     fun testCachingForJacoco() {
-        runner()
+        builder()
             .case("Test caching reports for JaCoCo Coverage Engine")
             .engines(CoverageEngine.JACOCO)
-            .sources("simple-single")
-            .check("build", "--build-cache") {
+            .sources("simple")
+            .build()
+            .run("build", "--build-cache") {
                 checkJacocoBinaryReport(DEFAULT_JACOCO_KJVM_BINARY)
                 checkReports(DEFAULT_XML, DEFAULT_HTML)
             }
-            .check("clean", "--build-cache") {
+            .run("clean", "--build-cache") {
                 checkJacocoBinaryReport(DEFAULT_JACOCO_KJVM_BINARY, false)
                 checkReports(DEFAULT_XML, DEFAULT_HTML, false)
             }
-            .check("build", "--build-cache") {
+            .run("build", "--build-cache") {
                 checkJacocoBinaryReport(DEFAULT_JACOCO_KJVM_BINARY)
                 checkReports(DEFAULT_XML, DEFAULT_HTML)
 
-                assertEquals(TaskOutcome.FROM_CACHE, outcome(":test"))
-                assertEquals(TaskOutcome.FROM_CACHE, outcome(":koverXmlReport"))
-                assertEquals(TaskOutcome.FROM_CACHE, outcome(":koverHtmlReport"))
+                outcome(":test") { assertEquals(TaskOutcome.FROM_CACHE, this)}
+                outcome(":koverXmlReport") { assertEquals(TaskOutcome.FROM_CACHE, this)}
+                outcome(":koverHtmlReport") { assertEquals(TaskOutcome.FROM_CACHE, this)}
             }
     }
 

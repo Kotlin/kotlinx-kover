@@ -37,33 +37,19 @@ open class KoverTaskExtension(objects: ObjectFactory) {
 
 
     /**
-     * Specifies inclusion rules coverage engine.
+     * Specifies class inclusion rules coverage engine. Exclusion rules have priority over inclusion ones.
      *
-     * ### Inclusion rules for IntelliJ
-     *
-     * Inclusion rules are represented as set of regular expressions
-     * that are matched against fully-qualified names of the classes being instrumented.
-     *
-     * ### Inclusion rules for JaCoCo
-     *
-     * Inclusion rules are represented as set of [JaCoCo-specific](https://www.eclemma.org/jacoco/trunk/doc/report-mojo.html#includes)
-     * fully qualified name that also supports `*` and `?`.
+     * Inclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
+     * It's possible to use `*` and `?` wildcards.
      */
     @get:Input
     public var includes: List<String> = emptyList()
 
     /**
-     * Specifies exclusion rules for coverage engine.
+     * Specifies class exclusion rules for coverage engine. Exclusion rules have priority over inclusion ones.
      *
-     * ### Exclusion rules for IntelliJ
-     *
-     * Exclusion rules are represented as set of regular expressions
-     * that are matched against fully-qualified names of the classes being instrumented.
-     *
-     * ### Inclusion rules for JaCoCo
-     *
-     * Exclusion rules are represented as set of [JaCoCo-specific](https://www.eclemma.org/jacoco/trunk/doc/report-mojo.html#excludes)
-     * fully qualified name that also supports `*` and `?`.
+     * Exclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
+     * It's possible to use `*` and `?` wildcards.
      */
     @get:Input
     public var excludes: List<String> = emptyList()

@@ -7,7 +7,6 @@ package kotlinx.kover.engines.intellij
 import kotlinx.kover.api.*
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
-import org.gradle.api.file.*
 import java.io.*
 
 
@@ -55,19 +54,37 @@ internal class IntellijAgent(val config: Configuration) {
             pw.appendLine(generateSmapFile.toString())
             pw.appendLine(smapPath)
             extension.includes.forEach { i ->
-                pw.appendLine(i)
+                pw.appendLine(i.replaceWildcards())
             }
 
             if (extension.excludes.isNotEmpty()) {
                 pw.appendLine("-exclude")
             }
 
-            extension.excludes.forEach { i ->
-                pw.appendLine(i)
+            extension.excludes.forEach { e ->
+                pw.appendLine(e.replaceWildcards())
             }
         }
     }
+
+    private fun String.replaceWildcards(): String {
+        // in most cases, the characters `*` or `.` will be present therefore, we increase the capacity in advance
+        val builder = StringBuilder(length * 2)
+
+        forEach { char ->
+            when (char) {
+                in regexMetacharactersSet -> builder.append('\\').append(char)
+                '*' -> builder.append('.').append("*")
+                '?' -> builder.append('.')
+                else -> builder.append(char)
+            }
+        }
+
+        return builder.toString()
+    }
 }
+
+private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()
 
 private fun Project.createIntellijConfig(koverExtension: KoverExtension): Configuration {
     val config = project.configurations.create("IntellijKoverConfig")

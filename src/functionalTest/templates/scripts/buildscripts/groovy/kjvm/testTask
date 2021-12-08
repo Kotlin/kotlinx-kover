@@ -1,0 +1,5 @@
+tasks.test {
+    kover {
+        //KOVER_TEST_CONFIG
+    }
+}

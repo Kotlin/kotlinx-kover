@@ -9,7 +9,7 @@ internal open class BaseGradleScriptTest {
     @JvmField
     internal val rootFolder: TemporaryFolder = TemporaryFolder()
 
-    fun runner(): ProjectRunner {
-        return createRunner(rootFolder.root)
+    fun builder(): ProjectBuilder {
+        return createBuilder(rootFolder.root)
     }
 }
