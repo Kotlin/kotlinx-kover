@@ -37,7 +37,7 @@ open class KoverTaskExtension(objects: ObjectFactory) {
 
 
     /**
-     * Specifies class inclusion rules coverage engine.
+     * Specifies class inclusion rules coverage engine. Exclusion rules have priority over inclusion ones.
      *
      * Inclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
      * It's possible to use `*` and `?` wildcards.
@@ -46,7 +46,7 @@ open class KoverTaskExtension(objects: ObjectFactory) {
     public var includes: List<String> = emptyList()
 
     /**
-     * Specifies class exclusion rules for coverage engine.
+     * Specifies class exclusion rules for coverage engine. Exclusion rules have priority over inclusion ones.
      *
      * Exclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
      * It's possible to use `*` and `?` wildcards.

@@ -72,6 +72,7 @@ private class RunResultImpl(private val result: BuildResult, private val slice: 
 
 private class XmlReportImpl(file: File) : XmlReport {
     private val document = DocumentBuilderFactory.newInstance()
+        // This option disables checking the dtd file for JaCoCo XML file
         .also { it.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false) }
         .newDocumentBuilder().parse(file)
 
