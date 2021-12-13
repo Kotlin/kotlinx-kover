@@ -4,6 +4,7 @@
 
 package kotlinx.kover
 
+import kotlinx.kover.adapters.*
 import kotlinx.kover.api.*
 import kotlinx.kover.api.KoverPaths.HTML_AGG_REPORT_DEFAULT_PATH
 import kotlinx.kover.api.KoverNames.CHECK_TASK_NAME
@@ -264,7 +265,18 @@ class KoverPlugin : Plugin<Project> {
             else
                 null
         })
-        jvmArgumentProviders.add(CoverageArgumentProvider(this, agents, providers.koverExtension))
+
+        val excludeAndroidPackages =
+            project.provider { project.androidPluginIsApplied && !providers.koverExtension.get().instrumentAndroidPackage }
+
+        jvmArgumentProviders.add(
+            CoverageArgumentProvider(
+                this,
+                agents,
+                providers.koverExtension,
+                excludeAndroidPackages
+            )
+        )
 
         doLast(IntellijErrorLogChecker(taskExtension))
     }
@@ -293,8 +305,8 @@ private class IntellijErrorLogChecker(private val taskExtension: KoverTaskExtens
 private class CoverageArgumentProvider(
     private val task: Task,
     private val agents: Map<CoverageEngine, CoverageAgent>,
-    @get:Nested
-    val koverExtension: Provider<KoverExtension>
+    @get:Nested val koverExtension: Provider<KoverExtension>,
+    @get:Input val excludeAndroidPackage: Provider<Boolean>
 ) : CommandLineArgumentProvider, Named {
 
     @get:Nested
@@ -316,6 +328,19 @@ private class CoverageArgumentProvider(
             || koverExtensionValue.disabledModules.contains(task.project.name)
         ) {
             return mutableListOf()
+        }
+
+        if (excludeAndroidPackage.get()) {
+            /*
+            The instrumentation of android classes often causes errors when using third-party
+            frameworks (see https://github.com/Kotlin/kotlinx-kover/issues/89).
+
+            Because android classes are not part of the project, in any case they do not get into the report,
+            and they can be excluded from instrumentation.
+
+            FIXME Remove this code if the IntelliJ Agent stops changing project classes during instrumentation
+             */
+            taskExtensionValue.excludes = taskExtensionValue.excludes + "android.*" + "com.android.*"
         }
 
         return agents.getFor(koverExtensionValue.coverageEngine.get()).buildCommandLineArgs(task, taskExtensionValue)

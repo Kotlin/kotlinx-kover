@@ -45,6 +45,12 @@ open class KoverExtension(objects: ObjectFactory) {
      */
     @get:Input
     var disabledModules: Set<String> = emptySet()
+
+    /**
+     * Specifies whether the classes from 'android' and 'com.android' packages should be included if Android plugin is applied.
+     */
+    @get:Input
+    public var instrumentAndroidPackage: Boolean = false
 }
 
 public enum class CoverageEngine {
