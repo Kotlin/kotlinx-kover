@@ -183,12 +183,12 @@ class KoverPlugin : Plugin<Project> {
     }
 
     private fun Project.createCollectingTask() {
-        tasks.create(COLLECT_TASK_NAME, KoverCollectingModulesTask::class.java) {
-            it.group = VERIFICATION_GROUP
-            it.description = "Collects reports from all modules in one directory."
-            it.outputDir.set(project.layout.buildDirectory.dir(ALL_MODULES_REPORTS_DEFAULT_PATH))
+        tasks.create(COLLECT_TASK_NAME, KoverCollectingModulesTask::class.java) { task ->
+            task.group = VERIFICATION_GROUP
+            task.description = "Collects reports from all modules in one directory."
+            task.outputDir.set(project.layout.buildDirectory.dir(ALL_MODULES_REPORTS_DEFAULT_PATH))
             // disable UP-TO-DATE check for task: it will be executed every time
-            it.outputs.upToDateWhen { false }
+            task.outputs.upToDateWhen { false }
 
             allprojects { proj ->
                 val xmlReportTask =
@@ -196,11 +196,11 @@ class KoverPlugin : Plugin<Project> {
                 val htmlReportTask =
                     proj.tasks.withType(KoverHtmlModuleReportTask::class.java).getByName(MODULE_HTML_REPORT_TASK_NAME)
 
-                it.mustRunAfter(xmlReportTask)
-                it.mustRunAfter(htmlReportTask)
+                task.mustRunAfter(xmlReportTask)
+                task.mustRunAfter(htmlReportTask)
 
-                it.xmlFiles[proj.name] = xmlReportTask.xmlReportFile
-                it.htmlDirs[proj.name] = htmlReportTask.htmlReportDir
+                task.xmlFiles[proj.name] = xmlReportTask.xmlReportFile
+                task.htmlDirs[proj.name] = htmlReportTask.htmlReportDir
             }
         }
     }

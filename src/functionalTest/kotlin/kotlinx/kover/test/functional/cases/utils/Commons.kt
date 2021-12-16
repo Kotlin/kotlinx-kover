@@ -5,10 +5,10 @@ import kotlinx.kover.test.functional.core.*
 import kotlinx.kover.test.functional.core.RunResult
 import kotlin.test.*
 
-internal fun RunResult.checkDefaultBinaryReport(mustExists: Boolean = true) {
+internal fun RunResult.checkDefaultBinaryReport(mustExist: Boolean = true) {
     val binary: String = defaultBinaryReport(engine, projectType)
 
-    if (mustExists) {
+    if (mustExist) {
         file(binary) {
             assertTrue { exists() }
             assertTrue { length() > 0 }
@@ -22,7 +22,7 @@ internal fun RunResult.checkDefaultBinaryReport(mustExists: Boolean = true) {
     if (engine == CoverageEngine.INTELLIJ) {
         val smap = defaultSmapFile(projectType)
 
-        if (mustExists) {
+        if (mustExist) {
             file(smap) {
                 assertTrue { exists() }
                 assertTrue { length() > 0 }
@@ -35,16 +35,16 @@ internal fun RunResult.checkDefaultBinaryReport(mustExists: Boolean = true) {
     }
 }
 
-internal fun RunResult.checkDefaultReports(mustExists: Boolean = true) {
-    checkReports(defaultXmlReport(), defaultHtmlReport(), mustExists)
+internal fun RunResult.checkDefaultReports(mustExist: Boolean = true) {
+    checkReports(defaultXmlReport(), defaultHtmlReport(), mustExist)
 }
 
-internal fun RunResult.checkDefaultModuleReports(mustExists: Boolean = true) {
-    checkReports(defaultXmlModuleReport(), defaultHtmlModuleReport(), mustExists)
+internal fun RunResult.checkDefaultModuleReports(mustExist: Boolean = true) {
+    checkReports(defaultXmlModuleReport(), defaultHtmlModuleReport(), mustExist)
 }
 
-internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExists: Boolean) {
-    if (mustExists) {
+internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
+    if (mustExist) {
         file(xmlPath) {
             assertTrue("XML file must exist '$xmlPath'") { exists() }
             assertTrue { length() > 0 }
