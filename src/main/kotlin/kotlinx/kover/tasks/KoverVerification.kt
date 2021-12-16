@@ -85,7 +85,7 @@ open class KoverModuleVerificationTask : KoverModuleTask() {
             val xmlReport =
                 this.project.tasks.withType(KoverXmlModuleReportTask::class.java)
                     .findByName(XML_MODULE_REPORT_TASK_NAME)
-                    ?: throw GradleException("Kover: task '$XML_MODULE_REPORT_TASK_NAME' not exists but it is required for verification")
+                    ?: throw GradleException("Kover: task '$XML_MODULE_REPORT_TASK_NAME' does not exist but it is required for verification")
 
             var xmlFile = xmlReport.xmlReportFile.get().asFile
             if (!xmlFile.exists()) {

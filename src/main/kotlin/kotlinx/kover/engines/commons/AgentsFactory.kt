@@ -15,5 +15,5 @@ internal object AgentsFactory {
 }
 
 internal fun Map<CoverageEngine, CoverageAgent>.getFor(engine: CoverageEngine): CoverageAgent {
-    return this[engine] ?: throw GradleException("Not found coverage agent for Coverage Engine '$engine'")
+    return this[engine] ?: throw GradleException("Coverage agent for Coverage Engine '$engine' not found")
 }
