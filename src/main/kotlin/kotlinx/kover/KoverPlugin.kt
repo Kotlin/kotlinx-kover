@@ -39,6 +39,8 @@ class KoverPlugin : Plugin<Project> {
     private val defaultJacocoVersion = "0.8.7"
 
     override fun apply(target: Project) {
+        target.checkAlreadyApplied()
+
         val koverExtension = target.createKoverExtension()
         val agents = AgentsFactory.createAgents(target, koverExtension)
 
@@ -262,6 +264,17 @@ class KoverPlugin : Plugin<Project> {
         jvmArgumentProviders.add(CoverageArgumentProvider(this, agents, providers.koverExtension))
 
         return taskExtension
+    }
+
+    private fun Project.checkAlreadyApplied() {
+        var parent = parent
+
+        while (parent != null) {
+            if (parent.plugins.hasPlugin(KoverPlugin::class.java)) {
+                throw GradleException("Kover plugin already applied: in module '${parent.name}' and child module '${this.name}'")
+            }
+            parent = this.parent
+        }
     }
 }
 
