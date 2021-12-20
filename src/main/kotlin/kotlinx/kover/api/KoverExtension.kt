@@ -11,10 +11,10 @@ import org.gradle.api.tasks.*
 open class KoverExtension(objects: ObjectFactory) {
 
     /**
-     * Specifies whether the plugin is applied to the test task and configures it to collect and generate coverage data.
+     * Specifies whether instrumentation is disabled for all test tasks of all modules.
      */
     @get:Input
-    public var isEnabled: Boolean = true
+    public var isDisabled: Boolean = false
 
     /**
      * Specifies the coverage engine to be used to collect execution data.

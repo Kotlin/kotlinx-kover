@@ -116,7 +116,7 @@ For example, to configure a standard test task for Kotlin/JVM named `test`, you 
 ```kotlin
 tasks.test {
     extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-        isEnabled = true
+        isDisabled = false
         binaryReportFile.set(file("$buildDir/custom/result.bin"))
         includes = listOf("com.example.*")
         excludes = listOf("com.example.subpackage.*")
@@ -131,7 +131,7 @@ tasks.test {
 ```groovy
 tasks.test {
     kover {
-        enabled = true
+        disabled = false
         binaryReportFile.set(file("$buildDir/custom/result.bin"))
         includes = ['com.example.*']
         excludes = ['com.example.subpackage.*']
@@ -154,7 +154,7 @@ android {
         unitTests.all {
             if (it.name == "testDebugUnitTest") {
                 extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-                    isEnabled = true
+                    isDisabled = false
                     binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
                     includes = listOf("com.example.*")
                     excludes = listOf("com.example.subpackage.*")
@@ -178,7 +178,7 @@ android {
         unitTests.all {
             if (name == "testDebugUnitTest") {
                 kover {
-                    enabled = true
+                    disabled = false
                     binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
                     includes = ['com.example.*']
                     excludes = ['com.example.subpackage.*']
@@ -298,7 +298,7 @@ In the module in which the plugin is applied, you need to add code:
 
 ```kotlin
 kover {
-    isEnabled = true                        // false to disable instrumentation of all test tasks in all modules
+    isDisabled = false                      // true to disable instrumentation of all test tasks in all modules
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
     intellijEngineVersion.set("1.0.640")    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
@@ -313,7 +313,7 @@ kover {
 
 ```groovy
 kover {
-    enabled = true                          // false to disable instrumentation of all test tasks in all modules
+    disabled = false                        // true to disable instrumentation of all test tasks in all modules
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
     intellijEngineVersion.set('1.0.640')    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set('0.8.7')        // change version of JaCoCo agent and reporter

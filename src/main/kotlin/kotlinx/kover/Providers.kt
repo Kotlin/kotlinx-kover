@@ -73,7 +73,7 @@ internal fun Project.testTasks(rootProject: Project): List<Test> {
     }
 
     return tasks.withType(Test::class.java)
-        .filter { t -> t.extensions.getByType(KoverTaskExtension::class.java).isEnabled }
+        .filterNot { t -> t.extensions.getByType(KoverTaskExtension::class.java).isDisabled }
 }
 
 internal fun Project.binaryReports(root: Project): List<File> {
@@ -84,7 +84,7 @@ internal fun Project.binaryReports(root: Project): List<File> {
     return tasks.withType(Test::class.java).asSequence()
         .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
         // process binary report only from tasks with enabled cover
-        .filter { e -> e.isEnabled }
+        .filterNot { e -> e.isDisabled }
         .map { e -> e.binaryReportFile.get() }
         // process binary report only from tasks with sources
         .filter { f -> f.exists() }
@@ -98,7 +98,7 @@ internal fun Project.smapFiles(root: Project): List<File> {
 
     return tasks.withType(Test::class.java).asSequence()
         .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
-        .filter { e -> e.isEnabled }
+        .filterNot { e -> e.isDisabled }
         .mapNotNull { e -> e.smapFile.orNull }
         /*
          Binary reports and SMAP files have same ordering for IntelliJ engine:

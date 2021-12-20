@@ -17,10 +17,10 @@ import java.io.*
  */
 open class KoverTaskExtension(objects: ObjectFactory) {
     /**
-     * Specifies whether the plugin is applied to the test task and configures it to collect and generate coverage data.
+     * Specifies whether instrumentation is disabled for an extended test task.
      */
     @get:Input
-    public var isEnabled: Boolean = true
+    public var isDisabled: Boolean = false
 
     /**
      * Specifies file path of generated binary file with coverage data.
