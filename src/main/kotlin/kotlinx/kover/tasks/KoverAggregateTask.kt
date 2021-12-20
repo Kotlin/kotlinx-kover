@@ -79,6 +79,6 @@ open class KoverAggregateTask : DefaultTask() {
 
 class NestedFiles(objects: ObjectFactory, files: Provider<FileCollection>) {
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     val files: Property<FileCollection> = objects.property(FileCollection::class.java).also { it.set(files) }
 }
