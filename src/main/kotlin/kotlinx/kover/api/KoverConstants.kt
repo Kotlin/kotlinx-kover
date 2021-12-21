@@ -7,15 +7,15 @@ public object KoverNames {
     public const val ROOT_EXTENSION_NAME = "kover"
     public const val TASK_EXTENSION_NAME = "kover"
 
-    public const val REPORT_TASK_NAME = "koverReport"
-    public const val COLLECT_TASK_NAME = "koverCollectReports"
     public const val XML_REPORT_TASK_NAME = "koverXmlReport"
     public const val HTML_REPORT_TASK_NAME = "koverHtmlReport"
+    public const val REPORT_TASK_NAME = "koverReport"
     public const val VERIFY_TASK_NAME = "koverVerify"
 
-    public const val MODULE_REPORT_TASK_NAME = "koverModuleReport"
     public const val XML_MODULE_REPORT_TASK_NAME = "koverXmlModuleReport"
-    public const val MODULE_HTML_REPORT_TASK_NAME = "koverHtmlModuleReport"
+    public const val HTML_MODULE_REPORT_TASK_NAME = "koverHtmlModuleReport"
+    public const val MODULE_REPORT_TASK_NAME = "koverModuleReport"
+    public const val COLLECT_MODULE_REPORTS_TASK_NAME = "koverCollectModuleReports"
     public const val MODULE_VERIFY_TASK_NAME = "koverModuleVerify"
 }
 

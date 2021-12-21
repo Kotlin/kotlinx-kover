@@ -7,9 +7,9 @@ package kotlinx.kover
 import kotlinx.kover.api.*
 import kotlinx.kover.api.KoverPaths.HTML_AGG_REPORT_DEFAULT_PATH
 import kotlinx.kover.api.KoverNames.CHECK_TASK_NAME
-import kotlinx.kover.api.KoverNames.COLLECT_TASK_NAME
+import kotlinx.kover.api.KoverNames.COLLECT_MODULE_REPORTS_TASK_NAME
 import kotlinx.kover.api.KoverNames.HTML_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.MODULE_HTML_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.HTML_MODULE_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.MODULE_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.MODULE_VERIFY_TASK_NAME
 import kotlinx.kover.api.KoverNames.REPORT_TASK_NAME
@@ -69,7 +69,7 @@ class KoverPlugin : Plugin<Project> {
         }
 
         val htmlReportTask = createKoverModuleTask(
-            MODULE_HTML_REPORT_TASK_NAME,
+            HTML_MODULE_REPORT_TASK_NAME,
             KoverHtmlModuleReportTask::class,
             providers,
             moduleProviders
@@ -185,9 +185,9 @@ class KoverPlugin : Plugin<Project> {
     }
 
     private fun Project.createCollectingTask() {
-        tasks.create(COLLECT_TASK_NAME, KoverCollectingModulesTask::class.java) { task ->
+        tasks.create(COLLECT_MODULE_REPORTS_TASK_NAME, KoverCollectingModulesTask::class.java) { task ->
             task.group = VERIFICATION_GROUP
-            task.description = "Collects reports from all modules in one directory."
+            task.description = "Collects all modules reports into one directory."
             task.outputDir.set(project.layout.buildDirectory.dir(ALL_MODULES_REPORTS_DEFAULT_PATH))
             // disable UP-TO-DATE check for task: it will be executed every time
             task.outputs.upToDateWhen { false }
@@ -196,7 +196,7 @@ class KoverPlugin : Plugin<Project> {
                 val xmlReportTask =
                     proj.tasks.withType(KoverXmlModuleReportTask::class.java).getByName(XML_MODULE_REPORT_TASK_NAME)
                 val htmlReportTask =
-                    proj.tasks.withType(KoverHtmlModuleReportTask::class.java).getByName(MODULE_HTML_REPORT_TASK_NAME)
+                    proj.tasks.withType(KoverHtmlModuleReportTask::class.java).getByName(HTML_MODULE_REPORT_TASK_NAME)
 
                 task.mustRunAfter(xmlReportTask)
                 task.mustRunAfter(htmlReportTask)
