@@ -300,7 +300,7 @@ In the module in which the plugin is applied, you need to add code:
 kover {
     isEnabled = true                        // false to disable instrumentation of all test tasks in all modules
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
-    intellijEngineVersion.set("1.0.639")    // change version of IntelliJ agent and reporter
+    intellijEngineVersion.set("1.0.640")    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
     disabledModules = setOf()               // setOf("module-name") to disable coverage for module with name `module-name`
@@ -315,7 +315,7 @@ kover {
 kover {
     enabled = true                          // false to disable instrumentation of all test tasks in all modules
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
-    intellijEngineVersion.set('1.0.639')    // change version of IntelliJ agent and reporter
+    intellijEngineVersion.set('1.0.640')    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set('0.8.7')        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
     disabledModules = []                    // ["module-name"] to disable coverage for module with name `module-name`

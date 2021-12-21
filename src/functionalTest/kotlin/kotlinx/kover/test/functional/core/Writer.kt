@@ -116,6 +116,20 @@ private fun buildSubmodulesIncludes(submodules: Set<String>): String {
     }
 }
 
+private fun ProjectBuilderState.buildExtraSettings(): String {
+    return if (localCache) {
+        """
+buildCache {
+    local {
+        directory = "${"$"}settingsDir/build-cache"
+    }
+}
+"""
+    } else {
+        ""
+    }
+}
+
 private fun ProjectBuilderState.buildRootExtension(slice: ProjectSlice): String {
     if (slice.engine == null && koverConfig.isDefault) {
         return ""
@@ -173,6 +187,7 @@ private fun ModuleBuilderState.buildVerifications(slice: ProjectSlice): String {
 private fun ProjectBuilderState.buildSettings(slice: ProjectSlice): String {
     return loadSettingsTemplate(slice)
         .replace("//SUBMODULES", buildSubmodulesIncludes(submodules.keys))
+        .replace("//EXTRA_SETTINGS", buildExtraSettings())
 }
 
 private fun ModuleBuilderState.buildScripts(slice: ProjectSlice): String {

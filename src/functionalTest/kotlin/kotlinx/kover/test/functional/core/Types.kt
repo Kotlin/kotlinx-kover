@@ -27,6 +27,8 @@ internal interface ProjectBuilder : ModuleBuilder<ProjectBuilder> {
     fun engines(vararg engines: CoverageEngine): ProjectBuilder
     fun types(vararg types: ProjectType): ProjectBuilder
 
+    fun withLocalCache(): ProjectBuilder
+
     fun configKover(config: KoverRootConfig.() -> Unit): ProjectBuilder
 
     fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit): ProjectBuilder

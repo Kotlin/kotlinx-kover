@@ -22,3 +22,5 @@ internal fun defaultHtmlReport() = "reports/kover/html"
 
 internal fun defaultXmlModuleReport() = "reports/kover/module-xml/report.xml"
 internal fun defaultHtmlModuleReport() = "reports/kover/module-html"
+
+internal fun errorsDirectory() = "kover/errors"

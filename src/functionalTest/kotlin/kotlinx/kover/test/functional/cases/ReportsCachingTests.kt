@@ -12,10 +12,14 @@ internal class ReportsCachingTests : BaseGradleScriptTest() {
         builder("Test caching aggregate reports")
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("simple")
+            .withLocalCache()
             .build()
             .run("build", "--build-cache") {
                 checkDefaultBinaryReport()
                 checkDefaultReports()
+                outcome(":test") { assertEquals(TaskOutcome.SUCCESS, this) }
+                outcome(":koverXmlReport") { assertEquals(TaskOutcome.SUCCESS, this) }
+                outcome(":koverHtmlReport") { assertEquals(TaskOutcome.SUCCESS, this) }
             }
             .run("clean", "--build-cache") {
                 checkDefaultBinaryReport(false)
@@ -35,10 +39,14 @@ internal class ReportsCachingTests : BaseGradleScriptTest() {
         builder("Test caching module reports")
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("simple")
+            .withLocalCache()
             .build()
             .run("koverModuleReport", "--build-cache") {
                 checkDefaultBinaryReport()
                 checkDefaultModuleReports()
+                outcome(":test") { assertEquals(TaskOutcome.SUCCESS, this) }
+                outcome(":koverXmlModuleReport") { assertEquals(TaskOutcome.SUCCESS, this) }
+                outcome(":koverHtmlModuleReport") { assertEquals(TaskOutcome.SUCCESS, this) }
             }
             .run("clean", "--build-cache") {
                 checkDefaultBinaryReport(false)

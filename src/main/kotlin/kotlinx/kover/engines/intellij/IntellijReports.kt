@@ -37,8 +37,22 @@ internal fun Task.intellijReport(
         e.classpath = classpath
         e.args = mutableListOf(argsFile.canonicalPath)
     }
+
+    project.copyIntellijErrorLog(project.layout.buildDirectory.get().file("kover/errors/$name.log").asFile)
 }
 
+internal fun Project.copyIntellijErrorLog(toFile: File, customDirectory: File? = null) {
+    var errorLog = customDirectory?.let { File(it, "coverage-error.log") }
+
+    if (errorLog == null || !errorLog.exists()) {
+        errorLog = File(projectDir, "coverage-error.log")
+    }
+
+    if (errorLog.exists() && errorLog.isFile) {
+        errorLog.copyTo(toFile, true)
+        errorLog.delete()
+    }
+}
 
 /*
 JSON format:

@@ -4,8 +4,8 @@
 
 package kotlinx.kover.engines.intellij
 
-val defaultIntellijVersion = IntellijEngineVersion(1, 0, 639)
-val minimalIntellijVersion = defaultIntellijVersion
+val defaultIntellijVersion = IntellijEngineVersion(1, 0, 640)
+val minimalIntellijVersion = IntellijEngineVersion(1, 0, 639)
 
 data class IntellijEngineVersion(val major: Int, val minor: Int, val build: Int): Comparable<IntellijEngineVersion> {
     override fun compareTo(other: IntellijEngineVersion): Int {

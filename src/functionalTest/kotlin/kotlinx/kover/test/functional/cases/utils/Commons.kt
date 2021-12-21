@@ -63,6 +63,17 @@ internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist
     }
 }
 
+internal fun RunResult.checkIntellijErrors(errorExpected: Boolean = false) {
+    if (engine != CoverageEngine.INTELLIJ) return
+
+    file(errorsDirectory()) {
+        if (this.exists() && !errorExpected) {
+            val errorLogs = this.listFiles()?.map { it.name } ?: emptyList()
+            throw AssertionError("Detected IntelliJ Coverage Engine errors: $errorLogs")
+        }
+    }
+}
+
 internal fun assertCounterAbsent(counter: Counter?) {
     assertNull(counter)
 }

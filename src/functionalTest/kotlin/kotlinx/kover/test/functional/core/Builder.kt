@@ -15,6 +15,7 @@ internal class ProjectBuilderState(val description: String) {
     val koverConfig: KoverRootConfig = KoverRootConfig()
     val rootModule: ModuleBuilderState = ModuleBuilderState()
     val submodules: MutableMap<String, ModuleBuilderState> = mutableMapOf()
+    var localCache: Boolean = false
 }
 
 internal class ModuleBuilderState {
@@ -45,6 +46,10 @@ private class ProjectBuilderImpl(
 
     override fun types(vararg types: ProjectType) = also {
         state.types += types
+    }
+
+    override fun withLocalCache(): ProjectBuilder = also {
+        state.localCache = true
     }
 
     override fun configKover(config: KoverRootConfig.() -> Unit) = also {
