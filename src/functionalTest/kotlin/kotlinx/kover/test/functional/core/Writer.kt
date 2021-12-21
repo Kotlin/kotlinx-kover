@@ -143,6 +143,13 @@ private fun ProjectBuilderState.buildRootExtension(slice: ProjectSlice): String 
         }
     }
 
+    if (koverConfig.disabledModules.isNotEmpty()) {
+        val prefix = if (slice.language == GradleScriptLanguage.KOTLIN) "setOf(" else "["
+        val postfix = if (slice.language == GradleScriptLanguage.KOTLIN) ")" else "]"
+        val value = koverConfig.disabledModules.joinToString(prefix = prefix, postfix = postfix) { "\"$it\"" }
+        builder.appendLine("    disabledModules = $value")
+    }
+
     builder.appendLine("}")
 
     return builder.toString()

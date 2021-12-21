@@ -39,6 +39,12 @@ open class KoverExtension(objects: ObjectFactory) {
      */
     @get:Input
     val generateReportOnCheck: Property<Boolean> = objects.property(Boolean::class.java)
+
+    /**
+     * Specifies the modules to be disabled from instrumentation and reportings.
+     */
+    @get:Input
+    var disabledModules: Set<String> = emptySet()
 }
 
 public enum class CoverageEngine {

@@ -44,7 +44,8 @@ internal data class KoverRootConfig(
     var disabled: Boolean? = null,
     var intellijVersion: String? = null,
     var jacocoVersion: String? = null,
-    var generateReportOnCheck: Boolean? = null
+    var generateReportOnCheck: Boolean? = null,
+    val disabledModules: MutableSet<String> = mutableSetOf()
 ) {
     val isDefault =
         disabled == null && intellijVersion == null && jacocoVersion == null && generateReportOnCheck == null
