@@ -12,4 +12,8 @@ internal open class BaseGradleScriptTest {
     fun builder(description: String): ProjectBuilder {
         return createBuilder(rootFolder.root, description)
     }
+
+    fun internalProject(name: String): ProjectRunner {
+        return loadInternalProject(name, rootFolder.root)
+    }
 }
