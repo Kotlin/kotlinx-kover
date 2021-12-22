@@ -15,15 +15,15 @@ import org.gradle.api.tasks.*
 
 abstract class KoverModuleTask : DefaultTask() {
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     val binaryReportFiles: Property<FileCollection> = project.objects.property(FileCollection::class.java)
 
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     val smapFiles: Property<FileCollection> = project.objects.property(FileCollection::class.java)
 
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     val srcDirs: Property<FileCollection> = project.objects.property(FileCollection::class.java)
 
     @get:Classpath
