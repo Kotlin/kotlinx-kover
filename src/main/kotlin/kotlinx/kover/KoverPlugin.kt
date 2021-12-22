@@ -248,7 +248,7 @@ class KoverPlugin : Plugin<Project> {
     private fun Test.configTest(
         providers: ProjectProviders,
         agents: Map<CoverageEngine, CoverageAgent>
-    ): KoverTaskExtension {
+    ) {
         val taskExtension = extensions.create(TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
 
         taskExtension.isEnabled = true
@@ -266,7 +266,7 @@ class KoverPlugin : Plugin<Project> {
         })
         jvmArgumentProviders.add(CoverageArgumentProvider(this, agents, providers.koverExtension))
 
-        return taskExtension
+        doLast(IntellijErrorLogChecker(taskExtension))
     }
 
     private fun Project.checkAlreadyApplied() {
@@ -278,6 +278,15 @@ class KoverPlugin : Plugin<Project> {
             }
             parent = this.parent
         }
+    }
+}
+
+private class IntellijErrorLogChecker(private val taskExtension: KoverTaskExtension) : Action<Task> {
+    override fun execute(task: Task) {
+        task.project.copyIntellijErrorLog(
+            task.project.layout.buildDirectory.get().file("kover/errors/${task.name}.log").asFile,
+            taskExtension.binaryReportFile.get().parentFile
+        )
     }
 }
 

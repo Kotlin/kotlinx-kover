@@ -1,6 +1,7 @@
 package kotlinx.kover.test.functional.core
 
 import kotlinx.kover.api.*
+import kotlinx.kover.test.functional.cases.utils.*
 import org.gradle.testkit.runner.*
 import org.w3c.dom.*
 import java.io.*
@@ -26,7 +27,7 @@ internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) 
                 .withArguments(args)
                 .build()
 
-            RunResultImpl(buildResult, slice, this).apply(checker)
+            RunResultImpl(buildResult, slice, this).apply { checkIntellijErrors() }.apply(checker)
         } catch (e: Throwable) {
             throw AssertionError("Assertion error occurred in test for project $slice", e)
         }
