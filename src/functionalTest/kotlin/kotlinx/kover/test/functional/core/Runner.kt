@@ -18,14 +18,14 @@ internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) 
     }
 
     private fun File.runGradle(args: List<String>, slice: ProjectSlice, checker: RunResult.() -> Unit) {
-        val buildResult = GradleRunner.create()
-            .withProjectDir(this)
-            .withPluginClasspath()
-            .addPluginTestRuntimeClasspath()
-            .withArguments(args)
-            .build()
-
         try {
+            val buildResult = GradleRunner.create()
+                .withProjectDir(this)
+                .withPluginClasspath()
+                .addPluginTestRuntimeClasspath()
+                .withArguments(args)
+                .build()
+
             RunResultImpl(buildResult, slice, this).apply(checker)
         } catch (e: Throwable) {
             throw AssertionError("Assertion error occurred in test for project $slice", e)
@@ -44,10 +44,16 @@ private fun GradleRunner.addPluginTestRuntimeClasspath() = apply {
 }
 
 
-private class RunResultImpl(private val result: BuildResult, private val slice: ProjectSlice, dir: File) : RunResult {
+private class RunResultImpl(private val result: BuildResult, private val slice: ProjectSlice, private val dir: File) :
+    RunResult {
     val buildDir: File = File(dir, "build")
 
     override val engine: CoverageEngine = slice.engine ?: CoverageEngine.INTELLIJ
+    override val projectType: ProjectType = slice.type
+
+    override fun submodule(name: String, checker: RunResult.() -> Unit) {
+        RunResultImpl(result, slice, File(dir, name)).also(checker)
+    }
 
     override fun output(checker: String.() -> Unit) {
         result.output.checker()

@@ -3,12 +3,11 @@ package kotlinx.kover.test.functional.core
 import kotlinx.kover.api.*
 import java.io.*
 
-internal fun createBuilder(rootDir: File): ProjectBuilder {
-    return ProjectBuilderImpl(rootDir)
+internal fun createBuilder(rootDir: File, description: String): ProjectBuilder {
+    return ProjectBuilderImpl(rootDir, description)
 }
 
-internal class ProjectBuilderState {
-    var description: String? = null
+internal class ProjectBuilderState(val description: String) {
     var pluginVersion: String? = null
     val languages: MutableSet<GradleScriptLanguage> = mutableSetOf()
     val types: MutableSet<ProjectType> = mutableSetOf()
@@ -20,23 +19,21 @@ internal class ProjectBuilderState {
 
 internal class ModuleBuilderState {
     val sourceTemplates: MutableList<String> = mutableListOf()
-    val kotlinScripts: MutableList<String> = mutableListOf()
-    val groovyScripts: MutableList<String> = mutableListOf()
-    val testKotlinScripts: MutableList<String> = mutableListOf()
-    val testGroovyScripts: MutableList<String> = mutableListOf()
+    val scripts: MutableList<GradleScript> = mutableListOf()
+    val testScripts: MutableList<GradleScript> = mutableListOf()
+    val dependencies: MutableList<GradleScript> = mutableListOf()
     val rules: MutableList<VerificationRule> = mutableListOf()
     val mainSources: MutableMap<String, String> = mutableMapOf()
     val testSources: MutableMap<String, String> = mutableMapOf()
 }
 
+internal data class GradleScript(val kotlin: String, val groovy: String)
+
 private class ProjectBuilderImpl(
     val rootDir: File,
-    private val state: ProjectBuilderState = ProjectBuilderState()
+    description: String,
+    private val state: ProjectBuilderState = ProjectBuilderState(description)
 ) : ModuleBuilderImpl<ProjectBuilder>(state.rootModule), ProjectBuilder {
-
-    override fun case(description: String) = also {
-        state.description = description
-    }
 
     override fun languages(vararg languages: GradleScriptLanguage) = also {
         state.languages += languages
@@ -100,26 +97,32 @@ private open class ModuleBuilderImpl<B : ModuleBuilder<B>>(val moduleState: Modu
     }
 
     override fun configTest(script: String): B {
-        moduleState.testKotlinScripts += script
-        moduleState.testGroovyScripts += script
+        moduleState.testScripts += GradleScript(script, script)
         return this as B
     }
 
     override fun configTest(kotlin: String, groovy: String): B {
-        moduleState.testKotlinScripts += kotlin
-        moduleState.testGroovyScripts += groovy
+        moduleState.testScripts += GradleScript(kotlin, groovy)
         return this as B
     }
 
     override fun config(script: String): B {
-        moduleState.kotlinScripts += script
-        moduleState.groovyScripts += script
+        moduleState.scripts += GradleScript(script, script)
         return this as B
     }
 
     override fun config(kotlin: String, groovy: String): B {
-        moduleState.kotlinScripts += kotlin
-        moduleState.groovyScripts += groovy
+        moduleState.testScripts += GradleScript(kotlin, groovy)
+        return this as B
+    }
+
+    override fun dependency(script: String): B {
+        moduleState.dependencies += GradleScript(script, script)
+        return this as B
+    }
+
+    override fun dependency(kotlin: String, groovy: String): B {
+        moduleState.dependencies += GradleScript(kotlin, groovy)
         return this as B
     }
 

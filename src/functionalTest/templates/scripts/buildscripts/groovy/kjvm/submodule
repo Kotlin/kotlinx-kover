@@ -1,0 +1,12 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+repositories {
+    mavenCentral()//REPOSITORIES
+}
+
+dependencies {//DEPENDENCIES
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+//KOVER//SCRIPTS//TEST_TASK//VERIFICATIONS

@@ -5,16 +5,16 @@
 package kotlinx.kover.engines.intellij
 
 import kotlinx.kover.api.*
+import kotlinx.kover.engines.commons.*
+import kotlinx.kover.engines.commons.Report
+import kotlinx.kover.engines.commons.ReportFiles
 import org.gradle.api.*
 import org.gradle.api.file.*
 import java.io.*
 import java.util.*
 
 internal fun Task.intellijReport(
-    binaryReportFiles: Iterable<File>,
-    smapFiles: Iterable<File>,
-    sources: Iterable<File>,
-    outputs: Iterable<File>,
+    report: Report,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
@@ -29,7 +29,7 @@ internal fun Task.intellijReport(
 
     val argsFile = File(temporaryDir, "intellijreport.json")
     argsFile.printWriter().use { pw ->
-        pw.writeModuleReportJson(binaryReportFiles, smapFiles, sources, outputs, xmlFile, htmlDir)
+        pw.writeReportsJson(report, xmlFile, htmlDir)
     }
 
     project.javaexec { e ->
@@ -78,11 +78,8 @@ JSON example:
 }
 ```
  */
-private fun Writer.writeModuleReportJson(
-    binaryReportFiles: Iterable<File>,
-    smapFiles: Iterable<File>,
-    sources: Iterable<File>,
-    outputs: Iterable<File>,
+private fun Writer.writeReportsJson(
+    report: Report,
     xmlFile: File?,
     htmlDir: File?
 ) {
@@ -95,30 +92,35 @@ private fun Writer.writeModuleReportJson(
         appendLine("""  "html": "${it.safePath()}",""")
     }
     appendLine("""  "modules": [""")
+    report.modules.forEachIndexed { index, module ->
+        writeModuleReportJson(report.files, module, index == (report.modules.size - 1))
+    }
+    appendLine("""  ]""")
+    appendLine("}")
+}
+
+private fun Writer.writeModuleReportJson(reportFiles: Iterable<ReportFiles>, moduleInfo: ModuleInfo, isLast: Boolean) {
     appendLine("""    { "reports": [ """)
 
-    val smapIterator = smapFiles.iterator()
-    appendLine(binaryReportFiles.joinToString(",\n        ", "        ") { f ->
-        """{"ic": "${f.safePath()}", "smap": "${smapIterator.next().safePath()}"}"""
+    appendLine(reportFiles.joinToString(",\n        ", "        ") { f ->
+        """{"ic": "${f.binary.safePath()}", "smap": "${f.smap!!.safePath()}"}"""
     })
 
     appendLine("""      ], """)
     appendLine("""      "output": [""")
     appendLine(
-        outputs.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+        moduleInfo.outputs.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
     appendLine("""      ],""")
     appendLine("""      "sources": [""")
 
     appendLine(
-        sources.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+        moduleInfo.sources.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
     appendLine("""      ]""")
-    appendLine("""    }""")
-    appendLine("""  ]""")
-    appendLine("}")
+    appendLine("""    }${if (isLast) "" else ","}""")
 }
 
 private fun File.safePath(): String {
-    return canonicalPath.replace("\\","\\\\").replace("\"", "\\\"")
+    return canonicalPath.replace("\\", "\\\\").replace("\"", "\\\"")
 }
 
 internal fun Task.intellijVerification(

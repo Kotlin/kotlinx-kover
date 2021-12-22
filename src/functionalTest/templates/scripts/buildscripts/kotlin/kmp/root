@@ -15,5 +15,12 @@ kotlin {
     dependencies {
         commonTestImplementation(kotlin("test"))
     }
+
+    sourceSets {
+        val jvmMain by getting {
+            dependencies {//DEPENDENCIES
+            }
+        }
+    }
 }
 //KOVER//SCRIPTS//TEST_TASK//VERIFICATIONS

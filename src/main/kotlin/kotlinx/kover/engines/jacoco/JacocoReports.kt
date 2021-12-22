@@ -6,6 +6,7 @@ package kotlinx.kover.engines.jacoco
 
 import groovy.lang.*
 import kotlinx.kover.api.*
+import kotlinx.kover.engines.commons.Report
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.internal.reflect.*
@@ -13,10 +14,8 @@ import java.io.*
 import java.math.*
 import java.util.*
 
-internal fun Task.callJacocoAntReportTask(
-    binaryReportFiles: Iterable<File>,
-    sources: Iterable<File>,
-    outputs: Iterable<File>,
+private fun Task.callJacocoAntReportTask(
+    report: Report,
     classpath: FileCollection,
     block: GroovyObject.() -> Unit
 ) {
@@ -30,10 +29,18 @@ internal fun Task.callJacocoAntReportTask(
         )
     )
 
+    val binaries: List<File> = report.files.map(kotlinx.kover.engines.commons.ReportFiles::binary)
+
+    val sources: MutableList<File> = mutableListOf()
+    val outputs: MutableList<File> = mutableListOf()
+    report.modules.forEach { module ->
+        sources.addAll(module.sources)
+        outputs.addAll(module.outputs)
+    }
+
     builder.invokeWithBody("jacocoReport") {
         invokeWithBody("executiondata") {
-            val binaries = project.files(binaryReportFiles)
-            binaries.addToAntBuilder(this, "resources")
+            project.files(binaries).addToAntBuilder(this, "resources")
         }
         invokeWithBody("structure", mapOf("name" to project.name)) {
             invokeWithBody("sourcefiles") {
@@ -48,14 +55,12 @@ internal fun Task.callJacocoAntReportTask(
 }
 
 internal fun Task.jacocoReport(
-    binaryReportFiles: Iterable<File>,
-    sources: Iterable<File>,
-    outputs: Iterable<File>,
-    classpath: FileCollection,
+    report: Report,
     xmlFile: File?,
-    htmlDir: File?
+    htmlDir: File?,
+    classpath: FileCollection
 ) {
-    callJacocoAntReportTask(binaryReportFiles, sources, outputs, classpath) {
+    callJacocoAntReportTask(report, classpath) {
         if (xmlFile != null) {
             xmlFile.parentFile.mkdirs()
             invokeMethod("xml", mapOf("destfile" to xmlFile))
@@ -69,15 +74,11 @@ internal fun Task.jacocoReport(
 
 
 internal fun Task.jacocoVerification(
-    binaryReportFiles: Iterable<File>,
-    sources: Iterable<File>,
-    outputs: Iterable<File>,
-    classpath: FileCollection,
-    rules: Iterable<VerificationRule>
+    report: Report,
+    rules: Iterable<VerificationRule>,
+    classpath: FileCollection
 ) {
-
-
-    callJacocoAntReportTask(binaryReportFiles, sources, outputs, classpath) {
+    callJacocoAntReportTask(report, classpath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
             rules.forEach {
                 invokeWithBody("rule", mapOf("element" to "BUNDLE")) {
