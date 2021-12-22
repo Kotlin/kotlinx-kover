@@ -271,7 +271,7 @@ class KoverPlugin : Plugin<Project> {
 
         while (parent != null) {
             if (parent.plugins.hasPlugin(KoverPlugin::class.java)) {
-                throw GradleException("Kover plugin already applied: in module '${parent.name}' and child module '${this.name}'")
+                throw GradleException("Kover plugin is applied in both parent module '${parent.name}' and child module '${this.name}'. Kover plugin should be applied only in parent module.")
             }
             parent = this.parent
         }
