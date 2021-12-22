@@ -10,10 +10,10 @@ Minimal supported `Gradle` version: `6.4`.
 ## Table of content
 - [Features](#features)
 - [Quickstart](#quickstart)
-  - [Apply plugin to a single-module build](#apply-plugin-to-single-module-build)
+  - [Apply plugin to a single-module build](#apply-plugin-to-a-single-module-build)
     - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
     - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
-  - [Apply plugin to a multi-module build](#apply-plugin-to-multi-module-build)
+  - [Apply plugin to a multi-module build](#apply-plugin-to-a-multi-module-build)
 - [Configuration](#configuration)
   - [Configuring JVM test task](#configuring-jvm-test-task)
   - [Configuring aggregated reports](#configuring-aggregated-reports)
@@ -95,7 +95,8 @@ apply plugin: 'kover'
 </details>
 
 ### Apply plugin to a multi-module build
-To apply the plugin to all Gradle modules, you just need to apply the plugin only to the root module, as shown [above](#apply-plugin-to-single-module-build).
+To apply the plugin to all Gradle modules, you just need to apply the plugin only to the root module, as shown [above](#apply-plugin-to-a-single-module-build).
+Applying the plugin to submodules if you have already applied it to the root module will cause configuration error.
 
 ## Configuration
 
@@ -191,6 +192,8 @@ android {
 
 
 ### Configuring aggregated reports
+Aggregated report provides report using combined classpath and coverage stats from the module in which plugin is applied and all its submodules.
+
 If you need to change the name of the XML report file or HTML directory, you may configure the corresponding tasks in 
 the module in which the plugin is applied (usually this is the root module).
 
@@ -428,7 +431,7 @@ tasks.koverModuleVerify {
 The plugin, when applied, automatically creates tasks for the module in which it is applied (usually this is the root module):
 - `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in all modules.
 - `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in all modules. 
-- `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.  Executes before `check` task if `generateReportOnCheck` is `true`.
+- `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.  Executes before `check` task if property `generateReportOnCheck` for `KoverExtension` is `true` ([see](#configuring-entire-plugin)).
 - `koverVerify` - Verifies code coverage metrics of all modules based on specified rules. Always executes before `check` task.
 - `koverCollectModuleReports` - Collects all modules reports into one directory. Default directory is `$buildDir/reports/kover/modules`, names for XML reports and dirs for HTML are modules names. Executing this task does not run `koverXmlReport` or `koverHtmlReport`, it only copies previously created reports if they exist to the output directory.
 
