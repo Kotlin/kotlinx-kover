@@ -13,25 +13,34 @@ internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) 
     override fun run(vararg args: String, checker: RunResult.() -> Unit): ProjectRunnerImpl {
         val argsList = listOf(*args)
 
-        projects.forEach { (slice, project) -> project.runGradle(argsList, slice, checker) }
+        projects.forEach { (slice, project) ->
+            try {
+                project.runGradle(argsList, checker)
+            } catch (e: Throwable) {
+                throw AssertionError("Assertion error occurred in test for project $slice", e)
+            }
+        }
 
         return this
     }
+}
 
-    private fun File.runGradle(args: List<String>, slice: ProjectSlice, checker: RunResult.() -> Unit) {
-        try {
-            val buildResult = GradleRunner.create()
-                .withProjectDir(this)
-                .withPluginClasspath()
-                .addPluginTestRuntimeClasspath()
-                .withArguments(args)
-                .build()
-
-            RunResultImpl(buildResult, slice, this).apply { checkIntellijErrors() }.apply(checker)
-        } catch (e: Throwable) {
-            throw AssertionError("Assertion error occurred in test for project $slice", e)
-        }
+internal class SingleProjectRunnerImpl(private val projectDir: File) : ProjectRunner {
+    override fun run(vararg args: String, checker: RunResult.() -> Unit): SingleProjectRunnerImpl {
+        projectDir.runGradle(listOf(*args), checker)
+        return this
     }
+}
+
+private fun File.runGradle(args: List<String>, checker: RunResult.() -> Unit) {
+    val buildResult = GradleRunner.create()
+        .withProjectDir(this)
+        .withPluginClasspath()
+        .addPluginTestRuntimeClasspath()
+        .withArguments(args)
+        .build()
+
+    RunResultImpl(buildResult, this).apply { checkIntellijErrors() }.apply(checker)
 }
 
 private fun GradleRunner.addPluginTestRuntimeClasspath() = apply {
@@ -45,15 +54,42 @@ private fun GradleRunner.addPluginTestRuntimeClasspath() = apply {
 }
 
 
-private class RunResultImpl(private val result: BuildResult, private val slice: ProjectSlice, private val dir: File) :
-    RunResult {
+private class RunResultImpl(private val result: BuildResult, private val dir: File) : RunResult {
     val buildDir: File = File(dir, "build")
 
-    override val engine: CoverageEngine = slice.engine ?: CoverageEngine.INTELLIJ
-    override val projectType: ProjectType = slice.type
+    private val buildScriptFile: File = buildFile()
+    private val buildScript: String by lazy { buildScriptFile.readText() }
+
+    override val engine: CoverageEngine by lazy {
+        if (buildScript.contains("set(kotlinx.kover.api.CoverageEngine.JACOCO)")) {
+            CoverageEngine.JACOCO
+        } else {
+            CoverageEngine.INTELLIJ
+        }
+    }
+
+    override val projectType: ProjectType by lazy {
+        if (buildScriptFile.name.substringAfterLast(".") == "kts") {
+            if (buildScript.contains("""kotlin("jvm")""")) {
+                ProjectType.KOTLIN_JVM
+            } else if (buildScript.contains("""kotlin("multiplatform")""")) {
+                ProjectType.KOTLIN_MULTIPLATFORM
+            } else {
+                throw IllegalArgumentException("Impossible to determine the type of project")
+            }
+        } else {
+            if (buildScript.contains("""id 'org.jetbrains.kotlin.jvm'""")) {
+                ProjectType.KOTLIN_JVM
+            } else if (buildScript.contains("""id 'org.jetbrains.kotlin.multiplatform'""")) {
+                ProjectType.KOTLIN_MULTIPLATFORM
+            } else {
+                throw IllegalArgumentException("Impossible to determine the type of project")
+            }
+        }
+    }
 
     override fun submodule(name: String, checker: RunResult.() -> Unit) {
-        RunResultImpl(result, slice, File(dir, name)).also(checker)
+        RunResultImpl(result, File(dir, name)).also(checker)
     }
 
     override fun output(checker: String.() -> Unit) {
@@ -73,6 +109,13 @@ private class RunResultImpl(private val result: BuildResult, private val slice: 
     override fun outcome(taskPath: String, checker: TaskOutcome.() -> Unit) {
         result.task(taskPath)?.outcome?.checker()
             ?: throw IllegalArgumentException("Task '$taskPath' not found in build result")
+    }
+
+    private fun buildFile(): File {
+        val file = File(dir, "build.gradle")
+        if (file.exists() && file.isFile) return file
+
+        return File(dir, "build.gradle.kts")
     }
 }
 
