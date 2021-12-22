@@ -10,10 +10,10 @@ Minimal supported `Gradle` version: `6.4`.
 ## Table of content
 - [Features](#features)
 - [Quickstart](#quickstart)
-  - [Apply plugin to single-module build](#apply-plugin-to-single-module-build)
+  - [Apply plugin to a single-module build](#apply-plugin-to-single-module-build)
     - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
     - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
-  - [Apply plugin to multi-module build](#apply-plugin-to-multi-module-build)
+  - [Apply plugin to a multi-module build](#apply-plugin-to-multi-module-build)
 - [Configuration](#configuration)
   - [Configuring JVM test task](#configuring-jvm-test-task)
   - [Configuring aggregated reports](#configuring-aggregated-reports)
@@ -32,7 +32,7 @@ Minimal supported `Gradle` version: `6.4`.
 * Customizable filters for instrumented classes
 
 ## Quickstart
-### Apply plugin to single-module build
+### Apply plugin to a single-module build
 #### Applying plugins with the plugins DSL
 In top level build file
 
@@ -94,8 +94,8 @@ apply plugin: 'kover'
 ```
 </details>
 
-### Apply plugin to multi-module build
-To apply the plugin to all modules, you just need to apply the plugin only to the root module, as shown [above](#apply-plugin-to-single-module-build).
+### Apply plugin to a multi-module build
+To apply the plugin to all Gradle modules, you just need to apply the plugin only to the root module, as shown [above](#apply-plugin-to-single-module-build).
 
 ## Configuration
 
