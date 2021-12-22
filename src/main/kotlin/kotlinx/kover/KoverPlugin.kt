@@ -237,7 +237,7 @@ class KoverPlugin : Plugin<Project> {
 
     private fun Project.createKoverExtension(): KoverExtension {
         val extension = extensions.create(ROOT_EXTENSION_NAME, KoverExtension::class.java, objects)
-        extension.isEnabled = true
+        extension.isDisabled = false
         extension.coverageEngine.set(CoverageEngine.INTELLIJ)
         extension.intellijEngineVersion.set(defaultIntellijVersion.toString())
         extension.jacocoEngineVersion.set(defaultJacocoVersion)
@@ -251,7 +251,7 @@ class KoverPlugin : Plugin<Project> {
     ) {
         val taskExtension = extensions.create(TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
 
-        taskExtension.isEnabled = true
+        taskExtension.isDisabled = false
         taskExtension.binaryReportFile.set(this.project.provider {
             val koverExtension = providers.koverExtension.get()
             val suffix = if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) ".ic" else ".exec"
@@ -311,8 +311,8 @@ private class CoverageArgumentProvider(
         val koverExtensionValue = koverExtension.get()
         val taskExtensionValue = taskExtension.get()
 
-        if (!taskExtensionValue.isEnabled
-            || !koverExtensionValue.isEnabled
+        if (taskExtensionValue.isDisabled
+            || koverExtensionValue.isDisabled
             || koverExtensionValue.disabledModules.contains(task.project.name)
         ) {
             return mutableListOf()
