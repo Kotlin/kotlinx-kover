@@ -63,4 +63,39 @@ internal class MultiModulesTest : BaseGradleScriptTest() {
                 }
             }
     }
+
+    @Test
+    fun testDisableModule() {
+        builder("Testing the generation of module reports")
+            .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
+            .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
+            .sources("multimodule-user")
+            .submodule(SUBMODULE_NAME) {
+                sources("multimodule-common")
+            }
+            .dependency(
+                "implementation(project(\":$SUBMODULE_NAME\"))",
+                "implementation project(':$SUBMODULE_NAME')"
+            )
+            .configKover { disabledModules += SUBMODULE_NAME }
+            .build()
+            .run("build", "koverModuleReport") {
+                checkDefaultBinaryReport()
+                checkDefaultReports()
+                checkDefaultModuleReports()
+                xml(defaultXmlReport()) {
+                    assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
+
+                    // classes from disabled module should not be included in the aggregated report
+                    assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
+                    assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
+                }
+
+                submodule(SUBMODULE_NAME) {
+                    checkDefaultBinaryReport(false)
+                    checkDefaultReports(false)
+                    checkDefaultModuleReports(false)
+                }
+            }
+    }
 }

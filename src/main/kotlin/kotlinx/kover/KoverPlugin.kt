@@ -166,21 +166,21 @@ class KoverPlugin : Plugin<Project> {
         providers: ProjectProviders,
         block: (T) -> Unit
     ): T {
-        return tasks.create(taskName, type.java) {
-            it.group = VERIFICATION_GROUP
+        return tasks.create(taskName, type.java) { task ->
+            task.group = VERIFICATION_GROUP
 
             providers.modules.forEach { (moduleName, m) ->
-                it.binaryReportFiles.put(moduleName, NestedFiles(it.project.objects, m.reports))
-                it.smapFiles.put(moduleName, NestedFiles(it.project.objects, m.smap))
-                it.srcDirs.put(moduleName, NestedFiles(it.project.objects, m.sources))
-                it.outputDirs.put(moduleName, NestedFiles(it.project.objects, m.output))
+                task.binaryReportFiles.put(moduleName, NestedFiles(task.project.objects, m.reports))
+                task.smapFiles.put(moduleName, NestedFiles(task.project.objects, m.smap))
+                task.srcDirs.put(moduleName, NestedFiles(task.project.objects, m.sources))
+                task.outputDirs.put(moduleName, NestedFiles(task.project.objects, m.output))
             }
 
-            it.coverageEngine.set(providers.engine)
-            it.classpath.set(providers.classpath)
-            it.dependsOn(providers.allModules.tests)
+            task.coverageEngine.set(providers.engine)
+            task.classpath.set(providers.classpath)
+            task.dependsOn(providers.allModules.tests)
 
-            block(it)
+            block(task)
         }
     }
 
@@ -215,20 +215,23 @@ class KoverPlugin : Plugin<Project> {
         moduleProviders: ModuleProviders,
         block: (T) -> Unit
     ): T {
-        return tasks.create(taskName, type.java) {
-            it.group = VERIFICATION_GROUP
+        return tasks.create(taskName, type.java) { task ->
+            task.group = VERIFICATION_GROUP
 
-            it.coverageEngine.set(providers.engine)
-            it.classpath.set(providers.classpath)
-            it.srcDirs.set(moduleProviders.sources)
-            it.outputDirs.set(moduleProviders.output)
+            task.coverageEngine.set(providers.engine)
+            task.classpath.set(providers.classpath)
+            task.srcDirs.set(moduleProviders.sources)
+            task.outputDirs.set(moduleProviders.output)
 
             // it is necessary to read all binary reports because module's classes can be invoked in another module
-            it.binaryReportFiles.set(providers.allModules.reports)
-            it.smapFiles.set(providers.allModules.smap)
-            it.dependsOn(providers.allModules.tests)
+            task.binaryReportFiles.set(providers.allModules.reports)
+            task.smapFiles.set(providers.allModules.smap)
+            task.dependsOn(providers.allModules.tests)
 
-            block(it)
+            task.onlyIf { !moduleProviders.disabled.get() }
+            task.onlyIf { !task.binaryReportFiles.get().isEmpty }
+
+            block(task)
         }
     }
 
@@ -299,7 +302,10 @@ private class CoverageArgumentProvider(
         val koverExtensionValue = koverExtension.get()
         val taskExtensionValue = taskExtension.get()
 
-        if (!taskExtensionValue.isEnabled || !koverExtensionValue.isEnabled) {
+        if (!taskExtensionValue.isEnabled
+            || !koverExtensionValue.isEnabled
+            || koverExtensionValue.disabledModules.contains(task.project.name)
+        ) {
             return mutableListOf()
         }
 
