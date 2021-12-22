@@ -17,3 +17,8 @@ internal fun createAdapters(): List<CompilationPluginAdapter> {
         KotlinAndroidPluginAdapter()
     )
 }
+
+val Project.androidPluginIsApplied: Boolean
+    get() {
+        return plugins.findPlugin("android") != null || plugins.findPlugin("kotlin-android") != null
+    }

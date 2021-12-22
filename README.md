@@ -304,6 +304,7 @@ kover {
     jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
     disabledModules = setOf()               // setOf("module-name") to disable coverage for module with name `module-name`
+    instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
 }
 ```
 </details>
@@ -319,6 +320,7 @@ kover {
     jacocoEngineVersion.set('0.8.7')        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
     disabledModules = []                    // ["module-name"] to disable coverage for module with name `module-name`
+    instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
 }
 ```
 </details>
