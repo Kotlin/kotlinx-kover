@@ -42,7 +42,7 @@ open class KoverHtmlReportTask : KoverAggregateTask() {
 }
 
 @CacheableTask
-open class KoverHtmlModuleReportTask : KoverModuleTask() {
+open class KoverHtmlProjectReportTask : KoverProjectTask() {
     /**
      * Specifies directory path of generated HTML report.
      */

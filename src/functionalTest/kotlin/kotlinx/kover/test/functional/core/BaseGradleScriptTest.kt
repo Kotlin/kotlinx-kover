@@ -9,11 +9,11 @@ internal open class BaseGradleScriptTest {
     @JvmField
     internal val rootFolder: TemporaryFolder = TemporaryFolder()
 
-    fun builder(description: String): ProjectBuilder {
+    fun builder(description: String): TestCaseBuilder {
         return createBuilder(rootFolder.root, description)
     }
 
-    fun internalProject(name: String): ProjectRunner {
-        return loadInternalProject(name, rootFolder.root)
+    fun internalSample(name: String): GradleRunner {
+        return createInternalSample(name, rootFolder.root)
     }
 }

@@ -7,7 +7,7 @@
 package kotlinx.kover.tasks
 
 import kotlinx.kover.api.*
-import kotlinx.kover.api.KoverNames.XML_MODULE_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.XML_PROJECT_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
 import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.intellij.*
@@ -61,7 +61,7 @@ open class KoverVerificationTask : KoverAggregateTask() {
 
 }
 
-open class KoverModuleVerificationTask : KoverModuleTask() {
+open class KoverProjectVerificationTask : KoverProjectTask() {
     private val rulesInternal: MutableList<VerificationRule> = mutableListOf()
 
     /**
@@ -83,9 +83,9 @@ open class KoverModuleVerificationTask : KoverModuleTask() {
     fun verify() {
         verify(report(), coverageEngine.get(), rulesInternal, classpath.get()) {
             val xmlReport =
-                this.project.tasks.withType(KoverXmlModuleReportTask::class.java)
-                    .findByName(XML_MODULE_REPORT_TASK_NAME)
-                    ?: throw GradleException("Kover: task '$XML_MODULE_REPORT_TASK_NAME' does not exist but it is required for verification")
+                this.project.tasks.withType(KoverXmlProjectReportTask::class.java)
+                    .findByName(XML_PROJECT_REPORT_TASK_NAME)
+                    ?: throw GradleException("Kover: task '$XML_PROJECT_REPORT_TASK_NAME' does not exist but it is required for verification")
 
             var xmlFile = xmlReport.xmlReportFile.get().asFile
             if (!xmlFile.exists()) {

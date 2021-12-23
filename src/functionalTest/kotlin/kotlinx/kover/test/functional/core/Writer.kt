@@ -8,31 +8,31 @@ private const val BUILD_SCRIPTS_PATH = "$TEMPLATES_PATH/scripts/buildscripts"
 private const val SETTINGS_PATH = "$TEMPLATES_PATH/scripts/settings"
 private const val SOURCES_PATH = "$TEMPLATES_PATH/sources"
 
-internal fun ProjectBuilderState.createProject(rootDir: File, slice: ProjectSlice): File {
+internal fun CommonBuilderState.createProject(rootDir: File, slice: ProjectSlice): File {
     val projectDir = File(rootDir, slice.encodedString()).also { it.mkdirs() }
 
     val extension = slice.scriptExtension
 
     val buildScript = loadScriptTemplate(true, slice)
         .processRootBuildScript(this, slice)
-        .processModuleBuildScript(rootModule, slice)
+        .processProjectBuildScript(rootProject, slice)
 
     File(projectDir, "build.$extension").writeText(buildScript)
     File(projectDir, "settings.$extension").writeText(buildSettings(slice))
 
-    rootModule.writeSources(projectDir, slice)
+    rootProject.writeSources(projectDir, slice)
 
-    submodules.forEach { (name, state) -> state.writeSubmodule(File(projectDir, name), slice) }
+    subprojects.forEach { (name, state) -> state.writeSubproject(File(projectDir, name), slice) }
 
     return projectDir
 }
 
-private fun ModuleBuilderState.writeSubmodule(directory: File, slice: ProjectSlice) {
+private fun ProjectBuilderState.writeSubproject(directory: File, slice: ProjectSlice) {
     directory.mkdirs()
 
     val extension = slice.scriptExtension
 
-    val buildScript = loadScriptTemplate(false, slice).processModuleBuildScript(this, slice)
+    val buildScript = loadScriptTemplate(false, slice).processProjectBuildScript(this, slice)
 
     File(directory, "build.$extension").writeText(buildScript)
 
@@ -61,12 +61,12 @@ private val ProjectSlice.testPath: String
     }
 
 
-private fun String.processRootBuildScript(state: ProjectBuilderState, slice: ProjectSlice): String {
+private fun String.processRootBuildScript(state: CommonBuilderState, slice: ProjectSlice): String {
     return replace("//PLUGIN_VERSION", state.pluginVersion!!)
         .replace("//KOVER", state.buildRootExtension(slice))
 }
 
-private fun String.processModuleBuildScript(state: ModuleBuilderState, slice: ProjectSlice): String {
+private fun String.processProjectBuildScript(state: ProjectBuilderState, slice: ProjectSlice): String {
     return replace("//REPOSITORIES", "")
         .replace("//DEPENDENCIES", state.buildDependencies(slice))
         .replace("//SCRIPTS", state.buildScripts(slice))
@@ -75,7 +75,7 @@ private fun String.processModuleBuildScript(state: ModuleBuilderState, slice: Pr
 }
 
 
-private fun ModuleBuilderState.writeSources(projectDir: File, slice: ProjectSlice) {
+private fun ProjectBuilderState.writeSources(projectDir: File, slice: ProjectSlice) {
     fun File.processDir(result: MutableMap<String, String>, targetRootPath: String, relativePath: String = "") {
         listFiles()?.forEach { file ->
             val filePath = "$relativePath/${file.name}"
@@ -108,15 +108,15 @@ private fun ProjectSlice.scriptPath(): String {
     return "$BUILD_SCRIPTS_PATH/$languageString/$typeString"
 }
 
-private fun buildSubmodulesIncludes(submodules: Set<String>): String {
-    if (submodules.isEmpty()) return ""
+private fun buildSubprojectsIncludes(subprojects: Set<String>): String {
+    if (subprojects.isEmpty()) return ""
 
-    return submodules.joinToString("\n", "\n", "\n") {
+    return subprojects.joinToString("\n", "\n", "\n") {
         """include("$it")"""
     }
 }
 
-private fun ProjectBuilderState.buildExtraSettings(): String {
+private fun CommonBuilderState.buildExtraSettings(): String {
     return if (localCache) {
         """
 buildCache {
@@ -130,7 +130,7 @@ buildCache {
     }
 }
 
-private fun ProjectBuilderState.buildRootExtension(slice: ProjectSlice): String {
+private fun CommonBuilderState.buildRootExtension(slice: ProjectSlice): String {
     if (slice.engine == null && koverConfig.isDefault) {
         return ""
     }
@@ -157,11 +157,11 @@ private fun ProjectBuilderState.buildRootExtension(slice: ProjectSlice): String 
         }
     }
 
-    if (koverConfig.disabledModules.isNotEmpty()) {
+    if (koverConfig.disabledProjects.isNotEmpty()) {
         val prefix = if (slice.language == GradleScriptLanguage.KOTLIN) "setOf(" else "["
         val postfix = if (slice.language == GradleScriptLanguage.KOTLIN) ")" else "]"
-        val value = koverConfig.disabledModules.joinToString(prefix = prefix, postfix = postfix) { "\"$it\"" }
-        builder.appendLine("    disabledModules = $value")
+        val value = koverConfig.disabledProjects.joinToString(prefix = prefix, postfix = postfix) { "\"$it\"" }
+        builder.appendLine("    disabledProjects = $value")
     }
 
     builder.appendLine("}")
@@ -169,7 +169,7 @@ private fun ProjectBuilderState.buildRootExtension(slice: ProjectSlice): String 
     return builder.toString()
 }
 
-private fun ModuleBuilderState.buildTestTask(slice: ProjectSlice): String {
+private fun ProjectBuilderState.buildTestTask(slice: ProjectSlice): String {
     if (testScripts.isEmpty()) {
         return ""
     }
@@ -180,17 +180,17 @@ private fun ModuleBuilderState.buildTestTask(slice: ProjectSlice): String {
 }
 
 @Suppress("UNUSED_PARAMETER")
-private fun ModuleBuilderState.buildVerifications(slice: ProjectSlice): String {
+private fun ProjectBuilderState.buildVerifications(slice: ProjectSlice): String {
     return ""
 }
 
-private fun ProjectBuilderState.buildSettings(slice: ProjectSlice): String {
+private fun CommonBuilderState.buildSettings(slice: ProjectSlice): String {
     return loadSettingsTemplate(slice)
-        .replace("//SUBMODULES", buildSubmodulesIncludes(submodules.keys))
+        .replace("//SUBPROJECTS", buildSubprojectsIncludes(subprojects.keys))
         .replace("//EXTRA_SETTINGS", buildExtraSettings())
 }
 
-private fun ModuleBuilderState.buildScripts(slice: ProjectSlice): String {
+private fun ProjectBuilderState.buildScripts(slice: ProjectSlice): String {
     if (scripts.isEmpty()) {
         return ""
     }
@@ -198,7 +198,7 @@ private fun ModuleBuilderState.buildScripts(slice: ProjectSlice): String {
     return configs.joinToString("\n", "\n", "\n")
 }
 
-private fun ModuleBuilderState.buildDependencies(slice: ProjectSlice): String {
+private fun ProjectBuilderState.buildDependencies(slice: ProjectSlice): String {
     if (dependencies.isEmpty()) {
         return ""
     }
@@ -212,7 +212,7 @@ private fun loadSettingsTemplate(slice: ProjectSlice): String {
 }
 
 private fun loadScriptTemplate(root: Boolean, slice: ProjectSlice): String {
-    val filename = if (root) "root" else "submodule"
+    val filename = if (root) "root" else "subproject"
     return File("${slice.scriptPath()}/$filename").readText()
 }
 

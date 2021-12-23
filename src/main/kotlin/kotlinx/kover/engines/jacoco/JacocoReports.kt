@@ -33,9 +33,9 @@ private fun Task.callJacocoAntReportTask(
 
     val sources: MutableList<File> = mutableListOf()
     val outputs: MutableList<File> = mutableListOf()
-    report.modules.forEach { module ->
-        sources.addAll(module.sources)
-        outputs.addAll(module.outputs)
+    report.projects.forEach { projectInfo ->
+        sources.addAll(projectInfo.sources)
+        outputs.addAll(projectInfo.outputs)
     }
 
     builder.invokeWithBody("jacocoReport") {

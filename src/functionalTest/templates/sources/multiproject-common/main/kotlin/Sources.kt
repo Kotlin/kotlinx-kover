@@ -2,11 +2,11 @@ package org.jetbrains
 
 class CommonClass {
     fun callFromThisModule() {
-        println("Call from this module")
+        println("Call from this project")
     }
 
     fun callFromAnotherModule() {
-        println("Call from another module")
+        println("Call from another project")
     }
 }
 

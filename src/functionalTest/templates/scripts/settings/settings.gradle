@@ -6,4 +6,4 @@ pluginManagement {
     }
 }
 rootProject.name = 'plugin-test-project-groovy'
-//SUBMODULES//EXTRA_SETTINGS
+//SUBPROJECTS//EXTRA_SETTINGS

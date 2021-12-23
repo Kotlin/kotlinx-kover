@@ -7,21 +7,21 @@ import kotlinx.kover.test.functional.core.BaseGradleScriptTest
 import kotlinx.kover.test.functional.core.ProjectType
 import kotlin.test.*
 
-private const val SUBMODULE_NAME = "common"
+internal class MultiProjectTests : BaseGradleScriptTest() {
+    private val subprojectName = "common"
 
-internal class MultiModulesTest : BaseGradleScriptTest() {
     @Test
     fun testAggregateReports() {
         builder("Testing the generation of aggregating reports")
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
-            .sources("multimodule-user")
-            .submodule(SUBMODULE_NAME) {
-                sources("multimodule-common")
+            .sources("multiproject-user")
+            .subproject(subprojectName) {
+                sources("multiproject-common")
             }
             .dependency(
-                "implementation(project(\":$SUBMODULE_NAME\"))",
-                "implementation project(':$SUBMODULE_NAME')"
+                "implementation(project(\":$subprojectName\"))",
+                "implementation project(':$subprojectName')"
             )
             .build()
             .run("build") {
@@ -34,28 +34,28 @@ internal class MultiModulesTest : BaseGradleScriptTest() {
     }
 
     @Test
-    fun testModuleReports() {
-        builder("Testing the generation of module reports")
+    fun testProjectsReports() {
+        builder("Testing the generation of project reports")
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
-            .sources("multimodule-user")
-            .submodule(SUBMODULE_NAME) {
-                sources("multimodule-common")
+            .sources("multiproject-user")
+            .subproject(subprojectName) {
+                sources("multiproject-common")
             }
             .dependency(
-                "implementation(project(\":$SUBMODULE_NAME\"))",
-                "implementation project(':$SUBMODULE_NAME')"
+                "implementation(project(\":$subprojectName\"))",
+                "implementation project(':$subprojectName')"
             )
             .build()
-            .run("koverModuleReport") {
-                xml(defaultXmlModuleReport()) {
+            .run("koverProjectReport") {
+                xml(defaultXmlProjectReport()) {
                     assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
                     assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
                     assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
                 }
 
-                submodule(SUBMODULE_NAME) {
-                    xml(defaultXmlModuleReport()) {
+                subproject(subprojectName) {
+                    xml(defaultXmlProjectReport()) {
                         assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
                         assertCounterFullyCovered(classCounter("org.jetbrains.CommonInternalClass"))
                         assertCounterAbsent(classCounter("org.jetbrains.UserClass"))
@@ -65,36 +65,36 @@ internal class MultiModulesTest : BaseGradleScriptTest() {
     }
 
     @Test
-    fun testDisableModule() {
-        builder("Testing the generation of module reports")
+    fun testDisableProject() {
+        builder("Testing the generation of projects reports")
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
-            .sources("multimodule-user")
-            .submodule(SUBMODULE_NAME) {
-                sources("multimodule-common")
+            .sources("multiproject-user")
+            .subproject(subprojectName) {
+                sources("multiproject-common")
             }
             .dependency(
-                "implementation(project(\":$SUBMODULE_NAME\"))",
-                "implementation project(':$SUBMODULE_NAME')"
+                "implementation(project(\":$subprojectName\"))",
+                "implementation project(':$subprojectName')"
             )
-            .configKover { disabledModules += SUBMODULE_NAME }
+            .configKover { disabledProjects += subprojectName }
             .build()
-            .run("build", "koverModuleReport") {
+            .run("build", "koverProjectReport") {
                 checkDefaultBinaryReport()
                 checkDefaultReports()
-                checkDefaultModuleReports()
+                checkDefaultProjectReports()
                 xml(defaultXmlReport()) {
                     assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
 
-                    // classes from disabled module should not be included in the aggregated report
+                    // classes from disabled project should not be included in the aggregated report
                     assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
                     assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
                 }
 
-                submodule(SUBMODULE_NAME) {
+                subproject(subprojectName) {
                     checkDefaultBinaryReport(false)
                     checkDefaultReports(false)
-                    checkDefaultModuleReports(false)
+                    checkDefaultProjectReports(false)
                 }
             }
     }

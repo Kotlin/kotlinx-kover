@@ -6,7 +6,7 @@ import org.gradle.api.tasks.*
 
 open class KoverCollectingModulesTask : DefaultTask() {
     /**
-     * Specifies directory path for collecting of all XML and HTML reports from all modules.
+     * Specifies directory path for collecting of all XML and HTML reports from all projects.
      */
     @get:OutputDirectory
     val outputDir: DirectoryProperty = project.objects.directoryProperty()

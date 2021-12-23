@@ -35,29 +35,29 @@ internal class ReportsCachingTests : BaseGradleScriptTest() {
     }
 
     @Test
-    fun testModuleCaching() {
-        builder("Test caching module reports")
+    fun testProjectReportCaching() {
+        builder("Test caching projects reports")
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("simple")
             .withLocalCache()
             .build()
-            .run("koverModuleReport", "--build-cache") {
+            .run("koverProjectReport", "--build-cache") {
                 checkDefaultBinaryReport()
-                checkDefaultModuleReports()
+                checkDefaultProjectReports()
                 outcome(":test") { assertEquals(TaskOutcome.SUCCESS, this) }
-                outcome(":koverXmlModuleReport") { assertEquals(TaskOutcome.SUCCESS, this) }
-                outcome(":koverHtmlModuleReport") { assertEquals(TaskOutcome.SUCCESS, this) }
+                outcome(":koverXmlProjectReport") { assertEquals(TaskOutcome.SUCCESS, this) }
+                outcome(":koverHtmlProjectReport") { assertEquals(TaskOutcome.SUCCESS, this) }
             }
             .run("clean", "--build-cache") {
                 checkDefaultBinaryReport(false)
-                checkDefaultModuleReports(false)
+                checkDefaultProjectReports(false)
             }
-            .run("koverModuleReport", "--build-cache") {
+            .run("koverProjectReport", "--build-cache") {
                 checkDefaultBinaryReport()
-                checkDefaultModuleReports()
+                checkDefaultProjectReports()
                 outcome(":test") { assertEquals(TaskOutcome.FROM_CACHE, this) }
-                outcome(":koverXmlModuleReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
-                outcome(":koverHtmlModuleReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
+                outcome(":koverXmlProjectReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
+                outcome(":koverHtmlProjectReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
             }
     }
 

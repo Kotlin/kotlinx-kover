@@ -3,22 +3,22 @@ package kotlinx.kover.test.functional.core
 import kotlinx.kover.api.*
 import java.io.*
 
-internal fun createBuilder(rootDir: File, description: String): ProjectBuilder {
-    return ProjectBuilderImpl(rootDir, description)
+internal fun createBuilder(rootDir: File, description: String): TestCaseBuilder {
+    return TestCaseBuilderImpl(rootDir, description)
 }
 
-internal class ProjectBuilderState(val description: String) {
+internal class CommonBuilderState(val description: String) {
     var pluginVersion: String? = null
     val languages: MutableSet<GradleScriptLanguage> = mutableSetOf()
     val types: MutableSet<ProjectType> = mutableSetOf()
     val engines: MutableSet<CoverageEngine?> = mutableSetOf()
     val koverConfig: KoverRootConfig = KoverRootConfig()
-    val rootModule: ModuleBuilderState = ModuleBuilderState()
-    val submodules: MutableMap<String, ModuleBuilderState> = mutableMapOf()
+    val rootProject: ProjectBuilderState = ProjectBuilderState()
+    val subprojects: MutableMap<String, ProjectBuilderState> = mutableMapOf()
     var localCache: Boolean = false
 }
 
-internal class ModuleBuilderState {
+internal class ProjectBuilderState {
     val sourceTemplates: MutableList<String> = mutableListOf()
     val scripts: MutableList<GradleScript> = mutableListOf()
     val testScripts: MutableList<GradleScript> = mutableListOf()
@@ -30,11 +30,11 @@ internal class ModuleBuilderState {
 
 internal data class GradleScript(val kotlin: String, val groovy: String)
 
-private class ProjectBuilderImpl(
+private class TestCaseBuilderImpl(
     val rootDir: File,
     description: String,
-    private val state: ProjectBuilderState = ProjectBuilderState(description)
-) : ModuleBuilderImpl<ProjectBuilder>(state.rootModule), ProjectBuilder {
+    private val state: CommonBuilderState = CommonBuilderState(description)
+) : ProjectBuilderImpl<TestCaseBuilder>(state.rootProject), TestCaseBuilder {
 
     override fun languages(vararg languages: GradleScriptLanguage) = also {
         state.languages += languages
@@ -48,7 +48,7 @@ private class ProjectBuilderImpl(
         state.types += types
     }
 
-    override fun withLocalCache(): ProjectBuilder = also {
+    override fun withLocalCache(): TestCaseBuilder = also {
         state.localCache = true
     }
 
@@ -56,13 +56,13 @@ private class ProjectBuilderImpl(
         state.koverConfig.config()
     }
 
-    override fun submodule(name: String, builder: ModuleBuilder<*>.() -> Unit) = also {
-        val moduleState = state.submodules.computeIfAbsent(name) { ModuleBuilderState() }
+    override fun subproject(name: String, builder: ProjectBuilder<*>.() -> Unit) = also {
+        val projectState = state.subprojects.computeIfAbsent(name) { ProjectBuilderState() }
         @Suppress("UPPER_BOUND_VIOLATED_WARNING")
-        ModuleBuilderImpl<ModuleBuilderImpl<*>>(moduleState).builder()
+        ProjectBuilderImpl<ProjectBuilderImpl<*>>(projectState).builder()
     }
 
-    override fun build(): ProjectRunner {
+    override fun build(): GradleRunner {
         if (state.languages.isEmpty()) {
             state.languages += GradleScriptLanguage.KOTLIN
         }
@@ -87,52 +87,52 @@ private class ProjectBuilderImpl(
             }
         }
 
-        return ProjectRunnerImpl(projects)
+        return GradleRunnerImpl(projects)
     }
 
 }
 
 
 @Suppress("UNCHECKED_CAST")
-private open class ModuleBuilderImpl<B : ModuleBuilder<B>>(val moduleState: ModuleBuilderState) : ModuleBuilder<B> {
+private open class ProjectBuilderImpl<B : ProjectBuilder<B>>(val projectState: ProjectBuilderState) : ProjectBuilder<B> {
 
     override fun verification(rules: Iterable<VerificationRule>): B {
-        moduleState.rules += rules
+        projectState.rules += rules
         return this as B
     }
 
     override fun configTest(script: String): B {
-        moduleState.testScripts += GradleScript(script, script)
+        projectState.testScripts += GradleScript(script, script)
         return this as B
     }
 
     override fun configTest(kotlin: String, groovy: String): B {
-        moduleState.testScripts += GradleScript(kotlin, groovy)
+        projectState.testScripts += GradleScript(kotlin, groovy)
         return this as B
     }
 
     override fun config(script: String): B {
-        moduleState.scripts += GradleScript(script, script)
+        projectState.scripts += GradleScript(script, script)
         return this as B
     }
 
     override fun config(kotlin: String, groovy: String): B {
-        moduleState.testScripts += GradleScript(kotlin, groovy)
+        projectState.testScripts += GradleScript(kotlin, groovy)
         return this as B
     }
 
     override fun dependency(script: String): B {
-        moduleState.dependencies += GradleScript(script, script)
+        projectState.dependencies += GradleScript(script, script)
         return this as B
     }
 
     override fun dependency(kotlin: String, groovy: String): B {
-        moduleState.dependencies += GradleScript(kotlin, groovy)
+        projectState.dependencies += GradleScript(kotlin, groovy)
         return this as B
     }
 
     override fun sources(template: String): B {
-        moduleState.sourceTemplates += template
+        projectState.sourceTemplates += template
         return this as B
     }
 }

@@ -8,22 +8,22 @@ import kotlinx.kover.adapters.*
 import kotlinx.kover.api.*
 import kotlinx.kover.api.KoverPaths.HTML_AGG_REPORT_DEFAULT_PATH
 import kotlinx.kover.api.KoverNames.CHECK_TASK_NAME
-import kotlinx.kover.api.KoverNames.COLLECT_MODULE_REPORTS_TASK_NAME
+import kotlinx.kover.api.KoverNames.COLLECT_PROJECT_REPORTS_TASK_NAME
 import kotlinx.kover.api.KoverNames.HTML_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.HTML_MODULE_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.MODULE_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.MODULE_VERIFY_TASK_NAME
+import kotlinx.kover.api.KoverNames.HTML_PROJECT_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.PROJECT_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.PROJECT_VERIFY_TASK_NAME
 import kotlinx.kover.api.KoverNames.REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.XML_MODULE_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.XML_PROJECT_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.ROOT_EXTENSION_NAME
 import kotlinx.kover.api.KoverNames.TASK_EXTENSION_NAME
 import kotlinx.kover.api.KoverNames.VERIFICATION_GROUP
 import kotlinx.kover.api.KoverNames.VERIFY_TASK_NAME
 import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverPaths.ALL_MODULES_REPORTS_DEFAULT_PATH
-import kotlinx.kover.api.KoverPaths.HTML_MODULE_REPORT_DEFAULT_PATH
+import kotlinx.kover.api.KoverPaths.ALL_PROJECTS_REPORTS_DEFAULT_PATH
+import kotlinx.kover.api.KoverPaths.HTML_PROJECT_REPORT_DEFAULT_PATH
 import kotlinx.kover.api.KoverPaths.XML_AGG_REPORT_DEFAULT_PATH
-import kotlinx.kover.api.KoverPaths.XML_MODULE_REPORT_DEFAULT_PATH
+import kotlinx.kover.api.KoverPaths.XML_PROJECT_REPORT_DEFAULT_PATH
 import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.CoverageAgent
 import kotlinx.kover.engines.intellij.*
@@ -48,54 +48,54 @@ class KoverPlugin : Plugin<Project> {
         val providers = target.createProviders(agents)
 
         target.allprojects {
-            it.applyToModule(providers, agents)
+            it.applyToProject(providers, agents)
         }
         target.createCollectingTask()
 
         target.createAggregateTasks(providers)
     }
 
-    private fun Project.applyToModule(providers: ProjectProviders, agents: Map<CoverageEngine, CoverageAgent>) {
-        val moduleProviders =
-            providers.modules[name] ?: throw GradleException("Kover: Providers for module '$name' was not found")
+    private fun Project.applyToProject(providers: AllProviders, agents: Map<CoverageEngine, CoverageAgent>) {
+        val projectProviders =
+            providers.projects[name] ?: throw GradleException("Kover: Providers for project '$name' was not found")
 
-        val xmlReportTask = createKoverModuleTask(
-            XML_MODULE_REPORT_TASK_NAME,
-            KoverXmlModuleReportTask::class,
+        val xmlReportTask = createKoverProjectTask(
+            XML_PROJECT_REPORT_TASK_NAME,
+            KoverXmlProjectReportTask::class,
             providers,
-            moduleProviders
+            projectProviders
         ) {
-            it.xmlReportFile.set(layout.buildDirectory.file(XML_MODULE_REPORT_DEFAULT_PATH))
-            it.description = "Generates code coverage XML report for all enabled test tasks in one module."
+            it.xmlReportFile.set(layout.buildDirectory.file(XML_PROJECT_REPORT_DEFAULT_PATH))
+            it.description = "Generates code coverage XML report for all enabled test tasks in one project."
         }
 
-        val htmlReportTask = createKoverModuleTask(
-            HTML_MODULE_REPORT_TASK_NAME,
-            KoverHtmlModuleReportTask::class,
+        val htmlReportTask = createKoverProjectTask(
+            HTML_PROJECT_REPORT_TASK_NAME,
+            KoverHtmlProjectReportTask::class,
             providers,
-            moduleProviders
+            projectProviders
         ) {
-            it.htmlReportDir.set(it.project.layout.buildDirectory.dir(HTML_MODULE_REPORT_DEFAULT_PATH))
-            it.description = "Generates code coverage HTML report for all enabled test tasks in one module."
+            it.htmlReportDir.set(it.project.layout.buildDirectory.dir(HTML_PROJECT_REPORT_DEFAULT_PATH))
+            it.description = "Generates code coverage HTML report for all enabled test tasks in one project."
         }
 
-        val verifyTask = createKoverModuleTask(
-            MODULE_VERIFY_TASK_NAME,
-            KoverModuleVerificationTask::class,
+        val verifyTask = createKoverProjectTask(
+            PROJECT_VERIFY_TASK_NAME,
+            KoverProjectVerificationTask::class,
             providers,
-            moduleProviders
+            projectProviders
         ) {
-            it.onlyIf { t -> (t as KoverModuleVerificationTask).rules.isNotEmpty() }
+            it.onlyIf { t -> (t as KoverProjectVerificationTask).rules.isNotEmpty() }
             // kover takes counter values from XML file. Remove after reporter upgrade
             it.mustRunAfter(xmlReportTask)
-            it.description = "Verifies code coverage metrics of one module based on specified rules."
+            it.description = "Verifies code coverage metrics of one project based on specified rules."
         }
 
-        tasks.create(MODULE_REPORT_TASK_NAME) {
+        tasks.create(PROJECT_REPORT_TASK_NAME) {
             it.group = VERIFICATION_GROUP
             it.dependsOn(xmlReportTask)
             it.dependsOn(htmlReportTask)
-            it.description = "Generates code coverage HTML and XML reports for all enabled test tasks in one module."
+            it.description = "Generates code coverage HTML and XML reports for all enabled test tasks in one project."
         }
 
         tasks.configureEach {
@@ -109,14 +109,14 @@ class KoverPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.createAggregateTasks(providers: ProjectProviders) {
+    private fun Project.createAggregateTasks(providers: AllProviders) {
         val xmlReportTask = createKoverAggregateTask(
             XML_REPORT_TASK_NAME,
             KoverXmlReportTask::class,
             providers
         ) {
             it.xmlReportFile.set(layout.buildDirectory.file(XML_AGG_REPORT_DEFAULT_PATH))
-            it.description = "Generates code coverage XML report for all enabled test tasks in all modules."
+            it.description = "Generates code coverage XML report for all enabled test tasks in all projects."
         }
 
         val htmlReportTask = createKoverAggregateTask(
@@ -125,14 +125,14 @@ class KoverPlugin : Plugin<Project> {
             providers
         ) {
             it.htmlReportDir.set(layout.buildDirectory.dir(HTML_AGG_REPORT_DEFAULT_PATH))
-            it.description = "Generates code coverage HTML report for all enabled test tasks in all modules."
+            it.description = "Generates code coverage HTML report for all enabled test tasks in all projects."
         }
 
         val reportTask = tasks.create(REPORT_TASK_NAME) {
             it.group = VERIFICATION_GROUP
             it.dependsOn(xmlReportTask)
             it.dependsOn(htmlReportTask)
-            it.description = "Generates code coverage HTML and XML reports for all enabled test tasks in all modules."
+            it.description = "Generates code coverage HTML and XML reports for all enabled test tasks in all projects."
         }
 
         val verifyTask = createKoverAggregateTask(
@@ -143,7 +143,7 @@ class KoverPlugin : Plugin<Project> {
             it.onlyIf { t -> (t as KoverVerificationTask).rules.isNotEmpty() }
             // kover takes counter values from XML file. Remove after reporter upgrade
             it.mustRunAfter(xmlReportTask)
-            it.description = "Verifies code coverage metrics of all modules based on specified rules."
+            it.description = "Verifies code coverage metrics of all projects based on specified rules."
         }
 
         tasks.configureEach {
@@ -164,40 +164,40 @@ class KoverPlugin : Plugin<Project> {
     private fun <T : KoverAggregateTask> Project.createKoverAggregateTask(
         taskName: String,
         type: KClass<T>,
-        providers: ProjectProviders,
+        providers: AllProviders,
         block: (T) -> Unit
     ): T {
         return tasks.create(taskName, type.java) { task ->
             task.group = VERIFICATION_GROUP
 
-            providers.modules.forEach { (moduleName, m) ->
-                task.binaryReportFiles.put(moduleName, NestedFiles(task.project.objects, m.reports))
-                task.smapFiles.put(moduleName, NestedFiles(task.project.objects, m.smap))
-                task.srcDirs.put(moduleName, NestedFiles(task.project.objects, m.sources))
-                task.outputDirs.put(moduleName, NestedFiles(task.project.objects, m.output))
+            providers.projects.forEach { (projectName, m) ->
+                task.binaryReportFiles.put(projectName, NestedFiles(task.project.objects, m.reports))
+                task.smapFiles.put(projectName, NestedFiles(task.project.objects, m.smap))
+                task.srcDirs.put(projectName, NestedFiles(task.project.objects, m.sources))
+                task.outputDirs.put(projectName, NestedFiles(task.project.objects, m.output))
             }
 
             task.coverageEngine.set(providers.engine)
             task.classpath.set(providers.classpath)
-            task.dependsOn(providers.allModules.tests)
+            task.dependsOn(providers.aggregated.tests)
 
             block(task)
         }
     }
 
     private fun Project.createCollectingTask() {
-        tasks.create(COLLECT_MODULE_REPORTS_TASK_NAME, KoverCollectingModulesTask::class.java) { task ->
+        tasks.create(COLLECT_PROJECT_REPORTS_TASK_NAME, KoverCollectingModulesTask::class.java) { task ->
             task.group = VERIFICATION_GROUP
-            task.description = "Collects all modules reports into one directory."
-            task.outputDir.set(project.layout.buildDirectory.dir(ALL_MODULES_REPORTS_DEFAULT_PATH))
+            task.description = "Collects all projects reports into one directory."
+            task.outputDir.set(project.layout.buildDirectory.dir(ALL_PROJECTS_REPORTS_DEFAULT_PATH))
             // disable UP-TO-DATE check for task: it will be executed every time
             task.outputs.upToDateWhen { false }
 
             allprojects { proj ->
                 val xmlReportTask =
-                    proj.tasks.withType(KoverXmlModuleReportTask::class.java).getByName(XML_MODULE_REPORT_TASK_NAME)
+                    proj.tasks.withType(KoverXmlProjectReportTask::class.java).getByName(XML_PROJECT_REPORT_TASK_NAME)
                 val htmlReportTask =
-                    proj.tasks.withType(KoverHtmlModuleReportTask::class.java).getByName(HTML_MODULE_REPORT_TASK_NAME)
+                    proj.tasks.withType(KoverHtmlProjectReportTask::class.java).getByName(HTML_PROJECT_REPORT_TASK_NAME)
 
                 task.mustRunAfter(xmlReportTask)
                 task.mustRunAfter(htmlReportTask)
@@ -209,11 +209,11 @@ class KoverPlugin : Plugin<Project> {
     }
 
 
-    private fun <T : KoverModuleTask> Project.createKoverModuleTask(
+    private fun <T : KoverProjectTask> Project.createKoverProjectTask(
         taskName: String,
         type: KClass<T>,
-        providers: ProjectProviders,
-        moduleProviders: ModuleProviders,
+        providers: AllProviders,
+        projectProviders: ProjectProviders,
         block: (T) -> Unit
     ): T {
         return tasks.create(taskName, type.java) { task ->
@@ -221,15 +221,15 @@ class KoverPlugin : Plugin<Project> {
 
             task.coverageEngine.set(providers.engine)
             task.classpath.set(providers.classpath)
-            task.srcDirs.set(moduleProviders.sources)
-            task.outputDirs.set(moduleProviders.output)
+            task.srcDirs.set(projectProviders.sources)
+            task.outputDirs.set(projectProviders.output)
 
-            // it is necessary to read all binary reports because module's classes can be invoked in another module
-            task.binaryReportFiles.set(providers.allModules.reports)
-            task.smapFiles.set(providers.allModules.smap)
-            task.dependsOn(providers.allModules.tests)
+            // it is necessary to read all binary reports because project's classes can be invoked in another project
+            task.binaryReportFiles.set(providers.aggregated.reports)
+            task.smapFiles.set(providers.aggregated.smap)
+            task.dependsOn(providers.aggregated.tests)
 
-            task.onlyIf { !moduleProviders.disabled.get() }
+            task.onlyIf { !projectProviders.disabled.get() }
             task.onlyIf { !task.binaryReportFiles.get().isEmpty }
 
             block(task)
@@ -247,7 +247,7 @@ class KoverPlugin : Plugin<Project> {
     }
 
     private fun Test.configTest(
-        providers: ProjectProviders,
+        providers: AllProviders,
         agents: Map<CoverageEngine, CoverageAgent>
     ) {
         val taskExtension = extensions.create(TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
@@ -286,7 +286,7 @@ class KoverPlugin : Plugin<Project> {
 
         while (parent != null) {
             if (parent.plugins.hasPlugin(KoverPlugin::class.java)) {
-                throw GradleException("Kover plugin is applied in both parent module '${parent.name}' and child module '${this.name}'. Kover plugin should be applied only in parent module.")
+                throw GradleException("Kover plugin is applied in both parent project '${parent.name}' and child project '${this.name}'. Kover plugin should be applied only in parent project.")
             }
             parent = this.parent
         }
@@ -325,7 +325,7 @@ private class CoverageArgumentProvider(
 
         if (taskExtensionValue.isDisabled
             || koverExtensionValue.isDisabled
-            || koverExtensionValue.disabledModules.contains(task.project.name)
+            || koverExtensionValue.disabledProjects.contains(task.project.name)
         ) {
             return mutableListOf()
         }

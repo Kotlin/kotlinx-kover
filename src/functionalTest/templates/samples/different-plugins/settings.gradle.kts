@@ -1,3 +1,3 @@
 rootProject.name = "different-plugins"
 
-include(":submodule-multiplatform")
+include(":subproject-multiplatform")
