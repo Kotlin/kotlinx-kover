@@ -106,14 +106,14 @@ private fun Writer.writeReportsJson(
         appendLine("""  "html": "${it.safePath()}",""")
     }
     appendLine("""  "modules": [""")
-    report.modules.forEachIndexed { index, module ->
-        writeModuleReportJson(report.files, module, index == (report.modules.size - 1))
+    report.projects.forEachIndexed { index, aProject ->
+        writeProjectReportJson(report.files, aProject, index == (report.projects.size - 1))
     }
     appendLine("""  ]""")
     appendLine("}")
 }
 
-private fun Writer.writeModuleReportJson(reportFiles: Iterable<ReportFiles>, moduleInfo: ModuleInfo, isLast: Boolean) {
+private fun Writer.writeProjectReportJson(reportFiles: Iterable<ReportFiles>, projectInfo: ProjectInfo, isLast: Boolean) {
     appendLine("""    { "reports": [ """)
 
     appendLine(reportFiles.joinToString(",\n        ", "        ") { f ->
@@ -123,12 +123,12 @@ private fun Writer.writeModuleReportJson(reportFiles: Iterable<ReportFiles>, mod
     appendLine("""      ], """)
     appendLine("""      "output": [""")
     appendLine(
-        moduleInfo.outputs.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+        projectInfo.outputs.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
     appendLine("""      ],""")
     appendLine("""      "sources": [""")
 
     appendLine(
-        moduleInfo.sources.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+        projectInfo.sources.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
     appendLine("""      ]""")
     appendLine("""    }${if (isLast) "" else ","}""")
 }

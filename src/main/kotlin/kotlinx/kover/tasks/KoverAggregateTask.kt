@@ -8,7 +8,6 @@ import kotlinx.kover.api.*
 import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.Report
 import kotlinx.kover.engines.commons.ReportFiles
-import kotlinx.kover.engines.intellij.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.model.*
@@ -47,14 +46,14 @@ open class KoverAggregateTask : DefaultTask() {
         val sourcesMap = srcDirs.get()
         val outputsMap = outputDirs.get()
 
-        val moduleNames = sourcesMap.keys
+        val projectsNames = sourcesMap.keys
 
         val reportFiles: MutableList<ReportFiles> = mutableListOf()
         val sourceFiles: MutableList<File> = mutableListOf()
         val outputFiles: MutableList<File> = mutableListOf()
 
-        // FIXME now all modules joined to one because of incorrect reporter's JSON format
-        moduleNames.map { name ->
+        // FIXME now all projects joined to one because of incorrect reporter's JSON format
+        projectsNames.map { name ->
             val binaries = binariesMap.getValue(name)
 
             reportFiles += if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
@@ -72,7 +71,7 @@ open class KoverAggregateTask : DefaultTask() {
             outputFiles += outputsMap.getValue(name).files.get()
         }
 
-        return Report(reportFiles, listOf(ModuleInfo(sourceFiles, outputFiles)))
+        return Report(reportFiles, listOf(ProjectInfo(sourceFiles, outputFiles)))
     }
 }
 

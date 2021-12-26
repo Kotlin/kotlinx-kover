@@ -1,17 +1,17 @@
 package org.jetbrains.serialuser
 
 import org.jetbrains.CommonClass
-import org.jetbrains.UserClass
+import org.jetbrains.CommonInternalClass
 import kotlin.test.Test
 
 class TestClass {
     @Test
     fun callCommonTest() {
-        CommonClass().callFromAnotherModule()
+        CommonClass().callFromThisProject()
     }
 
     @Test
-    fun callUserTest() {
-        UserClass().function()
+    fun callInternalTest() {
+        CommonInternalClass().function()
     }
 }

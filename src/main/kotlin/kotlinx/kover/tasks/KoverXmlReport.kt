@@ -40,7 +40,7 @@ open class KoverXmlReportTask : KoverAggregateTask() {
 }
 
 @CacheableTask
-open class KoverXmlModuleReportTask : KoverModuleTask() {
+open class KoverXmlProjectReportTask : KoverProjectTask() {
 
     /**
      * Specifies file path of generated XML report file with coverage data.

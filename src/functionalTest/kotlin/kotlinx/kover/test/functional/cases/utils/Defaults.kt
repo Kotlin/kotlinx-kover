@@ -20,7 +20,7 @@ internal fun defaultSmapFile(projectType: ProjectType): String {
 internal fun defaultXmlReport() = "reports/kover/report.xml"
 internal fun defaultHtmlReport() = "reports/kover/html"
 
-internal fun defaultXmlModuleReport() = "reports/kover/module-xml/report.xml"
-internal fun defaultHtmlModuleReport() = "reports/kover/module-html"
+internal fun defaultXmlProjectReport() = "reports/kover/project-xml/report.xml"
+internal fun defaultHtmlProjectReport() = "reports/kover/project-html"
 
 internal fun errorsDirectory() = "kover/errors"

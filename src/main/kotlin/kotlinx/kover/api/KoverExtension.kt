@@ -11,7 +11,7 @@ import org.gradle.api.tasks.*
 open class KoverExtension(objects: ObjectFactory) {
 
     /**
-     * Specifies whether instrumentation is disabled for all test tasks of all modules.
+     * Specifies whether instrumentation is disabled for all test tasks of all projects.
      */
     @get:Input
     public var isDisabled: Boolean = false
@@ -41,10 +41,10 @@ open class KoverExtension(objects: ObjectFactory) {
     val generateReportOnCheck: Property<Boolean> = objects.property(Boolean::class.java)
 
     /**
-     * Specifies the modules to be disabled from instrumentation and reportings.
+     * Specifies the projects to be disabled from instrumentation and reportings.
      */
     @get:Input
-    var disabledModules: Set<String> = emptySet()
+    var disabledProjects: Set<String> = emptySet()
 
     /**
      * Specifies whether the classes from 'android' and 'com.android' packages should be included if Android plugin is applied.

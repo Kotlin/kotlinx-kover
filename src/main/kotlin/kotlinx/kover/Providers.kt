@@ -11,11 +11,11 @@ import org.gradle.api.tasks.testing.*
 import java.io.*
 
 
-internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>): ProjectProviders {
-    val modules: MutableMap<String, ModuleProviders> = mutableMapOf()
+internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>): AllProviders {
+    val projects: MutableMap<String, ProjectProviders> = mutableMapOf()
 
     allprojects {
-        modules[it.name] = ModuleProviders(
+        projects[it.name] = ProjectProviders(
             it.provider { it.files(it.binaryReports(this)) },
             it.provider { it.files(it.smapFiles(this)) },
             it.provider { it.testTasks(this) },
@@ -41,8 +41,8 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
 
     // all sources and all outputs providers are unused, so NOW it can return empty file collection
     val emptyProvider: Provider<FileCollection> = provider { files() }
-    val allModulesProviders =
-        ModuleProviders(
+    val aggregatedProviders =
+        ProjectProviders(
             allReportsProvider,
             allSmapProvider,
             allTestsProvider,
@@ -50,7 +50,7 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
             emptyProvider,
             provider { false })
 
-    return ProjectProviders(modules, allModulesProviders, engineProvider, classpathProvider, extensionProvider)
+    return AllProviders(projects, aggregatedProviders, engineProvider, classpathProvider, extensionProvider)
 }
 
 
@@ -131,20 +131,20 @@ private fun Project.collectDirs(root: Project): Pair<FileCollection, FileCollect
 }
 
 private fun Project.isDisabled(root: Project): Boolean {
-    return root.extensions.getByType(KoverExtension::class.java).disabledModules.contains(name)
+    return root.extensions.getByType(KoverExtension::class.java).disabledProjects.contains(name)
 }
 
 
-internal class ProjectProviders(
-    val modules: Map<String, ModuleProviders>,
-    val allModules: ModuleProviders,
+internal class AllProviders(
+    val projects: Map<String, ProjectProviders>,
+    val aggregated: ProjectProviders,
 
     val engine: Provider<CoverageEngine>,
     val classpath: Provider<FileCollection>,
     val koverExtension: Provider<KoverExtension>
 )
 
-internal class ModuleProviders(
+internal class ProjectProviders(
     val reports: Provider<FileCollection>,
     val smap: Provider<FileCollection>,
     val tests: Provider<List<Test>>,

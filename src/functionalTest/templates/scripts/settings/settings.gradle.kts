@@ -6,4 +6,4 @@ pluginManagement {
     }
 }
 rootProject.name = "plugin-test-project-kotlin"
-//SUBMODULES//EXTRA_SETTINGS
+//SUBPROJECTS//EXTRA_SETTINGS

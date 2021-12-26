@@ -8,9 +8,10 @@ import java.io.*
 import javax.xml.parsers.*
 
 
-internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) : ProjectRunner {
+internal class GradleRunnerImpl(private val projects: Map<ProjectSlice, File>) :
+    GradleRunner {
 
-    override fun run(vararg args: String, checker: RunResult.() -> Unit): ProjectRunnerImpl {
+    override fun run(vararg args: String, checker: RunResult.() -> Unit): GradleRunnerImpl {
         val argsList = listOf(*args)
 
         projects.forEach { (slice, project) ->
@@ -25,15 +26,15 @@ internal class ProjectRunnerImpl(private val projects: Map<ProjectSlice, File>) 
     }
 }
 
-internal class SingleProjectRunnerImpl(private val projectDir: File) : ProjectRunner {
-    override fun run(vararg args: String, checker: RunResult.() -> Unit): SingleProjectRunnerImpl {
+internal class SingleGradleRunnerImpl(private val projectDir: File) : GradleRunner {
+    override fun run(vararg args: String, checker: RunResult.() -> Unit): SingleGradleRunnerImpl {
         projectDir.runGradle(listOf(*args), checker)
         return this
     }
 }
 
 private fun File.runGradle(args: List<String>, checker: RunResult.() -> Unit) {
-    val buildResult = GradleRunner.create()
+    val buildResult = org.gradle.testkit.runner.GradleRunner.create()
         .withProjectDir(this)
         .withPluginClasspath()
         .addPluginTestRuntimeClasspath()
@@ -43,7 +44,7 @@ private fun File.runGradle(args: List<String>, checker: RunResult.() -> Unit) {
     RunResultImpl(buildResult, this).apply { checkIntellijErrors() }.apply(checker)
 }
 
-private fun GradleRunner.addPluginTestRuntimeClasspath() = apply {
+private fun org.gradle.testkit.runner.GradleRunner.addPluginTestRuntimeClasspath() = apply {
     val classpathFile = File(System.getProperty("plugin-classpath"))
     if (!classpathFile.exists()) {
         throw IllegalStateException("Could not find classpath resource $classpathFile")
@@ -88,7 +89,7 @@ private class RunResultImpl(private val result: BuildResult, private val dir: Fi
         }
     }
 
-    override fun submodule(name: String, checker: RunResult.() -> Unit) {
+    override fun subproject(name: String, checker: RunResult.() -> Unit) {
         RunResultImpl(result, File(dir, name)).also(checker)
     }
 

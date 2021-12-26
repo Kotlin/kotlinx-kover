@@ -10,14 +10,14 @@ Minimal supported `Gradle` version: `6.4`.
 ## Table of content
 - [Features](#features)
 - [Quickstart](#quickstart)
-  - [Apply plugin to a single-module build](#apply-plugin-to-a-single-module-build)
+  - [Apply plugin to a single-project build](#apply-plugin-to-a-single-project-build)
     - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
     - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
-  - [Apply plugin to a multi-module build](#apply-plugin-to-a-multi-module-build)
+  - [Apply plugin to a multi-project build](#apply-plugin-to-a-multi-project-build)
 - [Configuration](#configuration)
   - [Configuring JVM test task](#configuring-jvm-test-task)
   - [Configuring aggregated reports](#configuring-aggregated-reports)
-  - [Configuring module reports](#configuring-module-reports)
+  - [Configuring project reports](#configuring-project-reports)
   - [Configuring entire plugin](#configuring-entire-plugin)
 - [Verification](#verification)
 - [Tasks](#tasks)
@@ -32,7 +32,7 @@ Minimal supported `Gradle` version: `6.4`.
 * Customizable filters for instrumented classes
 
 ## Quickstart
-### Apply plugin to a single-module build
+### Apply plugin to a single-project build
 #### Applying plugins with the plugins DSL
 In top level build file
 
@@ -94,9 +94,9 @@ apply plugin: 'kover'
 ```
 </details>
 
-### Apply plugin to a multi-module build
-To apply the plugin to all Gradle modules, you just need to apply the plugin only to the root module, as shown [above](#apply-plugin-to-a-single-module-build).
-Applying the plugin to submodules if you have already applied it to the root module will cause configuration error.
+### Apply plugin to a multi-project build
+To apply the plugin to all Gradle projects, you just need to apply the plugin only to the root project, as shown [above](#apply-plugin-to-a-single-project-build).
+Applying the plugin to subprojects if you have already applied it to the root project will cause configuration error.
 
 ## Configuration
 
@@ -108,7 +108,7 @@ However, in some cases, custom settings are needed - this can be done by configu
 ### Configuring JVM test task
 If you need to disable or filter instrumentation for a some test task, you may configure the Kover extension for it.
 
-For example, to configure a standard test task for Kotlin/JVM named `test`, you need to add the following code to the build script of the module where this task is declared
+For example, to configure a standard test task for Kotlin/JVM named `test`, you need to add the following code to the build script of the project where this task is declared
 
 <details open>
 <summary>Kotlin</summary>
@@ -192,10 +192,10 @@ android {
 
 
 ### Configuring aggregated reports
-Aggregated report provides report using combined classpath and coverage stats from the module in which plugin is applied and all its submodules.
+Aggregated report provides report using combined classpath and coverage stats from the project in which plugin is applied and all its subprojects.
 
 If you need to change the name of the XML report file or HTML directory, you may configure the corresponding tasks in 
-the module in which the plugin is applied (usually this is the root module).
+the project in which the plugin is applied (usually this is the root project).
 
 <details open>
 <summary>Kotlin</summary>
@@ -229,23 +229,23 @@ tasks.koverXmlReport {
 ```
 </details>
 
-### Configuring module reports
-If you need to change the name of the XML report file or HTML directory for a specific module, you may configure 
-the corresponding tasks in this module.
+### Configuring project reports
+If you need to change the name of the XML report file or HTML directory for a specific project, you may configure 
+the corresponding tasks in this project.
 
 
 <details open>
 <summary>Kotlin</summary>
 
 ```kotlin
-tasks.koverHtmlModuleReport {
+tasks.koverHtmlProjectReport {
     isEnabled = true                        // false to disable report generation
-    htmlReportDir.set(layout.buildDirectory.dir("my-module-report/html-result"))
+    htmlReportDir.set(layout.buildDirectory.dir("my-project-report/html-result"))
 }
 
-tasks.koverXmlModuleReport {
+tasks.koverXmlProjectReport {
     isEnabled = true                        // false to disable report generation
-    xmlReportFile.set(layout.buildDirectory.file("my-module-report/result.xml"))
+    xmlReportFile.set(layout.buildDirectory.file("my-project-report/result.xml"))
 }
 ```
 </details>
@@ -254,28 +254,28 @@ tasks.koverXmlModuleReport {
 <summary>Groovy</summary>
 
 ```groovy
-tasks.koverHtmlModuleReport {
+tasks.koverHtmlProjectReport {
     enabled = true                          // false to disable report generation
-    htmlReportDir.set(layout.buildDirectory.dir("my-module-report/html-result"))
+    htmlReportDir.set(layout.buildDirectory.dir("my-project-report/html-result"))
 }
 
-tasks.koverXmlModuleReport {
+tasks.koverXmlProjectReport {
     enabled = true                          // false to disable report generation
-    xmlReportFile.set(layout.buildDirectory.file("my-module-report/result.xml"))
+    xmlReportFile.set(layout.buildDirectory.file("my-project-report/result.xml"))
 }
 ```
 </details>
 
-You may collect all modules reports into one directory using `koverCollectModuleReports` task.
-Also, you may specify custom directory to collect modules reports in the build file of the module in which the plugin 
-is applied (usually this is the root module):
+You may collect all projects reports into one directory using `koverCollectProjectsReports` task.
+Also, you may specify custom directory to collect projects reports in the build file of the project in which the plugin 
+is applied (usually this is the root project):
 
 <details open>
 <summary>Kotlin</summary>
 
 ```kotlin
-tasks.koverCollectModuleReports {
-  outputDir.set(layout.buildDirectory.dir("all-modules-reports") )
+tasks.koverCollectProjectsReports {
+  outputDir.set(layout.buildDirectory.dir("all-projects-reports") )
 }
 ```
 </details>
@@ -284,26 +284,26 @@ tasks.koverCollectModuleReports {
 <summary>Groovy</summary>
 
 ```groovy
-tasks.koverCollectModuleReports {
-  outputDir.set(layout.buildDirectory.dir("all-modules-reports") )
+tasks.koverCollectProjectsReports {
+  outputDir.set(layout.buildDirectory.dir("all-projects-reports") )
 }
 ```
 </details>
 
 ### Configuring entire plugin
-In the module in which the plugin is applied, you need to add code:
+In the project in which the plugin is applied, you need to add code:
 
 <details open>
 <summary>Kotlin</summary>
 
 ```kotlin
 kover {
-    isDisabled = false                      // true to disable instrumentation of all test tasks in all modules
+    isDisabled = false                      // true to disable instrumentation of all test tasks in all projects
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
     intellijEngineVersion.set("1.0.640")    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
-    disabledModules = setOf()               // setOf("module-name") to disable coverage for module with name `module-name`
+    disabledProjects = setOf()              // setOf("project-name") to disable coverage for project with name `project-name`
     instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
 }
 ```
@@ -314,12 +314,12 @@ kover {
 
 ```groovy
 kover {
-    disabled = false                        // true to disable instrumentation of all test tasks in all modules
+    disabled = false                        // true to disable instrumentation of all test tasks in all projects
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
     intellijEngineVersion.set('1.0.640')    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set('0.8.7')        // change version of JaCoCo agent and reporter
     generateReportOnCheck.set(true)         // false to do not execute `koverReport` task before `check` task
-    disabledModules = []                    // ["module-name"] to disable coverage for module with name `module-name`
+    disabledProjects = []                   // ["project-name"] to disable coverage for project with name `project-name`
     instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
 }
 ```
@@ -333,8 +333,8 @@ Validation rules work for both types of agents.
 *The plugin currently only supports line counter values.*
 
 
-To add a rule check to cover the code of all modules, you need to add configuration to the module in which the plugin
-is applied (usually this is the root module):
+To add a rule check to cover the code of all projects, you need to add configuration to the project in which the plugin
+is applied (usually this is the root project):
 
 <details open>
 <summary>Kotlin</summary>
@@ -398,13 +398,13 @@ tasks.koverVerify {
 ```
 </details>
 
-To add rules for code coverage checks for one specific module, you need to add a configuration to this module:
+To add rules for code coverage checks for one specific project, you need to add a configuration to this project:
 
 <details open>
 <summary>Kotlin</summary>
 
 ```kotlin
-tasks.koverModuleVerify {
+tasks.koverProjectVerify {
     rule {
         name = "Minimal line coverage rate in percent"
         bound {
@@ -419,7 +419,7 @@ tasks.koverModuleVerify {
 <summary>Groovy</summary>
 
 ```groovy
-tasks.koverModuleVerify {
+tasks.koverProjectVerify {
     rule {
         name = "Minimal line coverage rate in percent"
         bound {
@@ -432,24 +432,24 @@ tasks.koverModuleVerify {
 
 
 ## Tasks
-The plugin, when applied, automatically creates tasks for the module in which it is applied (usually this is the root module):
-- `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in all modules.
-- `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in all modules. 
+The plugin, when applied, automatically creates tasks for the project in which it is applied (usually this is the root project):
+- `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in all projects.
+- `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in all projects. 
 - `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.  Executes before `check` task if property `generateReportOnCheck` for `KoverExtension` is `true` ([see](#configuring-entire-plugin)).
-- `koverVerify` - Verifies code coverage metrics of all modules based on specified rules. Always executes before `check` task.
-- `koverCollectModuleReports` - Collects all modules reports into one directory. Default directory is `$buildDir/reports/kover/modules`, names for XML reports and dirs for HTML are modules names. Executing this task does not run `koverXmlReport` or `koverHtmlReport`, it only copies previously created reports if they exist to the output directory.
+- `koverVerify` - Verifies code coverage metrics of all projects based on specified rules. Always executes before `check` task.
+- `koverCollectProjectsReports` - Collects all projects reports into one directory. Default directory is `$buildDir/reports/kover/projects`, names for XML reports and dirs for HTML are projects names. Executing this task does not run `koverXmlReport` or `koverHtmlReport`, it only copies previously created reports if they exist to the output directory.
 
-Tasks that are created for all modules:
-- `koverHtmlModuleReport` - Generates code coverage HTML report for all enabled test tasks in one module.
-- `koverXmlModuleReport` - Generates code coverage XML report for all enabled test tasks in one module.
-- `koverModuleReport` - Executes both `koverXmlModuleReport` and `koverHtmlModuleReport` tasks.
-- `koverModuleVerify` - Verifies code coverage metrics of one module based on specified rules. Always executes before `check` task.
+Tasks that are created for all projects:
+- `koverHtmlProjectReport` - Generates code coverage HTML report for all enabled test tasks in one project.
+- `koverXmlProjectReport` - Generates code coverage XML report for all enabled test tasks in one project.
+- `koverProjectReport` - Executes both `koverXmlProjectReport` and `koverHtmlProjectReport` tasks.
+- `koverProjectVerify` - Verifies code coverage metrics of one project based on specified rules. Always executes before `check` task.
 
 
 ## Implicit plugin dependencies
 During the applying of the plugin, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
 
-For the plugin to work correctly, you need to make sure that the `mavenCentral` or its mirror is added to the list by the repository of the module in which the plugin is applied (usually this is the root module) and add it if necessary.
+For the plugin to work correctly, you need to make sure that the `mavenCentral` or its mirror is added to the list by the repository of the project in which the plugin is applied (usually this is the root project) and add it if necessary.
 
 <details open>
 <summary>Kotlin</summary>
