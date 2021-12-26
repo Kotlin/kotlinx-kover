@@ -186,7 +186,7 @@ class KoverPlugin : Plugin<Project> {
     }
 
     private fun Project.createCollectingTask() {
-        tasks.create(COLLECT_PROJECT_REPORTS_TASK_NAME, KoverCollectingModulesTask::class.java) { task ->
+        tasks.create(COLLECT_PROJECT_REPORTS_TASK_NAME, KoverCollectingProjectsTask::class.java) { task ->
             task.group = VERIFICATION_GROUP
             task.description = "Collects all projects reports into one directory."
             task.outputDir.set(project.layout.buildDirectory.dir(ALL_PROJECTS_REPORTS_DEFAULT_PATH))

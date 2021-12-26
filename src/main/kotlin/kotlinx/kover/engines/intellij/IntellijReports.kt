@@ -107,13 +107,13 @@ private fun Writer.writeReportsJson(
     }
     appendLine("""  "modules": [""")
     report.projects.forEachIndexed { index, aProject ->
-        writeModuleReportJson(report.files, aProject, index == (report.projects.size - 1))
+        writeProjectReportJson(report.files, aProject, index == (report.projects.size - 1))
     }
     appendLine("""  ]""")
     appendLine("}")
 }
 
-private fun Writer.writeModuleReportJson(reportFiles: Iterable<ReportFiles>, projectInfo: ProjectInfo, isLast: Boolean) {
+private fun Writer.writeProjectReportJson(reportFiles: Iterable<ReportFiles>, projectInfo: ProjectInfo, isLast: Boolean) {
     appendLine("""    { "reports": [ """)
 
     appendLine(reportFiles.joinToString(",\n        ", "        ") { f ->

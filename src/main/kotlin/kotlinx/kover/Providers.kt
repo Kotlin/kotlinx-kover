@@ -41,7 +41,7 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
 
     // all sources and all outputs providers are unused, so NOW it can return empty file collection
     val emptyProvider: Provider<FileCollection> = provider { files() }
-    val allModulesProviders =
+    val aggregatedProviders =
         ProjectProviders(
             allReportsProvider,
             allSmapProvider,
@@ -50,7 +50,7 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
             emptyProvider,
             provider { false })
 
-    return AllProviders(projects, allModulesProviders, engineProvider, classpathProvider, extensionProvider)
+    return AllProviders(projects, aggregatedProviders, engineProvider, classpathProvider, extensionProvider)
 }
 
 

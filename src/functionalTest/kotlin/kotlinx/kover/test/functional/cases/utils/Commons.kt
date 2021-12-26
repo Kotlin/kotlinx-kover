@@ -40,7 +40,7 @@ internal fun RunResult.checkDefaultReports(mustExist: Boolean = true) {
 }
 
 internal fun RunResult.checkDefaultProjectReports(mustExist: Boolean = true) {
-    checkReports(defaultXmlProjectReport(), defaultHtmlModuleReport(), mustExist)
+    checkReports(defaultXmlProjectReport(), defaultHtmlProjectReport(), mustExist)
 }
 
 internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {

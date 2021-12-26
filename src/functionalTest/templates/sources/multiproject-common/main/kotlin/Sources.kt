@@ -1,18 +1,18 @@
 package org.jetbrains
 
 class CommonClass {
-    fun callFromThisModule() {
+    fun callFromThisProject() {
         println("Call from this project")
     }
 
-    fun callFromAnotherModule() {
+    fun callFromAnotherProject() {
         println("Call from another project")
     }
 }
 
 internal class CommonInternalClass {
     fun function() {
-        println("ModuleClass#function call")
+        println("CommonInternalClass#function call")
     }
 }
 

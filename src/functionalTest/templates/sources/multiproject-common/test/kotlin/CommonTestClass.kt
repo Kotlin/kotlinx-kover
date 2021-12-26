@@ -7,7 +7,7 @@ import kotlin.test.Test
 class TestClass {
     @Test
     fun callCommonTest() {
-        CommonClass().callFromThisModule()
+        CommonClass().callFromThisProject()
     }
 
     @Test
