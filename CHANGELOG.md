@@ -6,9 +6,8 @@ and the plugin API has been significantly redesigned. So we ask you to evaluate 
 the API has become more convenient.
 
 ### Features
-* Unified coverage agents filters. Now only the characters '*' or '?' are used as wildcards for both IntelliJ and JaCoCo agents
-**Regular expressions are no longer supported by the IntelliJ agent as filters of instrumented classes.** (#21)
 * Implemented aggregated multi-project report (#20, #43)
+* Unified coverage agents filters. Now only the characters '*' or '?' are used as wildcards for both IntelliJ and JaCoCo agents. **Regular expressions are no longer supported by the IntelliJ agent as filters of instrumented classes.** (#21)
 * Tasks for verification and reporting for single Gradle project were renamed according to the template like `koverXmlReport` -> `koverXmlProjectReport`
 * The `isEnabled` property has been renamed to `isDisabled` in extensions `KoverExtension` and `KoverTaskExtension` to make their purpose more obvious
 * The term `module` has been replaced with `project` for compatibility with Gradle terminology
