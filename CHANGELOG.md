@@ -6,19 +6,19 @@ and the plugin API has been significantly redesigned. So we ask you to evaluate 
 the API has become more convenient.
 
 ### Features
-* Unified coverage agents filters. Now only the characters '*' or '?' are used as wildcards for both IntelliJ and JaCoCo agents. 
+* Unified coverage agents filters. Now only the characters '*' or '?' are used as wildcards for both IntelliJ and JaCoCo agents
 **Regular expressions are no longer supported by the IntelliJ agent as filters of instrumented classes.** (#21)
 * Implemented aggregated multi-project report (#20, #43)
-* Tasks for verification and reporting for one module were renamed according to the template like `koverXmlReport` -> `koverXmlProjectReport`
+* Tasks for verification and reporting for single Gradle project were renamed according to the template like `koverXmlReport` -> `koverXmlProjectReport`
 * The `isEnabled` property has been renamed to `isDisabled` in extensions `KoverExtension` and `KoverTaskExtension` to make their purpose more obvious
 * The term `module` has been replaced with `project` for compatibility with Gradle terminology
-* Added the ability to disable the Kover for the specified module
+* Added the ability to disable the Kover for the specified Gradle project
 * Made tasks cache relocatable (#85)
 * Upgraded IntelliJ Engine default version to `1.0.640`
 
 ### Bugfixes
 * Added property to exclude Android classes from the instrumentation (#89)
-* Kotlin Multiplatform plugin adapter rewritten to use reflection Sergey (#100)
+* Kotlin Multiplatform plugin adapter rewritten to use reflection (#100)
 
 v0.4.4 / 2021-11-29
 ===================
