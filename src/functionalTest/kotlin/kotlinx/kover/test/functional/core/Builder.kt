@@ -73,7 +73,7 @@ private class TestCaseBuilderImpl(
             state.engines += null
         }
         if (state.pluginVersion == null) {
-            state.pluginVersion = "0.4.4" // TODO read from properties
+            state.pluginVersion = "0.5.0-RC" // TODO read from properties
         }
 
         val projects: MutableMap<ProjectSlice, File> = mutableMapOf()
