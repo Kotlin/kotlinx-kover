@@ -7,7 +7,7 @@ and [JaCoCo](https://github.com/jacoco/jacoco).
 
 Minimal supported `Gradle` version: `6.4`. 
 
-## Table of content
+## Table of contents
 - [Features](#features)
 - [Quickstart](#quickstart)
   - [Apply plugin to a single-project build](#apply-plugin-to-a-single-project-build)
@@ -25,16 +25,16 @@ Minimal supported `Gradle` version: `6.4`.
 
 ## Features
 
-* Collecting the code coverage for `JVM` test tasks
-* `XML` and `HTML` reports generation
+* Collecting code coverage for `JVM` test tasks
+* `XML` and `HTML` report generation
 * Support of `Kotlin/JVM`, `Kotlin Multiplatform` and mixed `Kotlin-Java` sources with zero additional configuration
-* `Kotlin Android` support without dividing them into build types and flavours
+* `Kotlin Android` support without the need to divide into build types and flavours
 * Customizable filters for instrumented classes
 
 ## Quickstart
 ### Apply plugin to a single-project build
 #### Applying plugins with the plugins DSL
-In top level build file
+In top-level build file:
 
 <details open>
 <summary>Kotlin</summary>
@@ -57,7 +57,7 @@ plugins {
 </details>
 
 #### Legacy Plugin Application: applying plugins with the buildscript block
-In top level build file
+In top-level build file:
 
 <details open>
 <summary>Kotlin</summary>
@@ -95,20 +95,20 @@ apply plugin: 'kover'
 </details>
 
 ### Apply plugin to a multi-project build
-To apply the plugin to all Gradle projects, you just need to apply the plugin only to the root project, as shown [above](#apply-plugin-to-a-single-project-build).
-Applying the plugin to subprojects if you have already applied it to the root project will cause configuration error.
+To apply the plugin to all Gradle projects, you only need to apply the plugin to the top-level build file as shown [above](#apply-plugin-to-a-single-project-build).
+Applying the plugin to subprojects if you have already applied it to the root project will cause configuration errors.
 
 ## Configuration
 
-Once applied, the plugin can be used out of the box without additional configuration. 
+Once applied, the Kover plugin can be used out of the box without additional configuration. 
 
 However, in some cases, custom settings are needed - this can be done by configuring special extensions and tasks.
 
 
 ### Configuring JVM test task
-If you need to disable or filter instrumentation for a some test task, you may configure the Kover extension for it.
+If you need to disable or filter instrumentation for a test task, you may configure the Kover extension for it.
 
-For example, to configure a standard test task for Kotlin/JVM named `test`, you need to add the following code to the build script of the project where this task is declared
+For example, to configure a standard test task for Kotlin/JVM named `test`, you need to add the following code to the build script of the project where this task is declared:
 
 <details open>
 <summary>Kotlin</summary>
@@ -140,7 +140,7 @@ tasks.test {
 ```
 </details>
 
-**For other platforms (Android, Kotlin-Multiplatform) the name may differ, you may also have several test tasks, so you first need to determine the name of the required task.**
+**For other platforms (Android, Kotlin-Multiplatform) the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
 
 Example of configuring test task for build type `debug` in Android:
 <details open>
@@ -192,10 +192,10 @@ android {
 
 
 ### Configuring aggregated reports
-Aggregated report provides report using combined classpath and coverage stats from the project in which plugin is applied and all its subprojects.
+Aggregated reports combine classpath and coverage stats from the project in which the plugin is applied and all of its subprojects.
 
 If you need to change the name of the XML report file or HTML directory, you may configure the corresponding tasks in 
-the project in which the plugin is applied (usually this is the root project).
+the project in which the plugin is applied (usually this is the root project):
 
 <details open>
 <summary>Kotlin</summary>
@@ -231,7 +231,7 @@ tasks.koverXmlReport {
 
 ### Configuring project reports
 If you need to change the name of the XML report file or HTML directory for a specific project, you may configure 
-the corresponding tasks in this project.
+the corresponding tasks in this project:
 
 
 <details open>
@@ -266,8 +266,8 @@ tasks.koverXmlProjectReport {
 ```
 </details>
 
-You may collect all projects reports into one directory using `koverCollectProjectsReports` task.
-Also, you may specify custom directory to collect projects reports in the build file of the project in which the plugin 
+You may collect all project reports into one directory using the `koverCollectProjectsReports` task.
+Also, you may specify a custom directory to collect project reports in the build directory of the project in which the plugin 
 is applied (usually this is the root project):
 
 <details open>
@@ -291,7 +291,7 @@ tasks.koverCollectProjectsReports {
 </details>
 
 ### Configuring entire plugin
-In the project in which the plugin is applied, you need to add code:
+In the project in which the plugin is applied, you can configure the following properties:
 
 <details open>
 <summary>Kotlin</summary>
@@ -333,7 +333,7 @@ Validation rules work for both types of agents.
 *The plugin currently only supports line counter values.*
 
 
-To add a rule check to cover the code of all projects, you need to add configuration to the project in which the plugin
+To add a rule to check coverage from the code of all projects, you need to add configuration to the project in which the plugin
 is applied (usually this is the root project):
 
 <details open>
@@ -447,9 +447,9 @@ Tasks that are created for all projects:
 
 
 ## Implicit plugin dependencies
-During the applying of the plugin, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
+While the plugin is being applied, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
 
-For the plugin to work correctly, you need to make sure that the `mavenCentral` or its mirror is added to the list by the repository of the project in which the plugin is applied (usually this is the root project) and add it if necessary.
+For the plugin to work correctly, you need to make sure that the `mavenCentral` (or its mirror) is added to the repository list of the project in which the plugin is applied, if it doesn't already exist (usually this is the root project):
 
 <details open>
 <summary>Kotlin</summary>
