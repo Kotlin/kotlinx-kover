@@ -153,7 +153,7 @@ android {
     testOptions {
         unitTests.all {
             if (it.name == "testDebugUnitTest") {
-                extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+                it.extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
                     isDisabled = false
                     binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
                     includes = listOf("com.example.*")
