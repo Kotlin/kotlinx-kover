@@ -6,24 +6,24 @@ package kotlinx.kover
 
 import kotlinx.kover.adapters.*
 import kotlinx.kover.api.*
-import kotlinx.kover.api.KoverPaths.HTML_AGG_REPORT_DEFAULT_PATH
+import kotlinx.kover.api.KoverPaths.MERGED_HTML_REPORT_DEFAULT_PATH
 import kotlinx.kover.api.KoverNames.CHECK_TASK_NAME
-import kotlinx.kover.api.KoverNames.COLLECT_PROJECT_REPORTS_TASK_NAME
+import kotlinx.kover.api.KoverNames.COLLECT_REPORTS_TASK_NAME
+import kotlinx.kover.api.KoverNames.MERGED_HTML_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.HTML_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.HTML_PROJECT_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.PROJECT_REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.PROJECT_VERIFY_TASK_NAME
 import kotlinx.kover.api.KoverNames.REPORT_TASK_NAME
-import kotlinx.kover.api.KoverNames.XML_PROJECT_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.VERIFY_TASK_NAME
+import kotlinx.kover.api.KoverNames.MERGED_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.ROOT_EXTENSION_NAME
 import kotlinx.kover.api.KoverNames.TASK_EXTENSION_NAME
 import kotlinx.kover.api.KoverNames.VERIFICATION_GROUP
-import kotlinx.kover.api.KoverNames.VERIFY_TASK_NAME
-import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.MERGED_VERIFY_TASK_NAME
+import kotlinx.kover.api.KoverNames.MERGED_XML_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverPaths.ALL_PROJECTS_REPORTS_DEFAULT_PATH
-import kotlinx.kover.api.KoverPaths.HTML_PROJECT_REPORT_DEFAULT_PATH
-import kotlinx.kover.api.KoverPaths.XML_AGG_REPORT_DEFAULT_PATH
-import kotlinx.kover.api.KoverPaths.XML_PROJECT_REPORT_DEFAULT_PATH
+import kotlinx.kover.api.KoverPaths.PROJECT_HTML_REPORT_DEFAULT_PATH
+import kotlinx.kover.api.KoverPaths.MERGED_XML_REPORT_DEFAULT_PATH
+import kotlinx.kover.api.KoverPaths.PROJECT_XML_REPORT_DEFAULT_PATH
 import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.CoverageAgent
 import kotlinx.kover.engines.intellij.*
@@ -52,7 +52,7 @@ class KoverPlugin : Plugin<Project> {
         }
         target.createCollectingTask()
 
-        target.createAggregateTasks(providers)
+        target.createMergedTasks(providers)
     }
 
     private fun Project.applyToProject(providers: AllProviders, agents: Map<CoverageEngine, CoverageAgent>) {
@@ -60,38 +60,38 @@ class KoverPlugin : Plugin<Project> {
             providers.projects[name] ?: throw GradleException("Kover: Providers for project '$name' was not found")
 
         val xmlReportTask = createKoverProjectTask(
-            XML_PROJECT_REPORT_TASK_NAME,
-            KoverXmlProjectReportTask::class,
+            XML_REPORT_TASK_NAME,
+            KoverXmlReportTask::class,
             providers,
             projectProviders
         ) {
-            it.xmlReportFile.set(layout.buildDirectory.file(XML_PROJECT_REPORT_DEFAULT_PATH))
+            it.xmlReportFile.set(layout.buildDirectory.file(PROJECT_XML_REPORT_DEFAULT_PATH))
             it.description = "Generates code coverage XML report for all enabled test tasks in one project."
         }
 
         val htmlReportTask = createKoverProjectTask(
-            HTML_PROJECT_REPORT_TASK_NAME,
-            KoverHtmlProjectReportTask::class,
+            HTML_REPORT_TASK_NAME,
+            KoverHtmlReportTask::class,
             providers,
             projectProviders
         ) {
-            it.htmlReportDir.set(it.project.layout.buildDirectory.dir(HTML_PROJECT_REPORT_DEFAULT_PATH))
+            it.htmlReportDir.set(it.project.layout.buildDirectory.dir(PROJECT_HTML_REPORT_DEFAULT_PATH))
             it.description = "Generates code coverage HTML report for all enabled test tasks in one project."
         }
 
         val verifyTask = createKoverProjectTask(
-            PROJECT_VERIFY_TASK_NAME,
-            KoverProjectVerificationTask::class,
+            VERIFY_TASK_NAME,
+            KoverVerificationTask::class,
             providers,
             projectProviders
         ) {
-            it.onlyIf { t -> (t as KoverProjectVerificationTask).rules.isNotEmpty() }
+            it.onlyIf { t -> (t as KoverVerificationTask).rules.isNotEmpty() }
             // kover takes counter values from XML file. Remove after reporter upgrade
             it.mustRunAfter(xmlReportTask)
             it.description = "Verifies code coverage metrics of one project based on specified rules."
         }
 
-        tasks.create(PROJECT_REPORT_TASK_NAME) {
+        tasks.create(REPORT_TASK_NAME) {
             it.group = VERIFICATION_GROUP
             it.dependsOn(xmlReportTask)
             it.dependsOn(htmlReportTask)
@@ -109,38 +109,38 @@ class KoverPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.createAggregateTasks(providers: AllProviders) {
-        val xmlReportTask = createKoverAggregateTask(
-            XML_REPORT_TASK_NAME,
-            KoverXmlReportTask::class,
+    private fun Project.createMergedTasks(providers: AllProviders) {
+        val xmlReportTask = createKoverMergedTask(
+            MERGED_XML_REPORT_TASK_NAME,
+            KoverMergedXmlReportTask::class,
             providers
         ) {
-            it.xmlReportFile.set(layout.buildDirectory.file(XML_AGG_REPORT_DEFAULT_PATH))
+            it.xmlReportFile.set(layout.buildDirectory.file(MERGED_XML_REPORT_DEFAULT_PATH))
             it.description = "Generates code coverage XML report for all enabled test tasks in all projects."
         }
 
-        val htmlReportTask = createKoverAggregateTask(
-            HTML_REPORT_TASK_NAME,
-            KoverHtmlReportTask::class,
+        val htmlReportTask = createKoverMergedTask(
+            MERGED_HTML_REPORT_TASK_NAME,
+            KoverMergedHtmlReportTask::class,
             providers
         ) {
-            it.htmlReportDir.set(layout.buildDirectory.dir(HTML_AGG_REPORT_DEFAULT_PATH))
+            it.htmlReportDir.set(layout.buildDirectory.dir(MERGED_HTML_REPORT_DEFAULT_PATH))
             it.description = "Generates code coverage HTML report for all enabled test tasks in all projects."
         }
 
-        val reportTask = tasks.create(REPORT_TASK_NAME) {
+        val reportTask = tasks.create(MERGED_REPORT_TASK_NAME) {
             it.group = VERIFICATION_GROUP
             it.dependsOn(xmlReportTask)
             it.dependsOn(htmlReportTask)
             it.description = "Generates code coverage HTML and XML reports for all enabled test tasks in all projects."
         }
 
-        val verifyTask = createKoverAggregateTask(
-            VERIFY_TASK_NAME,
-            KoverVerificationTask::class,
+        val verifyTask = createKoverMergedTask(
+            MERGED_VERIFY_TASK_NAME,
+            KoverMergedVerificationTask::class,
             providers
         ) {
-            it.onlyIf { t -> (t as KoverVerificationTask).rules.isNotEmpty() }
+            it.onlyIf { t -> (t as KoverMergedVerificationTask).rules.isNotEmpty() }
             // kover takes counter values from XML file. Remove after reporter upgrade
             it.mustRunAfter(xmlReportTask)
             it.description = "Verifies code coverage metrics of all projects based on specified rules."
@@ -150,7 +150,7 @@ class KoverPlugin : Plugin<Project> {
             if (it.name == CHECK_TASK_NAME) {
                 it.dependsOn(provider {
                     val koverExtension = extensions.getByType(KoverExtension::class.java)
-                    if (koverExtension.generateReportOnCheck.get()) {
+                    if (koverExtension.generateReportOnCheck) {
                         listOf(reportTask, verifyTask)
                     } else {
                         listOf(verifyTask)
@@ -161,7 +161,7 @@ class KoverPlugin : Plugin<Project> {
     }
 
 
-    private fun <T : KoverAggregateTask> Project.createKoverAggregateTask(
+    private fun <T : KoverMergedTask> Project.createKoverMergedTask(
         taskName: String,
         type: KClass<T>,
         providers: AllProviders,
@@ -178,14 +178,14 @@ class KoverPlugin : Plugin<Project> {
 
             task.coverageEngine.set(providers.engine)
             task.classpath.set(providers.classpath)
-            task.dependsOn(providers.aggregated.tests)
+            task.dependsOn(providers.merged.tests)
 
             block(task)
         }
     }
 
     private fun Project.createCollectingTask() {
-        tasks.create(COLLECT_PROJECT_REPORTS_TASK_NAME, KoverCollectingProjectsTask::class.java) { task ->
+        tasks.create(COLLECT_REPORTS_TASK_NAME, KoverCollectingTask::class.java) { task ->
             task.group = VERIFICATION_GROUP
             task.description = "Collects all projects reports into one directory."
             task.outputDir.set(project.layout.buildDirectory.dir(ALL_PROJECTS_REPORTS_DEFAULT_PATH))
@@ -194,9 +194,9 @@ class KoverPlugin : Plugin<Project> {
 
             allprojects { proj ->
                 val xmlReportTask =
-                    proj.tasks.withType(KoverXmlProjectReportTask::class.java).getByName(XML_PROJECT_REPORT_TASK_NAME)
+                    proj.tasks.withType(KoverXmlReportTask::class.java).getByName(XML_REPORT_TASK_NAME)
                 val htmlReportTask =
-                    proj.tasks.withType(KoverHtmlProjectReportTask::class.java).getByName(HTML_PROJECT_REPORT_TASK_NAME)
+                    proj.tasks.withType(KoverHtmlReportTask::class.java).getByName(HTML_REPORT_TASK_NAME)
 
                 task.mustRunAfter(xmlReportTask)
                 task.mustRunAfter(htmlReportTask)
@@ -224,8 +224,8 @@ class KoverPlugin : Plugin<Project> {
             task.outputDirs.set(projectProviders.output)
 
             // it is necessary to read all binary reports because project's classes can be invoked in another project
-            task.binaryReportFiles.set(providers.aggregated.reports)
-            task.dependsOn(providers.aggregated.tests)
+            task.binaryReportFiles.set(projectProviders.reports)
+            task.dependsOn(projectProviders.tests)
 
             task.onlyIf { !projectProviders.disabled.get() }
             task.onlyIf { !task.binaryReportFiles.get().isEmpty }
@@ -240,7 +240,6 @@ class KoverPlugin : Plugin<Project> {
         extension.coverageEngine.set(CoverageEngine.INTELLIJ)
         extension.intellijEngineVersion.set(defaultIntellijVersion.toString())
         extension.jacocoEngineVersion.set(defaultJacocoVersion)
-        extension.generateReportOnCheck.set(true)
         return extension
     }
 

@@ -26,31 +26,38 @@ open class KoverExtension(objects: ObjectFactory) {
      * Specifies the version of Intellij-coverage dependency.
      */
     @get:Input
-    val intellijEngineVersion: Property<String> = objects.property(String::class.java)
+    public val intellijEngineVersion: Property<String> = objects.property(String::class.java)
 
     /**
      * Specifies the version of JaCoCo dependency.
      */
     @get:Input
-    val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
+    public val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
 
     /**
      * Specifies whether the reports will be generated within 'check' task execution.
      */
     @get:Input
-    val generateReportOnCheck: Property<Boolean> = objects.property(Boolean::class.java)
+    public var generateReportOnCheck: Boolean = true
 
     /**
      * Specifies the projects to be disabled from instrumentation and reportings.
      */
     @get:Input
-    var disabledProjects: Set<String> = emptySet()
+    public var disabledProjects: Set<String> = emptySet()
 
     /**
      * Specifies whether the classes from 'android' and 'com.android' packages should be included if Android plugin is applied.
      */
     @get:Input
     public var instrumentAndroidPackage: Boolean = false
+
+    /**
+     * Specifies whether to perform all test tasks from all projects for Kover single-project tasks.
+     * If the value is `false`, then executed only test tasks of the project for which its Kover task is called.
+     */
+    @get:Input
+    public var runAllTestsForProjectTask: Boolean = false
 }
 
 public enum class CoverageEngine {

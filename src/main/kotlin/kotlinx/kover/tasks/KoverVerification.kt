@@ -7,8 +7,8 @@
 package kotlinx.kover.tasks
 
 import kotlinx.kover.api.*
-import kotlinx.kover.api.KoverNames.XML_PROJECT_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
+import kotlinx.kover.api.KoverNames.MERGED_XML_REPORT_TASK_NAME
 import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.intellij.*
 import kotlinx.kover.engines.jacoco.*
@@ -19,7 +19,49 @@ import org.gradle.api.tasks.*
 import java.io.*
 import javax.inject.*
 
-open class KoverVerificationTask : KoverAggregateTask() {
+open class KoverMergedVerificationTask : KoverMergedTask() {
+    private val rulesInternal: MutableList<VerificationRule> = mutableListOf()
+
+    /**
+     * Added verification rules for test task.
+     */
+    @get:Nested
+    public val rules: List<VerificationRule>
+        get() = rulesInternal
+
+    /**
+     * Add new coverage verification rule to check after test task execution.
+     */
+    public fun rule(configureRule: Action<VerificationRule>) {
+        rulesInternal += project.objects.newInstance(VerificationRuleImpl::class.java, project.objects)
+            .also { configureRule.execute(it) }
+    }
+
+    @TaskAction
+    fun verify() {
+        verify(report(), coverageEngine.get(), rulesInternal, classpath.get()) {
+            val xmlReport =
+                this.project.tasks.withType(KoverMergedXmlReportTask::class.java)
+                    .findByName(MERGED_XML_REPORT_TASK_NAME)
+                    ?: throw GradleException("Kover: task '$MERGED_XML_REPORT_TASK_NAME' not exists but it is required for verification")
+
+            var xmlFile = xmlReport.xmlReportFile.get().asFile
+            if (!xmlFile.exists()) {
+                xmlFile = File(temporaryDir, "counters.xml")
+                intellijReport(
+                    it,
+                    xmlFile,
+                    null,
+                    xmlReport.classpath.get()
+                )
+            }
+            xmlFile
+        }
+    }
+
+}
+
+open class KoverVerificationTask : KoverProjectTask() {
     private val rulesInternal: MutableList<VerificationRule> = mutableListOf()
 
     /**
@@ -43,49 +85,7 @@ open class KoverVerificationTask : KoverAggregateTask() {
             val xmlReport =
                 this.project.tasks.withType(KoverXmlReportTask::class.java)
                     .findByName(XML_REPORT_TASK_NAME)
-                    ?: throw GradleException("Kover: task '$XML_REPORT_TASK_NAME' not exists but it is required for verification")
-
-            var xmlFile = xmlReport.xmlReportFile.get().asFile
-            if (!xmlFile.exists()) {
-                xmlFile = File(temporaryDir, "counters.xml")
-                intellijReport(
-                    it,
-                    xmlFile,
-                    null,
-                    xmlReport.classpath.get()
-                )
-            }
-            xmlFile
-        }
-    }
-
-}
-
-open class KoverProjectVerificationTask : KoverProjectTask() {
-    private val rulesInternal: MutableList<VerificationRule> = mutableListOf()
-
-    /**
-     * Added verification rules for test task.
-     */
-    @get:Nested
-    public val rules: List<VerificationRule>
-        get() = rulesInternal
-
-    /**
-     * Add new coverage verification rule to check after test task execution.
-     */
-    public fun rule(configureRule: Action<VerificationRule>) {
-        rulesInternal += project.objects.newInstance(VerificationRuleImpl::class.java, project.objects)
-            .also { configureRule.execute(it) }
-    }
-
-    @TaskAction
-    fun verify() {
-        verify(report(), coverageEngine.get(), rulesInternal, classpath.get()) {
-            val xmlReport =
-                this.project.tasks.withType(KoverXmlProjectReportTask::class.java)
-                    .findByName(XML_PROJECT_REPORT_TASK_NAME)
-                    ?: throw GradleException("Kover: task '$XML_PROJECT_REPORT_TASK_NAME' does not exist but it is required for verification")
+                    ?: throw GradleException("Kover: task '$XML_REPORT_TASK_NAME' does not exist but it is required for verification")
 
             var xmlFile = xmlReport.xmlReportFile.get().asFile
             if (!xmlFile.exists()) {

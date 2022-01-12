@@ -15,7 +15,7 @@ import org.gradle.api.tasks.*
 import java.io.*
 
 @CacheableTask
-open class KoverAggregateTask : DefaultTask() {
+open class KoverMergedTask : DefaultTask() {
     @get:Nested
     val binaryReportFiles: MapProperty<String, NestedFiles> =
         project.objects.mapProperty(String::class.java, NestedFiles::class.java)
