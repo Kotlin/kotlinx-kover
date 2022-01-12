@@ -8,3 +8,6 @@ out/
 # Gradle files
 build/
 .gradle/
+
+# Android Studio
+local.properties
