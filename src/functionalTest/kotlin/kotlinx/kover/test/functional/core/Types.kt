@@ -47,6 +47,7 @@ internal data class KoverRootConfig(
     var intellijVersion: String? = null,
     var jacocoVersion: String? = null,
     var generateReportOnCheck: Boolean? = null,
+    var runAllTestsForProjectTask: Boolean? = null,
     val disabledProjects: MutableSet<String> = mutableSetOf()
 ) {
     val isDefault =

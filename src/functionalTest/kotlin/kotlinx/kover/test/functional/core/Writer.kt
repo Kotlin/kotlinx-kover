@@ -1,6 +1,7 @@
 package kotlinx.kover.test.functional.core
 
 import kotlinx.kover.api.*
+import kotlinx.kover.test.functional.core.GradleScriptLanguage.KOTLIN
 import java.io.*
 
 private const val TEMPLATES_PATH = "src/functionalTest/templates"
@@ -15,7 +16,7 @@ internal fun CommonBuilderState.createProject(rootDir: File, slice: ProjectSlice
 
     val buildScript = loadScriptTemplate(true, slice)
         .processRootBuildScript(this, slice)
-        .processProjectBuildScript(rootProject, slice)
+        .processProjectBuildScript(rootProject, slice, subprojects.keys)
 
     File(projectDir, "build.$extension").writeText(buildScript)
     File(projectDir, "settings.$extension").writeText(buildSettings(slice))
@@ -40,7 +41,7 @@ private fun ProjectBuilderState.writeSubproject(directory: File, slice: ProjectS
 }
 
 
-private val ProjectSlice.scriptExtension get() = if (language == GradleScriptLanguage.KOTLIN) "gradle.kts" else "gradle"
+private val ProjectSlice.scriptExtension get() = if (language == KOTLIN) "gradle.kts" else "gradle"
 
 private val ProjectSlice.srcPath: String
     get() {
@@ -66,9 +67,13 @@ private fun String.processRootBuildScript(state: CommonBuilderState, slice: Proj
         .replace("//KOVER", state.buildRootExtension(slice))
 }
 
-private fun String.processProjectBuildScript(state: ProjectBuilderState, slice: ProjectSlice): String {
+private fun String.processProjectBuildScript(
+    state: ProjectBuilderState,
+    slice: ProjectSlice,
+    subprojects: Set<String> = emptySet()
+): String {
     return replace("//REPOSITORIES", "")
-        .replace("//DEPENDENCIES", state.buildDependencies(slice))
+        .replace("//DEPENDENCIES", state.buildDependencies(slice, subprojects))
         .replace("//SCRIPTS", state.buildScripts(slice))
         .replace("//TEST_TASK", state.buildTestTask(slice))
         .replace("//VERIFICATIONS", state.buildVerifications(slice))
@@ -99,7 +104,7 @@ private fun ProjectBuilderState.writeSources(projectDir: File, slice: ProjectSli
 }
 
 private fun ProjectSlice.scriptPath(): String {
-    val languageString = if (language == GradleScriptLanguage.KOTLIN) "kotlin" else "groovy"
+    val languageString = if (language == KOTLIN) "kotlin" else "groovy"
     val typeString = when (type) {
         ProjectType.KOTLIN_JVM -> "kjvm"
         ProjectType.KOTLIN_MULTIPLATFORM -> "kmp"
@@ -140,8 +145,8 @@ private fun CommonBuilderState.buildRootExtension(slice: ProjectSlice): String {
     builder.appendLine("kover {")
 
     if (koverConfig.disabled != null) {
-        val property = if (slice.language == GradleScriptLanguage.KOTLIN) "isEnabled" else "enabled"
-        builder.appendLine("$property = ${koverConfig.disabled == false}")
+        val property = if (slice.language == KOTLIN) "isDisabled" else "disabled"
+        builder.appendLine("$property = ${koverConfig.disabled}")
     }
 
     if (slice.engine == CoverageEngine.INTELLIJ) {
@@ -158,10 +163,14 @@ private fun CommonBuilderState.buildRootExtension(slice: ProjectSlice): String {
     }
 
     if (koverConfig.disabledProjects.isNotEmpty()) {
-        val prefix = if (slice.language == GradleScriptLanguage.KOTLIN) "setOf(" else "["
-        val postfix = if (slice.language == GradleScriptLanguage.KOTLIN) ")" else "]"
+        val prefix = if (slice.language == KOTLIN) "setOf(" else "["
+        val postfix = if (slice.language == KOTLIN) ")" else "]"
         val value = koverConfig.disabledProjects.joinToString(prefix = prefix, postfix = postfix) { "\"$it\"" }
         builder.appendLine("    disabledProjects = $value")
+    }
+
+    if (koverConfig.runAllTestsForProjectTask != null) {
+        builder.appendLine("    runAllTestsForProjectTask = ${koverConfig.runAllTestsForProjectTask}")
     }
 
     builder.appendLine("}")
@@ -174,7 +183,7 @@ private fun ProjectBuilderState.buildTestTask(slice: ProjectSlice): String {
         return ""
     }
 
-    val configs = testScripts.map { if (slice.language == GradleScriptLanguage.KOTLIN) it.kotlin else it.groovy }
+    val configs = testScripts.map { if (slice.language == KOTLIN) it.kotlin else it.groovy }
 
     return loadTestTaskTemplate(slice).replace("//KOVER_TEST_CONFIG", configs.joinToString("\n"))
 }
@@ -194,15 +203,21 @@ private fun ProjectBuilderState.buildScripts(slice: ProjectSlice): String {
     if (scripts.isEmpty()) {
         return ""
     }
-    val configs = scripts.map { if (slice.language == GradleScriptLanguage.KOTLIN) it.kotlin else it.groovy }
+    val configs = scripts.map { if (slice.language == KOTLIN) it.kotlin else it.groovy }
     return configs.joinToString("\n", "\n", "\n")
 }
 
-private fun ProjectBuilderState.buildDependencies(slice: ProjectSlice): String {
-    if (dependencies.isEmpty()) {
+private fun ProjectBuilderState.buildDependencies(slice: ProjectSlice, subprojects: Set<String>): String {
+    if (dependencies.isEmpty() && subprojects.isEmpty()) {
         return ""
     }
-    val configs = dependencies.map { if (slice.language == GradleScriptLanguage.KOTLIN) it.kotlin else it.groovy }
+
+    val configs: MutableList<String> = mutableListOf();
+
+    configs += subprojects.map {
+        if (slice.language == KOTLIN) "implementation(project(\":$it\"))" else "implementation project(':$it')"
+    }
+    configs += dependencies.map { if (slice.language == KOTLIN) it.kotlin else it.groovy }
     return configs.joinToString("\n", "\n", "\n")
 }
 

@@ -16,8 +16,8 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
 
     allprojects {
         projects[it.name] = ProjectProviders(
-            it.provider { it.files(it.binaryReports(this)) },
-            it.provider { it.testTasks(this) },
+            it.provider { it.files(if (runAllTests()) allBinaryReports() else it.binaryReports(this)) },
+            it.provider { if (runAllTests()) allTestTasks() else it.testTasks(this) },
             it.provider { it.collectDirs(this).first },
             it.provider { it.collectDirs(this).second },
             it.provider { it.isDisabled(this) }
@@ -39,7 +39,7 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
 
     // all sources and all outputs providers are unused, so NOW it can return empty file collection
     val emptyProvider: Provider<FileCollection> = provider { files() }
-    val aggregatedProviders =
+    val mergedProviders =
         ProjectProviders(
             allReportsProvider,
             allTestsProvider,
@@ -47,7 +47,7 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
             emptyProvider,
             provider { false })
 
-    return AllProviders(projects, aggregatedProviders, engineProvider, classpathProvider, extensionProvider)
+    return AllProviders(projects, mergedProviders, engineProvider, classpathProvider, extensionProvider)
 }
 
 
@@ -108,10 +108,14 @@ private fun Project.isDisabled(root: Project): Boolean {
     return root.extensions.getByType(KoverExtension::class.java).disabledProjects.contains(name)
 }
 
+private fun Project.runAllTests(): Boolean {
+    return extensions.getByType(KoverExtension::class.java).runAllTestsForProjectTask
+}
+
 
 internal class AllProviders(
     val projects: Map<String, ProjectProviders>,
-    val aggregated: ProjectProviders,
+    val merged: ProjectProviders,
 
     val engine: Provider<CoverageEngine>,
     val classpath: Provider<FileCollection>,
