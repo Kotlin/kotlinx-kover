@@ -7,7 +7,6 @@ package kotlinx.kover.tasks
 import kotlinx.kover.api.*
 import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.Report
-import kotlinx.kover.engines.commons.ReportFiles
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.model.*
@@ -19,10 +18,6 @@ import java.io.*
 open class KoverAggregateTask : DefaultTask() {
     @get:Nested
     val binaryReportFiles: MapProperty<String, NestedFiles> =
-        project.objects.mapProperty(String::class.java, NestedFiles::class.java)
-
-    @get:Nested
-    val smapFiles: MapProperty<String, NestedFiles> =
         project.objects.mapProperty(String::class.java, NestedFiles::class.java)
 
     @get:Nested
@@ -42,36 +37,23 @@ open class KoverAggregateTask : DefaultTask() {
 
     internal fun report(): Report {
         val binariesMap = binaryReportFiles.get()
-        val smapFilesMap = smapFiles.get()
         val sourcesMap = srcDirs.get()
         val outputsMap = outputDirs.get()
 
         val projectsNames = sourcesMap.keys
 
-        val reportFiles: MutableList<ReportFiles> = mutableListOf()
-        val sourceFiles: MutableList<File> = mutableListOf()
-        val outputFiles: MutableList<File> = mutableListOf()
+        val reportFiles: MutableList<File> = mutableListOf()
+        val projects: MutableList<ProjectInfo> = mutableListOf()
 
-        // FIXME now all projects joined to one because of incorrect reporter's JSON format
-        projectsNames.map { name ->
-            val binaries = binariesMap.getValue(name)
-
-            reportFiles += if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
-                val smapFiles = smapFilesMap.getValue(name).files.get().iterator()
-                binaries.files.get().map { binary ->
-                    ReportFiles(binary, smapFiles.next())
-                }
-            } else {
-                binaries.files.get().map { binary ->
-                    ReportFiles(binary)
-                }
-            }
-
-            sourceFiles += sourcesMap.getValue(name).files.get()
-            outputFiles += outputsMap.getValue(name).files.get()
+        projectsNames.map { projectName ->
+            reportFiles += binariesMap.getValue(projectName).files.get()
+            projects += ProjectInfo(
+                sources = sourcesMap.getValue(projectName).files.get(),
+                outputs = outputsMap.getValue(projectName).files.get()
+            )
         }
 
-        return Report(reportFiles, listOf(ProjectInfo(sourceFiles, outputFiles)))
+        return Report(reportFiles, projects)
     }
 }
 

@@ -172,7 +172,6 @@ class KoverPlugin : Plugin<Project> {
 
             providers.projects.forEach { (projectName, m) ->
                 task.binaryReportFiles.put(projectName, NestedFiles(task.project.objects, m.reports))
-                task.smapFiles.put(projectName, NestedFiles(task.project.objects, m.smap))
                 task.srcDirs.put(projectName, NestedFiles(task.project.objects, m.sources))
                 task.outputDirs.put(projectName, NestedFiles(task.project.objects, m.output))
             }
@@ -226,7 +225,6 @@ class KoverPlugin : Plugin<Project> {
 
             // it is necessary to read all binary reports because project's classes can be invoked in another project
             task.binaryReportFiles.set(providers.aggregated.reports)
-            task.smapFiles.set(providers.aggregated.smap)
             task.dependsOn(providers.aggregated.tests)
 
             task.onlyIf { !projectProviders.disabled.get() }
@@ -257,13 +255,6 @@ class KoverPlugin : Plugin<Project> {
             val koverExtension = providers.koverExtension.get()
             val suffix = if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) ".ic" else ".exec"
             project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
-        })
-        taskExtension.smapFile.set(this.project.provider {
-            val koverExtension = providers.koverExtension.get()
-            if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ)
-                File(taskExtension.binaryReportFile.get().canonicalPath + ".smap")
-            else
-                null
         })
 
         val excludeAndroidPackages =

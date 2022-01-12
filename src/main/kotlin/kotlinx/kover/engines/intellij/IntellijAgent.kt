@@ -19,10 +19,9 @@ internal fun Project.createIntellijAgent(koverExtension: KoverExtension): Covera
 
 private class IntellijAgent(private val config: Configuration): CoverageAgent {
     private val trackingPerTest = false // a flag to enable tracking per test coverage
-    private val calculateForUnloadedClasses = true // a flag to calculate coverage for unloaded classes
+    private val calculateForUnloadedClasses = false // a flag to calculate coverage for unloaded classes
     private val appendToDataFile = false // a flag to use data file as initial coverage
     private val samplingMode = false //a flag to run coverage in sampling mode or in tracing mode otherwise
-    private val generateSmapFile = true
 
     override val engine: CoverageEngine = CoverageEngine.INTELLIJ
     override val classpath: FileCollection = config
@@ -33,7 +32,6 @@ private class IntellijAgent(private val config: Configuration): CoverageAgent {
         val jarFile = config.fileCollection { it.name == "intellij-coverage-agent" }.singleFile
         return mutableListOf(
             "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
-            "-Didea.coverage.check.inline.signatures=true",
             "-Didea.new.sampling.coverage=true",
             "-Didea.new.tracing.coverage=true",
             "-Didea.coverage.log.level=error",
@@ -46,18 +44,12 @@ private class IntellijAgent(private val config: Configuration): CoverageAgent {
         binary.parentFile.mkdirs()
         val binaryPath = binary.canonicalPath
 
-        val smap = extension.smapFile.get()
-        smap.parentFile.mkdirs()
-        val smapPath = smap.canonicalPath
-
         printWriter().use { pw ->
             pw.appendLine(binaryPath)
             pw.appendLine(trackingPerTest.toString())
             pw.appendLine(calculateForUnloadedClasses.toString())
             pw.appendLine(appendToDataFile.toString())
             pw.appendLine(samplingMode.toString())
-            pw.appendLine(generateSmapFile.toString())
-            pw.appendLine(smapPath)
             extension.includes.forEach { i ->
                 pw.appendLine(i.replaceWildcards())
             }
