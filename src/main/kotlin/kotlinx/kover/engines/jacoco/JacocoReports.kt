@@ -29,8 +29,6 @@ private fun Task.callJacocoAntReportTask(
         )
     )
 
-    val binaries: List<File> = report.files.map(kotlinx.kover.engines.commons.ReportFiles::binary)
-
     val sources: MutableList<File> = mutableListOf()
     val outputs: MutableList<File> = mutableListOf()
     report.projects.forEach { projectInfo ->
@@ -40,7 +38,7 @@ private fun Task.callJacocoAntReportTask(
 
     builder.invokeWithBody("jacocoReport") {
         invokeWithBody("executiondata") {
-            project.files(binaries).addToAntBuilder(this, "resources")
+            project.files(report.files).addToAntBuilder(this, "resources")
         }
         invokeWithBody("structure", mapOf("name" to project.name)) {
             invokeWithBody("sourcefiles") {

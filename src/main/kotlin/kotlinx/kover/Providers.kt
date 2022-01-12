@@ -17,7 +17,6 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
     allprojects {
         projects[it.name] = ProjectProviders(
             it.provider { it.files(it.binaryReports(this)) },
-            it.provider { it.files(it.smapFiles(this)) },
             it.provider { it.testTasks(this) },
             it.provider { it.collectDirs(this).first },
             it.provider { it.collectDirs(this).second },
@@ -36,7 +35,6 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
 
 
     val allReportsProvider: Provider<FileCollection> = provider { files(allBinaryReports()) }
-    val allSmapProvider: Provider<FileCollection> = provider { files(allSmapFiles()) }
     val allTestsProvider = provider { allTestTasks() }
 
     // all sources and all outputs providers are unused, so NOW it can return empty file collection
@@ -44,7 +42,6 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
     val aggregatedProviders =
         ProjectProviders(
             allReportsProvider,
-            allSmapProvider,
             allTestsProvider,
             emptyProvider,
             emptyProvider,
@@ -60,10 +57,6 @@ internal fun Project.allTestTasks(): List<Test> {
 
 internal fun Project.allBinaryReports(): List<File> {
     return allprojects.flatMap { it.binaryReports(this) }
-}
-
-internal fun Project.allSmapFiles(): List<File> {
-    return allprojects.flatMap { it.smapFiles(this) }
 }
 
 
@@ -87,25 +80,6 @@ internal fun Project.binaryReports(root: Project): List<File> {
         .filterNot { e -> e.isDisabled }
         .map { e -> e.binaryReportFile.get() }
         // process binary report only from tasks with sources
-        .filter { f -> f.exists() }
-        .toList()
-}
-
-internal fun Project.smapFiles(root: Project): List<File> {
-    if (isDisabled(root)) {
-        return emptyList()
-    }
-
-    return tasks.withType(Test::class.java).asSequence()
-        .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
-        .filterNot { e -> e.isDisabled }
-        .mapNotNull { e -> e.smapFile.orNull }
-        /*
-         Binary reports and SMAP files have same ordering for IntelliJ engine:
-            * SMAP file is null if coverage engine is a JaCoCo by default - in this case property is unused
-            * SMAP file not creates by JaCoCo - property is unused
-            * test task have no sources - in this case binary report and SMAP file not exists
-         */
         .filter { f -> f.exists() }
         .toList()
 }
@@ -146,7 +120,6 @@ internal class AllProviders(
 
 internal class ProjectProviders(
     val reports: Provider<FileCollection>,
-    val smap: Provider<FileCollection>,
     val tests: Provider<List<Test>>,
     val sources: Provider<FileCollection>,
     val output: Provider<FileCollection>,

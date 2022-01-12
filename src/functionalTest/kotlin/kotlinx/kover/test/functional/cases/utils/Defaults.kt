@@ -13,10 +13,6 @@ internal fun defaultBinaryReport(engine: CoverageEngine, projectType: ProjectTyp
     }
 }
 
-internal fun defaultSmapFile(projectType: ProjectType): String {
-    return defaultBinaryReport(CoverageEngine.INTELLIJ, projectType) + ".smap"
-}
-
 internal fun defaultXmlReport() = "reports/kover/report.xml"
 internal fun defaultHtmlReport() = "reports/kover/html"
 

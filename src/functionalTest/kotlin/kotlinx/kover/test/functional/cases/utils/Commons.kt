@@ -18,21 +18,6 @@ internal fun RunResult.checkDefaultBinaryReport(mustExist: Boolean = true) {
             assertFalse { exists() }
         }
     }
-
-    if (engine == CoverageEngine.INTELLIJ) {
-        val smap = defaultSmapFile(projectType)
-
-        if (mustExist) {
-            file(smap) {
-                assertTrue { exists() }
-                assertTrue { length() > 0 }
-            }
-        } else {
-            file(smap) {
-                assertFalse { exists() }
-            }
-        }
-    }
 }
 
 internal fun RunResult.checkDefaultReports(mustExist: Boolean = true) {
@@ -78,13 +63,9 @@ internal fun assertCounterAbsent(counter: Counter?) {
     assertNull(counter)
 }
 
-internal fun assertCounterExcluded(counter: Counter?, engine: CoverageEngine) {
-    if (engine == CoverageEngine.INTELLIJ) {
-        assertNull(counter)
-    } else {
-        assertNotNull(counter)
-        assertEquals(0, counter.covered)
-    }
+internal fun assertCounterNotCovered(counter: Counter?) {
+    assertNotNull(counter)
+    assertEquals(0, counter.covered)
 }
 
 internal fun assertCounterCovered(counter: Counter?) {
