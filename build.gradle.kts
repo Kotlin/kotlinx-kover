@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version Deps.Kotlin.version
 
     `java-gradle-plugin`
     `maven-publish`
@@ -22,16 +22,16 @@ sourceSets {
 dependencies {
     implementation(gradleApi())
 
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
-    compileOnly("com.android.tools.build:gradle:4.2.2")
+    compileOnly(Deps.Kotlin.gradlePlugin)
+    compileOnly(Deps.Android.gradlePlugin)
 
     testImplementation(kotlin("test"))
 
     "functionalTestImplementation"(gradleTestKit())
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.5.31")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-runner:1.5.31")
+    "functionalTestCompileOnly"(Deps.Kotlin.gradlePlugin)
+    "functionalTestCompileOnly"(Deps.Kotlin.compilerEmbeddable)
+    "functionalTestCompileOnly"(Deps.Kotlin.compilerRunner)
 
 }
 
