@@ -204,11 +204,17 @@ the project in which the plugin is applied (usually this is the root project):
 tasks.koverMergedHtmlReport {
     isEnabled = true                        // false to disable report generation
     htmlReportDir.set(layout.buildDirectory.dir("my-merged-report/html-result"))
+
+    includes = listOf("com.example.*")            // inclusion rules for classes
+    excludes = listOf("com.example.subpackage.*") // exclusion rules for classes
 }
 
 tasks.koverMergedXmlReport {
     isEnabled = true                        // false to disable report generation
     xmlReportFile.set(layout.buildDirectory.file("my-merged-report/result.xml"))
+
+    includes = listOf("com.example.*")            // inclusion rules for classes
+    excludes = listOf("com.example.subpackage.*") // exclusion rules for classes  
 }
 ```
 </details>
@@ -220,11 +226,17 @@ tasks.koverMergedXmlReport {
 tasks.koverMergedHtmlReport {
     enabled = true                          // false to disable report generation
     htmlReportDir.set(layout.buildDirectory.dir("my-merged-report/html-result"))
+
+    includes = ['com.example.*']             // inclusion rules for classes
+    excludes = ['com.example.subpackage.*']  // exclusion rules for classes
 }
 
 tasks.koverMergedXmlReport {
     enabled = true                          // false to disable report generation
     xmlReportFile.set(layout.buildDirectory.file("my-merged-report/result.xml"))
+
+    includes = ['com.example.*']             // inclusion rules for classes
+    excludes = ['com.example.subpackage.*']  // exclusion rules for classes
 }
 ```
 </details>
@@ -241,11 +253,17 @@ the corresponding tasks in this project:
 tasks.koverHtmlReport {
     isEnabled = true                        // false to disable report generation
     htmlReportDir.set(layout.buildDirectory.dir("my-project-report/html-result"))
+
+    includes = listOf("com.example.*")            // inclusion rules for classes
+    excludes = listOf("com.example.subpackage.*") // exclusion rules for classes  
 }
 
 tasks.koverXmlReport {
     isEnabled = true                        // false to disable report generation
     xmlReportFile.set(layout.buildDirectory.file("my-project-report/result.xml"))
+
+    includes = listOf("com.example.*")            // inclusion rules for classes
+    excludes = listOf("com.example.subpackage.*") // exclusion rules for classes 
 }
 ```
 </details>
@@ -257,11 +275,16 @@ tasks.koverXmlReport {
 tasks.koverHtmlReport {
     enabled = true                          // false to disable report generation
     htmlReportDir.set(layout.buildDirectory.dir("my-project-report/html-result"))
+
+    includes = ['com.example.*']             // inclusion rules for classes
+    excludes = ['com.example.subpackage.*']  // exclusion rules for classes  
 }
 
 tasks.koverXmlReport {
     enabled = true                          // false to disable report generation
     xmlReportFile.set(layout.buildDirectory.file("my-project-report/result.xml"))
+    includes = ['com.example.*']             // inclusion rules for classes
+    excludes = ['com.example.subpackage.*']  // exclusion rules for classes  
 }
 ```
 </details>
@@ -308,7 +331,7 @@ kover {
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
     intellijEngineVersion.set("1.0.640")    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
-    generateReportOnCheck.set(true)         // false to do not execute `koverMergedReport` task before `check` task
+    generateReportOnCheck = true            // false to do not execute `koverMergedReport` task before `check` task
     disabledProjects = setOf()              // setOf("project-name") to disable coverage for project with name `project-name`
     instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
     runAllTestsForProjectTask = false       // true to run all tests in all projects if `koverHtmlReport`, `koverXmlReport`, `koverReport`, `koverVerify` or `check` tasks executed on some project
@@ -325,7 +348,7 @@ kover {
     coverageEngine.set(kotlinx.kover.api.CoverageEngine.INTELLIJ) // change instrumentation agent and reporter
     intellijEngineVersion.set('1.0.640')    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set('0.8.7')        // change version of JaCoCo agent and reporter
-    generateReportOnCheck.set(true)         // false to do not execute `koverMergedReport` task before `check` task
+    generateReportOnCheck = true            // false to do not execute `koverMergedReport` task before `check` task
     disabledProjects = []                   // ["project-name"] to disable coverage for project with name `project-name`
     instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
     runAllTestsForProjectTask = false       // true to run all tests in all projects if `koverHtmlReport`, `koverXmlReport`, `koverReport`, `koverVerify` or `check` tasks executed on some project
@@ -349,6 +372,9 @@ is applied (usually this is the root project):
 
 ```kotlin
 tasks.koverMergedVerify {
+    includes = listOf("com.example.*")            // inclusion rules for classes
+    excludes = listOf("com.example.subpackage.*") // exclusion rules for classes
+  
     rule {
         name = "Minimum number of lines covered"
         bound {
@@ -380,6 +406,9 @@ tasks.koverMergedVerify {
 
 ```groovy
 tasks.koverMergedVerify {
+    includes = ['com.example.*']             // inclusion rules for classes
+    excludes = ['com.example.subpackage.*']  // exclusion rules for classes
+  
     rule {
         name = "Minimum number of lines covered"
         bound {
@@ -413,6 +442,9 @@ To add rules for code coverage checks for the code of one specific project, you 
 
 ```kotlin
 tasks.koverVerify {
+    includes = listOf("com.example.*")            // inclusion rules for classes
+    excludes = listOf("com.example.subpackage.*") // exclusion rules for classes
+
     rule {
         name = "Minimal line coverage rate in percent"
         bound {
@@ -428,6 +460,9 @@ tasks.koverVerify {
 
 ```groovy
 tasks.koverVerify {
+    includes = ['com.example.*']             // inclusion rules for classes
+    excludes = ['com.example.subpackage.*']  // exclusion rules for classes
+  
     rule {
         name = "Minimal line coverage rate in percent"
         bound {

@@ -26,6 +26,8 @@ open class KoverMergedXmlReportTask : KoverMergedTask() {
                 report(),
                 xmlReportFile.get().asFile,
                 null,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {
@@ -55,6 +57,8 @@ open class KoverXmlReportTask : KoverProjectTask() {
                 report(),
                 xmlReportFile.get().asFile,
                 null,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {

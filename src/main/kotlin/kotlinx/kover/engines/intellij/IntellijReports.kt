@@ -16,6 +16,8 @@ internal fun Task.intellijReport(
     report: Report,
     xmlFile: File?,
     htmlDir: File?,
+    includes: List<String>,
+    excludes: List<String>,
     classpath: FileCollection
 ) {
     xmlFile?.let {
@@ -28,7 +30,7 @@ internal fun Task.intellijReport(
 
     val argsFile = File(temporaryDir, "intellijreport.json")
     argsFile.printWriter().use { pw ->
-        pw.writeReportsJson(report, xmlFile, htmlDir)
+        pw.writeReportsJson(report, xmlFile, htmlDir, includes, excludes)
     }
 
     project.javaexec { e ->
@@ -95,22 +97,37 @@ JSON example:
 private fun Writer.writeReportsJson(
     report: Report,
     xmlFile: File?,
-    htmlDir: File?
+    htmlDir: File?,
+    includes: List<String>,
+    excludes: List<String>,
 ) {
     appendLine("{")
 
     appendLine("""  "reports": [ """)
     appendLine(report.files.joinToString(",\n        ", "        ") { f ->
-        """{"ic": "${f.safePath()}"}"""
+        """{"ic": ${f.jsonString}}"""
     })
     appendLine("""    ], """)
 
     xmlFile?.also {
-        appendLine("""  "xml": "${it.safePath()}",""")
+        appendLine("""  "xml": ${it.jsonString},""")
     }
     htmlDir?.also {
-        appendLine("""  "html": "${it.safePath()}",""")
+        appendLine("""  "html": ${it.jsonString},""")
     }
+
+    if (includes.isNotEmpty()) {
+        appendLine("""  "include": {""")
+        appendLine(includes.joinToString(", ", """    "classes": [""", "]") { i -> i.wildcardsToRegex().jsonString })
+        appendLine("""  },""")
+    }
+
+    if (excludes.isNotEmpty()) {
+        appendLine("""  "exclude": {""")
+        appendLine(excludes.joinToString(", ", """    "classes": [""", "]") { e -> e.wildcardsToRegex().jsonString })
+        appendLine("""  },""")
+    }
+
     appendLine("""  "modules": [""")
     report.projects.forEachIndexed { index, aProject ->
         writeProjectReportJson(aProject, index == (report.projects.size - 1))
@@ -123,19 +140,25 @@ private fun Writer.writeProjectReportJson(projectInfo: ProjectInfo, isLast: Bool
     appendLine("""    {""")
     appendLine("""      "output": [""")
     appendLine(
-        projectInfo.outputs.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+        projectInfo.outputs.joinToString(",\n        ", "        ") { f -> f.jsonString })
     appendLine("""      ],""")
     appendLine("""      "sources": [""")
 
     appendLine(
-        projectInfo.sources.joinToString(",\n        ", "        ") { f -> '"' + f.safePath() + '"' })
+        projectInfo.sources.joinToString(",\n        ", "        ") { f -> f.jsonString })
     appendLine("""      ]""")
     appendLine("""    }${if (isLast) "" else ","}""")
 }
 
-private fun File.safePath(): String {
-    return canonicalPath.replace("\\", "\\\\").replace("\"", "\\\"")
-}
+private val File.jsonString: String
+    get() {
+        return canonicalPath.jsonString
+    }
+
+private val String.jsonString: String
+    get() {
+        return '"' + replace("\\", "\\\\").replace("\"", "\\\"") + '"'
+    }
 
 internal fun Task.intellijVerification(
     xmlFile: File,

@@ -27,6 +27,8 @@ open class KoverMergedHtmlReportTask : KoverMergedTask() {
                 report(),
                 null,
                 htmlDirFile,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {
@@ -58,6 +60,8 @@ open class KoverHtmlReportTask : KoverProjectTask() {
                 report(),
                 null,
                 htmlDirFile,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {

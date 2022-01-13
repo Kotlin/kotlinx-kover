@@ -39,24 +39,7 @@ open class KoverMergedVerificationTask : KoverMergedTask() {
 
     @TaskAction
     fun verify() {
-        verify(report(), coverageEngine.get(), rulesInternal, classpath.get()) {
-            val xmlReport =
-                this.project.tasks.withType(KoverMergedXmlReportTask::class.java)
-                    .findByName(MERGED_XML_REPORT_TASK_NAME)
-                    ?: throw GradleException("Kover: task '$MERGED_XML_REPORT_TASK_NAME' not exists but it is required for verification")
-
-            var xmlFile = xmlReport.xmlReportFile.get().asFile
-            if (!xmlFile.exists()) {
-                xmlFile = File(temporaryDir, "counters.xml")
-                intellijReport(
-                    it,
-                    xmlFile,
-                    null,
-                    xmlReport.classpath.get()
-                )
-            }
-            xmlFile
-        }
+        verify(report(), coverageEngine.get(), rulesInternal, includes, excludes, classpath.get())
     }
 
 }
@@ -81,24 +64,7 @@ open class KoverVerificationTask : KoverProjectTask() {
 
     @TaskAction
     fun verify() {
-        verify(report(), coverageEngine.get(), rulesInternal, classpath.get()) {
-            val xmlReport =
-                this.project.tasks.withType(KoverXmlReportTask::class.java)
-                    .findByName(XML_REPORT_TASK_NAME)
-                    ?: throw GradleException("Kover: task '$XML_REPORT_TASK_NAME' does not exist but it is required for verification")
-
-            var xmlFile = xmlReport.xmlReportFile.get().asFile
-            if (!xmlFile.exists()) {
-                xmlFile = File(temporaryDir, "counters.xml")
-                intellijReport(
-                    it,
-                    xmlFile,
-                    null,
-                    xmlReport.classpath.get()
-                )
-            }
-            xmlFile
-        }
+        verify(report(), coverageEngine.get(), rulesInternal, includes, excludes, classpath.get())
     }
 
 }
@@ -107,12 +73,20 @@ private fun Task.verify(
     report: Report,
     engine: CoverageEngine,
     rules: List<VerificationRule>,
-    classpath: FileCollection,
-    // Remove it after verification is implemented in the IntelliJ reporter
-    xmlFileProducer: (Report) -> File,
+    includes: List<String>,
+    excludes: List<String>,
+    classpath: FileCollection
 ) {
     if (engine == CoverageEngine.INTELLIJ) {
-        val xmlFile = xmlFileProducer(report)
+        val xmlFile = File(temporaryDir, "counters.xml")
+        intellijReport(
+            report,
+            xmlFile,
+            null,
+            includes,
+            excludes,
+            classpath
+        )
         this.intellijVerification(xmlFile, rules)
     } else {
         jacocoVerification(report, rules, classpath)
