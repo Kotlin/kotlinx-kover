@@ -1,6 +1,10 @@
+@Suppress(
+    "UnstableApiUsage",
+    // Required to suppress false-positive described at https://youtrack.jetbrains.com/issue/KTIJ-19369
+    "DSL_SCOPE_VIOLATION"
+)
 plugins {
-    kotlin("jvm") version Deps.Kotlin.version
-
+    alias(libs.plugins.kotlin)
     `java-gradle-plugin`
     `maven-publish`
     signing
@@ -19,19 +23,20 @@ sourceSets {
     }
 }
 
+@Suppress("UnstableApiUsage")
 dependencies {
     implementation(gradleApi())
 
-    compileOnly(Deps.Kotlin.gradlePlugin)
-    compileOnly(Deps.Android.gradlePlugin)
+    compileOnly(libs.kotlin.gradle)
+    compileOnly(libs.android.gradle)
 
     testImplementation(kotlin("test"))
 
     "functionalTestImplementation"(gradleTestKit())
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
-    "functionalTestCompileOnly"(Deps.Kotlin.gradlePlugin)
-    "functionalTestCompileOnly"(Deps.Kotlin.compilerEmbeddable)
-    "functionalTestCompileOnly"(Deps.Kotlin.compilerRunner)
+    "functionalTestCompileOnly"(libs.kotlin.gradle)
+    "functionalTestCompileOnly"(libs.kotlin.compilerEmbeddable)
+    "functionalTestCompileOnly"(libs.kotlin.compilerRunner)
 
 }
 

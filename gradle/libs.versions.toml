@@ -1,0 +1,12 @@
+[versions]
+kotlin = "1.5.31"
+
+[libraries]
+android-gradle = { module = "com.android.tools.build:gradle", version = "4.2.2" }
+
+kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+kotlin-compilerRunner = { module = "org.jetbrains.kotlin:kotlin-compiler-runner", version.ref = "kotlin" }
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
