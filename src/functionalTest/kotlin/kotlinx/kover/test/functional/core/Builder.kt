@@ -117,7 +117,7 @@ private open class ProjectBuilderImpl<B : ProjectBuilder<B>>(val projectState: P
     }
 
     override fun config(kotlin: String, groovy: String): B {
-        projectState.testScripts += GradleScript(kotlin, groovy)
+        projectState.scripts += GradleScript(kotlin, groovy)
         return this as B
     }
 

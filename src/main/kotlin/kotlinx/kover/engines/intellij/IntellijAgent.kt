@@ -5,6 +5,7 @@
 package kotlinx.kover.engines.intellij
 
 import kotlinx.kover.api.*
+import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.CoverageAgent
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
@@ -51,7 +52,7 @@ private class IntellijAgent(private val config: Configuration): CoverageAgent {
             pw.appendLine(appendToDataFile.toString())
             pw.appendLine(samplingMode.toString())
             extension.includes.forEach { i ->
-                pw.appendLine(i.replaceWildcards())
+                pw.appendLine(i.wildcardsToRegex())
             }
 
             if (extension.excludes.isNotEmpty()) {
@@ -59,29 +60,11 @@ private class IntellijAgent(private val config: Configuration): CoverageAgent {
             }
 
             extension.excludes.forEach { e ->
-                pw.appendLine(e.replaceWildcards())
+                pw.appendLine(e.wildcardsToRegex())
             }
         }
-    }
-
-    private fun String.replaceWildcards(): String {
-        // in most cases, the characters `*` or `.` will be present therefore, we increase the capacity in advance
-        val builder = StringBuilder(length * 2)
-
-        forEach { char ->
-            when (char) {
-                in regexMetacharactersSet -> builder.append('\\').append(char)
-                '*' -> builder.append('.').append("*")
-                '?' -> builder.append('.')
-                else -> builder.append(char)
-            }
-        }
-
-        return builder.toString()
     }
 }
-
-private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()
 
 private fun Project.createIntellijConfig(koverExtension: KoverExtension): Configuration {
     val config = project.configurations.create("IntellijKoverConfig")

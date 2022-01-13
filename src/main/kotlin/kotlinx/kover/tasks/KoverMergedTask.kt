@@ -34,6 +34,31 @@ open class KoverMergedTask : DefaultTask() {
     @get:Classpath
     internal val classpath: Property<FileCollection> = project.objects.property(FileCollection::class.java)
 
+    /**
+     * Specifies class inclusion rules into report.
+     * Only the specified classes may be present in the report.
+     * Exclusion rules have priority over inclusion ones.
+     *
+     * Inclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
+     * It's possible to use `*` and `?` wildcards.
+     *
+     * **Works only with IntelliJ Coverage Engine.**
+     */
+    @get:Input
+    public var includes: List<String> = emptyList()
+
+    /**
+     * Specifies class exclusion rules into report.
+     * The specified classes will definitely be missing from report.
+     * Exclusion rules have priority over inclusion ones.
+     *
+     * Exclusion rules are represented as a set of fully-qualified names of the classes being instrumented.
+     * It's possible to use `*` and `?` wildcards.
+     *
+     * **Works only with IntelliJ Coverage Engine.**
+     */
+    @get:Input
+    public var excludes: List<String> = emptyList()
 
     internal fun report(): Report {
         val binariesMap = binaryReportFiles.get()

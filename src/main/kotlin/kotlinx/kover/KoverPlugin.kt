@@ -33,7 +33,6 @@ import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.process.*
-import java.io.*
 import kotlin.reflect.*
 
 class KoverPlugin : Plugin<Project> {
@@ -86,8 +85,6 @@ class KoverPlugin : Plugin<Project> {
             projectProviders
         ) {
             it.onlyIf { t -> (t as KoverVerificationTask).rules.isNotEmpty() }
-            // kover takes counter values from XML file. Remove after reporter upgrade
-            it.mustRunAfter(xmlReportTask)
             it.description = "Verifies code coverage metrics of one project based on specified rules."
         }
 
@@ -141,8 +138,6 @@ class KoverPlugin : Plugin<Project> {
             providers
         ) {
             it.onlyIf { t -> (t as KoverMergedVerificationTask).rules.isNotEmpty() }
-            // kover takes counter values from XML file. Remove after reporter upgrade
-            it.mustRunAfter(xmlReportTask)
             it.description = "Verifies code coverage metrics of all projects based on specified rules."
         }
 
