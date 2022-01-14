@@ -1,3 +1,14 @@
+0.5.0-RC2 / 2022-01-14
+===================
+
+In this version, the plugin API has been redesigned for more convenient and understandable work with multi-project 
+builds and merged reports. Also added filters for report and verification tasks.
+
+### Features
+* Added reports filtering (#17)
+* Disabled running of all test tasks for single-project Kover tasks (#114)
+* Upgraded IntelliJ Engine default version to `1.0.647`
+
 0.5.0-RC / 2021-12-24
 ===================
 
