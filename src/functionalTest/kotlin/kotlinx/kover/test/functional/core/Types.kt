@@ -81,4 +81,5 @@ internal class Counter(val type: String, val missed: Int, val covered: Int) {
 
 internal interface XmlReport {
     fun classCounter(className: String, type: String = "INSTRUCTION"): Counter?
+    fun methodCounter(className: String, methodName: String, type: String = "INSTRUCTION"): Counter?
 }
