@@ -21,7 +21,7 @@ internal fun Project.createIntellijAgent(koverExtension: KoverExtension): Covera
 private class IntellijAgent(private val config: Configuration): CoverageAgent {
     private val trackingPerTest = false // a flag to enable tracking per test coverage
     private val calculateForUnloadedClasses = false // a flag to calculate coverage for unloaded classes
-    private val appendToDataFile = false // a flag to use data file as initial coverage
+    private val appendToDataFile = true // a flag to use data file as initial coverage
     private val samplingMode = false //a flag to run coverage in sampling mode or in tracing mode otherwise
 
     override val engine: CoverageEngine = CoverageEngine.INTELLIJ
