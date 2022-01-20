@@ -39,8 +39,6 @@ class KoverPlugin : Plugin<Project> {
     private val defaultJacocoVersion = "0.8.7"
 
     override fun apply(target: Project) {
-        target.checkAlreadyApplied()
-
         val koverExtension = target.createKoverExtension()
         val agents = AgentsFactory.createAgents(target, koverExtension)
 
@@ -210,6 +208,10 @@ class KoverPlugin : Plugin<Project> {
         projectProviders: ProjectProviders,
         block: (T) -> Unit
     ): T {
+        tasks.findByName(taskName)?.let {
+            throw GradleException("Kover task '$taskName' already exist. Plugin should not be applied in child project if it has already been applied in one of the parent projects.")
+        }
+
         return tasks.create(taskName, type.java) { task ->
             task.group = VERIFICATION_GROUP
 
@@ -264,17 +266,6 @@ class KoverPlugin : Plugin<Project> {
         )
 
         doLast(IntellijErrorLogChecker(taskExtension))
-    }
-
-    private fun Project.checkAlreadyApplied() {
-        var parent = parent
-
-        while (parent != null) {
-            if (parent.plugins.hasPlugin(KoverPlugin::class.java)) {
-                throw GradleException("Kover plugin is applied in both parent project '${parent.name}' and child project '${this.name}'. Kover plugin should be applied only in parent project.")
-            }
-            parent = this.parent
-        }
     }
 }
 
