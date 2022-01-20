@@ -24,7 +24,7 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     assertCounterAbsent(classCounter("org.jetbrains.ExampleClass"))
                     assertCounterCovered(classCounter("org.jetbrains.SecondClass"))
                 }
@@ -51,7 +51,7 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     assertCounterAbsent(classCounter("org.jetbrains.ExampleClass"))
                     assertCounterAbsent(classCounter("org.jetbrains.Unused"))
                     assertCounterFullyCovered(classCounter("org.jetbrains.SecondClass"))

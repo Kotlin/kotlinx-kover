@@ -11,7 +11,7 @@ import org.gradle.api.tasks.testing.*
 import java.io.*
 
 
-internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>): AllProviders {
+internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>): BuildProviders {
     val projects: MutableMap<String, ProjectProviders> = mutableMapOf()
 
     allprojects {
@@ -36,6 +36,8 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
 
     val allReportsProvider: Provider<FileCollection> = provider { files(allBinaryReports()) }
     val allTestsProvider = provider { allTestTasks() }
+    val koverDisabledProvider = provider { extensions.getByType(KoverExtension::class.java).isDisabled }
+
 
     // all sources and all outputs providers are unused, so NOW it can return empty file collection
     val emptyProvider: Provider<FileCollection> = provider { files() }
@@ -45,9 +47,9 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
             allTestsProvider,
             emptyProvider,
             emptyProvider,
-            provider { false })
+            koverDisabledProvider)
 
-    return AllProviders(projects, mergedProviders, engineProvider, classpathProvider, extensionProvider)
+    return BuildProviders(projects, mergedProviders, engineProvider, classpathProvider, extensionProvider)
 }
 
 
@@ -105,7 +107,8 @@ private fun Project.collectDirs(root: Project): Pair<FileCollection, FileCollect
 }
 
 private fun Project.isDisabled(root: Project): Boolean {
-    return root.extensions.getByType(KoverExtension::class.java).disabledProjects.contains(name)
+    val koverExtension = root.extensions.getByType(KoverExtension::class.java)
+    return koverExtension.isDisabled || koverExtension.disabledProjects.contains(name)
 }
 
 private fun Project.runAllTests(): Boolean {
@@ -113,7 +116,7 @@ private fun Project.runAllTests(): Boolean {
 }
 
 
-internal class AllProviders(
+internal class BuildProviders(
     val projects: Map<String, ProjectProviders>,
     val merged: ProjectProviders,
 

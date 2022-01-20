@@ -14,7 +14,7 @@ internal class DefaultConfigTests : BaseGradleScriptTest() {
             .build()
             .run("build") {
                 checkDefaultBinaryReport()
-                checkDefaultReports()
+                checkDefaultMergedReports()
             }
     }
 

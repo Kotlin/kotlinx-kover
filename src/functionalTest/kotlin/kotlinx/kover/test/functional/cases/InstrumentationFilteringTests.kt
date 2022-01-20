@@ -21,7 +21,7 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     assertCounterNotCovered(classCounter("org.jetbrains.ExampleClass"))
                     assertCounterCovered(classCounter("org.jetbrains.SecondClass"))
                 }
@@ -45,7 +45,7 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     assertCounterNotCovered(classCounter("org.jetbrains.ExampleClass"))
                     assertCounterNotCovered(classCounter("org.jetbrains.Unused"))
                     assertCounterCovered(classCounter("org.jetbrains.SecondClass"))

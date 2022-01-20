@@ -52,7 +52,7 @@ class KoverPlugin : Plugin<Project> {
         target.createMergedTasks(providers)
     }
 
-    private fun Project.applyToProject(providers: AllProviders, agents: Map<CoverageEngine, CoverageAgent>) {
+    private fun Project.applyToProject(providers: BuildProviders, agents: Map<CoverageEngine, CoverageAgent>) {
         val projectProviders =
             providers.projects[name] ?: throw GradleException("Kover: Providers for project '$name' was not found")
 
@@ -104,7 +104,7 @@ class KoverPlugin : Plugin<Project> {
         }
     }
 
-    private fun Project.createMergedTasks(providers: AllProviders) {
+    private fun Project.createMergedTasks(providers: BuildProviders) {
         val xmlReportTask = createKoverMergedTask(
             MERGED_XML_REPORT_TASK_NAME,
             KoverMergedXmlReportTask::class,
@@ -157,7 +157,7 @@ class KoverPlugin : Plugin<Project> {
     private fun <T : KoverMergedTask> Project.createKoverMergedTask(
         taskName: String,
         type: KClass<T>,
-        providers: AllProviders,
+        providers: BuildProviders,
         block: (T) -> Unit
     ): T {
         return tasks.create(taskName, type.java) { task ->
@@ -172,6 +172,8 @@ class KoverPlugin : Plugin<Project> {
             task.coverageEngine.set(providers.engine)
             task.classpath.set(providers.classpath)
             task.dependsOn(providers.merged.tests)
+
+            task.onlyIf { !providers.merged.disabled.get() }
 
             block(task)
         }
@@ -204,7 +206,7 @@ class KoverPlugin : Plugin<Project> {
     private fun <T : KoverProjectTask> Project.createKoverProjectTask(
         taskName: String,
         type: KClass<T>,
-        providers: AllProviders,
+        providers: BuildProviders,
         projectProviders: ProjectProviders,
         block: (T) -> Unit
     ): T {
@@ -241,7 +243,7 @@ class KoverPlugin : Plugin<Project> {
     }
 
     private fun Test.configTestTask(
-        providers: AllProviders,
+        providers: BuildProviders,
         agents: Map<CoverageEngine, CoverageAgent>
     ) {
         val taskExtension = extensions.create(TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
