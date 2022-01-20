@@ -37,7 +37,7 @@ private class JacocoAgent(private val config: Configuration, private val project
 
         return listOfNotNull(
             "destfile=${binary.canonicalPath}",
-            "append=false", // Kover don't support parallel execution of one task
+            "append=true",
             "inclnolocationclasses=false",
             "dumponexit=true",
             "output=file",

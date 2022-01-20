@@ -100,7 +100,7 @@ class KoverPlugin : Plugin<Project> {
         }
 
         tasks.withType(Test::class.java).configureEach { t ->
-            t.configTest(providers, agents)
+            t.configTestTask(providers, agents)
         }
     }
 
@@ -240,7 +240,7 @@ class KoverPlugin : Plugin<Project> {
         return extension
     }
 
-    private fun Test.configTest(
+    private fun Test.configTestTask(
         providers: AllProviders,
         agents: Map<CoverageEngine, CoverageAgent>
     ) {
@@ -265,11 +265,39 @@ class KoverPlugin : Plugin<Project> {
             )
         )
 
-        doLast(IntellijErrorLogChecker(taskExtension))
+        doFirst(BinaryReportCleanupAction(providers.koverExtension, taskExtension))
+        doLast(IntellijErrorLogCopyAction(taskExtension))
     }
 }
 
-private class IntellijErrorLogChecker(private val taskExtension: KoverTaskExtension) : Action<Task> {
+/*
+  To support parallel tests, both Coverage Engines work in append to data file mode.
+  For this reason, before starting the tests, it is necessary to clear the file from the results of previous runs.
+*/
+private class BinaryReportCleanupAction(
+    private val koverExtensionProvider: Provider<KoverExtension>,
+    private val taskExtension: KoverTaskExtension
+) : Action<Task> {
+    override fun execute(task: Task) {
+        val koverExtension = koverExtensionProvider.get()
+        val file = taskExtension.binaryReportFile.get()
+
+        // always delete previous data file
+        file.delete()
+
+        if (!taskExtension.isDisabled
+            && !koverExtension.isDisabled
+            && !koverExtension.disabledProjects.contains(task.project.name)
+            && koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ
+        ) {
+            // IntelliJ engine expected empty file for parallel test execution.
+            // Since it is impossible to know in advance whether the tests will be run in parallel, we always create an empty file.
+            file.createNewFile()
+        }
+    }
+}
+
+private class IntellijErrorLogCopyAction(private val taskExtension: KoverTaskExtension) : Action<Task> {
     override fun execute(task: Task) {
         task.project.copyIntellijErrorLog(
             task.project.layout.buildDirectory.get().file("kover/errors/${task.name}.log").asFile,
