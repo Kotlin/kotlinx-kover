@@ -2,9 +2,10 @@ package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.cases.utils.*
-import kotlinx.kover.test.functional.cases.utils.defaultXmlReport
+import kotlinx.kover.test.functional.cases.utils.defaultMergedXmlReport
 import kotlinx.kover.test.functional.core.BaseGradleScriptTest
 import kotlinx.kover.test.functional.core.ProjectType
+import org.gradle.testkit.runner.*
 import kotlin.test.*
 
 internal class MultiProjectTests : BaseGradleScriptTest() {
@@ -21,7 +22,7 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             }
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
                     assertCounterFullyCovered(classCounter("org.jetbrains.CommonInternalClass"))
                     assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
@@ -40,14 +41,14 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             }
             .build()
             .run("koverReport") {
-                xml(defaultXmlProjectReport()) {
+                xml(defaultXmlReport()) {
                     assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
                     assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
                     assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
                 }
 
                 subproject(subprojectName) {
-                    xml(defaultXmlProjectReport()) {
+                    xml(defaultXmlReport()) {
                         assertCounterAbsent(classCounter("org.jetbrains.UserClass"))
 
                         // common class covered partially because calls from the root project are not counted
@@ -70,14 +71,14 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             }
             .build()
             .run("koverReport") {
-                xml(defaultXmlProjectReport()) {
+                xml(defaultXmlReport()) {
                     assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
                     assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
                     assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
                 }
 
                 subproject(subprojectName) {
-                    xml(defaultXmlProjectReport()) {
+                    xml(defaultXmlReport()) {
                         assertCounterAbsent(classCounter("org.jetbrains.UserClass"))
 
                         // common class fully covered because calls from the root project are counted too
@@ -89,8 +90,34 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
     }
 
     @Test
+    fun testDisabledKover() {
+        builder("Testing disabling whole Kover")
+            .sources("multiproject-user")
+            .subproject(subprojectName) {
+                sources("multiproject-common")
+            }
+            .configKover { disabled = true }
+            .build()
+            .run("build", "koverHtmlReport") {
+                checkDefaultBinaryReport(false)
+                checkOutcome("koverMergedHtmlReport", TaskOutcome.SKIPPED)
+                checkOutcome("koverMergedVerify", TaskOutcome.SKIPPED)
+
+                checkOutcome("koverHtmlReport", TaskOutcome.SKIPPED)
+                checkOutcome("koverVerify", TaskOutcome.SKIPPED)
+                checkOutcome("koverMergedHtmlReport", TaskOutcome.SKIPPED)
+
+                subproject(subprojectName) {
+                    checkDefaultBinaryReport(false)
+                    checkOutcome("koverHtmlReport", TaskOutcome.SKIPPED)
+                    checkOutcome("koverVerify", TaskOutcome.SKIPPED)
+                }
+            }
+    }
+
+    @Test
     fun testDisableSubproject() {
-        builder("Testing disabling tests of subproject")
+        builder("Testing disabling one of subproject")
             .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("multiproject-user")
@@ -101,9 +128,9 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             .build()
             .run("build", "koverReport") {
                 checkDefaultBinaryReport()
+                checkDefaultMergedReports()
                 checkDefaultReports()
-                checkDefaultProjectReports()
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
 
                     // classes from disabled project should not be included in the merged report
@@ -113,8 +140,8 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
 
                 subproject(subprojectName) {
                     checkDefaultBinaryReport(false)
+                    checkDefaultMergedReports(false)
                     checkDefaultReports(false)
-                    checkDefaultProjectReports(false)
                 }
             }
     }

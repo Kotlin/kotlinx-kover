@@ -13,7 +13,7 @@ internal class BranchCounterTests: BaseGradleScriptTest() {
             .sources("branches")
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     val counter = methodCounter("org.jetbrains.MyBranchedClass", "foo", type = "BRANCH")
                     assertNotNull(counter)
                     assertEquals(1, counter.covered)

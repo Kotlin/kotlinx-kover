@@ -70,7 +70,7 @@ internal interface RunResult {
 
     fun xml(filename: String, checker: XmlReport.() -> Unit)
 
-    fun outcome(taskPath: String, checker: TaskOutcome.() -> Unit)
+    fun outcome(taskName: String, checker: TaskOutcome.() -> Unit)
 }
 
 

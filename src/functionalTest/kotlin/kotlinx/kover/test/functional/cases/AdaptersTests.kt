@@ -1,8 +1,8 @@
 package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.test.functional.cases.utils.assertCounterFullyCovered
-import kotlinx.kover.test.functional.cases.utils.defaultXmlProjectReport
 import kotlinx.kover.test.functional.cases.utils.defaultXmlReport
+import kotlinx.kover.test.functional.cases.utils.defaultMergedXmlReport
 import kotlinx.kover.test.functional.core.BaseGradleScriptTest
 import kotlin.test.*
 
@@ -16,7 +16,7 @@ internal class AdaptersTests : BaseGradleScriptTest() {
          */
         internalSample("different-plugins")
             .run("koverMergedXmlReport") {
-                xml(defaultXmlReport()) {
+                xml(defaultMergedXmlReport()) {
                     assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
                     assertCounterFullyCovered(classCounter("org.jetbrains.JvmClass"))
                 }
@@ -25,7 +25,7 @@ internal class AdaptersTests : BaseGradleScriptTest() {
         internalSample("different-plugins")
             .run("koverXmlReport") {
                 subproject("subproject-multiplatform") {
-                    xml(defaultXmlProjectReport()) {
+                    xml(defaultXmlReport()) {
                         assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
                         assertCounterFullyCovered(classCounter("org.jetbrains.JvmClass"))
                     }

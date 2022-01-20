@@ -13,10 +13,10 @@ internal fun defaultBinaryReport(engine: CoverageEngine, projectType: ProjectTyp
     }
 }
 
-internal fun defaultXmlReport() = "reports/kover/report.xml"
-internal fun defaultHtmlReport() = "reports/kover/html"
+internal fun defaultMergedXmlReport() = "reports/kover/report.xml"
+internal fun defaultMergedHtmlReport() = "reports/kover/html"
 
-internal fun defaultXmlProjectReport() = "reports/kover/project-xml/report.xml"
-internal fun defaultHtmlProjectReport() = "reports/kover/project-html"
+internal fun defaultXmlReport() = "reports/kover/project-xml/report.xml"
+internal fun defaultHtmlReport() = "reports/kover/project-html"
 
 internal fun errorsDirectory() = "kover/errors"

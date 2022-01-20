@@ -3,6 +3,7 @@ package kotlinx.kover.test.functional.cases.utils
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.core.*
 import kotlinx.kover.test.functional.core.RunResult
+import org.gradle.testkit.runner.*
 import kotlin.test.*
 
 internal fun RunResult.checkDefaultBinaryReport(mustExist: Boolean = true) {
@@ -20,12 +21,18 @@ internal fun RunResult.checkDefaultBinaryReport(mustExist: Boolean = true) {
     }
 }
 
+internal fun RunResult.checkDefaultMergedReports(mustExist: Boolean = true) {
+    checkReports(defaultMergedXmlReport(), defaultMergedHtmlReport(), mustExist)
+}
+
 internal fun RunResult.checkDefaultReports(mustExist: Boolean = true) {
     checkReports(defaultXmlReport(), defaultHtmlReport(), mustExist)
 }
 
-internal fun RunResult.checkDefaultProjectReports(mustExist: Boolean = true) {
-    checkReports(defaultXmlProjectReport(), defaultHtmlProjectReport(), mustExist)
+internal fun RunResult.checkOutcome(taskName: String, outcome: TaskOutcome) {
+    outcome(taskName) {
+        assertEquals(outcome, this)
+    }
 }
 
 internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
