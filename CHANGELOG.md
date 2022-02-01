@@ -1,3 +1,55 @@
+0.5.0 / 2022-02-01
+===================
+Note that this is a full changelog relative to `0.4.4` version. Changelog relative to `0.5.0-RC2` can be found at the end of the changelog.
+
+### Features
+* Added reports filtering (#17)
+* Disabled running of all test tasks for single-project Kover tasks (#114)
+* Implemented aggregated multi-project report (#20, #43)
+* Unified coverage agents filters. Now only the characters '*' or '?' are used as wildcards for both IntelliJ and JaCoCo agents. **Regular expressions are no longer supported by the IntelliJ agent as filters of instrumented classes.** (#21)
+* Tasks for verification and reporting for single Gradle project were renamed according to the template like `koverXmlReport` -> `koverXmlProjectReport`
+* The `isEnabled` property has been renamed to `isDisabled` in extensions `KoverExtension` and `KoverTaskExtension` to make their purpose more obvious
+* The term `module` has been replaced with `project` for compatibility with Gradle terminology
+* Added the ability to disable the Kover for the specified Gradle project
+* Made tasks cache relocatable (#85)
+* Improved checks of disabled plugin before running Kover tasks
+* Upgraded IntelliJ Engine minimal version to `1.0.647`
+* Upgraded IntelliJ Engine default version to `1.0.656`
+
+### Bugfixes
+* Added support of parallel tests execution (#113)
+* Removed checking of parent projects for re-apply of the plugin (#116)
+* Added property to exclude Android classes from the instrumentation (#89)
+* Kotlin Multiplatform plugin adapter rewritten to use reflection (#100)
+
+### IntelliJ Agent Features (version 1.0.656)
+* Added the ability to count JVM instructions
+* Fixed getting into the report of objects and sealed classes
+* Added an excluding from the report of functions marked by `Deprecated` annotation with `HIDDEN` and `ERROR` levels
+
+### Internal features
+* Added functional test on branch counter
+* Added functional tests on instruction counter
+
+### Changelog relative to version `0.5.0-RC2`
+
+#### Features
+* Improved checks of disabled plugin before running Kover tasks
+* Upgraded IntelliJ Engine default version to `1.0.656`
+
+#### Bugfixes
+* Added support of parallel tests execution (#113)
+* Removed checking of parent projects for re-apply of the plugin (#116)
+
+#### IntelliJ Agent Features (version 1.0.656)
+* Added the ability to count JVM instructions
+* Fixed getting into the report of objects and sealed classes
+* Added an excluding from the report of functions marked by `Deprecated` annotation with `HIDDEN` and `ERROR` levels 
+
+#### Internal features
+* Added functional test on branch counter
+* Added functional tests on instruction counter
+
 0.5.0-RC2 / 2022-01-14
 ===================
 
