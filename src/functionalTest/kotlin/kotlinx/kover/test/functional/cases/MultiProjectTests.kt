@@ -23,9 +23,9 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             .build()
             .run("build") {
                 xml(defaultMergedXmlReport()) {
-                    assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
-                    assertCounterFullyCovered(classCounter("org.jetbrains.CommonInternalClass"))
-                    assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
+                    classCounter("org.jetbrains.CommonClass").assertFullyCovered()
+                    classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()
+                    classCounter("org.jetbrains.UserClass").assertFullyCovered()
                 }
             }
     }
@@ -42,18 +42,18 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             .build()
             .run("koverReport") {
                 xml(defaultXmlReport()) {
-                    assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
-                    assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
-                    assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
+                    classCounter("org.jetbrains.CommonClass").assertAbsent()
+                    classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
+                    classCounter("org.jetbrains.UserClass").assertFullyCovered()
                 }
 
                 subproject(subprojectName) {
                     xml(defaultXmlReport()) {
-                        assertCounterAbsent(classCounter("org.jetbrains.UserClass"))
+                        classCounter("org.jetbrains.UserClass").assertAbsent()
 
                         // common class covered partially because calls from the root project are not counted
-                        assertCounterCovered(classCounter("org.jetbrains.CommonClass"))
-                        assertCounterCovered(classCounter("org.jetbrains.CommonInternalClass"))
+                        classCounter("org.jetbrains.CommonClass").assertCovered()
+                        classCounter("org.jetbrains.CommonInternalClass").assertCovered()
                     }
                 }
             }
@@ -72,18 +72,18 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             .build()
             .run("koverReport") {
                 xml(defaultXmlReport()) {
-                    assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
-                    assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
-                    assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
+                    classCounter("org.jetbrains.CommonClass").assertAbsent()
+                    classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
+                    classCounter("org.jetbrains.UserClass").assertFullyCovered()
                 }
 
                 subproject(subprojectName) {
                     xml(defaultXmlReport()) {
-                        assertCounterAbsent(classCounter("org.jetbrains.UserClass"))
+                        classCounter("org.jetbrains.UserClass").assertAbsent()
 
                         // common class fully covered because calls from the root project are counted too
-                        assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
-                        assertCounterFullyCovered(classCounter("org.jetbrains.CommonInternalClass"))
+                        classCounter("org.jetbrains.CommonClass").assertFullyCovered()
+                        classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()
                     }
                 }
             }
@@ -131,11 +131,11 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
                 checkDefaultMergedReports()
                 checkDefaultReports()
                 xml(defaultMergedXmlReport()) {
-                    assertCounterFullyCovered(classCounter("org.jetbrains.UserClass"))
+                    classCounter("org.jetbrains.UserClass").assertFullyCovered()
 
                     // classes from disabled project should not be included in the merged report
-                    assertCounterAbsent(classCounter("org.jetbrains.CommonClass"))
-                    assertCounterAbsent(classCounter("org.jetbrains.CommonInternalClass"))
+                    classCounter("org.jetbrains.CommonClass").assertAbsent()
+                    classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
                 }
 
                 subproject(subprojectName) {
