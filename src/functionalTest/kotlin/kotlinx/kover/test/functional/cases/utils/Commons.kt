@@ -66,24 +66,37 @@ internal fun RunResult.checkIntellijErrors(errorExpected: Boolean = false) {
     }
 }
 
-internal fun assertCounterAbsent(counter: Counter?) {
-    assertNull(counter)
+internal fun Counter?.assertAbsent() {
+    assertNull(this)
 }
 
-internal fun assertCounterNotCovered(counter: Counter?) {
-    assertNotNull(counter)
-    assertEquals(0, counter.covered)
+internal fun Counter?.assertFullyMissed() {
+    assertNotNull(this)
+    assertTrue { this.missed > 0 }
+    assertEquals(0, this.covered)
 }
 
-internal fun assertCounterCovered(counter: Counter?) {
-    assertNotNull(counter)
-    assertTrue { counter.covered > 0 }
+internal fun Counter?.assertCovered() {
+    assertNotNull(this)
+    assertTrue { this.covered > 0 }
 }
 
-internal fun assertCounterFullyCovered(counter: Counter?) {
-    assertNotNull(counter)
-    assertTrue { counter.covered > 0 }
-    assertEquals(0, counter.missed)
+
+internal fun Counter?.assertTotal(count: Int) {
+    assertNotNull(this)
+    assertEquals(count, covered + missed)
+}
+
+internal fun Counter?.assertCovered(covered: Int, missed: Int) {
+    assertNotNull(this)
+    assertEquals(covered, this.covered)
+    assertEquals(missed, this.missed)
+}
+
+internal fun Counter?.assertFullyCovered() {
+    assertNotNull(this)
+    assertTrue { this.covered > 0 }
+    assertEquals(0, this.missed)
 }
 
 
