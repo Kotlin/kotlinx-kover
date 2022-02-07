@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.5.31"
+kotlin = "1.6.10"
 
 [libraries]
 android-gradle = { module = "com.android.tools.build:gradle", version = "4.2.2" }
