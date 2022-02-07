@@ -11,14 +11,13 @@ import org.gradle.api.tasks.testing.*
 import java.io.*
 
 
-internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>): AllProviders {
+internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>): BuildProviders {
     val projects: MutableMap<String, ProjectProviders> = mutableMapOf()
 
     allprojects {
         projects[it.name] = ProjectProviders(
-            it.provider { it.files(it.binaryReports(this)) },
-            it.provider { it.files(it.smapFiles(this)) },
-            it.provider { it.testTasks(this) },
+            it.provider { it.files(if (runAllTests()) allBinaryReports() else it.binaryReports(this)) },
+            it.provider { if (runAllTests()) allTestTasks() else it.testTasks(this) },
             it.provider { it.collectDirs(this).first },
             it.provider { it.collectDirs(this).second },
             it.provider { it.isDisabled(this) }
@@ -36,21 +35,21 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
 
 
     val allReportsProvider: Provider<FileCollection> = provider { files(allBinaryReports()) }
-    val allSmapProvider: Provider<FileCollection> = provider { files(allSmapFiles()) }
     val allTestsProvider = provider { allTestTasks() }
+    val koverDisabledProvider = provider { extensions.getByType(KoverExtension::class.java).isDisabled }
+
 
     // all sources and all outputs providers are unused, so NOW it can return empty file collection
     val emptyProvider: Provider<FileCollection> = provider { files() }
-    val aggregatedProviders =
+    val mergedProviders =
         ProjectProviders(
             allReportsProvider,
-            allSmapProvider,
             allTestsProvider,
             emptyProvider,
             emptyProvider,
-            provider { false })
+            koverDisabledProvider)
 
-    return AllProviders(projects, aggregatedProviders, engineProvider, classpathProvider, extensionProvider)
+    return BuildProviders(projects, mergedProviders, engineProvider, classpathProvider, extensionProvider)
 }
 
 
@@ -60,10 +59,6 @@ internal fun Project.allTestTasks(): List<Test> {
 
 internal fun Project.allBinaryReports(): List<File> {
     return allprojects.flatMap { it.binaryReports(this) }
-}
-
-internal fun Project.allSmapFiles(): List<File> {
-    return allprojects.flatMap { it.smapFiles(this) }
 }
 
 
@@ -91,25 +86,6 @@ internal fun Project.binaryReports(root: Project): List<File> {
         .toList()
 }
 
-internal fun Project.smapFiles(root: Project): List<File> {
-    if (isDisabled(root)) {
-        return emptyList()
-    }
-
-    return tasks.withType(Test::class.java).asSequence()
-        .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
-        .filterNot { e -> e.isDisabled }
-        .mapNotNull { e -> e.smapFile.orNull }
-        /*
-         Binary reports and SMAP files have same ordering for IntelliJ engine:
-            * SMAP file is null if coverage engine is a JaCoCo by default - in this case property is unused
-            * SMAP file not creates by JaCoCo - property is unused
-            * test task have no sources - in this case binary report and SMAP file not exists
-         */
-        .filter { f -> f.exists() }
-        .toList()
-}
-
 private fun Project.collectDirs(root: Project): Pair<FileCollection, FileCollection> {
     if (isDisabled(root)) {
         return files() to files()
@@ -131,13 +107,18 @@ private fun Project.collectDirs(root: Project): Pair<FileCollection, FileCollect
 }
 
 private fun Project.isDisabled(root: Project): Boolean {
-    return root.extensions.getByType(KoverExtension::class.java).disabledProjects.contains(name)
+    val koverExtension = root.extensions.getByType(KoverExtension::class.java)
+    return koverExtension.isDisabled || koverExtension.disabledProjects.contains(name)
+}
+
+private fun Project.runAllTests(): Boolean {
+    return extensions.getByType(KoverExtension::class.java).runAllTestsForProjectTask
 }
 
 
-internal class AllProviders(
+internal class BuildProviders(
     val projects: Map<String, ProjectProviders>,
-    val aggregated: ProjectProviders,
+    val merged: ProjectProviders,
 
     val engine: Provider<CoverageEngine>,
     val classpath: Provider<FileCollection>,
@@ -146,7 +127,6 @@ internal class AllProviders(
 
 internal class ProjectProviders(
     val reports: Provider<FileCollection>,
-    val smap: Provider<FileCollection>,
     val tests: Provider<List<Test>>,
     val sources: Provider<FileCollection>,
     val output: Provider<FileCollection>,

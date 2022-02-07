@@ -21,9 +21,9 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
-                    assertCounterExcluded(classCounter("org.jetbrains.ExampleClass"), this@run.engine)
-                    assertCounterCovered(classCounter("org.jetbrains.SecondClass"))
+                xml(defaultMergedXmlReport()) {
+                    classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
+                    classCounter("org.jetbrains.SecondClass").assertCovered()
                 }
             }
     }
@@ -45,10 +45,10 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             )
             .build()
             .run("build") {
-                xml(defaultXmlReport()) {
-                    assertCounterExcluded(classCounter("org.jetbrains.ExampleClass"), this@run.engine)
-                    assertCounterExcluded(classCounter("org.jetbrains.Unused"), this@run.engine)
-                    assertCounterCovered(classCounter("org.jetbrains.SecondClass"))
+                xml(defaultMergedXmlReport()) {
+                    classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
+                    classCounter("org.jetbrains.Unused").assertFullyMissed()
+                    classCounter("org.jetbrains.SecondClass").assertCovered()
                 }
             }
     }

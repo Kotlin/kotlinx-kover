@@ -11,7 +11,7 @@ import org.gradle.api.file.*
 import org.gradle.api.tasks.*
 
 @CacheableTask
-open class KoverXmlReportTask : KoverAggregateTask() {
+open class KoverMergedXmlReportTask : KoverMergedTask() {
 
     /**
      * Specifies file path of generated XML report file with coverage data.
@@ -26,6 +26,8 @@ open class KoverXmlReportTask : KoverAggregateTask() {
                 report(),
                 xmlReportFile.get().asFile,
                 null,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {
@@ -40,7 +42,7 @@ open class KoverXmlReportTask : KoverAggregateTask() {
 }
 
 @CacheableTask
-open class KoverXmlProjectReportTask : KoverProjectTask() {
+open class KoverXmlReportTask : KoverProjectTask() {
 
     /**
      * Specifies file path of generated XML report file with coverage data.
@@ -55,6 +57,8 @@ open class KoverXmlProjectReportTask : KoverProjectTask() {
                 report(),
                 xmlReportFile.get().asFile,
                 null,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {

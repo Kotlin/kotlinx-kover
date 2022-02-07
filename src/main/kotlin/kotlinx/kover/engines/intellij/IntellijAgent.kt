@@ -5,6 +5,7 @@
 package kotlinx.kover.engines.intellij
 
 import kotlinx.kover.api.*
+import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.CoverageAgent
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
@@ -19,10 +20,9 @@ internal fun Project.createIntellijAgent(koverExtension: KoverExtension): Covera
 
 private class IntellijAgent(private val config: Configuration): CoverageAgent {
     private val trackingPerTest = false // a flag to enable tracking per test coverage
-    private val calculateForUnloadedClasses = true // a flag to calculate coverage for unloaded classes
-    private val appendToDataFile = false // a flag to use data file as initial coverage
+    private val calculateForUnloadedClasses = false // a flag to calculate coverage for unloaded classes
+    private val appendToDataFile = true // a flag to use data file as initial coverage
     private val samplingMode = false //a flag to run coverage in sampling mode or in tracing mode otherwise
-    private val generateSmapFile = true
 
     override val engine: CoverageEngine = CoverageEngine.INTELLIJ
     override val classpath: FileCollection = config
@@ -33,7 +33,6 @@ private class IntellijAgent(private val config: Configuration): CoverageAgent {
         val jarFile = config.fileCollection { it.name == "intellij-coverage-agent" }.singleFile
         return mutableListOf(
             "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
-            "-Didea.coverage.check.inline.signatures=true",
             "-Didea.new.sampling.coverage=true",
             "-Didea.new.tracing.coverage=true",
             "-Didea.coverage.log.level=error",
@@ -46,20 +45,14 @@ private class IntellijAgent(private val config: Configuration): CoverageAgent {
         binary.parentFile.mkdirs()
         val binaryPath = binary.canonicalPath
 
-        val smap = extension.smapFile.get()
-        smap.parentFile.mkdirs()
-        val smapPath = smap.canonicalPath
-
         printWriter().use { pw ->
             pw.appendLine(binaryPath)
             pw.appendLine(trackingPerTest.toString())
             pw.appendLine(calculateForUnloadedClasses.toString())
             pw.appendLine(appendToDataFile.toString())
             pw.appendLine(samplingMode.toString())
-            pw.appendLine(generateSmapFile.toString())
-            pw.appendLine(smapPath)
             extension.includes.forEach { i ->
-                pw.appendLine(i.replaceWildcards())
+                pw.appendLine(i.wildcardsToRegex())
             }
 
             if (extension.excludes.isNotEmpty()) {
@@ -67,29 +60,11 @@ private class IntellijAgent(private val config: Configuration): CoverageAgent {
             }
 
             extension.excludes.forEach { e ->
-                pw.appendLine(e.replaceWildcards())
+                pw.appendLine(e.wildcardsToRegex())
             }
         }
-    }
-
-    private fun String.replaceWildcards(): String {
-        // in most cases, the characters `*` or `.` will be present therefore, we increase the capacity in advance
-        val builder = StringBuilder(length * 2)
-
-        forEach { char ->
-            when (char) {
-                in regexMetacharactersSet -> builder.append('\\').append(char)
-                '*' -> builder.append('.').append("*")
-                '?' -> builder.append('.')
-                else -> builder.append(char)
-            }
-        }
-
-        return builder.toString()
     }
 }
-
-private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()
 
 private fun Project.createIntellijConfig(koverExtension: KoverExtension): Configuration {
     val config = project.configurations.create("IntellijKoverConfig")

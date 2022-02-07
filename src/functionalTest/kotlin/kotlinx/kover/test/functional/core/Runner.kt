@@ -55,7 +55,11 @@ private fun org.gradle.testkit.runner.GradleRunner.addPluginTestRuntimeClasspath
 }
 
 
-private class RunResultImpl(private val result: BuildResult, private val dir: File) : RunResult {
+private class RunResultImpl(
+    private val result: BuildResult,
+    private val dir: File,
+    private val path: String = ":"
+) : RunResult {
     val buildDir: File = File(dir, "build")
 
     private val buildScriptFile: File = buildFile()
@@ -90,7 +94,7 @@ private class RunResultImpl(private val result: BuildResult, private val dir: Fi
     }
 
     override fun subproject(name: String, checker: RunResult.() -> Unit) {
-        RunResultImpl(result, File(dir, name)).also(checker)
+        RunResultImpl(result, File(dir, name), "$path$name:").also(checker)
     }
 
     override fun output(checker: String.() -> Unit) {
@@ -107,9 +111,9 @@ private class RunResultImpl(private val result: BuildResult, private val dir: Fi
         XmlReportImpl(xmlFile).checker()
     }
 
-    override fun outcome(taskPath: String, checker: TaskOutcome.() -> Unit) {
-        result.task(taskPath)?.outcome?.checker()
-            ?: throw IllegalArgumentException("Task '$taskPath' not found in build result")
+    override fun outcome(taskName: String, checker: TaskOutcome.() -> Unit) {
+        result.task(path + taskName)?.outcome?.checker()
+            ?: throw IllegalArgumentException("Task '$taskName' with path '$path$taskName' not found in build result")
     }
 
     private fun buildFile(): File {
@@ -133,35 +137,52 @@ private class XmlReportImpl(file: File) : XmlReport {
 
         val reportElement = ((document.getElementsByTagName("report").item(0)) as Element)
 
-        var classElement: Element? = null
+        val counterElement: Element? = reportElement
+            .filter("package", "name", packageName)
+            ?.filter("class", "name", correctedClassName)
+            ?.filter("counter", "type", type)
 
-        reportElement.forEach("package") loop@{
-            if (getAttribute("name") == packageName) {
-                forEach("class") {
-                    if (getAttribute("name") == correctedClassName) {
-                        classElement = this
-                        return@loop
-                    }
-                }
-            }
+        return counterElement?.let {
+            Counter(
+                type,
+                it.getAttribute("missed").toInt(),
+                it.getAttribute("covered").toInt()
+            )
         }
+    }
 
-        classElement?.forEach("counter") {
-            if (getAttribute("type") == type) {
-                return Counter(type, this.getAttribute("missed").toInt(), this.getAttribute("covered").toInt())
-            }
+    override fun methodCounter(className: String, methodName: String, type: String): Counter? {
+        val correctedClassName = className.replace('.', '/')
+        val packageName = correctedClassName.substringBeforeLast('/')
+
+        val reportElement = ((document.getElementsByTagName("report").item(0)) as Element)
+
+        val counterElement: Element? = reportElement
+            .filter("package", "name", packageName)
+            ?.filter("class", "name", correctedClassName)
+            ?.filter("method", "name", methodName)
+            ?.filter("counter", "type", type)
+
+        return counterElement?.let {
+            Counter(
+                type,
+                it.getAttribute("missed").toInt(),
+                it.getAttribute("covered").toInt()
+            )
         }
-        return null
     }
 }
 
-private inline fun Element.forEach(tag: String, block: Element.() -> Unit) {
+private fun Element.filter(tag: String, attributeName: String, attributeValue: String): Element? {
     val elements = getElementsByTagName(tag)
-
     for (i in 0 until elements.length) {
         val element = elements.item(i) as Element
         if (element.parentNode == this) {
-            element.block()
+            if (element.getAttribute(attributeName) == attributeValue) {
+                return element
+            }
         }
     }
+    return null
 }
+

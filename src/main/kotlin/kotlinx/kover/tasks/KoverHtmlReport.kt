@@ -11,7 +11,7 @@ import org.gradle.api.file.*
 import org.gradle.api.tasks.*
 
 @CacheableTask
-open class KoverHtmlReportTask : KoverAggregateTask() {
+open class KoverMergedHtmlReportTask : KoverMergedTask() {
     /**
      * Specifies directory path of generated HTML report.
      */
@@ -27,6 +27,8 @@ open class KoverHtmlReportTask : KoverAggregateTask() {
                 report(),
                 null,
                 htmlDirFile,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {
@@ -37,12 +39,12 @@ open class KoverHtmlReportTask : KoverAggregateTask() {
                 classpath.get(),
             )
         }
-        project.logger.lifecycle("Kover: aggregate HTML report file://${htmlDirFile.canonicalPath}/index.html")
+        project.logger.lifecycle("Kover: merged HTML report file://${htmlDirFile.canonicalPath}/index.html")
     }
 }
 
 @CacheableTask
-open class KoverHtmlProjectReportTask : KoverProjectTask() {
+open class KoverHtmlReportTask : KoverProjectTask() {
     /**
      * Specifies directory path of generated HTML report.
      */
@@ -58,6 +60,8 @@ open class KoverHtmlProjectReportTask : KoverProjectTask() {
                 report(),
                 null,
                 htmlDirFile,
+                includes,
+                excludes,
                 classpath.get()
             )
         } else {

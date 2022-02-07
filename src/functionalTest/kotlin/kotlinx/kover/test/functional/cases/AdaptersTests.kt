@@ -1,8 +1,8 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.assertCounterFullyCovered
-import kotlinx.kover.test.functional.cases.utils.defaultXmlProjectReport
+import kotlinx.kover.test.functional.cases.utils.assertFullyCovered
 import kotlinx.kover.test.functional.cases.utils.defaultXmlReport
+import kotlinx.kover.test.functional.cases.utils.defaultMergedXmlReport
 import kotlinx.kover.test.functional.core.BaseGradleScriptTest
 import kotlin.test.*
 
@@ -15,19 +15,19 @@ internal class AdaptersTests : BaseGradleScriptTest() {
             Therefore, Kover is forced to use reflection to work with extensions of the kotlin multiplatform plugin.
          */
         internalSample("different-plugins")
-            .run("koverXmlReport") {
-                xml(defaultXmlReport()) {
-                    assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
-                    assertCounterFullyCovered(classCounter("org.jetbrains.JvmClass"))
+            .run("koverMergedXmlReport") {
+                xml(defaultMergedXmlReport()) {
+                    classCounter("org.jetbrains.CommonClass").assertFullyCovered()
+                    classCounter("org.jetbrains.JvmClass").assertFullyCovered()
                 }
             }
 
         internalSample("different-plugins")
-            .run("koverXmlProjectReport") {
+            .run("koverXmlReport") {
                 subproject("subproject-multiplatform") {
-                    xml(defaultXmlProjectReport()) {
-                        assertCounterFullyCovered(classCounter("org.jetbrains.CommonClass"))
-                        assertCounterFullyCovered(classCounter("org.jetbrains.JvmClass"))
+                    xml(defaultXmlReport()) {
+                        classCounter("org.jetbrains.CommonClass").assertFullyCovered()
+                        classCounter("org.jetbrains.JvmClass").assertFullyCovered()
                     }
                 }
             }

@@ -9,28 +9,28 @@ import kotlin.test.*
 internal class ReportsCachingTests : BaseGradleScriptTest() {
     @Test
     fun testCaching() {
-        builder("Test caching aggregate reports")
+        builder("Test caching of merged reports")
             .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("simple")
             .withLocalCache()
             .build()
             .run("build", "--build-cache") {
                 checkDefaultBinaryReport()
-                checkDefaultReports()
-                outcome(":test") { assertEquals(TaskOutcome.SUCCESS, this) }
-                outcome(":koverXmlReport") { assertEquals(TaskOutcome.SUCCESS, this) }
-                outcome(":koverHtmlReport") { assertEquals(TaskOutcome.SUCCESS, this) }
+                checkDefaultMergedReports()
+                checkOutcome("test", TaskOutcome.SUCCESS)
+                checkOutcome("koverMergedXmlReport", TaskOutcome.SUCCESS)
+                checkOutcome("koverMergedHtmlReport", TaskOutcome.SUCCESS)
             }
             .run("clean", "--build-cache") {
                 checkDefaultBinaryReport(false)
-                checkDefaultReports(false)
+                checkDefaultMergedReports(false)
             }
             .run("build", "--build-cache") {
                 checkDefaultBinaryReport()
-                checkDefaultReports()
-                outcome(":test") { assertEquals(TaskOutcome.FROM_CACHE, this) }
-                outcome(":koverXmlReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
-                outcome(":koverHtmlReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
+                checkDefaultMergedReports()
+                checkOutcome("test", TaskOutcome.FROM_CACHE)
+                checkOutcome("koverMergedXmlReport", TaskOutcome.FROM_CACHE)
+                checkOutcome("koverMergedHtmlReport", TaskOutcome.FROM_CACHE)
             }
     }
 
@@ -41,23 +41,23 @@ internal class ReportsCachingTests : BaseGradleScriptTest() {
             .sources("simple")
             .withLocalCache()
             .build()
-            .run("koverProjectReport", "--build-cache") {
+            .run("koverReport", "--build-cache") {
                 checkDefaultBinaryReport()
-                checkDefaultProjectReports()
-                outcome(":test") { assertEquals(TaskOutcome.SUCCESS, this) }
-                outcome(":koverXmlProjectReport") { assertEquals(TaskOutcome.SUCCESS, this) }
-                outcome(":koverHtmlProjectReport") { assertEquals(TaskOutcome.SUCCESS, this) }
+                checkDefaultReports()
+                checkOutcome("test", TaskOutcome.SUCCESS)
+                checkOutcome("koverXmlReport", TaskOutcome.SUCCESS)
+                checkOutcome("koverHtmlReport", TaskOutcome.SUCCESS)
             }
             .run("clean", "--build-cache") {
                 checkDefaultBinaryReport(false)
-                checkDefaultProjectReports(false)
+                checkDefaultReports(false)
             }
-            .run("koverProjectReport", "--build-cache") {
+            .run("koverReport", "--build-cache") {
                 checkDefaultBinaryReport()
-                checkDefaultProjectReports()
-                outcome(":test") { assertEquals(TaskOutcome.FROM_CACHE, this) }
-                outcome(":koverXmlProjectReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
-                outcome(":koverHtmlProjectReport") { assertEquals(TaskOutcome.FROM_CACHE, this) }
+                checkDefaultReports()
+                checkOutcome("test", TaskOutcome.FROM_CACHE)
+                checkOutcome("koverXmlReport", TaskOutcome.FROM_CACHE)
+                checkOutcome("koverHtmlReport", TaskOutcome.FROM_CACHE)
             }
     }
 

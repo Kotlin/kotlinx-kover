@@ -47,6 +47,7 @@ internal data class KoverRootConfig(
     var intellijVersion: String? = null,
     var jacocoVersion: String? = null,
     var generateReportOnCheck: Boolean? = null,
+    var runAllTestsForProjectTask: Boolean? = null,
     val disabledProjects: MutableSet<String> = mutableSetOf()
 ) {
     val isDefault =
@@ -69,7 +70,7 @@ internal interface RunResult {
 
     fun xml(filename: String, checker: XmlReport.() -> Unit)
 
-    fun outcome(taskPath: String, checker: TaskOutcome.() -> Unit)
+    fun outcome(taskName: String, checker: TaskOutcome.() -> Unit)
 }
 
 
@@ -80,4 +81,5 @@ internal class Counter(val type: String, val missed: Int, val covered: Int) {
 
 internal interface XmlReport {
     fun classCounter(className: String, type: String = "INSTRUCTION"): Counter?
+    fun methodCounter(className: String, methodName: String, type: String = "INSTRUCTION"): Counter?
 }
