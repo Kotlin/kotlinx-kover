@@ -21,6 +21,8 @@ sourceSets {
 
 dependencies {
     implementation(gradleApi())
+    // exclude transitive dependency on stdlib, the Gradle version should be used
+    compileOnly(kotlin("stdlib"))
 
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
     compileOnly("com.android.tools.build:gradle:4.2.2")
@@ -32,7 +34,6 @@ dependencies {
     "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
     "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.6.10")
     "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-runner:1.6.10")
-
 }
 
 java {
@@ -67,12 +68,13 @@ tasks.check { dependsOn("functionalTest") }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     kotlinOptions {
-        languageVersion = "1.5"
-
         allWarningsAsErrors = true
-        // Suppress the warning about kotlin-reflect 1.3 and kotlin-stdlib 1.4 in the classpath.
-        // It's incorrect in this case because we're limiting API version to 1.3 anyway.
-        freeCompilerArgs = freeCompilerArgs + "-Xskip-runtime-version-check"
+
+        // Kover works with the stdlib of at least version `1.4.x`
+        languageVersion = "1.4"
+        apiVersion = "1.4"
+        // Kotlin compiler 1.6 issues a warning if `languageVersion` or `apiVersion` 1.4 is used - suppress it
+        freeCompilerArgs = freeCompilerArgs + "-Xsuppress-version-warnings"
     }
 }
 
