@@ -11,6 +11,8 @@ import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
+import org.gradle.configurationcache.extensions.*
+import org.gradle.process.*
 
 abstract class KoverProjectTask : DefaultTask() {
     @get:InputFiles
@@ -56,7 +58,16 @@ abstract class KoverProjectTask : DefaultTask() {
     @get:Input
     public var excludes: List<String> = emptyList()
 
+    // exec operations to launch Java applications
+    @get:Internal
+    protected val exec: ExecOperations = project.serviceOf()
+
     internal fun report(): Report {
-        return Report(binaryReportFiles.get().toList(), listOf(ProjectInfo(srcDirs.get(), outputDirs.get())))
+        return Report(
+            binaryReportFiles.get().toList(),
+            listOf(ProjectInfo(srcDirs.get(), outputDirs.get())),
+            includes,
+            excludes
+        )
     }
 }

@@ -23,11 +23,10 @@ open class KoverMergedXmlReportTask : KoverMergedTask() {
     fun generate() {
         if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
             intellijReport(
+                exec,
                 report(),
                 xmlReportFile.get().asFile,
                 null,
-                includes,
-                excludes,
                 classpath.get()
             )
         } else {
@@ -54,11 +53,10 @@ open class KoverXmlReportTask : KoverProjectTask() {
     fun generate() {
         if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
             intellijReport(
+                exec,
                 report(),
                 xmlReportFile.get().asFile,
                 null,
-                includes,
-                excludes,
                 classpath.get()
             )
         } else {

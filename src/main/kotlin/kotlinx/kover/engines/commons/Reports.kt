@@ -2,7 +2,12 @@ package kotlinx.kover.engines.commons
 
 import java.io.*
 
-internal class Report(val files: List<File>, val projects: List<ProjectInfo>)
+internal class Report(
+    val files: List<File>,
+    val projects: List<ProjectInfo>,
+    val includes: List<String> = emptyList(),
+    val excludes: List<String> = emptyList()
+)
 internal class ProjectInfo(val sources: Iterable<File>, val outputs: Iterable<File>)
 
 private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()

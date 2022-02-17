@@ -33,6 +33,7 @@ import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.process.*
+import java.io.File
 import kotlin.reflect.*
 
 class KoverPlugin : Plugin<Project> {
@@ -160,23 +161,25 @@ class KoverPlugin : Plugin<Project> {
         providers: BuildProviders,
         block: (T) -> Unit
     ): T {
-        return tasks.create(taskName, type.java) { task ->
-            task.group = VERIFICATION_GROUP
+        val task = tasks.create(taskName, type.java)
 
-            providers.projects.forEach { (projectName, m) ->
-                task.binaryReportFiles.put(projectName, NestedFiles(task.project.objects, m.reports))
-                task.srcDirs.put(projectName, NestedFiles(task.project.objects, m.sources))
-                task.outputDirs.put(projectName, NestedFiles(task.project.objects, m.output))
-            }
+        task.group = VERIFICATION_GROUP
 
-            task.coverageEngine.set(providers.engine)
-            task.classpath.set(providers.classpath)
-            task.dependsOn(providers.merged.tests)
-
-            task.onlyIf { !providers.merged.disabled.get() }
-
-            block(task)
+        providers.projects.forEach { (projectName, m) ->
+            task.binaryReportFiles.put(projectName, NestedFiles(task.project.objects, m.reports))
+            task.srcDirs.put(projectName, NestedFiles(task.project.objects, m.sources))
+            task.outputDirs.put(projectName, NestedFiles(task.project.objects, m.output))
         }
+
+        task.coverageEngine.set(providers.engine)
+        task.classpath.set(providers.classpath)
+        task.dependsOn(providers.merged.tests)
+
+        val disabledProvider = providers.merged.disabled
+        task.onlyIf { !disabledProvider.get() }
+
+        block(task)
+        return task
     }
 
     private fun Project.createCollectingTask() {
@@ -214,23 +217,25 @@ class KoverPlugin : Plugin<Project> {
             throw GradleException("Kover task '$taskName' already exist. Plugin should not be applied in child project if it has already been applied in one of the parent projects.")
         }
 
-        return tasks.create(taskName, type.java) { task ->
-            task.group = VERIFICATION_GROUP
+        val task = tasks.create(taskName, type.java)
+        task.group = VERIFICATION_GROUP
 
-            task.coverageEngine.set(providers.engine)
-            task.classpath.set(providers.classpath)
-            task.srcDirs.set(projectProviders.sources)
-            task.outputDirs.set(projectProviders.output)
+        task.coverageEngine.set(providers.engine)
+        task.classpath.set(providers.classpath)
+        task.srcDirs.set(projectProviders.sources)
+        task.outputDirs.set(projectProviders.output)
 
-            // it is necessary to read all binary reports because project's classes can be invoked in another project
-            task.binaryReportFiles.set(projectProviders.reports)
-            task.dependsOn(projectProviders.tests)
+        // it is necessary to read all binary reports because project's classes can be invoked in another project
+        task.binaryReportFiles.set(projectProviders.reports)
+        task.dependsOn(projectProviders.tests)
 
-            task.onlyIf { !projectProviders.disabled.get() }
-            task.onlyIf { !task.binaryReportFiles.get().isEmpty }
+        val disabledProvider = projectProviders.disabled
+        task.onlyIf { !disabledProvider.get() }
+        task.onlyIf { !(it as KoverProjectTask).binaryReportFiles.get().isEmpty }
 
-            block(task)
-        }
+        block(task)
+
+        return task
     }
 
     private fun Project.createKoverExtension(): KoverExtension {
@@ -249,26 +254,33 @@ class KoverPlugin : Plugin<Project> {
         val taskExtension = extensions.create(TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
 
         taskExtension.isDisabled = false
-        taskExtension.binaryReportFile.set(this.project.provider {
+        taskExtension.binaryReportFile.set(project.provider {
             val koverExtension = providers.koverExtension.get()
             val suffix = if (koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ) ".ic" else ".exec"
             project.layout.buildDirectory.get().file("kover/$name$suffix").asFile
         })
 
+        val pluginContainer = project.plugins
         val excludeAndroidPackages =
-            project.provider { project.androidPluginIsApplied && !providers.koverExtension.get().instrumentAndroidPackage }
+            project.provider { pluginContainer.androidPluginIsApplied && !providers.koverExtension.get().instrumentAndroidPackage }
 
         jvmArgumentProviders.add(
             CoverageArgumentProvider(
                 this,
                 agents,
+                taskExtension,
                 providers.koverExtension,
                 excludeAndroidPackages
             )
         )
 
-        doFirst(BinaryReportCleanupAction(providers.koverExtension, taskExtension))
-        doLast(IntellijErrorLogCopyAction(taskExtension))
+        val sourceErrorProvider = project.provider {
+            File(taskExtension.binaryReportFile.get().parentFile, "coverage-error.log")
+        }
+        val targetErrorProvider = project.layout.buildDirectory.file("kover/errors/$name.log").map { it.asFile }
+
+        doFirst(BinaryReportCleanupAction(project.name, providers.koverExtension, taskExtension))
+        doLast(MoveIntellijErrorLogAction(sourceErrorProvider, targetErrorProvider))
     }
 }
 
@@ -277,6 +289,7 @@ class KoverPlugin : Plugin<Project> {
   For this reason, before starting the tests, it is necessary to clear the file from the results of previous runs.
 */
 private class BinaryReportCleanupAction(
+    private val projectName: String,
     private val koverExtensionProvider: Provider<KoverExtension>,
     private val taskExtension: KoverTaskExtension
 ) : Action<Task> {
@@ -289,7 +302,7 @@ private class BinaryReportCleanupAction(
 
         if (!taskExtension.isDisabled
             && !koverExtension.isDisabled
-            && !koverExtension.disabledProjects.contains(task.project.name)
+            && !koverExtension.disabledProjects.contains(projectName)
             && koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ
         ) {
             // IntelliJ engine expected empty file for parallel test execution.
@@ -299,26 +312,28 @@ private class BinaryReportCleanupAction(
     }
 }
 
-private class IntellijErrorLogCopyAction(private val taskExtension: KoverTaskExtension) : Action<Task> {
+private class MoveIntellijErrorLogAction(
+    private val sourceFile: Provider<File>,
+    private val targetFile: Provider<File>
+) : Action<Task> {
     override fun execute(task: Task) {
-        task.project.copyIntellijErrorLog(
-            task.project.layout.buildDirectory.get().file("kover/errors/${task.name}.log").asFile,
-            taskExtension.binaryReportFile.get().parentFile
-        )
+        val origin = sourceFile.get()
+        if (origin.exists() && origin.isFile) {
+            origin.copyTo(targetFile.get(), true)
+            origin.delete()
+        }
     }
 }
 
 private class CoverageArgumentProvider(
     private val task: Task,
     private val agents: Map<CoverageEngine, CoverageAgent>,
+    @get:Nested val taskExtension: KoverTaskExtension,
     @get:Nested val koverExtension: Provider<KoverExtension>,
     @get:Input val excludeAndroidPackage: Provider<Boolean>
 ) : CommandLineArgumentProvider, Named {
 
-    @get:Nested
-    val taskExtension: Provider<KoverTaskExtension> = task.project.provider {
-        task.extensions.getByType(KoverTaskExtension::class.java)
-    }
+    private val projectName: String = task.project.name
 
     @Internal
     override fun getName(): String {
@@ -327,11 +342,10 @@ private class CoverageArgumentProvider(
 
     override fun asArguments(): MutableIterable<String> {
         val koverExtensionValue = koverExtension.get()
-        val taskExtensionValue = taskExtension.get()
 
-        if (taskExtensionValue.isDisabled
+        if (taskExtension.isDisabled
             || koverExtensionValue.isDisabled
-            || koverExtensionValue.disabledProjects.contains(task.project.name)
+            || koverExtensionValue.disabledProjects.contains(projectName)
         ) {
             return mutableListOf()
         }
@@ -346,9 +360,9 @@ private class CoverageArgumentProvider(
 
             FIXME Remove this code if the IntelliJ Agent stops changing project classes during instrumentation
              */
-            taskExtensionValue.excludes = taskExtensionValue.excludes + "android.*" + "com.android.*"
+            taskExtension.excludes = taskExtension.excludes + "android.*" + "com.android.*"
         }
 
-        return agents.getFor(koverExtensionValue.coverageEngine.get()).buildCommandLineArgs(task, taskExtensionValue)
+        return agents.getFor(koverExtensionValue.coverageEngine.get()).buildCommandLineArgs(task, taskExtension)
     }
 }

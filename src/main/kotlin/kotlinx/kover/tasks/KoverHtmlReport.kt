@@ -24,11 +24,10 @@ open class KoverMergedHtmlReportTask : KoverMergedTask() {
 
         if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
             intellijReport(
+                exec,
                 report(),
                 null,
                 htmlDirFile,
-                includes,
-                excludes,
                 classpath.get()
             )
         } else {
@@ -39,12 +38,14 @@ open class KoverMergedHtmlReportTask : KoverMergedTask() {
                 classpath.get(),
             )
         }
-        project.logger.lifecycle("Kover: merged HTML report file://${htmlDirFile.canonicalPath}/index.html")
+        logger.lifecycle("Kover: merged HTML report file://${htmlDirFile.canonicalPath}/index.html")
     }
 }
 
 @CacheableTask
 open class KoverHtmlReportTask : KoverProjectTask() {
+    private val projectName = project.name
+
     /**
      * Specifies directory path of generated HTML report.
      */
@@ -57,11 +58,10 @@ open class KoverHtmlReportTask : KoverProjectTask() {
 
         if (coverageEngine.get() == CoverageEngine.INTELLIJ) {
             intellijReport(
+                exec,
                 report(),
                 null,
                 htmlDirFile,
-                includes,
-                excludes,
                 classpath.get()
             )
         } else {
@@ -72,6 +72,6 @@ open class KoverHtmlReportTask : KoverProjectTask() {
                 classpath.get(),
             )
         }
-        project.logger.lifecycle("Kover: HTML report for '${project.name}' file://${htmlDirFile.canonicalPath}/index.html")
+        logger.lifecycle("Kover: HTML report for '$projectName' file://${htmlDirFile.canonicalPath}/index.html")
     }
 }
