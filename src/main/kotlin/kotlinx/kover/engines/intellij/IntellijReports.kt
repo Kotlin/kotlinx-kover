@@ -9,15 +9,15 @@ import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.Report
 import org.gradle.api.*
 import org.gradle.api.file.*
+import org.gradle.process.ExecOperations
 import java.io.*
 import java.util.*
 
 internal fun Task.intellijReport(
+    exec: ExecOperations,
     report: Report,
     xmlFile: File?,
     htmlDir: File?,
-    includes: List<String>,
-    excludes: List<String>,
     classpath: FileCollection
 ) {
     xmlFile?.let {
@@ -30,28 +30,13 @@ internal fun Task.intellijReport(
 
     val argsFile = File(temporaryDir, "intellijreport.json")
     argsFile.printWriter().use { pw ->
-        pw.writeReportsJson(report, xmlFile, htmlDir, includes, excludes)
+        pw.writeReportsJson(report, xmlFile, htmlDir)
     }
 
-    project.javaexec { e ->
+    exec.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.report.Main")
         e.classpath = classpath
         e.args = mutableListOf(argsFile.canonicalPath)
-    }
-
-    project.copyIntellijErrorLog(project.layout.buildDirectory.get().file("kover/errors/$name.log").asFile)
-}
-
-internal fun Project.copyIntellijErrorLog(toFile: File, customDirectory: File? = null) {
-    var errorLog = customDirectory?.let { File(it, "coverage-error.log") }
-
-    if (errorLog == null || !errorLog.exists()) {
-        errorLog = File(projectDir, "coverage-error.log")
-    }
-
-    if (errorLog.exists() && errorLog.isFile) {
-        errorLog.copyTo(toFile, true)
-        errorLog.delete()
     }
 }
 
@@ -97,9 +82,7 @@ JSON example:
 private fun Writer.writeReportsJson(
     report: Report,
     xmlFile: File?,
-    htmlDir: File?,
-    includes: List<String>,
-    excludes: List<String>,
+    htmlDir: File?
 ) {
     appendLine("{")
 
@@ -115,6 +98,9 @@ private fun Writer.writeReportsJson(
     htmlDir?.also {
         appendLine("""  "html": ${it.jsonString},""")
     }
+
+    val includes = report.includes
+    val excludes = report.excludes
 
     if (includes.isNotEmpty()) {
         appendLine("""  "include": {""")

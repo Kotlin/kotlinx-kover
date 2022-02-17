@@ -5,30 +5,32 @@
 package kotlinx.kover.engines.jacoco
 
 import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.CoverageAgent
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
 import org.gradle.api.file.*
+import org.gradle.api.provider.*
+import org.gradle.configurationcache.extensions.*
 import java.io.*
 
 internal fun Project.createJacocoAgent(koverExtension: KoverExtension): CoverageAgent {
     val jacocoConfig = createJacocoConfig(koverExtension)
-    return JacocoAgent(jacocoConfig, this)
+    val archiveOperations: ArchiveOperations = serviceOf()
+    val jarProvider = provider {
+        val fatJar = jacocoConfig.fileCollection { it.name == "org.jacoco.agent" }.singleFile
+        archiveOperations.zipTree(fatJar).filter { it.name == "jacocoagent.jar" }.singleFile
+    }
+    return JacocoAgent(jacocoConfig, jarProvider)
 }
 
-private class JacocoAgent(private val config: Configuration, private val project: Project): CoverageAgent {
+private class JacocoAgent(
+    override val classpath: FileCollection,
+    private val jarProvider: Provider<File>
+) : CoverageAgent {
     override val engine: CoverageEngine = CoverageEngine.JACOCO
 
-    override val classpath: FileCollection = config
-
     override fun buildCommandLineArgs(task: Task, extension: KoverTaskExtension): MutableList<String> {
-        return mutableListOf("-javaagent:${getJacocoJar().canonicalPath}=${agentArgs(extension)}")
-    }
-
-    private fun getJacocoJar(): File {
-        val containedJarFile = config.fileCollection { it.name == "org.jacoco.agent" }.singleFile
-        return project.zipTree(containedJarFile).filter { it.name == "jacocoagent.jar" }.singleFile
+        return mutableListOf("-javaagent:${jarProvider.get().canonicalPath}=${agentArgs(extension)}")
     }
 
     private fun agentArgs(extension: KoverTaskExtension): String {
@@ -42,13 +44,13 @@ private class JacocoAgent(private val config: Configuration, private val project
             "dumponexit=true",
             "output=file",
             "jmx=false",
-            extension.includes.filterString("includes"),
-            extension.excludes.filterString("excludes")
+            extension.includes.joinToFilterString("includes"),
+            extension.excludes.joinToFilterString("excludes")
         ).joinToString(",")
     }
 }
 
-private fun List<String>.filterString(name: String): String? {
+private fun List<String>.joinToFilterString(name: String): String? {
     if (isEmpty()) return null
     return name + "=" + joinToString(":")
 }

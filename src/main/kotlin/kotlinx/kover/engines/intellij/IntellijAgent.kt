@@ -10,29 +10,30 @@ import kotlinx.kover.engines.commons.CoverageAgent
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
 import org.gradle.api.file.*
+import org.gradle.api.provider.Provider
 import java.io.*
 
 
 internal fun Project.createIntellijAgent(koverExtension: KoverExtension): CoverageAgent {
     val intellijConfig = createIntellijConfig(koverExtension)
-    return IntellijAgent(intellijConfig)
+    val jarProvider = provider { intellijConfig.fileCollection { it.name == "intellij-coverage-agent" }.singleFile }
+    return IntellijAgent(intellijConfig, jarProvider)
 }
 
-private class IntellijAgent(private val config: Configuration): CoverageAgent {
+private class IntellijAgent(override val classpath: FileCollection, private val jarProvider: Provider<File>): CoverageAgent {
     private val trackingPerTest = false // a flag to enable tracking per test coverage
     private val calculateForUnloadedClasses = false // a flag to calculate coverage for unloaded classes
     private val appendToDataFile = true // a flag to use data file as initial coverage
     private val samplingMode = false //a flag to run coverage in sampling mode or in tracing mode otherwise
 
     override val engine: CoverageEngine = CoverageEngine.INTELLIJ
-    override val classpath: FileCollection = config
 
     override fun buildCommandLineArgs(task: Task, extension: KoverTaskExtension): MutableList<String> {
         val argsFile = File(task.temporaryDir, "intellijagent.args")
         argsFile.writeArgsToFile(extension)
-        val jarFile = config.fileCollection { it.name == "intellij-coverage-agent" }.singleFile
+
         return mutableListOf(
-            "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
+            "-javaagent:${jarProvider.get().canonicalPath}=${argsFile.canonicalPath}",
             "-Didea.new.sampling.coverage=true",
             "-Didea.new.tracing.coverage=true",
             "-Didea.coverage.log.level=error",

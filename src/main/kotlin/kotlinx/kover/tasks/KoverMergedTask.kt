@@ -12,6 +12,8 @@ import org.gradle.api.file.*
 import org.gradle.api.model.*
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
+import org.gradle.configurationcache.extensions.*
+import org.gradle.process.*
 import java.io.*
 
 @CacheableTask
@@ -60,6 +62,10 @@ open class KoverMergedTask : DefaultTask() {
     @get:Input
     public var excludes: List<String> = emptyList()
 
+    // exec operations to launch Java applications
+    @get:Internal
+    protected val exec: ExecOperations = project.serviceOf()
+
     internal fun report(): Report {
         val binariesMap = binaryReportFiles.get()
         val sourcesMap = srcDirs.get()
@@ -78,7 +84,7 @@ open class KoverMergedTask : DefaultTask() {
             )
         }
 
-        return Report(reportFiles, projects)
+        return Report(reportFiles, projects, includes, excludes)
     }
 }
 

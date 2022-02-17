@@ -5,9 +5,7 @@
 package kotlinx.kover.adapters
 
 import kotlinx.kover.adapters.api.*
-import org.gradle.api.*
-import org.gradle.api.file.*
-import java.io.*
+import org.gradle.api.plugins.PluginContainer
 
 internal fun createAdapters(): List<CompilationPluginAdapter> {
     return listOf(
@@ -18,7 +16,7 @@ internal fun createAdapters(): List<CompilationPluginAdapter> {
     )
 }
 
-val Project.androidPluginIsApplied: Boolean
+val PluginContainer.androidPluginIsApplied: Boolean
     get() {
-        return plugins.findPlugin("android") != null || plugins.findPlugin("kotlin-android") != null
+        return findPlugin("android") != null || findPlugin("kotlin-android") != null
     }
