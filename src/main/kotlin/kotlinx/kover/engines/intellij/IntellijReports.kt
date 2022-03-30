@@ -161,26 +161,49 @@ internal fun Task.intellijVerification(
 private fun readCounterValuesFromXml(file: File): Map<VerificationValueType, Int> {
     val scanner = Scanner(file)
     var lineCounterLine: String? = null
+    var branchCounterLine: String? = null
+    var instructionCounterLine: String? = null
 
     while (scanner.hasNextLine()) {
         val line = scanner.nextLine()
         if (line.startsWith("<counter type=\"LINE\"")) {
             lineCounterLine = line
         }
+        if (line.startsWith("<counter type=\"INSTRUCTION\"")) {
+            instructionCounterLine = line
+        }
+        if (line.startsWith("<counter type=\"BRANCH\"")) {
+            branchCounterLine = line
+        }
     }
     scanner.close()
 
     lineCounterLine ?: throw GradleException("No LINE counter in XML report")
+    branchCounterLine ?: throw GradleException("No BRANCH counter in XML report")
+    instructionCounterLine ?: throw GradleException("No INSTRUCTION counter in XML report")
 
-    val coveredCount = lineCounterLine.substringAfter("covered=\"").substringBefore("\"").toInt()
-    val missedCount = lineCounterLine.substringAfter("missed=\"").substringBefore("\"").toInt()
-    val percentage = if ((coveredCount + missedCount) > 0) 100 * coveredCount / (coveredCount + missedCount) else 0
+    val (coveredLinesCount, missedLinesCount, linesPercentage) = parseCoverage(lineCounterLine)
+    val (coveredBranchesCount, missedBranchesCount, branchesPercentage) = parseCoverage(branchCounterLine)
+    val (coveredInstructionsCount, missedInstructionsCount, instructionsPercentage) = parseCoverage(instructionCounterLine)
 
     return mapOf(
-        VerificationValueType.COVERED_LINES_COUNT to coveredCount,
-        VerificationValueType.MISSED_LINES_COUNT to missedCount,
-        VerificationValueType.COVERED_LINES_PERCENTAGE to percentage
+        VerificationValueType.COVERED_LINES_COUNT to coveredLinesCount,
+        VerificationValueType.MISSED_LINES_COUNT to missedLinesCount,
+        VerificationValueType.COVERED_LINES_PERCENTAGE to linesPercentage,
+        VerificationValueType.COVERED_BRANCHES_COUNT to coveredBranchesCount,
+        VerificationValueType.MISSED_BRANCHES_COUNT to missedBranchesCount,
+        VerificationValueType.COVERED_BRANCHES_PERCENTAGE to branchesPercentage,
+        VerificationValueType.COVERED_INSTRUCTIONS_COUNT to coveredInstructionsCount,
+        VerificationValueType.MISSED_INSTRUCTIONS_COUNT to missedInstructionsCount,
+        VerificationValueType.COVERED_INSTRUCTIONS_PERCENTAGE to instructionsPercentage,
     )
+}
+
+private fun parseCoverage(line: String): Triple<Int, Int, Int> {
+    val coveredCount = line.substringAfter("covered=\"").substringBefore("\"").toInt()
+    val missedCount = line.substringAfter("missed=\"").substringBefore("\"").toInt()
+    val percentage = if ((coveredCount + missedCount) > 0) 100 * coveredCount / (coveredCount + missedCount) else 0
+    return Triple(coveredCount, missedCount, percentage)
 }
 
 
@@ -208,6 +231,12 @@ private fun VerificationBound.check(counters: Map<VerificationValueType, Int>): 
         VerificationValueType.COVERED_LINES_COUNT -> "covered lines count"
         VerificationValueType.MISSED_LINES_COUNT -> "missed lines count"
         VerificationValueType.COVERED_LINES_PERCENTAGE -> "covered lines percentage"
+        VerificationValueType.COVERED_BRANCHES_COUNT -> "covered branches count"
+        VerificationValueType.MISSED_BRANCHES_COUNT -> "missed branches count"
+        VerificationValueType.COVERED_BRANCHES_PERCENTAGE -> "covered branches percentage"
+        VerificationValueType.COVERED_INSTRUCTIONS_COUNT -> "covered instructions count"
+        VerificationValueType.MISSED_INSTRUCTIONS_COUNT -> "missed instructions count"
+        VerificationValueType.COVERED_INSTRUCTIONS_PERCENTAGE -> "covered instructions percentage"
     }
 
     return if (minValue != null && minValue > value) {

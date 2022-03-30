@@ -4,15 +4,18 @@
 
 package kotlinx.kover.engines.jacoco
 
-import groovy.lang.*
-import kotlinx.kover.api.*
+import groovy.lang.Closure
+import groovy.lang.GroovyObject
+import kotlinx.kover.api.VerificationRule
+import kotlinx.kover.api.VerificationValueType
 import kotlinx.kover.engines.commons.Report
-import org.gradle.api.*
-import org.gradle.api.file.*
-import org.gradle.internal.reflect.*
-import java.io.*
-import java.math.*
-import java.util.*
+import org.gradle.api.GradleException
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
+import org.gradle.internal.reflect.JavaMethod
+import java.io.File
+import java.math.BigDecimal
+import java.util.Hashtable
 
 private fun Task.callJacocoAntReportTask(
     report: Report,
@@ -81,18 +84,49 @@ internal fun Task.jacocoVerification(
             rules.forEach {
                 invokeWithBody("rule", mapOf("element" to "BUNDLE")) {
                     it.bounds.forEach { b ->
-                        val limitArgs = mutableMapOf("counter" to "LINE")
+                        val limitArgs = mutableMapOf<String, String>()
                         var min: BigDecimal? = b.minValue?.toBigDecimal()
                         var max: BigDecimal? = b.maxValue?.toBigDecimal()
                         when (b.valueType) {
                             VerificationValueType.COVERED_LINES_COUNT -> {
                                 limitArgs["value"] = "COVEREDCOUNT"
+                                limitArgs["counter"] = "LINE"
                             }
                             VerificationValueType.MISSED_LINES_COUNT -> {
                                 limitArgs["value"] = "MISSEDCOUNT"
+                                limitArgs["counter"] = "LINE"
                             }
                             VerificationValueType.COVERED_LINES_PERCENTAGE -> {
                                 limitArgs["value"] = "COVEREDRATIO"
+                                limitArgs["counter"] = "LINE"
+                                min = min?.divide(BigDecimal(100))
+                                max = max?.divide(BigDecimal(100))
+                            }
+                            VerificationValueType.COVERED_BRANCHES_COUNT -> {
+                                limitArgs["value"] = "COVEREDCOUNT"
+                                limitArgs["counter"] = "BRANCH"
+                            }
+                            VerificationValueType.MISSED_BRANCHES_COUNT -> {
+                                limitArgs["value"] = "MISSEDCOUNT"
+                                limitArgs["counter"] = "BRANCH"
+                            }
+                            VerificationValueType.COVERED_BRANCHES_PERCENTAGE -> {
+                                limitArgs["value"] = "COVEREDRATIO"
+                                limitArgs["counter"] = "BRANCH"
+                                min = min?.divide(BigDecimal(100))
+                                max = max?.divide(BigDecimal(100))
+                            }
+                            VerificationValueType.COVERED_INSTRUCTIONS_COUNT -> {
+                                limitArgs["value"] = "COVEREDCOUNT"
+                                limitArgs["counter"] = "INSTRUCTION"
+                            }
+                            VerificationValueType.MISSED_INSTRUCTIONS_COUNT -> {
+                                limitArgs["value"] = "MISSEDCOUNT"
+                                limitArgs["counter"] = "INSTRUCTION"
+                            }
+                            VerificationValueType.COVERED_INSTRUCTIONS_PERCENTAGE -> {
+                                limitArgs["value"] = "COVEREDRATIO"
+                                limitArgs["counter"] = "INSTRUCTION"
                                 min = min?.divide(BigDecimal(100))
                                 max = max?.divide(BigDecimal(100))
                             }
