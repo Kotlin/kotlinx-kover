@@ -58,6 +58,12 @@ open class KoverExtension(objects: ObjectFactory) {
      */
     @get:Input
     public var runAllTestsForProjectTask: Boolean = false
+
+    /**
+     * Specifies the projects to be disabled from instrumentation and reportings.
+     */
+    @get:Internal
+    internal var disabledProjectsPaths: Set<String> = emptySet()
 }
 
 public enum class CoverageEngine {

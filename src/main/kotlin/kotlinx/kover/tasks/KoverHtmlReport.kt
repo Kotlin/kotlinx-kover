@@ -44,7 +44,7 @@ open class KoverMergedHtmlReportTask : KoverMergedTask() {
 
 @CacheableTask
 open class KoverHtmlReportTask : KoverProjectTask() {
-    private val projectName = project.name
+    private val projectPath = project.path
 
     /**
      * Specifies directory path of generated HTML report.
@@ -72,6 +72,6 @@ open class KoverHtmlReportTask : KoverProjectTask() {
                 classpath.get(),
             )
         }
-        logger.lifecycle("Kover: HTML report for '$projectName' file://${htmlDirFile.canonicalPath}/index.html")
+        logger.lifecycle("Kover: HTML report for '$projectPath' file://${htmlDirFile.canonicalPath}/index.html")
     }
 }

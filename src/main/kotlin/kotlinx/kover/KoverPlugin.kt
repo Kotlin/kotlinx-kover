@@ -55,7 +55,8 @@ class KoverPlugin : Plugin<Project> {
 
     private fun Project.applyToProject(providers: BuildProviders, agents: Map<CoverageEngine, CoverageAgent>) {
         val projectProviders =
-            providers.projects[name] ?: throw GradleException("Kover: Providers for project '$name' was not found")
+            providers.projects[path]
+                ?: throw GradleException("Kover: Providers for project '$name' ('$path') was not found")
 
         val xmlReportTask = createKoverProjectTask(
             XML_REPORT_TASK_NAME,
@@ -165,10 +166,10 @@ class KoverPlugin : Plugin<Project> {
 
         task.group = VERIFICATION_GROUP
 
-        providers.projects.forEach { (projectName, m) ->
-            task.binaryReportFiles.put(projectName, NestedFiles(task.project.objects, m.reports))
-            task.srcDirs.put(projectName, NestedFiles(task.project.objects, m.sources))
-            task.outputDirs.put(projectName, NestedFiles(task.project.objects, m.output))
+        providers.projects.forEach { (projectPath, m) ->
+            task.binaryReportFiles.put(projectPath, NestedFiles(task.project.objects, m.reports))
+            task.srcDirs.put(projectPath, NestedFiles(task.project.objects, m.sources))
+            task.outputDirs.put(projectPath, NestedFiles(task.project.objects, m.output))
         }
 
         task.coverageEngine.set(providers.engine)
@@ -199,8 +200,8 @@ class KoverPlugin : Plugin<Project> {
                 task.mustRunAfter(xmlReportTask)
                 task.mustRunAfter(htmlReportTask)
 
-                task.xmlFiles[proj.name] = xmlReportTask.xmlReportFile
-                task.htmlDirs[proj.name] = htmlReportTask.htmlReportDir
+                task.xmlFiles[proj.path] = xmlReportTask.xmlReportFile
+                task.htmlDirs[proj.path] = htmlReportTask.htmlReportDir
             }
         }
     }
@@ -244,6 +245,9 @@ class KoverPlugin : Plugin<Project> {
         extension.coverageEngine.set(CoverageEngine.INTELLIJ)
         extension.intellijEngineVersion.set(defaultIntellijVersion.toString())
         extension.jacocoEngineVersion.set(defaultJacocoVersion)
+
+        afterEvaluate(CollectDisabledProjectsPathsAction(extension))
+
         return extension
     }
 
@@ -279,7 +283,7 @@ class KoverPlugin : Plugin<Project> {
         }
         val targetErrorProvider = project.layout.buildDirectory.file("kover/errors/$name.log").map { it.asFile }
 
-        doFirst(BinaryReportCleanupAction(project.name, providers.koverExtension, taskExtension))
+        doFirst(BinaryReportCleanupAction(project.path, providers.koverExtension, taskExtension))
         doLast(MoveIntellijErrorLogAction(sourceErrorProvider, targetErrorProvider))
     }
 }
@@ -289,7 +293,7 @@ class KoverPlugin : Plugin<Project> {
   For this reason, before starting the tests, it is necessary to clear the file from the results of previous runs.
 */
 private class BinaryReportCleanupAction(
-    private val projectName: String,
+    private val projectPath: String,
     private val koverExtensionProvider: Provider<KoverExtension>,
     private val taskExtension: KoverTaskExtension
 ) : Action<Task> {
@@ -302,13 +306,39 @@ private class BinaryReportCleanupAction(
 
         if (!taskExtension.isDisabled
             && !koverExtension.isDisabled
-            && !koverExtension.disabledProjects.contains(projectName)
+            && !koverExtension.disabledProjectsPaths.contains(projectPath)
             && koverExtension.coverageEngine.get() == CoverageEngine.INTELLIJ
         ) {
             // IntelliJ engine expected empty file for parallel test execution.
             // Since it is impossible to know in advance whether the tests will be run in parallel, we always create an empty file.
             file.createNewFile()
         }
+    }
+}
+
+private class CollectDisabledProjectsPathsAction(
+    private val koverExtension: KoverExtension,
+) : Action<Project> {
+    override fun execute(project: Project) {
+        val allProjects = project.allprojects
+        val paths = allProjects.associate { it.name to mutableListOf<String>() }
+        allProjects.forEach { paths.getValue(it.name) += it.path }
+
+        val result: MutableSet<String> = mutableSetOf()
+
+        koverExtension.disabledProjects.map {
+            if (it.startsWith(':')) {
+                result += it
+            } else {
+                val projectPaths = paths[it] ?: return@map
+                if (projectPaths.size > 1) {
+                    throw GradleException("Cover configuring error: ambiguous name of the excluded project '$it': suitable projects with paths $projectPaths")
+                }
+                result += projectPaths
+            }
+        }
+
+        koverExtension.disabledProjectsPaths = result
     }
 }
 
@@ -333,7 +363,7 @@ private class CoverageArgumentProvider(
     @get:Input val excludeAndroidPackage: Provider<Boolean>
 ) : CommandLineArgumentProvider, Named {
 
-    private val projectName: String = task.project.name
+    private val projectPath: String = task.project.path
 
     @Internal
     override fun getName(): String {
@@ -345,7 +375,7 @@ private class CoverageArgumentProvider(
 
         if (taskExtension.isDisabled
             || koverExtensionValue.isDisabled
-            || koverExtensionValue.disabledProjects.contains(projectName)
+            || koverExtensionValue.disabledProjectsPaths.contains(projectPath)
         ) {
             return mutableListOf()
         }

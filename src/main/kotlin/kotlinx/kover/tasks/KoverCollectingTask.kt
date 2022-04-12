@@ -24,20 +24,26 @@ open class KoverCollectingTask : DefaultTask() {
             it.into(outputDir)
             xmlFiles.forEach { (p, f) ->
                 it.from(f) { c ->
-                    c.rename { "$p.xml" }
+                    c.rename { "${p.pathAsFilename()}.xml" }
                 }
             }
         }
 
 
         htmlDirs.forEach { (p, d) ->
+            val name = p.pathAsFilename()
+
             // delete directory for HTML reports so that the old reports do not overlap with the new ones
-            project.delete(outputDir.dir("html/$p"))
+            project.delete(outputDir.dir("html/$name"))
 
             project.copy {
                 it.from(d)
-                it.into(outputDir.dir("html/$p"))
+                it.into(outputDir.dir("html/$name"))
             }
         }
+    }
+
+    private fun String.pathAsFilename(): String {
+        return if (this == ":") "_root_" else replace(':', '_')
     }
 }

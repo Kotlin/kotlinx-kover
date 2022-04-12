@@ -6,6 +6,8 @@ package kotlinx.kover.engines.jacoco
 
 import groovy.lang.*
 import kotlinx.kover.api.*
+import kotlinx.kover.engines.commons.*
+import kotlinx.kover.engines.commons.ONE_HUNDRED
 import kotlinx.kover.engines.commons.Report
 import org.gradle.api.*
 import org.gradle.api.file.*
@@ -40,7 +42,7 @@ private fun Task.callJacocoAntReportTask(
         invokeWithBody("executiondata") {
             project.files(report.files).addToAntBuilder(this, "resources")
         }
-        invokeWithBody("structure", mapOf("name" to project.name)) {
+        invokeWithBody("structure", mapOf("name" to project.path)) {
             invokeWithBody("sourcefiles") {
                 project.files(sources).addToAntBuilder(this, "resources")
             }
@@ -93,8 +95,8 @@ internal fun Task.jacocoVerification(
                             }
                             VerificationValueType.COVERED_LINES_PERCENTAGE -> {
                                 limitArgs["value"] = "COVEREDRATIO"
-                                min = min?.divide(BigDecimal(100))
-                                max = max?.divide(BigDecimal(100))
+                                min = min?.divide(ONE_HUNDRED)
+                                max = max?.divide(ONE_HUNDRED)
                             }
                         }
 

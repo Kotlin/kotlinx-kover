@@ -15,7 +15,7 @@ internal fun Project.createProviders(agents: Map<CoverageEngine, CoverageAgent>)
     val projects: MutableMap<String, ProjectProviders> = mutableMapOf()
 
     allprojects {
-        projects[it.name] = ProjectProviders(
+        projects[it.path] = ProjectProviders(
             it.provider { it.files(if (runAllTests()) allBinaryReports() else it.binaryReports(this)) },
             it.provider { if (runAllTests()) allTestTasks() else it.testTasks(this) },
             it.provider { it.collectDirs(this).first },
@@ -108,7 +108,7 @@ private fun Project.collectDirs(root: Project): Pair<FileCollection, FileCollect
 
 private fun Project.isDisabled(root: Project): Boolean {
     val koverExtension = root.extensions.getByType(KoverExtension::class.java)
-    return koverExtension.isDisabled || koverExtension.disabledProjects.contains(name)
+    return koverExtension.isDisabled || koverExtension.disabledProjectsPaths.contains(path)
 }
 
 private fun Project.runAllTests(): Boolean {

@@ -332,7 +332,7 @@ kover {
     intellijEngineVersion.set("1.0.656")    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set("0.8.7")        // change version of JaCoCo agent and reporter
     generateReportOnCheck = true            // false to do not execute `koverMergedReport` task before `check` task
-    disabledProjects = setOf()              // setOf("project-name") to disable coverage for project with name `project-name`
+    disabledProjects = setOf()              // setOf("project-name") or setOf(":project-name") to disable coverage for project with path `:project-name` (`:` for the root project)
     instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
     runAllTestsForProjectTask = false       // true to run all tests in all projects if `koverHtmlReport`, `koverXmlReport`, `koverReport`, `koverVerify` or `check` tasks executed on some project
 }
@@ -349,7 +349,7 @@ kover {
     intellijEngineVersion.set('1.0.656')    // change version of IntelliJ agent and reporter
     jacocoEngineVersion.set('0.8.7')        // change version of JaCoCo agent and reporter
     generateReportOnCheck = true            // false to do not execute `koverMergedReport` task before `check` task
-    disabledProjects = []                   // ["project-name"] to disable coverage for project with name `project-name`
+    disabledProjects = []                   // ["project-name"] or [":project-name"] to disable coverage for project with path `:project-name` (`:` for the root project)
     instrumentAndroidPackage = false        // true to instrument packages `android.*` and `com.android.*`
     runAllTestsForProjectTask = false       // true to run all tests in all projects if `koverHtmlReport`, `koverXmlReport`, `koverReport`, `koverVerify` or `check` tasks executed on some project
 }

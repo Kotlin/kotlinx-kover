@@ -71,16 +71,16 @@ open class KoverMergedTask : DefaultTask() {
         val sourcesMap = srcDirs.get()
         val outputsMap = outputDirs.get()
 
-        val projectsNames = sourcesMap.keys
+        val projectsPaths = sourcesMap.keys
 
         val reportFiles: MutableList<File> = mutableListOf()
         val projects: MutableList<ProjectInfo> = mutableListOf()
 
-        projectsNames.map { projectName ->
-            reportFiles += binariesMap.getValue(projectName).files.get()
+        projectsPaths.map { projectPath ->
+            reportFiles += binariesMap.getValue(projectPath).files.get()
             projects += ProjectInfo(
-                sources = sourcesMap.getValue(projectName).files.get(),
-                outputs = outputsMap.getValue(projectName).files.get()
+                sources = sourcesMap.getValue(projectPath).files.get(),
+                outputs = outputsMap.getValue(projectPath).files.get()
             )
         }
 
