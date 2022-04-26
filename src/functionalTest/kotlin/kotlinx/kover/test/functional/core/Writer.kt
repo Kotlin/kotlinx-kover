@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.test.functional.core
 
 import kotlinx.kover.api.*
@@ -190,7 +194,31 @@ private fun ProjectBuilderState.buildTestTask(slice: ProjectSlice): String {
 
 @Suppress("UNUSED_PARAMETER")
 private fun ProjectBuilderState.buildVerifications(slice: ProjectSlice): String {
-    return ""
+    if (rules.isEmpty()) {
+        return ""
+    }
+
+    val builder = StringBuilder()
+    builder.appendLine()
+    builder.appendLine("tasks.koverVerify {")
+
+    for (rule in rules) {
+        builder.appendLine("    rule {")
+        rule.name?.also { builder.appendLine("""        name = "$it"""") }
+        for (bound in rule.bounds) {
+            builder.appendLine("        bound {")
+            bound.minValue?.let { builder.appendLine("            minValue = $it") }
+            bound.maxValue?.let { builder.appendLine("            maxValue = $it") }
+            if (bound.valueType != VerificationValueType.COVERED_LINES_PERCENTAGE) {
+                builder.appendLine("            valueType = kotlinx.kover.api.VerificationValueType.${bound.valueType}")
+            }
+            builder.appendLine("        }")
+        }
+        builder.appendLine("    }")
+    }
+    builder.appendLine("}")
+
+    return builder.toString()
 }
 
 private fun CommonBuilderState.buildSettings(slice: ProjectSlice): String {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.api
@@ -13,6 +13,12 @@ import javax.annotation.*
  * Works only with lines counter.
  */
 public interface VerificationRule {
+    /**
+     * Unique ID of the rule.
+     */
+    @get:Internal
+    public val id: Int
+
     /**
      * Custom name of the rule.
      */
@@ -34,6 +40,12 @@ public interface VerificationRule {
 }
 
 public interface VerificationBound {
+    /**
+     * ID of the bound unique in the rule.
+     */
+    @get:Internal
+    public val id: Int
+
     /**
      * Minimal value to compare with counter value.
      */

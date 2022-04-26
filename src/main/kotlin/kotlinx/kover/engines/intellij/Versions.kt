@@ -1,11 +1,11 @@
 /*
- * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.engines.intellij
 
-val minimalIntellijVersion = IntellijEngineVersion(1, 0, 647)
-val defaultIntellijVersion = IntellijEngineVersion(1, 0, 656)
+val minimalIntellijVersion = IntellijEngineVersion(1, 0, 665)
+val defaultIntellijVersion = minimalIntellijVersion
 
 data class IntellijEngineVersion(val major: Int, val minor: Int, val build: Int): Comparable<IntellijEngineVersion> {
     override fun compareTo(other: IntellijEngineVersion): Int {

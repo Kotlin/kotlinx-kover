@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.test.functional.core
 
 import kotlinx.kover.api.*
@@ -10,7 +14,8 @@ internal enum class ProjectType { KOTLIN_JVM, KOTLIN_MULTIPLATFORM, ANDROID }
 
 internal interface ProjectBuilder<B : ProjectBuilder<B>> {
     fun sources(template: String): B
-    fun verification(rules: Iterable<VerificationRule>): B
+
+    fun rule(name: String?=null, builder: RuleBuilder.() -> Unit): B
 
     fun configTest(script: String): B
     fun configTest(kotlin: String, groovy: String): B
@@ -20,6 +25,10 @@ internal interface ProjectBuilder<B : ProjectBuilder<B>> {
 
     fun dependency(script: String): B
     fun dependency(kotlin: String, groovy: String): B
+}
+
+internal interface RuleBuilder {
+    fun bound(builder: VerificationBound.() -> Unit)
 }
 
 internal interface TestCaseBuilder : ProjectBuilder<TestCaseBuilder> {
@@ -56,6 +65,7 @@ internal data class KoverRootConfig(
 
 internal interface GradleRunner {
     fun run(vararg args: String, checker: RunResult.() -> Unit = {}): GradleRunner
+    fun runWithError(vararg args: String, errorChecker: RunResult.() -> Unit = {}): GradleRunner
 }
 
 internal interface RunResult {

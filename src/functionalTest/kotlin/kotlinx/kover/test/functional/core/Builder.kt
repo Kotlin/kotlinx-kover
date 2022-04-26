@@ -1,6 +1,11 @@
+/*
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.test.functional.core
 
 import kotlinx.kover.api.*
+import org.gradle.api.*
 import java.io.*
 
 internal fun createBuilder(rootDir: File, description: String): TestCaseBuilder {
@@ -96,9 +101,9 @@ private class TestCaseBuilderImpl(
 @Suppress("UNCHECKED_CAST")
 private open class ProjectBuilderImpl<B : ProjectBuilder<B>>(val projectState: ProjectBuilderState) : ProjectBuilder<B> {
 
-    override fun verification(rules: Iterable<VerificationRule>): B {
-        projectState.rules += rules
-        return this as B
+    override fun rule(name: String?, builder: RuleBuilder.() -> Unit): B {
+        projectState.rules += VerificationRuleI(projectState.rules.size, name).apply(builder)
+          return this as B
     }
 
     override fun configTest(script: String): B {
@@ -136,6 +141,27 @@ private open class ProjectBuilderImpl<B : ProjectBuilder<B>>(val projectState: P
         return this as B
     }
 }
+
+private data class VerificationRuleI(
+    override val id: Int,
+    override var name: String?
+) : VerificationRule, RuleBuilder {
+    override val bounds: MutableList<VerificationBound> = mutableListOf()
+    override fun bound(configureBound: Action<VerificationBound>) {
+        bounds += VerificationBoundI(bounds.size).also { configureBound.execute(it) }
+    }
+
+    override fun bound(builder: VerificationBound.() -> Unit) {
+        bounds += VerificationBoundI(bounds.size).apply(builder)
+    }
+}
+
+private data class VerificationBoundI(
+    override val id: Int,
+    override var minValue: Int? = null,
+    override var maxValue: Int? = null,
+    override var valueType: VerificationValueType = VerificationValueType.COVERED_LINES_PERCENTAGE
+) : VerificationBound
 
 
 
