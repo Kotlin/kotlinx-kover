@@ -189,9 +189,9 @@ private fun Task.checkRule(counters: Map<VerificationValueType, Int>, rule: Veri
 
     val ruleName = if (rule.name != null) "'${rule.name}' " else ""
     return if (boundsViolations.size > 1) {
-        "Rule ${ruleName}violated for '${project.name}':" + boundsViolations.joinToString("\n  ", "\n  ")
+        "Rule ${ruleName}violated for '${project.path}':" + boundsViolations.joinToString("\n  ", "\n  ")
     } else if (boundsViolations.size == 1) {
-        "Rule ${ruleName}violated for '${project.name}': ${boundsViolations[0]}"
+        "Rule ${ruleName}violated for '${project.path}': ${boundsViolations[0]}"
     } else {
         null
     }

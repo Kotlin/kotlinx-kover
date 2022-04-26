@@ -118,13 +118,40 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
     @Test
     fun testDisableSubproject() {
         builder("Testing disabling one of subproject")
-            .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
-            .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
             .sources("multiproject-user")
             .subproject(subprojectName) {
                 sources("multiproject-common")
             }
             .configKover { disabledProjects += subprojectName }
+            .build()
+            .run("build", "koverReport") {
+                checkDefaultBinaryReport()
+                checkDefaultMergedReports()
+                checkDefaultReports()
+                xml(defaultMergedXmlReport()) {
+                    classCounter("org.jetbrains.UserClass").assertFullyCovered()
+
+                    // classes from disabled project should not be included in the merged report
+                    classCounter("org.jetbrains.CommonClass").assertAbsent()
+                    classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
+                }
+
+                subproject(subprojectName) {
+                    checkDefaultBinaryReport(false)
+                    checkDefaultMergedReports(false)
+                    checkDefaultReports(false)
+                }
+            }
+    }
+
+    @Test
+    fun testDisableSubprojectByPath() {
+        builder("Testing disabling one of subproject by path")
+            .sources("multiproject-user")
+            .subproject(subprojectName) {
+                sources("multiproject-common")
+            }
+            .configKover { disabledProjects += ":$subprojectName" }
             .build()
             .run("build", "koverReport") {
                 checkDefaultBinaryReport()

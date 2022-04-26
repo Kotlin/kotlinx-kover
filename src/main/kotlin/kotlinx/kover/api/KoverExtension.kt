@@ -58,6 +58,13 @@ open class KoverExtension(objects: ObjectFactory) {
      */
     @get:Input
     public var runAllTestsForProjectTask: Boolean = false
+
+    /**
+     * Fully-qualified path of disabled projects.
+     * It is filled in only automatically based on custom values in `disabledProjects'.
+     */
+    @get:Internal
+    internal var disabledProjectsPaths: Set<String> = emptySet()
 }
 
 public enum class CoverageEngine {

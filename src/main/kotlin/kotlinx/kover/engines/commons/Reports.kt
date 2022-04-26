@@ -30,3 +30,5 @@ internal fun String.wildcardsToRegex(): String {
 
     return builder.toString()
 }
+
+internal val ONE_HUNDRED = 100.toBigDecimal()
