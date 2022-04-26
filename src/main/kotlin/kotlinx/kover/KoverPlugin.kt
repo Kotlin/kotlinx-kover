@@ -332,7 +332,7 @@ private class CollectDisabledProjectsPathsAction(
             } else {
                 val projectPaths = paths[it] ?: return@map
                 if (projectPaths.size > 1) {
-                    throw GradleException("Cover configuring error: ambiguous name of the excluded project '$it': suitable projects with paths $projectPaths")
+                    throw GradleException("Kover configuring error: ambiguous name of the excluded project '$it': suitable projects with paths $projectPaths. Consider using fully-qualified name starting with ':'")
                 }
                 result += projectPaths
             }

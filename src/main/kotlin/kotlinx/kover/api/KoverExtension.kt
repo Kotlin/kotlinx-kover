@@ -60,7 +60,8 @@ open class KoverExtension(objects: ObjectFactory) {
     public var runAllTestsForProjectTask: Boolean = false
 
     /**
-     * Specifies the projects to be disabled from instrumentation and reportings.
+     * Fully-qualified path of disabled projects.
+     * It is filled in only automatically based on custom values in `disabledProjects'.
      */
     @get:Internal
     internal var disabledProjectsPaths: Set<String> = emptySet()
