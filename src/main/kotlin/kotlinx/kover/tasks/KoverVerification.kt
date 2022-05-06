@@ -2,8 +2,6 @@
  * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-
-
 package kotlinx.kover.tasks
 
 import kotlinx.kover.api.*
@@ -15,7 +13,6 @@ import org.gradle.api.file.*
 import org.gradle.api.model.*
 import org.gradle.api.tasks.*
 import org.gradle.process.*
-import java.io.*
 import javax.inject.*
 
 open class KoverMergedVerificationTask : KoverMergedTask() {
@@ -32,7 +29,11 @@ open class KoverMergedVerificationTask : KoverMergedTask() {
      * Add new coverage verification rule to check after test task execution.
      */
     public fun rule(configureRule: Action<VerificationRule>) {
-        rulesInternal += project.objects.newInstance(VerificationRuleImpl::class.java, project.objects)
+        rulesInternal += project.objects.newInstance(
+            VerificationRuleImpl::class.java,
+            rulesInternal.size,
+            project.objects
+        )
             .also { configureRule.execute(it) }
     }
 
@@ -57,7 +58,11 @@ open class KoverVerificationTask : KoverProjectTask() {
      * Add new coverage verification rule to check after test task execution.
      */
     public fun rule(configureRule: Action<VerificationRule>) {
-        rulesInternal += project.objects.newInstance(VerificationRuleImpl::class.java, project.objects)
+        rulesInternal += project.objects.newInstance(
+            VerificationRuleImpl::class.java,
+            rulesInternal.size,
+            project.objects
+        )
             .also { configureRule.execute(it) }
     }
 
@@ -76,29 +81,23 @@ private fun Task.verify(
     classpath: FileCollection
 ) {
     if (engine == CoverageEngine.INTELLIJ) {
-        val xmlFile = File(temporaryDir, "counters.xml")
-        intellijReport(
-            exec,
-            report,
-            xmlFile,
-            null,
-            classpath
-        )
-        intellijVerification(xmlFile, rules)
+        intellijVerification(exec, report, rules, classpath)
     } else {
         jacocoVerification(report, rules, classpath)
     }
 }
 
-private open class VerificationRuleImpl @Inject constructor(private val objects: ObjectFactory) : VerificationRule {
+private open class VerificationRuleImpl @Inject constructor(override val id: Int, private val objects: ObjectFactory) :
+    VerificationRule {
     override var name: String? = null
     override val bounds: MutableList<VerificationBound> = mutableListOf()
     override fun bound(configureBound: Action<VerificationBound>) {
-        bounds += objects.newInstance(VerificationBoundImpl::class.java).also { configureBound.execute(it) }
+        bounds += objects.newInstance(VerificationBoundImpl::class.java, bounds.size)
+            .also { configureBound.execute(it) }
     }
 }
 
-private open class VerificationBoundImpl : VerificationBound {
+private open class VerificationBoundImpl @Inject constructor(override val id: Int) : VerificationBound {
     override var minValue: Int? = null
     override var maxValue: Int? = null
     override var valueType: VerificationValueType = VerificationValueType.COVERED_LINES_PERCENTAGE

@@ -1,17 +1,16 @@
 /*
- * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.engines.intellij
 
-import kotlinx.kover.api.*
 import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.Report
+import kotlinx.kover.json.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.process.ExecOperations
 import java.io.*
-import java.util.*
 
 internal fun Task.intellijReport(
     exec: ExecOperations,
@@ -29,9 +28,7 @@ internal fun Task.intellijReport(
     }
 
     val argsFile = File(temporaryDir, "intellijreport.json")
-    argsFile.printWriter().use { pw ->
-        pw.writeReportsJson(report, xmlFile, htmlDir)
-    }
+    argsFile.writeReportsJson(report, xmlFile, htmlDir)
 
     exec.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.report.Main")
@@ -79,142 +76,26 @@ JSON example:
 }
 ```
  */
-private fun Writer.writeReportsJson(
+private fun File.writeReportsJson(
     report: Report,
     xmlFile: File?,
     htmlDir: File?
 ) {
-    appendLine("{")
-
-    appendLine("""  "reports": [ """)
-    appendLine(report.files.joinToString(",\n        ", "        ") { f ->
-        """{"ic": ${f.jsonString}}"""
-    })
-    appendLine("""    ], """)
-
-    xmlFile?.also {
-        appendLine("""  "xml": ${it.jsonString},""")
-    }
-    htmlDir?.also {
-        appendLine("""  "html": ${it.jsonString},""")
-    }
-
-    val includes = report.includes
-    val excludes = report.excludes
-
-    if (includes.isNotEmpty()) {
-        appendLine("""  "include": {""")
-        appendLine(includes.joinToString(", ", """    "classes": [""", "]") { i -> i.wildcardsToRegex().jsonString })
-        appendLine("""  },""")
-    }
-
-    if (excludes.isNotEmpty()) {
-        appendLine("""  "exclude": {""")
-        appendLine(excludes.joinToString(", ", """    "classes": [""", "]") { e -> e.wildcardsToRegex().jsonString })
-        appendLine("""  },""")
-    }
-
-    appendLine("""  "modules": [""")
-    report.projects.forEachIndexed { index, aProject ->
-        writeProjectReportJson(aProject, index == (report.projects.size - 1))
-    }
-    appendLine("""  ]""")
-    appendLine("}")
-}
-
-private fun Writer.writeProjectReportJson(projectInfo: ProjectInfo, isLast: Boolean) {
-    appendLine("""    {""")
-    appendLine("""      "output": [""")
-    appendLine(
-        projectInfo.outputs.joinToString(",\n        ", "        ") { f -> f.jsonString })
-    appendLine("""      ],""")
-    appendLine("""      "sources": [""")
-
-    appendLine(
-        projectInfo.sources.joinToString(",\n        ", "        ") { f -> f.jsonString })
-    appendLine("""      ]""")
-    appendLine("""    }${if (isLast) "" else ","}""")
-}
-
-private val File.jsonString: String
-    get() {
-        return canonicalPath.jsonString
-    }
-
-private val String.jsonString: String
-    get() {
-        return '"' + replace("\\", "\\\\").replace("\"", "\\\"") + '"'
-    }
-
-internal fun Task.intellijVerification(
-    xmlFile: File,
-    rules: Iterable<VerificationRule>
-) {
-    val counters = readCounterValuesFromXml(xmlFile)
-    val violations = rules.mapNotNull { checkRule(counters, it) }
-
-    if (violations.isNotEmpty()) {
-        throw GradleException(violations.joinToString("\n"))
-    }
-}
-
-private fun readCounterValuesFromXml(file: File): Map<VerificationValueType, Int> {
-    val scanner = Scanner(file)
-    var lineCounterLine: String? = null
-
-    while (scanner.hasNextLine()) {
-        val line = scanner.nextLine()
-        if (line.startsWith("<counter type=\"LINE\"")) {
-            lineCounterLine = line
+    writeJsonObject(mutableMapOf<String, Any>(
+        "reports" to report.files.map { mapOf("ic" to it) },
+        "modules" to report.projects.map { mapOf("sources" to it.sources, "output" to it.outputs) },
+    ).also {
+        if (report.includes.isNotEmpty()) {
+            it["include"] = mapOf("classes" to report.includes.map { c -> c.wildcardsToRegex() })
         }
-    }
-    scanner.close()
-
-    lineCounterLine ?: throw GradleException("No LINE counter in XML report")
-
-    val coveredCount = lineCounterLine.substringAfter("covered=\"").substringBefore("\"").toInt()
-    val missedCount = lineCounterLine.substringAfter("missed=\"").substringBefore("\"").toInt()
-    val percentage = if ((coveredCount + missedCount) > 0) 100 * coveredCount / (coveredCount + missedCount) else 0
-
-    return mapOf(
-        VerificationValueType.COVERED_LINES_COUNT to coveredCount,
-        VerificationValueType.MISSED_LINES_COUNT to missedCount,
-        VerificationValueType.COVERED_LINES_PERCENTAGE to percentage
-    )
-}
-
-
-private fun Task.checkRule(counters: Map<VerificationValueType, Int>, rule: VerificationRule): String? {
-    val boundsViolations = rule.bounds.mapNotNull { it.check(counters) }
-
-    val ruleName = if (rule.name != null) "'${rule.name}' " else ""
-    return if (boundsViolations.size > 1) {
-        "Rule ${ruleName}violated for '${project.path}':" + boundsViolations.joinToString("\n  ", "\n  ")
-    } else if (boundsViolations.size == 1) {
-        "Rule ${ruleName}violated for '${project.path}': ${boundsViolations[0]}"
-    } else {
-        null
-    }
-}
-
-private fun VerificationBound.check(counters: Map<VerificationValueType, Int>): String? {
-    val minValue = this.minValue
-    val maxValue = this.maxValue
-    val valueType = this.valueType
-
-    val value = counters[valueType] ?: throw GradleException("Not found value for counter '${valueType}'")
-
-    val valueTypeName = when (valueType) {
-        VerificationValueType.COVERED_LINES_COUNT -> "covered lines count"
-        VerificationValueType.MISSED_LINES_COUNT -> "missed lines count"
-        VerificationValueType.COVERED_LINES_PERCENTAGE -> "covered lines percentage"
-    }
-
-    return if (minValue != null && minValue > value) {
-        "$valueTypeName is $value, but expected minimum is $minValue"
-    } else if (maxValue != null && maxValue < value) {
-        "$valueTypeName is $value, but expected maximum is $maxValue"
-    } else {
-        null
-    }
+        if (report.excludes.isNotEmpty()) {
+            it["exclude"] = mapOf("classes" to report.excludes.map { c -> c.wildcardsToRegex() })
+        }
+        xmlFile?.also { f ->
+            it["xml"] = f
+        }
+        htmlDir?.also { d ->
+            it["html"] = d
+        }
+    })
 }

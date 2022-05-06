@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.test.functional.core
 
 import kotlinx.kover.api.*
@@ -13,35 +17,64 @@ internal class GradleRunnerImpl(private val projects: Map<ProjectSlice, File>) :
 
     override fun run(vararg args: String, checker: RunResult.() -> Unit): GradleRunnerImpl {
         val argsList = listOf(*args)
-
         projects.forEach { (slice, project) ->
             try {
-                project.runGradle(argsList, checker)
-            } catch (e: Throwable) {
+                val buildResult = project.runGradle(argsList)
+                RunResultImpl(buildResult, project).apply { checkIntellijErrors() }.apply(checker)
+            } catch (e: UnexpectedBuildFailure) {
                 throw AssertionError("Assertion error occurred in test for project $slice", e)
             }
         }
-
+        return this
+    }
+    override fun runWithError(vararg args: String, errorChecker: RunResult.() -> Unit): GradleRunnerImpl {
+        val argsList = listOf(*args)
+        projects.forEach { (slice, project) ->
+            try {
+                project.runGradleWithError(argsList)
+                throw AssertionError("Assertion error expected in test for project $slice")
+            } catch (e: UnexpectedBuildFailure) {
+                RunResultImpl(e.buildResult, project).apply { checkIntellijErrors() }.apply(errorChecker)
+            }
+        }
         return this
     }
 }
 
 internal class SingleGradleRunnerImpl(private val projectDir: File) : GradleRunner {
     override fun run(vararg args: String, checker: RunResult.() -> Unit): SingleGradleRunnerImpl {
-        projectDir.runGradle(listOf(*args), checker)
+        val buildResult = projectDir.runGradle(listOf(*args))
+        RunResultImpl(buildResult, projectDir).apply { checkIntellijErrors() }.apply(checker)
+        return this
+    }
+
+    override fun runWithError(vararg args: String, errorChecker: RunResult.() -> Unit): SingleGradleRunnerImpl {
+        try {
+            projectDir.runGradleWithError(listOf(*args))
+            throw AssertionError("Assertion error expected in test")
+        } catch (e: UnexpectedBuildFailure) {
+            RunResultImpl(e.buildResult, projectDir).apply { checkIntellijErrors() }.apply(errorChecker)
+        }
         return this
     }
 }
 
-private fun File.runGradle(args: List<String>, checker: RunResult.() -> Unit) {
-    val buildResult = org.gradle.testkit.runner.GradleRunner.create()
+private fun File.runGradle(args: List<String>): BuildResult {
+    return org.gradle.testkit.runner.GradleRunner.create()
         .withProjectDir(this)
         .withPluginClasspath()
         .addPluginTestRuntimeClasspath()
         .withArguments(args)
         .build()
+}
 
-    RunResultImpl(buildResult, this).apply { checkIntellijErrors() }.apply(checker)
+private fun File.runGradleWithError(args: List<String>) {
+    org.gradle.testkit.runner.GradleRunner.create()
+        .withProjectDir(this)
+        .withPluginClasspath()
+        .addPluginTestRuntimeClasspath()
+        .withArguments(args)
+        .build()
 }
 
 private fun org.gradle.testkit.runner.GradleRunner.addPluginTestRuntimeClasspath() = apply {
