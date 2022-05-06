@@ -15,7 +15,7 @@ internal enum class ProjectType { KOTLIN_JVM, KOTLIN_MULTIPLATFORM, ANDROID }
 internal interface ProjectBuilder<B : ProjectBuilder<B>> {
     fun sources(template: String): B
 
-    fun rule(name: String?=null, builder: RuleBuilder.() -> Unit): B
+    fun rule(name: String? = null, builder: RuleBuilder.() -> Unit): B
 
     fun configTest(script: String): B
     fun configTest(kotlin: String, groovy: String): B

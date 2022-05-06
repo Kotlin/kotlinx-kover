@@ -102,7 +102,7 @@ private class TestCaseBuilderImpl(
 private open class ProjectBuilderImpl<B : ProjectBuilder<B>>(val projectState: ProjectBuilderState) : ProjectBuilder<B> {
 
     override fun rule(name: String?, builder: RuleBuilder.() -> Unit): B {
-        projectState.rules += VerificationRuleI(projectState.rules.size, name).apply(builder)
+        projectState.rules += TestVerificationRule(projectState.rules.size, name).apply(builder)
           return this as B
     }
 
@@ -142,21 +142,21 @@ private open class ProjectBuilderImpl<B : ProjectBuilder<B>>(val projectState: P
     }
 }
 
-private data class VerificationRuleI(
+private data class TestVerificationRule(
     override val id: Int,
     override var name: String?
 ) : VerificationRule, RuleBuilder {
     override val bounds: MutableList<VerificationBound> = mutableListOf()
     override fun bound(configureBound: Action<VerificationBound>) {
-        bounds += VerificationBoundI(bounds.size).also { configureBound.execute(it) }
+        bounds += TestVerificationBound(bounds.size).also { configureBound.execute(it) }
     }
 
     override fun bound(builder: VerificationBound.() -> Unit) {
-        bounds += VerificationBoundI(bounds.size).apply(builder)
+        bounds += TestVerificationBound(bounds.size).apply(builder)
     }
 }
 
-private data class VerificationBoundI(
+private data class TestVerificationBound(
     override val id: Int,
     override var minValue: Int? = null,
     override var maxValue: Int? = null,

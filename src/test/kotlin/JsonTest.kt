@@ -2,7 +2,8 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-import kotlinx.kover.json.*
+package kotlinx.kover.json
+
 import java.io.File
 import java.math.BigDecimal
 import kotlin.test.*

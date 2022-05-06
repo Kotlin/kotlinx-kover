@@ -41,7 +41,7 @@ internal fun Task.intellijVerification(
         e.args = mutableListOf(verifyRequest.canonicalPath)
     }
 
-    val violations = resultFile.readJsonArray()
+    val violations = resultFile.readJsonObject()
     if (violations.isNotEmpty()) {
         val result = processViolationsModel(violations)
         raiseViolations(result, rules)
@@ -159,16 +159,12 @@ private fun VerificationBound.valueAligned(value: Int): BigDecimal {
 }
 
 @Suppress("UNCHECKED_CAST")
-private fun processViolationsModel(violations: List<Any>): ViolationsResult {
+private fun processViolationsModel(violations: Map<String, Any>): ViolationsResult {
     val rules = mutableMapOf<Int, RuleViolation>()
     try {
-        for (violation in violations) {
-            val ruleViolation = violation as Map<String, Any>
-            val ruleId = ruleViolation.getValue("id") as BigDecimal
-            val boundViolations = ruleViolation.getValue("bounds") as Map<String, Any>
-
+        violations.forEach { (ruleId, boundViolations) ->
             val bounds = mutableMapOf<Int, BoundViolation>()
-            boundViolations.forEach { (id, v) ->
+            (boundViolations as Map<String, Any>).forEach { (id, v) ->
                 val minViolations = (v as Map<String, Map<String, Any>>)["min"]
                 val maxViolations = v["max"]
 
@@ -184,7 +180,7 @@ private fun processViolationsModel(violations: List<Any>): ViolationsResult {
             rules[ruleId.toInt()] = RuleViolation(bounds)
         }
     } catch (e: Throwable) {
-        throw GradleException("", e)
+            throw GradleException("Error occurred while parsing verifier result", e)
     }
 
     return ViolationsResult(rules)
