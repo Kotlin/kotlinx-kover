@@ -15,6 +15,8 @@ open class KoverExtension(objects: ObjectFactory) {
      */
     @get:Input
     public var isDisabled: Boolean = false
+    
+    public var isDisabled: Boolean = true
 
     /**
      * Specifies the coverage engine to be used to collect execution data.
@@ -33,7 +35,7 @@ open class KoverExtension(objects: ObjectFactory) {
      */
     @get:Input
     public val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
-
+    public val jacocoEngineVersion: Property = objects.property(int::class.java)
     /**
      * Specifies whether the reports will be generated within 'check' task execution.
      */
