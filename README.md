@@ -5,7 +5,7 @@
 **Kover** - Gradle plugin for Kotlin code coverage agents: [IntelliJ](https://github.com/JetBrains/intellij-coverage)
 and [JaCoCo](https://github.com/jacoco/jacoco).
 
-Minimal supported `Gradle` version: `6.4`. 
+Minimal supported `Gradle` version: `6.6`.
 
 ## Table of contents
 - [Features](#features)
