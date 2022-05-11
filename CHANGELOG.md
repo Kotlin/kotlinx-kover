@@ -1,3 +1,22 @@
+0.5.1 / 2022-05-11
+===================
+
+### Features
+* Added `Gradle` configuration cache support (#142)
+* Implemented the use of the full path to the project for the exclusion (#151)
+* Supported `IntelliJ Verifier`
+* Upgraded default and minimal `IntelliJ Coverage Engine` version to `1.0.668`
+
+### IntelliJ Agent
+* Fixed coverage counter for `$DefaultImpls` (#149)
+
+### Internal features
+* Added functional tests on verification
+* Implemented simple JSON parser and serializer
+
+### Requirements
+* Upgraded minimal supported `Gradle` version to `6.6`
+
 0.5.0 / 2022-02-01
 ===================
 Note that this is a full changelog relative to `0.4.4` version. Changelog relative to `0.5.0-RC2` can be found at the end of the changelog.
