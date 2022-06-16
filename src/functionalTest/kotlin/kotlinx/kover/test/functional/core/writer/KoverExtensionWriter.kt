@@ -61,7 +61,7 @@ private fun PrintWriter.printFilters(state: TestKoverProjectFiltersState, slice:
     indented(indents, "filters {")
     if (classes != null && (classes.excludes.isNotEmpty() || classes.includes.isNotEmpty())) {
         indented(indents + 1, "classes {")
-        printClassFilters(classes, slice, indents + 2)
+        printClassFilter(classes, slice, indents + 2)
         indented(indents + 1, "}")
     }
 

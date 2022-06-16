@@ -21,7 +21,7 @@ internal object DirsLookup {
     )
 
     @Suppress("UNUSED_PARAMETER")
-    fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilters): ProjectDirectories {
+    fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): ProjectDirectories {
         val srcDirs = HashMap<String, File>()
         val outDirs = HashMap<String, File>()
 
@@ -42,9 +42,9 @@ internal object DirsLookup {
 
 
 internal abstract class LookupAdapter {
-    protected abstract fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilters): Dirs
+    protected abstract fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs
 
-    fun lookupSafe(project: Project, sourceSetFilters: KoverSourceSetFilters): Dirs {
+    fun lookupSafe(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {
         return try {
             lookup(project, sourceSetFilters)
         } catch (e: Throwable) {
@@ -58,7 +58,7 @@ internal abstract class LookupAdapter {
         }
     }
 
-    protected fun filterSourceSet(name: String, sourceSetFilters: KoverSourceSetFilters): Boolean {
+    protected fun filterSourceSet(name: String, sourceSetFilters: KoverSourceSetFilter): Boolean {
         if (sourceSetFilters.excludes.contains(name)) {
             return false
         }

@@ -14,9 +14,9 @@ private const val calculateForUnloadedClasses = false // a flag to calculate cov
 private const val appendToDataFile = true // a flag to use data file as initial coverage
 private const val samplingMode = false //a flag to run coverage in sampling mode or in tracing mode otherwise
 
-internal fun Task.buildIntellijAgentJvmArgs(jarFile: File, reportFile: File, classFilters: KoverClassFilters): MutableList<String> {
+internal fun Task.buildIntellijAgentJvmArgs(jarFile: File, reportFile: File, classFilter: KoverClassFilter): MutableList<String> {
     val argsFile = File(temporaryDir, "intellijagent.args")
-    argsFile.writeAgentArgs(reportFile, classFilters)
+    argsFile.writeAgentArgs(reportFile, classFilter)
 
     return mutableListOf(
         "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
@@ -27,7 +27,7 @@ internal fun Task.buildIntellijAgentJvmArgs(jarFile: File, reportFile: File, cla
     )
 }
 
-private fun File.writeAgentArgs(reportFile: File, classFilters: KoverClassFilters) {
+private fun File.writeAgentArgs(reportFile: File, classFilter: KoverClassFilter) {
     reportFile.parentFile.mkdirs()
     val binaryPath = reportFile.canonicalPath
 
@@ -37,15 +37,15 @@ private fun File.writeAgentArgs(reportFile: File, classFilters: KoverClassFilter
         pw.appendLine(calculateForUnloadedClasses.toString())
         pw.appendLine(appendToDataFile.toString())
         pw.appendLine(samplingMode.toString())
-        classFilters.includes.forEach { i ->
+        classFilter.includes.forEach { i ->
             pw.appendLine(i.wildcardsToRegex())
         }
 
-        if (classFilters.excludes.isNotEmpty()) {
+        if (classFilter.excludes.isNotEmpty()) {
             pw.appendLine("-exclude")
         }
 
-        classFilters.excludes.forEach { e ->
+        classFilter.excludes.forEach { e ->
             pw.appendLine(e.wildcardsToRegex())
         }
     }

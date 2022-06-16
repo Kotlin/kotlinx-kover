@@ -23,7 +23,7 @@ internal open class KoverVerificationTask : KoverReportTask() {
             this,
             exec,
             files.get(),
-            classFilters.get(),
+            classFilter.get(),
             reportRules,
         )
         resultFile.get().asFile.writeText(errors ?: "")
@@ -48,7 +48,7 @@ internal open class KoverVerificationTask : KoverReportTask() {
                 ruleBounds += ReportVerificationBound(ruleBounds.size, min, max, bound.counter, bound.valueType)
             }
 
-            result += ReportVerificationRule(result.size, rule.name, rule.target, rule.filters.orNull, ruleBounds)
+            result += ReportVerificationRule(result.size, rule.name, rule.target, rule.classFilter.orNull, ruleBounds)
         }
 
         return result

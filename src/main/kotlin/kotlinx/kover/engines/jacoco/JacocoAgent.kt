@@ -8,11 +8,11 @@ import kotlinx.kover.api.*
 import org.gradle.api.Task
 import java.io.*
 
-internal fun Task.buildJacocoAgentJvmArgs(jarFile: File, reportFile: File, classFilters: KoverClassFilters): MutableList<String> {
+internal fun Task.buildJacocoAgentJvmArgs(jarFile: File, reportFile: File, classFilter: KoverClassFilter): MutableList<String> {
     val agentArgs = listOfNotNull(
         "destfile=${reportFile.canonicalPath},append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false",
-        classFilters.includes.joinToFilterString("includes"),
-        classFilters.excludes.joinToFilterString("excludes")
+        classFilter.includes.joinToFilterString("includes"),
+        classFilter.excludes.joinToFilterString("excludes")
     ).joinToString(",")
 
     return mutableListOf("-javaagent:${jarFile.canonicalPath}=$agentArgs")

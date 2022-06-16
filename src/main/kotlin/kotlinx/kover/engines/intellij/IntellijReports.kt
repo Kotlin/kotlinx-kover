@@ -16,7 +16,7 @@ import java.io.*
 internal fun Task.intellijReport(
     exec: ExecOperations,
     projectFiles: Map<String, ProjectFiles>,
-    filters: KoverClassFilters,
+    filters: KoverClassFilter,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
@@ -80,7 +80,7 @@ JSON example:
  */
 private fun File.writeReportsJson(
     projectFiles: Map<String, ProjectFiles>,
-    classFilters: KoverClassFilters,
+    classFilter: KoverClassFilter,
     xmlFile: File?,
     htmlDir: File?
 ) {
@@ -88,11 +88,11 @@ private fun File.writeReportsJson(
         "reports" to projectFiles.flatMap { it.value.binaryReportFiles }.map { mapOf("ic" to it) },
         "modules" to projectFiles.map { mapOf("sources" to it.value.sources, "output" to it.value.outputs) },
     ).also {
-        if (classFilters.includes.isNotEmpty()) {
-            it["include"] = mapOf("classes" to classFilters.includes.map { c -> c.wildcardsToRegex() })
+        if (classFilter.includes.isNotEmpty()) {
+            it["include"] = mapOf("classes" to classFilter.includes.map { c -> c.wildcardsToRegex() })
         }
-        if (classFilters.excludes.isNotEmpty()) {
-            it["exclude"] = mapOf("classes" to classFilters.excludes.map { c -> c.wildcardsToRegex() })
+        if (classFilter.excludes.isNotEmpty()) {
+            it["exclude"] = mapOf("classes" to classFilter.excludes.map { c -> c.wildcardsToRegex() })
         }
         xmlFile?.also { f ->
             it["xml"] = f

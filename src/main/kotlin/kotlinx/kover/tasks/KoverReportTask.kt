@@ -19,7 +19,7 @@ internal abstract class KoverReportTask : DefaultTask() {
         project.objects.mapProperty(String::class.java, ProjectFiles::class.java)
 
     @get:Nested
-    internal val classFilters: Property<KoverClassFilters> = project.objects.property(KoverClassFilters::class.java)
+    internal val classFilter: Property<KoverClassFilter> = project.objects.property(KoverClassFilter::class.java)
 
     @get:Nested
     internal val engine: Property<EngineDetails> = project.objects.property(EngineDetails::class.java)

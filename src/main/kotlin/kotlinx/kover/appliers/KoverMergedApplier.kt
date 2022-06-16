@@ -30,12 +30,14 @@ internal fun Project.applyMerged() {
 private fun Project.createMergedExtension(): KoverMergedConfig {
     val extension = extensions.create(KoverNames.MERGED_EXTENSION_NAME, KoverMergedConfig::class.java, objects)
     extension.isEnabled.set(false)
+    extension.filters.classes.set(KoverClassFilter())
+    extension.filters.projects.set(KoverProjectsFilter())
     extension.xmlReport.onCheck.set(false)
     extension.xmlReport.reportFile.set(layout.buildDirectory.file(MERGED_XML_REPORT_DEFAULT_PATH))
-    extension.xmlReport.classes.set(extension.filters.classes)
+    extension.xmlReport.classFilter.set(extension.filters.classes)
     extension.htmlReport.onCheck.set(false)
     extension.htmlReport.reportDir.set(layout.buildDirectory.dir(MERGED_HTML_REPORT_DEFAULT_PATH))
-    extension.htmlReport.classes.set(extension.filters.classes)
+    extension.htmlReport.classFilter.set(extension.filters.classes)
     extension.verify.onCheck.set(false)
     return extension
 }
@@ -53,11 +55,11 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
 
         val xmlTask = container.createMergedTask<KoverXmlTask>(
             MERGED_XML_REPORT_TASK_NAME,
-            extension.xmlReport.classes,
+            extension.xmlReport.classFilter,
             extensionByProject,
             engineProvider,
             testsProvider,
-            { e -> e.xmlReport.taskFilters.sourceSets.get() }
+            { e -> e.xmlReport.filters.sourceSets.get() }
         ) {
             it.reportFile.set(extension.xmlReport.reportFile)
             it.description = "Generates code coverage XML report for all enabled test tasks in specified projects."
@@ -65,7 +67,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
 
         val htmlTask = container.createMergedTask<KoverHtmlTask>(
             MERGED_HTML_REPORT_TASK_NAME,
-            extension.htmlReport.classes,
+            extension.htmlReport.classFilter,
             extensionByProject,
             engineProvider,
             testsProvider,
@@ -121,11 +123,11 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
 
 private inline fun <reified T : KoverReportTask> Project.createMergedTask(
     taskName: String,
-    classFilters: Provider<KoverClassFilters>,
+    classFilter: Provider<KoverClassFilter>,
     extensionByProject: Provider<Map<Project, KoverProjectConfig>>,
     engineProvider: Provider<EngineDetails>,
     testsProvider: Provider<List<Test>>,
-    crossinline filterExtractor: (KoverProjectConfig) -> KoverSourceSetFilters,
+    crossinline filterExtractor: (KoverProjectConfig) -> KoverSourceSetFilter,
     crossinline block: (T) -> Unit
 ): T {
     val task = tasks.create(taskName, T::class.java) {
@@ -133,7 +135,7 @@ private inline fun <reified T : KoverReportTask> Project.createMergedTask(
         it.engine.set(engineProvider)
         it.dependsOn(testsProvider)
 
-        it.classFilters.set(classFilters)
+        it.classFilter.set(classFilter)
         it.group = VERIFICATION_GROUP
         block(it)
     }
@@ -163,7 +165,7 @@ private fun Project.projectsExtensionsProvider(
 
 private inline fun Project.mergedFilesProvider(
     extensionByProject: Provider<Map<Project, KoverProjectConfig>>,
-    crossinline filterExtractor: (KoverProjectConfig) -> KoverSourceSetFilters
+    crossinline filterExtractor: (KoverProjectConfig) -> KoverSourceSetFilter
 ): Provider<Map<String, ProjectFiles>> {
     return provider {
         extensionByProject.get()
@@ -173,7 +175,7 @@ private inline fun Project.mergedFilesProvider(
 }
 
 
-private fun filterProjects(filters: KoverProjectsFilters, allProjects: Iterable<Project>): List<Project> {
+private fun filterProjects(filters: KoverProjectsFilter, allProjects: Iterable<Project>): List<Project> {
     if (filters.includes.isEmpty()) {
         return allProjects.toList()
     }

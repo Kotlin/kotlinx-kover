@@ -8,12 +8,12 @@ import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.core.*
 import java.io.PrintWriter
 
-internal fun PrintWriter.printClassFilters(classFilters: KoverClassFilters, slice: ProjectSlice, indents: Int) {
-    if (classFilters.excludes.isNotEmpty()) {
-        indented(indents, "excludes".addAllList(classFilters.excludes, slice.language))
+internal fun PrintWriter.printClassFilter(classFilter: KoverClassFilter, slice: ProjectSlice, indents: Int) {
+    if (classFilter.excludes.isNotEmpty()) {
+        indented(indents, "excludes".addAllList(classFilter.excludes, slice.language))
     }
-    if (classFilters.includes.isNotEmpty()) {
-        indented(indents, "includes".addAllList(classFilters.includes, slice.language))
+    if (classFilter.includes.isNotEmpty()) {
+        indented(indents, "includes".addAllList(classFilter.includes, slice.language))
     }
 }
 
@@ -37,9 +37,9 @@ internal fun PrintWriter.printVerify(state: TestKoverVerifyConfigState, slice: P
         if (rule.target != null) {
             indented(indents + 2, "target = ${rule.target?.enum(slice.language)}")
         }
-        if (rule.overrideClassFilters != null) {
-            indented(indents + 2, "overrideClassFilters {")
-            printClassFilters(rule.overrideClassFilters!!, slice, indents + 3)
+        if (rule.overrideClassFilter != null) {
+            indented(indents + 2, "overrideClassFilter {")
+            printClassFilter(rule.overrideClassFilter!!, slice, indents + 3)
             indented(indents + 2, "}")
         }
         rule.bounds.forEach { bound ->

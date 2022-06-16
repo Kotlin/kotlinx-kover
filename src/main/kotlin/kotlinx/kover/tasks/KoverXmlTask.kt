@@ -18,7 +18,7 @@ internal open class KoverXmlTask : KoverReportTask() {
             this,
             exec,
             projectFiles,
-            classFilters.get(),
+            classFilter.get(),
             reportFile.get().asFile,
             null
         )

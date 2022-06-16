@@ -116,15 +116,15 @@ internal class TestKoverProjectConfigState : TestKoverProjectConfig {
 }
 
 internal class TestKoverProjectFiltersState : TestKoverProjectFilters {
-    var classes: KoverClassFilters? = null
-    var sourcesets: KoverSourceSetFilters? = null
+    var classes: KoverClassFilter? = null
+    var sourcesets: KoverSourceSetFilter? = null
 
-    override fun classes(config: KoverClassFilters.() -> Unit) {
-        classes = KoverClassFilters().also(config)
+    override fun classes(config: KoverClassFilter.() -> Unit) {
+        classes = KoverClassFilter().also(config)
     }
 
-    override fun sourcesets(config: KoverSourceSetFilters.() -> Unit) {
-        sourcesets = KoverSourceSetFilters().also(config)
+    override fun sourcesets(config: KoverSourceSetFilter.() -> Unit) {
+        sourcesets = KoverSourceSetFilter().also(config)
     }
 }
 
@@ -168,11 +168,11 @@ internal class TestVerificationRule {
     var name: String? = null
     var target: VerificationTarget? = null
 
-    var overrideClassFilters: KoverClassFilters? = null
+    var overrideClassFilter: KoverClassFilter? = null
     val bounds: MutableList<VerificationBoundState> = mutableListOf()
 
-    fun overrideClassFilters(config: Action<KoverClassFilters>) {
-        overrideClassFilters = KoverClassFilters().also { config.execute(it) }
+    fun overrideClassFilter(config: Action<KoverClassFilter>) {
+        overrideClassFilter = KoverClassFilter().also { config.execute(it) }
     }
 
     fun bound(configureBound: VerificationBoundState.() -> Unit) {
@@ -221,14 +221,14 @@ internal class TestKoverMergedConfigState : TestKoverMergedConfig {
 }
 
 internal class TestKoverMergedFiltersState : TestKoverMergedFilters {
-    var classes: KoverClassFilters? = null
-    var projects: KoverProjectsFilters? = null
-    override fun classes(config: KoverClassFilters.() -> Unit) {
-        classes = KoverClassFilters().also(config)
+    var classes: KoverClassFilter? = null
+    var projects: KoverProjectsFilter? = null
+    override fun classes(config: KoverClassFilter.() -> Unit) {
+        classes = KoverClassFilter().also(config)
     }
 
-    override fun projects(config: KoverProjectsFilters.() -> Unit) {
-        projects = KoverProjectsFilters().also(config)
+    override fun projects(config: KoverProjectsFilter.() -> Unit) {
+        projects = KoverProjectsFilter().also(config)
     }
 }
 

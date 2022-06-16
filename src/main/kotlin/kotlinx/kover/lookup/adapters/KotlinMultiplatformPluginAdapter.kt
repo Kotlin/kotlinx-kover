@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.plugin.*
 
 internal class KotlinMultiplatformPluginAdapter : LookupAdapter() {
 
-    override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilters): Dirs {
+    override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {
         project.plugins.findPlugin("kotlin-multiplatform") ?: return Dirs()
 
         val extension = try {

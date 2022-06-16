@@ -22,19 +22,33 @@ public enum class CoverageEngineVendor {
     JACOCO
 }
 
+/**
+ * Coverage Engine by IntelliJ.
+ */
 public class IntellijEngine(override val version: String): CoverageEngineVariant {
     override val vendor: CoverageEngineVendor = CoverageEngineVendor.INTELLIJ
     override fun toString(): String = "IntelliJ Coverage Engine $version"
 }
+
+/**
+ * IntelliJ Coverage Engine with default version [DEFAULT_INTELLIJ_VERSION].
+ */
 public object DefaultIntellijEngine: CoverageEngineVariant {
     override val vendor: CoverageEngineVendor = CoverageEngineVendor.INTELLIJ
     override val version: String = DEFAULT_INTELLIJ_VERSION
 }
 
+/**
+ * Coverage Engine by JaCoCo.
+ */
 public class JacocoEngine(override val version: String): CoverageEngineVariant {
     override val vendor: CoverageEngineVendor = CoverageEngineVendor.JACOCO
     override fun toString(): String = "JaCoCo Coverage Engine $version"
 }
+
+/**
+ * JaCoCo Coverage Engine with default version [DEFAULT_JACOCO_VERSION].
+ */
 public object DefaultJacocoEngine: CoverageEngineVariant {
     override val vendor: CoverageEngineVendor = CoverageEngineVendor.JACOCO
     override val version: String = DEFAULT_JACOCO_VERSION

@@ -34,7 +34,7 @@ internal fun Project.applyToProject() {
 
     val xmlTask = createTask<KoverXmlTask>(
         XML_REPORT_TASK_NAME,
-        extension.xmlReport.taskFilters,
+        extension.xmlReport.filters,
         extension,
         engineProvider,
         testsProvider,
@@ -114,7 +114,7 @@ private inline fun <reified T : KoverReportTask> Project.createTask(
         it.files.put(path, projectFilesProvider(extension, filters.sourceSets))
         it.engine.set(engineProvider)
         it.dependsOn(testsProvider)
-        it.classFilters.set(filters.classes)
+        it.classFilter.set(filters.classes)
         it.group = KoverNames.VERIFICATION_GROUP
         block(it)
     }
@@ -134,10 +134,12 @@ private fun Project.createProjectExtension(): KoverProjectConfig {
 
     extension.isDisabled.set(false)
     extension.engine.set(DefaultIntellijEngine)
+    extension.filters.classes.set(KoverClassFilter())
+    extension.filters.sourceSets.set(KoverSourceSetFilter())
     extension.xmlReport.reportFile.set(layout.buildDirectory.file(KoverPaths.PROJECT_XML_REPORT_DEFAULT_PATH))
     extension.xmlReport.onCheck.set(false)
-    extension.xmlReport.taskFilters.classes.set(extension.filters.classes)
-    extension.xmlReport.taskFilters.sourceSets.set(extension.filters.sourceSets)
+    extension.xmlReport.filters.classes.set(extension.filters.classes)
+    extension.xmlReport.filters.sourceSets.set(extension.filters.sourceSets)
     extension.htmlReport.reportDir.set(layout.buildDirectory.dir(KoverPaths.PROJECT_HTML_REPORT_DEFAULT_PATH))
     extension.htmlReport.onCheck.set(false)
     extension.htmlReport.taskFilters.classes.set(extension.filters.classes)
@@ -181,13 +183,13 @@ internal fun engineByVariant(
 
 internal fun Project.projectFilesProvider(
     extension: KoverProjectConfig,
-    sourceSetFiltersProvider: Provider<KoverSourceSetFilters>
+    sourceSetFiltersProvider: Provider<KoverSourceSetFilter>
 ): Provider<ProjectFiles> {
     return provider { projectFiles(sourceSetFiltersProvider.get(), extension) }
 }
 
 internal fun Project.projectFiles(
-    filters: KoverSourceSetFilters,
+    filters: KoverSourceSetFilter,
     extension: KoverProjectConfig
 ): ProjectFiles {
     val directories = DirsLookup.lookup(project, filters)

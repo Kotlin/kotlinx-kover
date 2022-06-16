@@ -20,12 +20,12 @@ import java.math.RoundingMode
 internal fun Task.intellijVerification(
     exec: ExecOperations,
     projectFiles: Map<String, ProjectFiles>,
-    classFilters: KoverClassFilters,
+    classFilter: KoverClassFilter,
     rules: List<ReportVerificationRule>,
     classpath: FileCollection
 ): String? {
     val aggRequest = File(temporaryDir, "agg-request.json")
-    val groupedRules = groupRules(classFilters, rules)
+    val groupedRules = groupRules(classFilter, rules)
     aggRequest.writeAggJson(projectFiles, groupedRules)
     exec.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.aggregate.Main")
@@ -53,18 +53,18 @@ internal fun Task.intellijVerification(
 
 private data class RulesGroup(
     val aggFile: File,
-    val filters: KoverClassFilters,
+    val filters: KoverClassFilter,
     val rules: List<ReportVerificationRule>
 )
 
 private fun Task.groupRules(
-    commonClassFilters: KoverClassFilters,
+    commonClassFilter: KoverClassFilter,
     allRules: List<ReportVerificationRule>
 ): List<RulesGroup> {
     val result = mutableListOf<RulesGroup>()
     val commonAggFile = File(temporaryDir, "aggregated-common.ic")
     val commonRules = mutableListOf<ReportVerificationRule>()
-    result += RulesGroup(commonAggFile, commonClassFilters, commonRules)
+    result += RulesGroup(commonAggFile, commonClassFilter, commonRules)
 
     allRules.forEach {
         if (it.filters == null) {

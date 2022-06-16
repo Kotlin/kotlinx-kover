@@ -23,7 +23,7 @@ internal open class KoverHtmlTask : KoverReportTask() {
             this,
             exec,
             projectFiles,
-            classFilters.get(),
+            classFilter.get(),
             null,
             reportDirFile
         )

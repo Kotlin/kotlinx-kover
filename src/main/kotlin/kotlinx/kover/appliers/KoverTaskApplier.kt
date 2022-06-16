@@ -12,7 +12,6 @@ import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
-import org.gradle.configurationcache.extensions.*
 import org.gradle.process.*
 import java.io.*
 
@@ -71,10 +70,10 @@ private class CoverageArgumentProvider(
         }
 
         val reportFile = taskExtension.reportFile.get().asFile
-        val classFilters = KoverClassFilters()
+        val classFilter = KoverClassFilter()
 
-        classFilters.includes += taskExtension.includes.get()
-        classFilters.excludes += taskExtension.excludes.get()
+        classFilter.includes += taskExtension.includes.get()
+        classFilter.excludes += taskExtension.excludes.get()
         /*
             The instrumentation of android classes often causes errors when using third-party
             frameworks (see https://github.com/Kotlin/kotlinx-kover/issues/89).
@@ -84,10 +83,10 @@ private class CoverageArgumentProvider(
 
             FIXME Remove this code if the IntelliJ Agent stops changing project classes during instrumentation
         */
-        classFilters.excludes += "android.*"
-        classFilters.excludes += "com.android.*"
+        classFilter.excludes += "android.*"
+        classFilter.excludes += "com.android.*"
 
-        return EngineManager.buildAgentArgs(engineProvider.get(), task, reportFile, classFilters)
+        return EngineManager.buildAgentArgs(engineProvider.get(), task, reportFile, classFilter)
     }
 }
 

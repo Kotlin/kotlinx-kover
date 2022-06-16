@@ -11,7 +11,7 @@ import org.gradle.api.tasks.*
 
 internal class OldJavaPluginAdapter : LookupAdapter() {
 
-    override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilters): Dirs {
+    override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {
         project.plugins.findPlugin("java") ?: return Dirs()
 
         val sourceSetContainer = project.extensions.findByType(

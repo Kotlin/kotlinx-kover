@@ -11,6 +11,7 @@ import org.gradle.api.model.*
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import java.io.*
 
 /**
  * Extension for Kover plugin that additionally configures test tasks and
@@ -61,5 +62,5 @@ public open class KoverTaskExtension(objects: ObjectFactory) {
         replaceWith = ReplaceWith("reportFile"),
         level = DeprecationLevel.ERROR
     )
-    public val binaryReportFile: RegularFileProperty? = null
+    public val binaryReportFile:  Property<File> = objects.property(File::class.java)
 }

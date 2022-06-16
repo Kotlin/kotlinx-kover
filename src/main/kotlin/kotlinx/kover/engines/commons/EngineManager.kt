@@ -21,13 +21,13 @@ internal object EngineManager {
         details: EngineDetails,
         task: Task,
         reportFile: File,
-        classFilters: KoverClassFilters
+        classFilter: KoverClassFilter
     ): MutableList<String> {
         return if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
-            task.buildIntellijAgentJvmArgs(details.jarFile, reportFile, classFilters)
+            task.buildIntellijAgentJvmArgs(details.jarFile, reportFile, classFilter)
         } else {
             reportFile.parentFile.mkdirs()
-            task.buildJacocoAgentJvmArgs(details.jarFile, reportFile, classFilters)
+            task.buildJacocoAgentJvmArgs(details.jarFile, reportFile, classFilter)
         }
     }
 
@@ -36,12 +36,12 @@ internal object EngineManager {
         task: Task,
         exec: ExecOperations,
         projectFiles: Map<String, ProjectFiles>,
-        classFilters: KoverClassFilters,
+        classFilter: KoverClassFilter,
         xmlFile: File?,
         htmlDir: File?
     ) {
         if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
-            task.intellijReport(exec, projectFiles, classFilters, xmlFile, htmlDir, details.classpath)
+            task.intellijReport(exec, projectFiles, classFilter, xmlFile, htmlDir, details.classpath)
         } else {
             task.jacocoReport(projectFiles, xmlFile, htmlDir, details.classpath)
         }
@@ -52,11 +52,11 @@ internal object EngineManager {
         task: Task,
         exec: ExecOperations,
         projectFiles: Map<String, ProjectFiles>,
-        classFilters: KoverClassFilters,
+        classFilter: KoverClassFilter,
         rules: List<ReportVerificationRule>,
     ): String? {
         return if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
-            task.intellijVerification(exec, projectFiles, classFilters, rules, details.classpath)
+            task.intellijVerification(exec, projectFiles, classFilter, rules, details.classpath)
         } else {
             task.jacocoVerification(projectFiles, rules, details.classpath)
         }
