@@ -4,9 +4,10 @@
 
 package kotlinx.kover.engines.intellij
 
+import kotlinx.kover.api.*
 import kotlinx.kover.engines.commons.*
-import kotlinx.kover.engines.commons.Report
 import kotlinx.kover.json.*
+import kotlinx.kover.tasks.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.process.ExecOperations
@@ -14,7 +15,8 @@ import java.io.*
 
 internal fun Task.intellijReport(
     exec: ExecOperations,
-    report: Report,
+    projectFiles: Map<String, ProjectFiles>,
+    filters: KoverClassFilters,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
@@ -28,7 +30,7 @@ internal fun Task.intellijReport(
     }
 
     val argsFile = File(temporaryDir, "intellijreport.json")
-    argsFile.writeReportsJson(report, xmlFile, htmlDir)
+    argsFile.writeReportsJson(projectFiles, filters, xmlFile, htmlDir)
 
     exec.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.report.Main")
@@ -77,19 +79,20 @@ JSON example:
 ```
  */
 private fun File.writeReportsJson(
-    report: Report,
+    projectFiles: Map<String, ProjectFiles>,
+    classFilters: KoverClassFilters,
     xmlFile: File?,
     htmlDir: File?
 ) {
     writeJsonObject(mutableMapOf<String, Any>(
-        "reports" to report.files.map { mapOf("ic" to it) },
-        "modules" to report.projects.map { mapOf("sources" to it.sources, "output" to it.outputs) },
+        "reports" to projectFiles.flatMap { it.value.binaryReportFiles }.map { mapOf("ic" to it) },
+        "modules" to projectFiles.map { mapOf("sources" to it.value.sources, "output" to it.value.outputs) },
     ).also {
-        if (report.includes.isNotEmpty()) {
-            it["include"] = mapOf("classes" to report.includes.map { c -> c.wildcardsToRegex() })
+        if (classFilters.includes.isNotEmpty()) {
+            it["include"] = mapOf("classes" to classFilters.includes.map { c -> c.wildcardsToRegex() })
         }
-        if (report.excludes.isNotEmpty()) {
-            it["exclude"] = mapOf("classes" to report.excludes.map { c -> c.wildcardsToRegex() })
+        if (classFilters.excludes.isNotEmpty()) {
+            it["exclude"] = mapOf("classes" to classFilters.excludes.map { c -> c.wildcardsToRegex() })
         }
         xmlFile?.also { f ->
             it["xml"] = f

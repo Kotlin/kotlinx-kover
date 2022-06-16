@@ -5,163 +5,247 @@
 package kotlinx.kover.test.functional.core
 
 import kotlinx.kover.api.*
+import kotlinx.kover.test.functional.core.writer.initSlice
 import org.gradle.api.*
 import java.io.*
 
-internal fun createBuilder(rootDir: File, description: String): TestCaseBuilder {
-    return TestCaseBuilderImpl(rootDir, description)
-}
+internal class DiverseBuildState(
+    private val rootDir: File,
+    private val languages: List<GradleScriptLanguage>,
+    private val engines: List<CoverageEngineVendor>,
+    private val types: List<ProjectType>,
+    private val withCache: Boolean
+) : DiverseBuild {
+    private val projects: MutableMap<String, ProjectBuilderState> = mutableMapOf()
 
-internal class CommonBuilderState(val description: String) {
-    var pluginVersion: String? = null
-    val languages: MutableSet<GradleScriptLanguage> = mutableSetOf()
-    val types: MutableSet<ProjectType> = mutableSetOf()
-    val engines: MutableSet<CoverageEngine?> = mutableSetOf()
-    val koverConfig: KoverRootConfig = KoverRootConfig()
-    val rootProject: ProjectBuilderState = ProjectBuilderState()
-    val subprojects: MutableMap<String, ProjectBuilderState> = mutableMapOf()
-    var localCache: Boolean = false
-}
-
-internal class ProjectBuilderState {
-    val sourceTemplates: MutableList<String> = mutableListOf()
-    val scripts: MutableList<GradleScript> = mutableListOf()
-    val testScripts: MutableList<GradleScript> = mutableListOf()
-    val dependencies: MutableList<GradleScript> = mutableListOf()
-    val rules: MutableList<VerificationRule> = mutableListOf()
-    val mainSources: MutableMap<String, String> = mutableMapOf()
-    val testSources: MutableMap<String, String> = mutableMapOf()
-}
-
-internal data class GradleScript(val kotlin: String, val groovy: String)
-
-private class TestCaseBuilderImpl(
-    val rootDir: File,
-    description: String,
-    private val state: CommonBuilderState = CommonBuilderState(description)
-) : ProjectBuilderImpl<TestCaseBuilder>(state.rootProject), TestCaseBuilder {
-
-    override fun languages(vararg languages: GradleScriptLanguage) = also {
-        state.languages += languages
+    override fun addProject(name: String, path: String, builder: ProjectBuilder.() -> Unit) {
+        projects[path] = ProjectBuilderState(name).also(builder)
     }
 
-    override fun engines(vararg engines: CoverageEngine) = also {
-        state.engines += engines
-    }
+    override fun prepare(): GradleRunner {
+        val initSlices: MutableMap<ProjectSlice, File> = mutableMapOf()
 
-    override fun types(vararg types: ProjectType) = also {
-        state.types += types
-    }
+        val targetEngines = engines.ifEmpty { listOf(null) }
 
-    override fun withLocalCache(): TestCaseBuilder = also {
-        state.localCache = true
-    }
 
-    override fun configKover(config: KoverRootConfig.() -> Unit) = also {
-        state.koverConfig.config()
-    }
-
-    override fun subproject(name: String, builder: ProjectBuilder<*>.() -> Unit) = also {
-        val projectState = state.subprojects.computeIfAbsent(name) { ProjectBuilderState() }
-        @Suppress("UPPER_BOUND_VIOLATED_WARNING")
-        ProjectBuilderImpl<ProjectBuilderImpl<*>>(projectState).builder()
-    }
-
-    override fun build(): GradleRunner {
-        if (state.languages.isEmpty()) {
-            state.languages += GradleScriptLanguage.KOTLIN
-        }
-        if (state.types.isEmpty()) {
-            state.types += ProjectType.KOTLIN_JVM
-        }
-        if (state.engines.isEmpty()) {
-            state.engines += null
-        }
-        if (state.pluginVersion == null) {
-            state.pluginVersion = "0.5.0"
-        }
-
-        val projects: MutableMap<ProjectSlice, File> = mutableMapOf()
-
-        state.languages.forEach { language ->
-            state.types.forEach { type ->
-                state.engines.forEach { engine ->
-                    val slice = ProjectSlice(language, type, engine ?: CoverageEngine.INTELLIJ)
-                    projects[slice] = state.createProject(rootDir, slice)
+        languages.forEach { language ->
+            types.forEach { type ->
+                targetEngines.forEach { engine ->
+                    val slice = ProjectSlice(language, type, engine)
+                    initSlices[slice] = initSlice(rootDir, slice, projects, withCache)
                 }
             }
         }
 
-        return GradleRunnerImpl(projects)
+        val extraArgs = if (withCache) {
+            listOf("--build-cache")
+        } else {
+            listOf()
+        }
+
+        return DiverseGradleRunner(initSlices, extraArgs)
+    }
+}
+
+
+internal class ProjectBuilderState(val name: String) : ProjectBuilder {
+    val sourceTemplates: MutableSet<String> = mutableSetOf()
+    val plugins: PluginsState = PluginsState()
+    val repositories: RepositoriesState = RepositoriesState()
+    var kover: TestKoverProjectConfigState? = null
+    var merged: TestKoverMergedConfigState? = null
+    val testTasks: TestTaskConfigState = TestTaskConfigState()
+    val subprojects: MutableList<String> = mutableListOf()
+
+    override fun plugins(block: Plugins.() -> Unit) {
+        plugins.also(block)
+    }
+
+    override fun repositories(block: Repositories.() -> Unit) {
+        repositories.also(block)
+    }
+
+    override fun kover(config: TestKoverProjectConfig.() -> Unit) {
+        kover = TestKoverProjectConfigState().also(config)
+    }
+
+    override fun koverMerged(config: TestKoverMergedConfig.() -> Unit) {
+        merged = TestKoverMergedConfigState().also(config)
+    }
+
+    override fun subproject(path: String) {
+        subprojects += path
+    }
+
+    override fun testTasks(block: TestTaskConfig.() -> Unit) {
+        testTasks.also(block)
+    }
+
+    override fun sourcesFrom(template: String) {
+        sourceTemplates += template
+    }
+}
+
+internal class TestKoverProjectConfigState : TestKoverProjectConfig {
+    override var isDisabled: Boolean? = null
+    override var engine: CoverageEngineVariant? = null
+    val filters: TestKoverProjectFiltersState = TestKoverProjectFiltersState()
+    val instrumentation: KoverProjectInstrumentation = KoverProjectInstrumentation()
+    val xml: TestKoverProjectXmlConfigState = TestKoverProjectXmlConfigState()
+    val html: TestKoverProjectHtmlConfigState = TestKoverProjectHtmlConfigState()
+    val verify: TestKoverVerifyConfigState = TestKoverVerifyConfigState()
+    override fun filters(config: TestKoverProjectFilters.() -> Unit) {
+        filters.also(config)
+    }
+
+    override fun instrumentation(config: KoverProjectInstrumentation.() -> Unit) {
+        instrumentation.also(config)
+    }
+
+    override fun xmlReport(config: TestKoverProjectXmlConfig.() -> Unit) {
+        xml.also(config)
+    }
+
+    override fun htmlReport(config: TestKoverProjectHtmlConfig.() -> Unit) {
+        html.also(config)
+    }
+
+    override fun verify(config: TestKoverVerifyConfig.() -> Unit) {
+        verify.also(config)
+    }
+}
+
+internal class TestKoverProjectFiltersState : TestKoverProjectFilters {
+    var classes: KoverClassFilters? = null
+    var sourcesets: KoverSourceSetFilters? = null
+
+    override fun classes(config: KoverClassFilters.() -> Unit) {
+        classes = KoverClassFilters().also(config)
+    }
+
+    override fun sourcesets(config: KoverSourceSetFilters.() -> Unit) {
+        sourcesets = KoverSourceSetFilters().also(config)
+    }
+}
+
+internal class TestKoverProjectXmlConfigState : TestKoverProjectXmlConfig {
+    override var onCheck: Boolean? = null
+    override var reportFile: File? = null
+    var overrideFilters: TestKoverProjectFiltersState? = null
+
+    override fun overrideFilters(config: TestKoverProjectFilters.() -> Unit) {
+        if (overrideFilters == null) {
+            overrideFilters = TestKoverProjectFiltersState()
+        }
+        overrideFilters!!.also(config)
+    }
+}
+
+internal class TestKoverProjectHtmlConfigState : TestKoverProjectHtmlConfig {
+    override var onCheck: Boolean? = null
+    override var reportDir: File? = null
+    var overrideFilters: TestKoverProjectFiltersState? = null
+
+    override fun overrideFilters(config: TestKoverProjectFilters.() -> Unit) {
+        if (overrideFilters == null) {
+            overrideFilters = TestKoverProjectFiltersState()
+        }
+        overrideFilters!!.also(config)
+    }
+}
+
+internal class TestKoverVerifyConfigState : TestKoverVerifyConfig {
+    override val onCheck: Boolean? = null
+    val rules: MutableList<TestVerificationRule> = mutableListOf()
+
+    override fun rule(config: TestVerificationRule.() -> Unit) {
+        rules += TestVerificationRule().also(config)
+    }
+}
+
+internal class TestVerificationRule {
+    var isEnabled: Boolean? = null
+    var name: String? = null
+    var target: VerificationTarget? = null
+
+    var overrideClassFilters: KoverClassFilters? = null
+    val bounds: MutableList<VerificationBoundState> = mutableListOf()
+
+    fun overrideClassFilters(config: Action<KoverClassFilters>) {
+        overrideClassFilters = KoverClassFilters().also { config.execute(it) }
+    }
+
+    fun bound(configureBound: VerificationBoundState.() -> Unit) {
+        bounds += VerificationBoundState().also(configureBound)
+    }
+}
+
+internal class VerificationBoundState {
+    var minValue: Int? = null
+    var maxValue: Int? = null
+    var counter: CounterType? = null
+    var valueType: VerificationValueType? = null
+}
+
+internal class TestTaskConfigState : TestTaskConfig {
+    var excludes: List<String>? = null
+    var includes: List<String>? = null
+    override fun excludes(vararg classes: String) {
+        excludes = classes.toList()
+    }
+
+    override fun includes(vararg classes: String) {
+        includes = classes.toList()
     }
 
 }
 
-
-@Suppress("UNCHECKED_CAST")
-private open class ProjectBuilderImpl<B : ProjectBuilder<B>>(val projectState: ProjectBuilderState) : ProjectBuilder<B> {
-
-    override fun rule(name: String?, builder: RuleBuilder.() -> Unit): B {
-        projectState.rules += TestVerificationRule(projectState.rules.size, name).apply(builder)
-          return this as B
+internal class RepositoriesState : Repositories {
+    val repositories: MutableList<String> = mutableListOf()
+    override fun repository(name: String) {
+        repositories += name
     }
 
-    override fun configTest(script: String): B {
-        projectState.testScripts += GradleScript(script, script)
-        return this as B
+}
+
+internal class TestKoverMergedConfigState : TestKoverMergedConfig {
+    var enabled: Boolean = false
+    val filters: TestKoverMergedFiltersState = TestKoverMergedFiltersState()
+    override fun enable() {
+        enabled = true
     }
 
-    override fun configTest(kotlin: String, groovy: String): B {
-        projectState.testScripts += GradleScript(kotlin, groovy)
-        return this as B
-    }
-
-    override fun config(script: String): B {
-        projectState.scripts += GradleScript(script, script)
-        return this as B
-    }
-
-    override fun config(kotlin: String, groovy: String): B {
-        projectState.scripts += GradleScript(kotlin, groovy)
-        return this as B
-    }
-
-    override fun dependency(script: String): B {
-        projectState.dependencies += GradleScript(script, script)
-        return this as B
-    }
-
-    override fun dependency(kotlin: String, groovy: String): B {
-        projectState.dependencies += GradleScript(kotlin, groovy)
-        return this as B
-    }
-
-    override fun sources(template: String): B {
-        projectState.sourceTemplates += template
-        return this as B
+    override fun filters(config: TestKoverMergedFilters.() -> Unit) {
+        filters.also(config)
     }
 }
 
-private data class TestVerificationRule(
-    override val id: Int,
-    override var name: String?
-) : VerificationRule, RuleBuilder {
-    override val bounds: MutableList<VerificationBound> = mutableListOf()
-    override fun bound(configureBound: Action<VerificationBound>) {
-        bounds += TestVerificationBound(bounds.size).also { configureBound.execute(it) }
+internal class TestKoverMergedFiltersState : TestKoverMergedFilters {
+    var classes: KoverClassFilters? = null
+    var projects: KoverProjectsFilters? = null
+    override fun classes(config: KoverClassFilters.() -> Unit) {
+        classes = KoverClassFilters().also(config)
     }
 
-    override fun bound(builder: VerificationBound.() -> Unit) {
-        bounds += TestVerificationBound(bounds.size).apply(builder)
+    override fun projects(config: KoverProjectsFilters.() -> Unit) {
+        projects = KoverProjectsFilters().also(config)
     }
 }
 
-private data class TestVerificationBound(
-    override val id: Int,
-    override var minValue: Int? = null,
-    override var maxValue: Int? = null,
-    override var valueType: VerificationValueType = VerificationValueType.COVERED_LINES_PERCENTAGE
-) : VerificationBound
+internal class PluginsState : Plugins {
+    var useKotlin: Boolean = false
+    var useKover: Boolean = false
+    var kotlinVersion: String? = null
+    var koverVersion: String? = null
 
+    override fun kotlin(version: String?) {
+        useKotlin = true
+        kotlinVersion = version
+    }
 
+    override fun kover(version: String?) {
+        useKover = true
+        koverVersion = version
+    }
 
+}

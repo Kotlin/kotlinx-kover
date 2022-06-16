@@ -60,7 +60,7 @@ internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist
 }
 
 internal fun RunResult.checkIntellijErrors(errorExpected: Boolean = false) {
-    if (engine != CoverageEngine.INTELLIJ) return
+    if (engine != CoverageEngineVendor.INTELLIJ) return
 
     file(errorsDirectory()) {
         if (this.exists() && !errorExpected) {

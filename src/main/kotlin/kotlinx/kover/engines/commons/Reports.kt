@@ -1,14 +1,28 @@
+/*
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.engines.commons
 
-import java.io.*
+import kotlinx.kover.api.*
+import java.math.BigDecimal
 
-internal class Report(
-    val files: List<File>,
-    val projects: List<ProjectInfo>,
-    val includes: List<String> = emptyList(),
-    val excludes: List<String> = emptyList()
+
+internal class ReportVerificationRule(
+    val id: Int,
+    val name: String?,
+    val target: VerificationTarget,
+    val filters: KoverClassFilters?,
+    val bounds: List<ReportVerificationBound>
 )
-internal class ProjectInfo(val sources: Iterable<File>, val outputs: Iterable<File>)
+
+internal class ReportVerificationBound(
+    val id: Int,
+    val minValue: BigDecimal?,
+    val maxValue: BigDecimal?,
+    val counter: CounterType,
+    val valueType: VerificationValueType
+)
 
 private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()
 

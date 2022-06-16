@@ -14,7 +14,7 @@ internal class AdaptersTests : BaseGradleScriptTest() {
             Classes from plugins applied in subproject not accessible for Kover in root project.
             Therefore, Kover is forced to use reflection to work with extensions of the kotlin multiplatform plugin.
          */
-        internalSample("different-plugins")
+        sampleBuild("different-plugins")
             .run("koverMergedXmlReport") {
                 xml(defaultMergedXmlReport()) {
                     classCounter("org.jetbrains.CommonClass").assertFullyCovered()
@@ -22,7 +22,7 @@ internal class AdaptersTests : BaseGradleScriptTest() {
                 }
             }
 
-        internalSample("different-plugins")
+        sampleBuild("different-plugins")
             .run("koverXmlReport") {
                 subproject("subproject-multiplatform") {
                     xml(defaultXmlReport()) {

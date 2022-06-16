@@ -12,11 +12,11 @@ import java.io.*
 import javax.xml.parsers.*
 
 
-internal class GradleRunnerImpl(private val projects: Map<ProjectSlice, File>) :
+internal class DiverseGradleRunner(private val projects: Map<ProjectSlice, File>, private val extraArgs: List<String>) :
     GradleRunner {
 
-    override fun run(vararg args: String, checker: RunResult.() -> Unit): GradleRunnerImpl {
-        val argsList = listOf(*args)
+    override fun run(vararg args: String, checker: RunResult.() -> Unit): DiverseGradleRunner {
+        val argsList = listOf(*args) + extraArgs
         projects.forEach { (slice, project) ->
             try {
                 val buildResult = project.runGradle(argsList)
@@ -27,8 +27,8 @@ internal class GradleRunnerImpl(private val projects: Map<ProjectSlice, File>) :
         }
         return this
     }
-    override fun runWithError(vararg args: String, errorChecker: RunResult.() -> Unit): GradleRunnerImpl {
-        val argsList = listOf(*args)
+    override fun runWithError(vararg args: String, errorChecker: RunResult.() -> Unit): DiverseGradleRunner {
+        val argsList = listOf(*args) + extraArgs
         projects.forEach { (slice, project) ->
             try {
                 project.runGradleWithError(argsList)
@@ -98,11 +98,11 @@ private class RunResultImpl(
     private val buildScriptFile: File = buildFile()
     private val buildScript: String by lazy { buildScriptFile.readText() }
 
-    override val engine: CoverageEngine by lazy {
+    override val engine: CoverageEngineVendor by lazy {
         if (buildScript.contains("set(kotlinx.kover.api.CoverageEngine.JACOCO)")) {
-            CoverageEngine.JACOCO
+            CoverageEngineVendor.JACOCO
         } else {
-            CoverageEngine.INTELLIJ
+            CoverageEngineVendor.INTELLIJ
         }
     }
 
@@ -116,9 +116,9 @@ private class RunResultImpl(
                 throw IllegalArgumentException("Impossible to determine the type of project")
             }
         } else {
-            if (buildScript.contains("""id 'org.jetbrains.kotlin.jvm'""")) {
+            if (buildScript.contains("""id "org.jetbrains.kotlin.jvm"""")) {
                 ProjectType.KOTLIN_JVM
-            } else if (buildScript.contains("""id 'org.jetbrains.kotlin.multiplatform'""")) {
+            } else if (buildScript.contains("""id "org.jetbrains.kotlin.multiplatform"""")) {
                 ProjectType.KOTLIN_MULTIPLATFORM
             } else {
                 throw IllegalArgumentException("Impossible to determine the type of project")
