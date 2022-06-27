@@ -71,7 +71,71 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
     public fun verify(config: Action<KoverVerifyConfig>) {
         config.execute(verify)
     }
+
+
+    // DEPRECATIONS
+    // TODO delete in 0.7 version
+    @get:Internal
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        replaceWith = ReplaceWith("engine"),
+        level = DeprecationLevel.ERROR
+    )
+    public val coverageEngine: Property<CoverageEngineVendor> = objects.property(CoverageEngineVendor::class.java)
+
+    @get:Internal
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        replaceWith = ReplaceWith("engine"),
+        level = DeprecationLevel.ERROR
+    )
+    public val intellijEngineVersion: Property<String> = objects.property(String::class.java)
+
+    @get:Internal
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        replaceWith = ReplaceWith("engine"),
+        level = DeprecationLevel.ERROR
+    )
+    public val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
+
+    @get:Internal
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        level = DeprecationLevel.ERROR
+    )
+    public var generateReportOnCheck: Boolean = true
+
+    @get:Internal
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        level = DeprecationLevel.ERROR
+    )
+    public var disabledProjects: Set<String> = emptySet()
+
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        level = DeprecationLevel.ERROR
+    )
+    @get:Internal
+    public var instrumentAndroidPackage: Boolean = false
+
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        level = DeprecationLevel.ERROR
+    )
+    @get:Internal
+    public var runAllTestsForProjectTask: Boolean = false
 }
+
+// DEPRECATIONS
+// TODO delete in 0.7 version
+@Deprecated(
+    message = "Class was renamed in Kover API version 2",
+    replaceWith = ReplaceWith("KoverProjectConfig"),
+    level = DeprecationLevel.ERROR
+)
+public open class KoverExtension()
 
 public open class KoverProjectFilters @Inject constructor(private val objects: ObjectFactory) {
     internal val classes: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)

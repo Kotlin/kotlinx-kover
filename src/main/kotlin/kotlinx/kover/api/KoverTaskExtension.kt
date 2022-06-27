@@ -55,7 +55,7 @@ public open class KoverTaskExtension(objects: ObjectFactory) {
 
 
     // DEPRECATIONS
-    // TODO delete in 0.9 version
+    // TODO delete in 0.7 version
     @get:Internal
     @Deprecated(
         message = "Property was renamed in Kover API version 2",

@@ -7,8 +7,9 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
 
+// TODO make internal in 0.7 version
 @CacheableTask
-internal open class KoverVerificationTask : KoverReportTask() {
+public open class KoverVerificationTask : KoverReportTask() {
     @get:Nested
     internal val rules: ListProperty<VerificationRule> = project.objects.listProperty(VerificationRule::class.java)
 
@@ -54,5 +55,30 @@ internal open class KoverVerificationTask : KoverReportTask() {
         return result
     }
 
+
+    // DEPRECATIONS
+    // TODO delete in 0.7 version
+    @Suppress("UNUSED_PARAMETER")
+    @Deprecated(
+        message = "Function was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        level = DeprecationLevel.ERROR
+    )
+    public fun rule(configureRule: Action<VerificationRule>) {
+        throw Exception("Function was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue")
+    }
+
+    @get:Internal
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        level = DeprecationLevel.ERROR
+    )
+    public var includes: List<String> = emptyList()
+
+    @get:Internal
+    @Deprecated(
+        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        level = DeprecationLevel.ERROR
+    )
+    public var excludes: List<String> = emptyList()
 }
 

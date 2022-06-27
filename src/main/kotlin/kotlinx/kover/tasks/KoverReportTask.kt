@@ -13,7 +13,8 @@ import org.gradle.configurationcache.extensions.*
 import org.gradle.process.*
 import java.io.*
 
-internal abstract class KoverReportTask : DefaultTask() {
+// TODO make internal in 0.7 version
+public abstract class KoverReportTask : DefaultTask() {
     @get:Nested
     internal val files: MapProperty<String, ProjectFiles> =
         project.objects.mapProperty(String::class.java, ProjectFiles::class.java)
