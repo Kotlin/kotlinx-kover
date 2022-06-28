@@ -2,15 +2,17 @@
 The new API allows you to configure Kover more flexible and in one place.
 Now there is no need to configure each Kover task separately.
 
-To configure reports that collect coverage only for tests from one project, the `kover { }` project extension is used.
-
-To configure reports that collect test coverage from different projects, the `koverMerged { }` project extension is used. 
-At the same time, in order to create tasks with answers, they must be explicitly activated
+In the new API, the plugin is used only for one project. If you need Kover in several projects, apply the plugin for each of them.
+To create merged tasks (that collect test coverage from different projects), enable it by `koverMerged.enable()` or 
 ```
 koverMerged {
     enable()
 }
 ```
+in one project, which will be a merged report container.
+
+To configure reports that collect coverage only for tests from one project, the `kover { }` project extension is used.
+To configure merged reports, the `koverMerged { }` project extension is used.
 
 # Migration Issues
 
@@ -92,7 +94,7 @@ Solution for Kotlin script: change `isDisabled = true` to `isDisabled.set(true)`
 
 Solution: change `binaryReportFile` to `reportFile`
 
-### type of "includes" property changed from "List<String>" to "ListProperty<String>"
+### type of "includes" property changed from "List\<String\>" to "ListProperty\<String\>"
 
 Solution for Kotlin: change `includes = listOf("com.example.*", "foo.bar.*")`
 to `includes.addAll("com.example.*", "foo.bar.*")`

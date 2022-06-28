@@ -135,7 +135,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
     replaceWith = ReplaceWith("KoverProjectConfig"),
     level = DeprecationLevel.ERROR
 )
-public open class KoverExtension()
+public open class KoverExtension
 
 public open class KoverProjectFilters @Inject constructor(private val objects: ObjectFactory) {
     internal val classes: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
@@ -512,7 +512,7 @@ public enum class CounterType {
 
 
 /**
- * Type of lines counter value to compare with minimal and maximal values if them defined.
+ * Type of counter value to compare with minimal and maximal values if them defined.
  */
 public enum class VerificationValueType {
     COVERED_COUNT,
