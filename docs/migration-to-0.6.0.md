@@ -1,8 +1,10 @@
 # Main differences
-The new API allows you to configure Kover more flexible and in one place.
-Now there is no need to configure each Kover task separately.
 
-In the new API, the plugin is used only for one project. If you need Kover in several projects, apply the plugin for each of them.
+The new API allows you to configure Kover in a more flexible manner, while being more concise than the previous API.
+From now on, there is no need to configure each Kover task separately.
+
+In the new API, in order to respect upcoming Gradle conventions, the plugin should be explicitly applied to
+each project that needs coverage.
 To create merged tasks (that collect test coverage from different projects), enable it by `koverMerged.enable()` or 
 ```
 koverMerged {
@@ -18,11 +20,11 @@ To configure merged reports, the `koverMerged { }` project extension is used.
 
 ## Root kover extension
 
-### type of "isDisabled" property changed from "Boolean" to "Property\<Boolean\>".
+### type of `isDisabled` property changed from `Boolean` to `Property<Boolean>`.
 
 for Kotlin script: change `isDisabled = true` to `isDisabled.set(true)`
 
-### properties "coverageEngine", "intellijEngineVersion" and "jacocoEngineVersion" was removed.
+### Properties `coverageEngine`, `intellijEngineVersion` and `jacocoEngineVersion` were removed.
 
 Use property `engine` - it combines version and coverage engine vendor.
 
@@ -38,7 +40,7 @@ To use JaCoCo Coverage Engine with default version write  `engine.set(kotlinx.ko
 To use JaCoCo Coverage Engine with custom version write  `engine.set(kotlinx.kover.api.JacocoEngine("version"))`
 (Kotlin) or `engine = kotlinx.kover.api.JacocoEngine("version")` (Groovy).
 
-### property "generateReportOnCheck" was removed
+### Property "generateReportOnCheck" was removed
 
 Use the properties individually for each report
 
@@ -58,7 +60,7 @@ kover {
 }
 ```
 
-### property "disabledProjects" was removed
+### property `disabledProjects` was removed
 
 Use inclusion list in project filters
 
@@ -73,44 +75,46 @@ koverMerged {
 }
 ```
 
-If `includes` is empty - all subprojects and current project are used in merged reports.
+If `includes` are empty, all subprojects and current project are used in merged reports.
 
-### property "instrumentAndroidPackage" was removed
+### Property `instrumentAndroidPackage` was removed
 
 There is no replacement. At the moment, all classes from the packages "android." and "com.android.*" excluded from
 instrumentation.
 
-### property "runAllTestsForProjectTask" was removed
+### property `runAllTestsForProjectTask` was removed
 
 TBD
 
 ## Kover extension for test task
 
-### type of "isDisabled" property changed from "Boolean" to "Property\<Boolean\>".
+### type of `isDisabled` property changed from "Boolean" to `Property<Boolean>`".
 
 Solution for Kotlin script: change `isDisabled = true` to `isDisabled.set(true)`
 
-### "binaryReportFile" was renamed to "reportFile"
+### `binaryReportFile` was renamed to `reportFile`
 
 Solution: change `binaryReportFile` to `reportFile`
 
-### type of "includes" property changed from "List\<String\>" to "ListProperty\<String\>"
+### Type of `includes` property changed from `List<String>` to `ListProperty<String>`
 
 Solution for Kotlin: change `includes = listOf("com.example.*", "foo.bar.*")`
 to `includes.addAll("com.example.*", "foo.bar.*")`
+
 Solution for Groovy: change `includes = ["com.example.*", "foo.bar.*"]`
 to `includes.addAll("com.example.*", "foo.bar.*")`
 
-### type of "excludes" property changed from "List\<String\>" to "ListProperty\<String\>"
+### type of `excludes` property changed from `List<String>` to `ListProperty<String>`
 
 Solution for Kotlin: change `excludes = listOf("com.example.*", "foo.bar.*")`
 to `includes.addAll("com.example.*", "foo.bar.*")`
+
 Solution for Groovy: change `excludes = ["com.example.*", "foo.bar.*"]`
 to `includes.addAll("com.example.*", "foo.bar.*")`
 
-## "koverXmlReport" and "koverMergedXmlReport" tasks configuration
+## `koverXmlReport` and `koverMergedXmlReport` tasks configuration
 
-###property `xmlReportFile` was removed
+### Property `xmlReportFile` was removed
 Solution: use property in Kover extension at the root of the project
 
 ```
@@ -122,7 +126,7 @@ kover {
 ```
 &ast; for `xmlReportFile` task use `koverMerged { ... }` extension of the project.
 
-### property "includes" was removed
+### Property `includes` was removed
 
 Solution for Kotlin: use filter in Kover extension at the root of the project
 
@@ -149,7 +153,7 @@ kover {
 ```
 &ast; for `xmlReportFile` task use `koverMerged { ... }` extension of the project.
 
-### property "excludes" was removed
+### Property `excludes` was removed
 
 Solution for Kotlin: use filter in Kover extension at the root of the project
 
@@ -176,9 +180,9 @@ kover {
 ```
 &ast; for `xmlReportFile` task use `koverMerged { ... }` extension of the project.
 
-## "koverHtmlReport" and "koverMergedHtmlReport" tasks configuration
+## `koverHtmlReport` and `koverMergedHtmlReport` tasks configuration
 
-### property "htmlReportDir" was removed
+### Property `htmlReportDir` was removed
 
 Solution: use property in Kover extension at the root of the project
 
@@ -191,7 +195,7 @@ kover {
 ```
 &ast; for `koverMergedHtmlReport` task use `koverMerged { ... }` extension of the project.
  
-### property "includes" was removed
+### Property `includes` was removed
 
 Solution for Kotlin: use filter in Kover extension at the root of the project
 
@@ -218,7 +222,7 @@ kover {
 ```
 &ast; for `koverMergedHtmlReport` task use `koverMerged { ... }` extension of the project.
 
-### property "excludes" was removed
+### Property `excludes` was removed
 
 Solution for Kotlin: use filter in Kover extension at the root of the project
 
@@ -245,9 +249,9 @@ kover {
 ```
 &ast; for `koverMergedHtmlReport` task use `koverMerged { ... }` extension of the project.
 
-## "koverVerify" and "koverMergedVerify" tasks configuration
+## `koverVerify` and `koverMergedVerify` tasks configuration
 
-### function "rule" was removed
+### Function `rule` was removed
 
 Solution: use function in Kover extension at the root of the project
 
@@ -260,9 +264,10 @@ kover {
     }
 }
 ```
-&ast; for `koverMergedVerify` task use `koverMerged { ... }` extension of the project.
 
-### property "includes" was removed
+* For `koverMergedVerify` task use `koverMerged { ... }` extension of the project.
+
+### Property `includes` was removed
 
 Solution for Kotlin: use filter in Kover extension at the root of the project
 
@@ -289,7 +294,7 @@ kover {
 ```
 &ast; for `koverMergedVerify` task use `koverMerged { ... }` extension of the project.
 
-### property "excludes" was removed
+### Property `excludes` was removed
 
 Solution for Kotlin: use filter in Kover extension at the root of the project
 
@@ -314,5 +319,5 @@ kover {
     }
 }
 ```
-&ast; for `koverMergedVerify` task use `koverMerged { ... }` extension of the project.
+* For `koverMergedVerify` task use `koverMerged { ... }` extension of the project.
 
