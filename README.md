@@ -201,20 +201,19 @@ android {
 
 **Instrumentation inclusion rules**
 
-Only the specified classes may be instrumented, the remaining classes will still be present in the report, but for them the coverage will be zero.
+Only the specified classes will be instrumented, the remaining (non-included) classes will still be present in the report, but their coverage will be zero.
 
 **Instrumentation exclusion rules**
 
-The specified classes will not be instrumented and there will be zero coverage for them.
+The specified classes will not be instrumented and their coverage will be zero.
 
-Instrumentation inclusion/exclusion rule represented as a fully-qualified name of the class (several classes if wildcards are used).
+Instrumentation inclusion/exclusion rules are represented as a fully-qualified name of the class (several classes if wildcards are used).
 File or directory names are not allowed.
-It's possible to use `*` (zero or several of any chars) and `?` (one any char) wildcards. Wildcard `**`  is similar to the `*`.
+It is possible to use `*` (zero or several of any chars) and `?` (one any char) wildcards. Wildcard `**`  is similar to the `*`.
 
-Examples `my.package.ClassName` or `my.*.*Name` but not the `my/package/ClassName.kt` or  `src/my.**.ClassName`
+Examples `my.package.ClassName` or `my.*.*Name` are allowed, while `my/package/ClassName.kt` or  `src/my.**.ClassName` are not.
 
 Exclusion rules have priority over inclusion ones.
-
 
 ### Configuring project
 In the project in which the plugin is applied, you can configure instrumentation and default Kover tasks:
@@ -347,19 +346,21 @@ kover {
 ```
 </details>
 
-How to specify the engine version, see the [section](#specifying-coverage-engine)
+Engine version is specified separately, see [specifying coverage engine](#specifying-coverage-engine) section.
 
 ### Configuring merged reports
-To create default merged reports, you need to write `koverMerged.enable()` or 
+
+In order to create a merged report, it has to be enabled explicitly in a containing project with
+ `koverMerged.enable()` or 
 ```
 koverMerged {
     enable()
 }
 ```
-in the containing project. By default, the merged reports will include this project along with all its subprojects.
+By default, merged reports include containing project along with all its subprojects.
 
 
-Merged reports can be configured. To do this, you need to configure the extension in the containing project (where `koverMerged.enable()` is called)
+Merged reports can also be configured in a similar manner. To do this, you need to configure the extension in the containing project (where `koverMerged.enable()` is called)
 
 <details open>
 <summary>Kotlin</summary>
@@ -530,11 +531,11 @@ kotlinx.kover.api.JacocoEngine("0.8.8")
 ```
 
 ## Kover default tasks
-Tasks that are created for project where the Kover plugin is applied:
-- `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in one project.
-- `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in one project.
+Tasks that are created for a project where the Kover plugin is applied:
+- `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in the project.
+- `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in the project.
 - `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.
-- `koverVerify` - Verifies code coverage metrics of one project based on specified rules. Always executes before `check` task.
+- `koverVerify` - Verifies code coverage metrics of the project based on configured rules. Always is executed before `check` task.
 
 Tasks that are created for project where the Kover plugin is applied and merged reports are enabled:
 - `koverMergedHtmlReport` - Generates code coverage HTML report for all enabled test tasks in all projects.
@@ -546,7 +547,7 @@ Tasks that are created for project where the Kover plugin is applied and merged 
 ## Implicit plugin dependencies
 While the plugin is being applied, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
 
-For the plugin to work correctly, you need to make sure that the `mavenCentral` (or its mirror) is added to the repository list of the project in which the plugin is applied, if it doesn't already exist (usually this is the root project):
+For the plugin to work correctly, you need to make sure that the `mavenCentral` (or any of its mirrors) is added to the repository list of the project in which the plugin is applied, if it doesn't already exist (usually this is the root project):
 
 <details open>
 <summary>Kotlin</summary>
