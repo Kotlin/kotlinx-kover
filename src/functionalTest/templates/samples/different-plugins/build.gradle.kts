@@ -5,3 +5,5 @@ plugins {
 repositories {
     mavenCentral()
 }
+
+koverMerged.enable()

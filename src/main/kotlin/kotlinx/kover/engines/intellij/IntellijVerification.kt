@@ -5,10 +5,10 @@
 package kotlinx.kover.engines.intellij
 
 import kotlinx.kover.api.*
-import kotlinx.kover.api.VerificationValueType.COVERED_LINES_PERCENTAGE
+import kotlinx.kover.api.VerificationValueType.*
 import kotlinx.kover.engines.commons.*
-import kotlinx.kover.engines.commons.Report
 import kotlinx.kover.json.*
+import kotlinx.kover.tasks.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.process.ExecOperations
@@ -19,13 +19,14 @@ import java.math.RoundingMode
 @Suppress("UNUSED_PARAMETER")
 internal fun Task.intellijVerification(
     exec: ExecOperations,
-    report: Report,
-    rules: Iterable<VerificationRule>,
+    projectFiles: Map<String, ProjectFiles>,
+    classFilter: KoverClassFilter,
+    rules: List<ReportVerificationRule>,
     classpath: FileCollection
-) {
+): String? {
     val aggRequest = File(temporaryDir, "agg-request.json")
-    val aggFile = File(temporaryDir, "aggregated.ic")
-    aggRequest.writeAggVerifyJson(report, aggFile)
+    val groupedRules = groupRules(classFilter, rules)
+    aggRequest.writeAggJson(projectFiles, groupedRules)
     exec.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.aggregate.Main")
         e.classpath = classpath
@@ -33,19 +34,46 @@ internal fun Task.intellijVerification(
     }
 
     val verifyRequest = File(temporaryDir, "verify-request.json")
-    val resultFile = File(temporaryDir, "verify-result.json")
-    verifyRequest.writeVerifyJson(aggFile, resultFile, rules)
+    val verifyResponseFile = File(temporaryDir, "verify-result.json")
+    verifyRequest.writeVerifyJson(groupedRules, verifyResponseFile)
     exec.javaexec { e ->
         e.mainClass.set("com.intellij.rt.coverage.verify.Main")
         e.classpath = classpath
         e.args = mutableListOf(verifyRequest.canonicalPath)
     }
 
-    val violations = resultFile.readJsonObject()
-    if (violations.isNotEmpty()) {
+    val violations = verifyResponseFile.readJsonObject()
+    return if (violations.isNotEmpty()) {
         val result = processViolationsModel(violations)
         raiseViolations(result, rules)
+    } else {
+        null
     }
+}
+
+private data class RulesGroup(
+    val aggFile: File,
+    val filters: KoverClassFilter,
+    val rules: List<ReportVerificationRule>
+)
+
+private fun Task.groupRules(
+    commonClassFilter: KoverClassFilter,
+    allRules: List<ReportVerificationRule>
+): List<RulesGroup> {
+    val result = mutableListOf<RulesGroup>()
+    val commonAggFile = File(temporaryDir, "aggregated-common.ic")
+    val commonRules = mutableListOf<ReportVerificationRule>()
+    result += RulesGroup(commonAggFile, commonClassFilter, commonRules)
+
+    allRules.forEach {
+        if (it.filters == null) {
+            commonRules += it
+        } else {
+            result += RulesGroup(File(temporaryDir, "aggregated-${result.size}.ic"), it.filters, listOf(it))
+        }
+    }
+    return result
 }
 
 /*
@@ -68,24 +96,28 @@ internal fun Task.intellijVerification(
   }
 }
  */
-private fun File.writeAggVerifyJson(
-    report: Report,
-    aggReport: File
+private fun File.writeAggJson(
+    projectFiles: Map<String, ProjectFiles>,
+    groups: List<RulesGroup>
 ) {
     writeJsonObject(mapOf(
-        "reports" to report.files.map { mapOf("ic" to it) },
-        "modules" to report.projects.map { mapOf("sources" to it.sources, "output" to it.outputs) },
-        "result" to listOf(mapOf(
-            "aggregatedReportFile" to aggReport,
-            "filters" to mutableMapOf<String, Any>().also {
-                if (report.includes.isNotEmpty()) {
-                    it["include"] = mapOf("classes" to report.includes.map { c -> c.wildcardsToRegex() })
+        "reports" to projectFiles.flatMap { it.value.binaryReportFiles }.map { mapOf("ic" to it) },
+        "modules" to projectFiles.map { mapOf("sources" to it.value.sources, "output" to it.value.outputs) },
+        "result" to groups.map { group ->
+            mapOf(
+                "aggregatedReportFile" to group.aggFile,
+                "filters" to mutableMapOf<String, Any>().also {
+                    if (group.filters.includes.isNotEmpty()) {
+                        it["include"] =
+                            mapOf("classes" to group.filters.includes.map { c -> c.wildcardsToRegex() })
+                    }
+                    if (group.filters.excludes.isNotEmpty()) {
+                        it["exclude"] =
+                            mapOf("classes" to group.filters.excludes.map { c -> c.wildcardsToRegex() })
+                    }
                 }
-                if (report.excludes.isNotEmpty()) {
-                    it["exclude"] = mapOf("classes" to report.excludes.map { c -> c.wildcardsToRegex() })
-                }
-            }
-        ))
+            )
+        }
     ))
 }
 
@@ -110,51 +142,70 @@ private fun File.writeAggVerifyJson(
 }
  */
 private fun File.writeVerifyJson(
-    aggReport: File,
+    groups: List<RulesGroup>,
     result: File,
-    rules: Iterable<VerificationRule>
 ) {
-    writeJsonObject(mapOf(
-        "resultFile" to result,
-        "rules" to rules.map { rule ->
-            mapOf(
+    val rulesArray = mutableListOf<Map<String, Any>>()
+
+    groups.forEach { group ->
+        group.rules.forEach { rule ->
+            rulesArray += mapOf(
                 "id" to rule.id,
-                "aggregatedReportFile" to aggReport,
-                "targetType" to "ALL",
+                "aggregatedReportFile" to group.aggFile,
+                "targetType" to rule.targetToReporter(),
                 "bounds" to rule.bounds.map { b ->
                     mutableMapOf(
                         "id" to b.id,
-                        "counter" to "LINE",
-                        "valueType" to b.valueTypeConverted(),
+                        "counter" to b.counterToReporter(),
+                        "valueType" to b.valueTypeToReporter(),
                     ).also {
                         val minValue = b.minValue
                         val maxValue = b.maxValue
                         if (minValue != null) {
-                            it["min"] = b.valueAligned(minValue)
+                            it["min"] = b.valueToReporter(minValue)
                         }
                         if (maxValue != null) {
-                            it["max"] = b.valueAligned(maxValue)
+                            it["max"] = b.valueToReporter(maxValue)
                         }
                     }
                 }
             )
         }
-    ))
+    }
+
+    writeJsonObject(mapOf("resultFile" to result, "rules" to rulesArray))
 }
 
-private fun VerificationBound.valueTypeConverted(): String {
-    return when (valueType) {
-        VerificationValueType.COVERED_LINES_COUNT -> "COVERED"
-        VerificationValueType.MISSED_LINES_COUNT -> "MISSED"
-        COVERED_LINES_PERCENTAGE -> "COVERED_RATE"
+private fun ReportVerificationRule.targetToReporter(): String {
+    return when (target) {
+        VerificationTarget.ALL -> "ALL"
+        VerificationTarget.CLASS -> "CLASS"
+        VerificationTarget.PACKAGE -> "PACKAGE"
     }
 }
 
-private fun VerificationBound.valueAligned(value: Int): BigDecimal {
-    return if (valueType == COVERED_LINES_PERCENTAGE) {
-        value.toBigDecimal().divide(ONE_HUNDRED, 6, RoundingMode.HALF_UP)
+private fun ReportVerificationBound.counterToReporter(): String {
+    return when (counter) {
+        CounterType.LINE -> "LINE"
+        CounterType.INSTRUCTION -> "INSTRUCTION"
+        CounterType.BRANCH -> "BRANCH"
+    }
+}
+
+private fun ReportVerificationBound.valueTypeToReporter(): String {
+    return when (valueType) {
+        COVERED_COUNT -> "COVERED"
+        MISSED_COUNT -> "MISSED"
+        COVERED_PERCENTAGE -> "COVERED_RATE"
+        MISSED_PERCENTAGE -> "MISSED_RATE"
+    }
+}
+
+private fun ReportVerificationBound.valueToReporter(value: BigDecimal): BigDecimal {
+    return if (valueType == COVERED_PERCENTAGE || valueType == MISSED_PERCENTAGE) {
+        value.divide(ONE_HUNDRED, 6, RoundingMode.HALF_UP)
     } else {
-        value.toBigDecimal()
+        value
     }
 }
 
@@ -180,31 +231,33 @@ private fun processViolationsModel(violations: Map<String, Any>): ViolationsResu
             rules[ruleId.toInt()] = RuleViolation(bounds)
         }
     } catch (e: Throwable) {
-            throw GradleException("Error occurred while parsing verifier result", e)
+        throw GradleException("Error occurred while parsing verifier result", e)
     }
 
     return ViolationsResult(rules)
 }
 
-private fun raiseViolations(result: ViolationsResult, rules: Iterable<VerificationRule>) {
+private fun raiseViolations(result: ViolationsResult, rules: Iterable<ReportVerificationRule>): String {
     val messageBuilder = StringBuilder()
     val rulesMap = rules.associateBy { r -> r.id }
 
     result.ruleViolations.forEach { (ruleId, rv) ->
-        val rule = rulesMap[ruleId] ?: throw Exception("")
+        val rule = rulesMap[ruleId]
+            ?: throw Exception("Error occurred while parsing verification error: unmapped rule with ID $ruleId")
         val ruleName = if (rule.name != null) " '${rule.name}' " else " "
 
         val boundsMap = rule.bounds.associateBy { b -> b.id }
 
         val boundMessages = rv.boundViolations.mapNotNull { (boundId, v) ->
-            val bound = boundsMap[boundId] ?: throw Exception("")
+            val bound = boundsMap[boundId]
+                ?: throw Exception("Error occurred while parsing verification error: unmapped bound with ID $boundId")
             val minViolation = v.min["all"]
             val maxViolation = v.max["all"]
 
             if (minViolation != null) {
-                "${bound.readableValueType} is ${minViolation.toRateIfNeeded(bound)}, but expected minimum is ${bound.minValue}"
+                "${bound.readableValueType} is ${minViolation.fromRateIfNeeded(bound)}, but expected minimum is ${bound.minValue}"
             } else if (maxViolation != null) {
-                "${bound.readableValueType} is ${maxViolation.toRateIfNeeded(bound)}, but expected maximum is ${bound.maxValue}"
+                "${bound.readableValueType} is ${maxViolation.fromRateIfNeeded(bound)}, but expected maximum is ${bound.maxValue}"
             } else {
                 null
             }
@@ -219,22 +272,23 @@ private fun raiseViolations(result: ViolationsResult, rules: Iterable<Verificati
         }
     }
 
-    throw GradleException(messageBuilder.toString())
+    return messageBuilder.toString()
 }
 
-private fun BigDecimal.toRateIfNeeded(bound: VerificationBound): BigDecimal {
-    return if (bound.valueType == COVERED_LINES_PERCENTAGE) {
+private fun BigDecimal.fromRateIfNeeded(bound: ReportVerificationBound): BigDecimal {
+    return if (bound.valueType == COVERED_PERCENTAGE || bound.valueType == MISSED_PERCENTAGE) {
         this.multiply(ONE_HUNDRED)
     } else {
         this
     }
 }
 
-private val VerificationBound.readableValueType: String
+private val ReportVerificationBound.readableValueType: String
     get() = when (valueType) {
-        VerificationValueType.COVERED_LINES_COUNT -> "covered lines count"
-        VerificationValueType.MISSED_LINES_COUNT -> "missed lines count"
-        COVERED_LINES_PERCENTAGE -> "covered lines percentage"
+        COVERED_COUNT -> "covered lines count"
+        MISSED_COUNT -> "missed lines count"
+        COVERED_PERCENTAGE -> "covered lines percentage"
+        MISSED_PERCENTAGE -> "missed lines percentage"
     }
 
 

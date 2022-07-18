@@ -9,54 +9,50 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
 
     @Test
     fun testExclude() {
-        builder("Test exclusion of classes from XML report")
-            .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
-            .sources("simple")
-            .config(
-                """
-  tasks.koverMergedXmlReport {
-    excludes = listOf("org.jetbrains.*Exa?ple*")
-  }""".trimIndent(),
-                """
-  tasks.koverMergedXmlReport {
-    excludes = ['org.jetbrains.*Exa?ple*']
-  }""".trimIndent()
-            )
-            .build()
-            .run("build") {
-                xml(defaultMergedXmlReport()) {
-                    classCounter("org.jetbrains.ExampleClass").assertAbsent()
-                    classCounter("org.jetbrains.SecondClass").assertCovered()
+        val build = diverseBuild(languages = ALL_LANGUAGES)
+        build.addKoverRootProject {
+            sourcesFrom("simple")
+
+            kover {
+                filters {
+                    classes {
+                        excludes += "org.jetbrains.*Exa?ple*"
+                    }
                 }
             }
+        }
+        val runner = build.prepare()
+        runner.run("koverXmlReport") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertAbsent()
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
     }
 
     @Test
     fun testExcludeInclude() {
-        builder("Test inclusion and exclusion of classes in XML report")
-            .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
-            .sources("simple")
-            .config(
-                """
-  tasks.koverMergedXmlReport {
-    includes = listOf("org.jetbrains.*Cla?s")
-    excludes = listOf("org.jetbrains.*Exa?ple*")
-  }""".trimIndent(),
+        val build = diverseBuild(languages = ALL_LANGUAGES)
+        build.addKoverRootProject {
+            sourcesFrom("simple")
 
-                """
-  tasks.koverMergedXmlReport {
-    includes = ['org.jetbrains.*Cla?s']
-    excludes = ['org.jetbrains.*Exa?ple*']
-  }""".trimIndent()
-            )
-            .build()
-            .run("build") {
-                xml(defaultMergedXmlReport()) {
-                    classCounter("org.jetbrains.ExampleClass").assertAbsent()
-                    classCounter("org.jetbrains.Unused").assertAbsent()
-                    classCounter("org.jetbrains.SecondClass").assertFullyCovered()
+            kover {
+                filters {
+                    classes {
+                        excludes += "org.jetbrains.*Exa?ple*"
+                        includes += "org.jetbrains.*Cla?s"
+                    }
                 }
             }
+        }
+        val runner = build.prepare()
+        runner.run("koverXmlReport") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertAbsent()
+                classCounter("org.jetbrains.Unused").assertAbsent()
+                classCounter("org.jetbrains.SecondClass").assertFullyCovered()
+            }
+        }
     }
 
 }

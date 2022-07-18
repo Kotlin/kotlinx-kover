@@ -1,14 +1,14 @@
 /*
- * Copyright 2017-2021 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.engines.jacoco
 
 import groovy.lang.*
 import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.*
+import kotlinx.kover.engines.commons.ReportVerificationRule
 import kotlinx.kover.engines.commons.ONE_HUNDRED
-import kotlinx.kover.engines.commons.Report
+import kotlinx.kover.tasks.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.internal.reflect.*
@@ -16,51 +16,13 @@ import java.io.*
 import java.math.*
 import java.util.*
 
-private fun Task.callJacocoAntReportTask(
-    report: Report,
-    classpath: FileCollection,
-    block: GroovyObject.() -> Unit
-) {
-    val builder = ant
-    builder.invokeMethod(
-        "taskdef",
-        mapOf(
-            "name" to "jacocoReport",
-            "classname" to "org.jacoco.ant.ReportTask",
-            "classpath" to classpath.asPath
-        )
-    )
-
-    val sources: MutableList<File> = mutableListOf()
-    val outputs: MutableList<File> = mutableListOf()
-    report.projects.forEach { projectInfo ->
-        sources.addAll(projectInfo.sources)
-        outputs.addAll(projectInfo.outputs)
-    }
-
-    builder.invokeWithBody("jacocoReport") {
-        invokeWithBody("executiondata") {
-            project.files(report.files).addToAntBuilder(this, "resources")
-        }
-        invokeWithBody("structure", mapOf("name" to project.path)) {
-            invokeWithBody("sourcefiles") {
-                project.files(sources).addToAntBuilder(this, "resources")
-            }
-            invokeWithBody("classfiles") {
-                project.files(outputs).addToAntBuilder(this, "resources")
-            }
-        }
-        block()
-    }
-}
-
 internal fun Task.jacocoReport(
-    report: Report,
+    projectFiles: Map<String, ProjectFiles>,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
 ) {
-    callJacocoAntReportTask(report, classpath) {
+    callJacocoAntReportTask(projectFiles, classpath) {
         if (xmlFile != null) {
             xmlFile.parentFile.mkdirs()
             invokeMethod("xml", mapOf("destfile" to xmlFile))
@@ -74,27 +36,32 @@ internal fun Task.jacocoReport(
 
 
 internal fun Task.jacocoVerification(
-    report: Report,
-    rules: Iterable<VerificationRule>,
+    projectFiles: Map<String, ProjectFiles>,
+    rules: List<ReportVerificationRule>,
     classpath: FileCollection
-) {
-    callJacocoAntReportTask(report, classpath) {
+): String? {
+    callJacocoAntReportTask(projectFiles, classpath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
             rules.forEach {
                 invokeWithBody("rule", mapOf("element" to "BUNDLE")) {
                     it.bounds.forEach { b ->
                         val limitArgs = mutableMapOf("counter" to "LINE")
-                        var min: BigDecimal? = b.minValue?.toBigDecimal()
-                        var max: BigDecimal? = b.maxValue?.toBigDecimal()
+                        var min: BigDecimal? = b.minValue
+                        var max: BigDecimal? = b.maxValue
                         when (b.valueType) {
-                            VerificationValueType.COVERED_LINES_COUNT -> {
+                            VerificationValueType.COVERED_COUNT -> {
                                 limitArgs["value"] = "COVEREDCOUNT"
                             }
-                            VerificationValueType.MISSED_LINES_COUNT -> {
+                            VerificationValueType.MISSED_COUNT -> {
                                 limitArgs["value"] = "MISSEDCOUNT"
                             }
-                            VerificationValueType.COVERED_LINES_PERCENTAGE -> {
+                            VerificationValueType.COVERED_PERCENTAGE -> {
                                 limitArgs["value"] = "COVEREDRATIO"
+                                min = min?.divide(ONE_HUNDRED)
+                                max = max?.divide(ONE_HUNDRED)
+                            }
+                            VerificationValueType.MISSED_PERCENTAGE -> {
+                                limitArgs["value"] = "MISSEDRATIO"
                                 min = min?.divide(ONE_HUNDRED)
                                 max = max?.divide(ONE_HUNDRED)
                             }
@@ -114,7 +81,47 @@ internal fun Task.jacocoVerification(
         }
     }
 
-    ant.violations?.let { throw GradleException(it) }
+    return ant.violations
+}
+
+private fun Task.callJacocoAntReportTask(
+    projectFiles: Map<String, ProjectFiles>,
+    classpath: FileCollection,
+    block: GroovyObject.() -> Unit
+) {
+    val builder = ant
+    builder.invokeMethod(
+        "taskdef",
+        mapOf(
+            "name" to "jacocoReport",
+            "classname" to "org.jacoco.ant.ReportTask",
+            "classpath" to classpath.asPath
+        )
+    )
+
+    val sources: MutableList<File> = mutableListOf()
+    val outputs: MutableList<File> = mutableListOf()
+    val binaries: MutableList<File> = mutableListOf()
+    projectFiles.forEach { pf ->
+        binaries += pf.value.binaryReportFiles
+        sources += pf.value.sources
+        outputs += pf.value.outputs
+    }
+
+    builder.invokeWithBody("jacocoReport") {
+        invokeWithBody("executiondata") {
+            project.files(binaries).addToAntBuilder(this, "resources")
+        }
+        invokeWithBody("structure", mapOf("name" to project.path)) {
+            invokeWithBody("sourcefiles") {
+                project.files(sources).addToAntBuilder(this, "resources")
+            }
+            invokeWithBody("classfiles") {
+                project.files(outputs).addToAntBuilder(this, "resources")
+            }
+        }
+        block()
+    }
 }
 
 private val GroovyObject.violations: String?
