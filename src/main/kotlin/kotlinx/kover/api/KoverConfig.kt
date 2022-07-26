@@ -2,8 +2,6 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:Suppress("RedundantVisibilityModifier")
-
 package kotlinx.kover.api
 
 import org.gradle.api.*
@@ -29,6 +27,8 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 
     /**
      * Specifies whether instrumentation is disabled for all test tasks of current project.
+     *
+     * `false` by default.
      */
     public val isDisabled: Property<Boolean> = objects.property(Boolean::class.java)
 
@@ -38,35 +38,43 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
     public val engine: Property<CoverageEngineVariant> = objects.property(CoverageEngineVariant::class.java)
 
     /**
-     * Configures filters for all Kover tasks of current project.
+     * Configures filtering for all Kover's tasks of current project by class names and source sets.
      */
     public fun filters(config: Action<KoverProjectFilters>) {
         config.execute(filters)
     }
 
     /**
-     * Configures instrumentation of the test tasks of current project.
+     * Configures a list of tasks, the execution of tests from which is registered in the coverage counters.
+     *
      */
     public fun instrumentation(config: Action<KoverProjectInstrumentation>) {
         config.execute(instrumentation)
     }
 
     /**
-     * Configures the task of generating an XML report.
+     * Configures the task of generating an XML report, including XML report location and whether it should be
+     * generated during the 'check' task.
+     *
+     * By default, [KoverPaths.PROJECT_XML_REPORT_DEFAULT_PATH] location in build directory is used.
      */
     public fun xmlReport(config: Action<KoverProjectXmlConfig>) {
         config.execute(xmlReport)
     }
 
     /**
-     * Configures the task of generating an HTML report.
+     * Configures the task of generating an HTML report, including HTML report location and whether it should be
+     * generated during the 'check' task.
+     *
+     * By default, [KoverPaths.PROJECT_HTML_REPORT_DEFAULT_PATH] location in build directory is used.
      */
     public fun htmlReport(config: Action<KoverProjectHtmlConfig>) {
         config.execute(htmlReport)
     }
 
     /**
-     * Configures the verification task.
+     * Configures the verification task, including adding verification rules and whether it should be
+     * verified during the 'check' task.
      */
     public fun verify(config: Action<KoverVerifyConfig>) {
         config.execute(verify)
@@ -75,17 +83,18 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 
     // DEPRECATIONS
     // TODO delete in 0.7 version
+    @Suppress("DEPRECATION")
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
-    public val coverageEngine: Property<CoverageEngineVendor> = objects.property(CoverageEngineVendor::class.java)
+    public val coverageEngine: Property<CoverageEngine> = objects.property(CoverageEngine::class.java)
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
@@ -93,7 +102,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
@@ -101,27 +110,27 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public var generateReportOnCheck: Boolean = true
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public var disabledProjects: Set<String> = emptySet()
 
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     @get:Internal
     public var instrumentAndroidPackage: Boolean = false
 
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     @get:Internal
@@ -154,7 +163,7 @@ public open class KoverProjectFilters @Inject constructor(private val objects: O
     /**
      * Configures source set filter.
      */
-    public fun sourcesets(config: Action<KoverSourceSetFilter>) {
+    public fun sourceSets(config: Action<KoverSourceSetFilter>) {
         val sourceSetFilters = objects.newInstance(KoverSourceSetFilter::class.java)
         config.execute(sourceSetFilters)
         sourceSets.set(sourceSetFilters)
@@ -173,17 +182,21 @@ public open class KoverProjectXmlConfig @Inject constructor(objects: ObjectFacto
 
     /**
      * Specifies whether the XML report generation task should be executed before the `check` task.
+     *
+     * `false` by default.
      */
     public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
 
     /**
      * Specifies file path of generated XML report file with coverage data.
+     *
+     * By default, is a value of [KoverPaths.PROJECT_XML_REPORT_DEFAULT_PATH] in the build directory.
      */
     public val reportFile: RegularFileProperty = objects.fileProperty()
 
     /**
      * Override filters for the XML report generation task.
-     * Only the explicitly specified filters will be overrided, the rest will be inherited from the common filters (see [KoverProjectConfig.filters]).
+     * Only the explicitly specified filters will be overridden, the rest will be inherited from the common filters (see [KoverProjectConfig.filters]).
      */
     public fun overrideFilters(config: Action<KoverProjectFilters>) {
         config.execute(filters)
@@ -195,11 +208,15 @@ public open class KoverProjectHtmlConfig @Inject constructor(private val objects
 
     /**
      * Specifies whether the HTML report generation task should be executed before the `check` task.
+     *
+     * `false` by default.
      */
     public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
 
     /**
      * Specifies directory path of generated HTML report.
+     *
+     * By default, is a value of [KoverPaths.PROJECT_HTML_REPORT_DEFAULT_PATH] in the build directory.
      */
     public val reportDir: DirectoryProperty = objects.directoryProperty()
 
@@ -343,6 +360,8 @@ public open class KoverVerifyConfig @Inject constructor(private val objects: Obj
 
     /**
      * Specifies whether the verification task should be executed before the `check` task.
+     *
+     * By default, `true` for project reports and `false` for merged.
      */
     public val onCheck: Property<Boolean> = objects.property(Boolean::class.java).value(true)
 
@@ -380,13 +399,13 @@ public open class KoverClassFilter {
 
 public open class KoverSourceSetFilter {
     /**
-     * TBD
+     * Not implemented in beta version.
      */
     @get:Input
     public val excludes: MutableSet<String> = mutableSetOf()
 
     /**
-     * TBD
+     * Not implemented in beta version.
      */
     @get:Input
     public var excludeTests: Boolean = true
@@ -475,17 +494,17 @@ public open class VerificationBound {
  */
 public enum class VerificationTarget {
     /**
-     * Count the coverage for all code.
+     * Counts the coverage for all code.
      */
     ALL,
 
     /**
-     * Count the coverage for each class separately.
+     * Counts the coverage for each class separately.
      */
     CLASS,
 
     /**
-     * Count the coverage for each package that has classes separately.
+     * Counts the coverage for each package that has classes separately.
      */
     PACKAGE
 }
@@ -495,17 +514,17 @@ public enum class VerificationTarget {
  */
 public enum class CounterType {
     /**
-     * Evaluate coverage for lines.
+     * Evaluates coverage for lines.
      */
     LINE,
 
     /**
-     * Evaluate coverage for JVM bytecode instructions.
+     * Evaluates coverage for JVM bytecode instructions.
      */
     INSTRUCTION,
 
     /**
-     * Evaluate coverage for code branches.
+     * Evaluates coverage for code branches excluded dead-branches.
      */
     BRANCH
 }

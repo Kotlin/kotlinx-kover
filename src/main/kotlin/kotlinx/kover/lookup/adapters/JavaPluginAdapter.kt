@@ -9,7 +9,11 @@ import kotlinx.kover.lookup.LookupAdapter
 import org.gradle.api.*
 import org.gradle.api.tasks.*
 
-internal class OldJavaPluginAdapter : LookupAdapter() {
+/**
+ * Adapter to get sources and outputs of java plugin.
+ * Required to support java sources.
+ */
+internal class JavaPluginAdapter : LookupAdapter() {
 
     override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {
         project.plugins.findPlugin("java") ?: return Dirs()

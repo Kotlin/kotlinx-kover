@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.10"
 
     `java-gradle-plugin`
     `maven-publish`
@@ -24,16 +24,16 @@ dependencies {
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
 
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
+    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:${property("kotlin.version")}")
     compileOnly("com.android.tools.build:gradle:4.2.2")
 
     testImplementation(kotlin("test"))
 
     "functionalTestImplementation"(gradleTestKit())
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.6.10")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-runner:1.6.10")
+    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:${property("kotlin.version")}")
+    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:${property("kotlin.version")}")
+    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-runner:${property("kotlin.version")}")
 }
 
 java {
@@ -73,7 +73,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
         // Kover works with the stdlib of at least version `1.4.x`
         languageVersion = "1.4"
         apiVersion = "1.4"
-        // Kotlin compiler 1.6 issues a warning if `languageVersion` or `apiVersion` 1.4 is used - suppress it
+        // Kotlin compiler 1.7 issues a warning if `languageVersion` or `apiVersion` 1.4 is used - suppress it
         freeCompilerArgs = freeCompilerArgs + "-Xsuppress-version-warnings"
     }
 }

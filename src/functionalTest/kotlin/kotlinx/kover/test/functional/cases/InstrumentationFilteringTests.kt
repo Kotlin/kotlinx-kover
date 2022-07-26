@@ -46,4 +46,22 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
         }
     }
 
+    @Test
+    fun testDisableInstrumentationOfTask() {
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, listOf(ProjectType.KOTLIN_JVM))
+        build.addKoverRootProject {
+            sourcesFrom("simple")
+            kover {
+                instrumentation {
+                    excludeTasks += "test"
+                }
+            }
+        }
+        val runner = build.prepare()
+        runner.run("build", "koverXmlReport") {
+            // if task `test` is excluded from instrumentation then the binary report is not created for it
+            checkDefaultBinaryReport(false)
+        }
+    }
+
 }

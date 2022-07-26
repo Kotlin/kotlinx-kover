@@ -48,7 +48,7 @@ internal open class BaseGradleScriptTest {
 internal fun DiverseBuild.addKoverRootProject(builder: ProjectBuilder.() -> Unit) {
     addProject("root", ":") {
         plugins {
-            kotlin("1.6.20")
+            kotlin("1.7.10")
             kover("DEV")
         }
 

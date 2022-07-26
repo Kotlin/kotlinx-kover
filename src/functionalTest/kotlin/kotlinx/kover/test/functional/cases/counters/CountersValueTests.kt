@@ -40,10 +40,8 @@ internal class CountersValueTests : BaseGradleScriptTest() {
                 // empty functions must be included in the report with line counter
                 methodCounter("org.jetbrains.Different", "emptyFun", type = "LINE").assertFullyMissed()
 
-                // Instruction counters
-                // helloWorld contains 4 instructions. `return` ignored by reporter and the first instruction is not covered because of a bug in the IR compiler
-                // FIXME after https://youtrack.jetbrains.com/issue/KT-51080 is fixed, the number should become 3
-                methodCounter("org.jetbrains.Different", "helloWorld").assertTotal(2)
+                // Instruction counters - value may depend on Kotlin compiler version
+                methodCounter("org.jetbrains.Different", "helloWorld").assertTotal(4)
             }
         }
     }

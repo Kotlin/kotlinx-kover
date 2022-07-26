@@ -117,14 +117,14 @@ internal class TestKoverProjectConfigState : TestKoverProjectConfig {
 
 internal class TestKoverProjectFiltersState : TestKoverProjectFilters {
     var classes: KoverClassFilter? = null
-    var sourcesets: KoverSourceSetFilter? = null
+    var sourceSets: KoverSourceSetFilter? = null
 
     override fun classes(config: KoverClassFilter.() -> Unit) {
         classes = KoverClassFilter().also(config)
     }
 
-    override fun sourcesets(config: KoverSourceSetFilter.() -> Unit) {
-        sourcesets = KoverSourceSetFilter().also(config)
+    override fun sourceSets(config: KoverSourceSetFilter.() -> Unit) {
+        sourceSets = KoverSourceSetFilter().also(config)
     }
 }
 

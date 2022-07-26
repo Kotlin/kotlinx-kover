@@ -16,6 +16,7 @@ internal fun PrintWriter.printKover(kover: TestKoverProjectConfigState?, slice: 
     indented(indents, "kover {")
     printDisabled(kover.isDisabled, slice, indents + 1)
     printEngine(kover.engine, slice, indents + 1)
+    printInstrumentation(kover.instrumentation, slice, indents + 1)
     printFilters(kover.filters, slice, indents + 1)
     printVerify(kover.verify, slice, indents + 1)
     indented(indents, "}")
@@ -55,8 +56,8 @@ private fun PrintWriter.printDisabled(isDisabled: Boolean?, slice: ProjectSlice,
 
 private fun PrintWriter.printFilters(state: TestKoverProjectFiltersState, slice: ProjectSlice, indents: Int) {
     val classes = state.classes
-    val sourcesets = state.sourcesets
-    if (sourcesets == null && classes == null) return
+    val sourceSets = state.sourceSets
+    if (sourceSets == null && classes == null) return
 
     indented(indents, "filters {")
     if (classes != null && (classes.excludes.isNotEmpty() || classes.includes.isNotEmpty())) {
@@ -65,15 +66,23 @@ private fun PrintWriter.printFilters(state: TestKoverProjectFiltersState, slice:
         indented(indents + 1, "}")
     }
 
-    if (sourcesets != null) {
-        indented(indents + 1, "sourcesets {")
-        if (sourcesets.excludes.isNotEmpty()) {
-            indented(indents + 2, "excludes".addAllList(sourcesets.excludes, slice.language))
+    if (sourceSets != null) {
+        indented(indents + 1, "sourceSets {")
+        if (sourceSets.excludes.isNotEmpty()) {
+            indented(indents + 2, "excludes".addAllList(sourceSets.excludes, slice.language))
         }
-        indented(indents + 2, "excludeTests = " + sourcesets.excludeTests)
+        indented(indents + 2, "excludeTests = " + sourceSets.excludeTests)
         indented(indents + 1, "}")
     }
 
+    indented(indents, "}")
+}
+
+private fun PrintWriter.printInstrumentation(state: KoverProjectInstrumentation, slice: ProjectSlice, indents: Int) {
+    if (state.excludeTasks.isEmpty()) return
+
+    indented(indents, "instrumentation {")
+    indented(indents + 1, "excludeTasks".addAllList(state.excludeTasks, slice.language))
     indented(indents, "}")
 }
 

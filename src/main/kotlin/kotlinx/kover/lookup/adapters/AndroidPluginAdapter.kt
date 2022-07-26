@@ -9,6 +9,10 @@ import kotlinx.kover.api.*
 import kotlinx.kover.lookup.*
 import org.gradle.api.*
 
+/**
+ * Adapter to get sources and outputs of Android Gradle plugin.
+ * Required to support java sources for android.
+ */
 internal class AndroidPluginAdapter : LookupAdapter() {
     override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {
         project.plugins.findPlugin("android") ?: return Dirs()

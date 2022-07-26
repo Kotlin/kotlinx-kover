@@ -14,7 +14,7 @@ open class ProjectDirectories(val sources: FileCollection, val outputs: FileColl
 
 internal object DirsLookup {
     private val adapters: List<LookupAdapter> = listOf(
-        OldJavaPluginAdapter(),
+        JavaPluginAdapter(),
         AndroidPluginAdapter(),
         KotlinMultiplatformPluginAdapter(),
         KotlinAndroidPluginAdapter()
@@ -40,8 +40,13 @@ internal object DirsLookup {
 
 }
 
-
+/**
+ * Allows to get a list of directories with source code and generated class-files that used by various Gradle plugins.
+ */
 internal abstract class LookupAdapter {
+    /**
+     * Find the sources and output directories used by the plugin whose support is implemented in the child class.
+     */
     protected abstract fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs
 
     fun lookupSafe(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {

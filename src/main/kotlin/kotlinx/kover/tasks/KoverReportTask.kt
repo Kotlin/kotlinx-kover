@@ -13,7 +13,7 @@ import org.gradle.configurationcache.extensions.*
 import org.gradle.process.*
 import java.io.*
 
-// TODO make internal in 0.7 version
+// TODO make internal in 0.7 version - for now it public to save access to deprecated fields to print deprecation message
 public abstract class KoverReportTask : DefaultTask() {
     @get:Nested
     internal val files: MapProperty<String, ProjectFiles> =

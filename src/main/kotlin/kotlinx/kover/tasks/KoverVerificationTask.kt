@@ -7,7 +7,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
 
-// TODO make internal in 0.7 version
+// TODO make internal in 0.7 version - for now it public to save access to deprecated fields to print deprecation message
 @CacheableTask
 public open class KoverVerificationTask : KoverReportTask() {
     @get:Nested
@@ -60,23 +60,23 @@ public open class KoverVerificationTask : KoverReportTask() {
     // TODO delete in 0.7 version
     @Suppress("UNUSED_PARAMETER")
     @Deprecated(
-        message = "Function was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Function was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public fun rule(configureRule: Action<VerificationRule>) {
-        throw Exception("Function was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue")
+        throw Exception("Function was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}")
     }
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public var includes: List<String> = emptyList()
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please read migration to 0.6.0 guide to solve the issue",
+        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public var excludes: List<String> = emptyList()

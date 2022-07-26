@@ -2,8 +2,6 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-@file:Suppress("RedundantVisibilityModifier")
-
 package kotlinx.kover.api
 
 public object KoverNames {
@@ -38,8 +36,12 @@ public object KoverPaths {
 }
 
 public object KoverVersions {
-    internal const val MINIMAL_INTELLIJ_VERSION = "1.0.668"
-    internal const val DEFAULT_INTELLIJ_VERSION = "1.0.668"
+    internal const val MINIMAL_INTELLIJ_VERSION = "1.0.675"
+    internal const val DEFAULT_INTELLIJ_VERSION = "1.0.675"
 
     internal const val DEFAULT_JACOCO_VERSION = "0.8.8"
+}
+
+public object KoverMigrations {
+    public const val MIGRATION_0_5_TO_0_6 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0-BETA/docs/migration-to-0.6.0.md"
 }

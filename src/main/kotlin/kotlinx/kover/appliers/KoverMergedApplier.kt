@@ -209,14 +209,18 @@ private fun Project.engineProvider(extensionByProject: Provider<Map<Project, Kov
 
     val containerPath = path
     return provider {
-        val variants = extensionByProject.get().map { ComparableEngineVariant(it.value.engine.get()) }.toSet()
-        // check same engine variants are used
-        if (variants.size > 1) {
-            throw GradleException("Can't create Kover merge tasks: different coverage engines are used in projects")
+        val map: MutableMap<CoverageEngineVariant, MutableList<String>> = mutableMapOf()
+        extensionByProject.get().forEach { (p, v) ->
+            map.computeIfAbsent(v.engine.get()) { mutableListOf() } += p.path
         }
-        val variant = variants.first()
-        if (variant != ComparableEngineVariant(containerEngine.get())) {
-            throw GradleException("Can't create Kover merge tasks: project engines are different from the engine from the containing project '$containerPath'")
+
+        // check same engine variants are used
+        if (map.size > 1) {
+            throw GradleException("Can't create Kover merge tasks: different coverage engines are used in projects.\n\tProjects by engines: $map")
+        }
+        val variant = map.keys.first()
+        if (variant != containerEngine.get()) {
+            throw GradleException("Can't create Kover merge tasks: child projects engines '$variant' are different from the engine '${containerEngine.get()}' from the containing project '$containerPath'")
         }
         engineByVariant(variant, config, archiveOperations)
     }
@@ -225,31 +229,4 @@ private fun Project.engineProvider(extensionByProject: Provider<Map<Project, Kov
 
 private fun Project.instrumentedTasksProvider(extensionByProject: Provider<Map<Project, KoverProjectConfig>>): Provider<List<Test>> {
     return provider { extensionByProject.get().flatMap { it.key.instrumentedTasks(it.value) } }
-}
-
-
-/**
- * Wrapper for [CoverageEngineVariant] to group applied engines.
- */
-private class ComparableEngineVariant(origin: CoverageEngineVariant) : CoverageEngineVariant {
-    override val vendor: CoverageEngineVendor = origin.vendor
-    override val version: String = origin.version
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as ComparableEngineVariant
-
-        if (vendor != other.vendor) return false
-        if (version != other.version) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = vendor.hashCode()
-        result = 31 * result + version.hashCode()
-        return result
-    }
 }

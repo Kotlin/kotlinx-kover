@@ -91,7 +91,7 @@ internal interface TestKoverProjectHtmlConfig {
 internal interface TestKoverProjectFilters {
     fun classes(config: KoverClassFilter.() -> Unit)
 
-    fun sourcesets(config: KoverSourceSetFilter.() -> Unit)
+    fun sourceSets(config: KoverSourceSetFilter.() -> Unit)
 }
 
 internal interface TestKoverMergedConfig {

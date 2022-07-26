@@ -13,6 +13,10 @@ import org.gradle.internal.metaobject.*
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
 
+/**
+ * Adapter to get sources and outputs of Kotlin Multi-Platform Gradle plugin.
+ * Required to support kotlin sources for multiplatform projects.
+ */
 internal class KotlinMultiplatformPluginAdapter : LookupAdapter() {
 
     override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {
