@@ -49,14 +49,14 @@ public open class KoverHtmlTask : KoverReportTask() {
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
+        message = "Property was removed in Kover API version 2, use property 'filters { classes { includes } }' in Kover project extension instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public var includes: List<String> = emptyList()
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
+        message = "Property was removed in Kover API version 2, use property 'filters { classes { excludes } }' in Kover project extension instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public var excludes: List<String> = emptyList()

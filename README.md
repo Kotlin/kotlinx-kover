@@ -376,7 +376,7 @@ koverMerged {
         }
 
         projects { // common projects filter for all default Kover merged tasks
-            includes += listOf("project1", ":child:project") // Specifies the projects involved in the merged tasks
+            excludes += listOf("project1", ":child:project") // Specifies the projects excluded from the merged tasks
         }
     }
 
@@ -437,7 +437,7 @@ koverMerged {
         }
     
         projects { // common projects filter for all default Kover merged tasks
-            includes.addAll("project1", ":child:project") // Specifies the projects involved in the merged tasks
+            excludes.addAll("project1", ":child:project") // Specifies the projects excluded in the merged tasks
         }
     }
   

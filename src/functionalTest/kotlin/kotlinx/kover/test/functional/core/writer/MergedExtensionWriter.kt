@@ -37,8 +37,8 @@ private fun PrintWriter.printFilters(state: TestKoverMergedFiltersState, slice: 
 
     if (projects != null) {
         indented(indents + 1, "projects {")
-        if (projects.includes.isNotEmpty()) {
-            indented(indents + 2, "includes".addAllList(projects.includes, slice.language))
+        if (projects.excludes.isNotEmpty()) {
+            indented(indents + 2, "excludes".addAllList(projects.excludes, slice.language))
         }
         indented(indents + 1, "}")
     }

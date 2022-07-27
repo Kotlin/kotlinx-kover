@@ -138,7 +138,7 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
     }
 
     @Test
-    fun testIncludeProject() {
+    fun testExcludeProject() {
         val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
         val subPath = build.addKoverSubproject(subprojectName) {
             sourcesFrom("multiproject-common")
@@ -152,7 +152,7 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
                 enable()
                 filters {
                     projects {
-                        includes += rootName
+                        excludes += subprojectName
                     }
                 }
             }
@@ -180,7 +180,7 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
     }
 
     @Test
-    fun testIncludeProjectByPath() {
+    fun testExcludeProjectByPath() {
         val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
         val subPath = build.addKoverSubproject(subprojectName) {
             sourcesFrom("multiproject-common")
@@ -194,7 +194,7 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
                 enable()
                 filters {
                     projects {
-                        includes += ":"
+                        excludes += subPath
                     }
                 }
             }

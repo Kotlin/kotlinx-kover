@@ -22,9 +22,29 @@ To configure merged reports, the `koverMerged { }` project extension is used.
 
 ### type of `isDisabled` property changed from `Boolean` to `Property<Boolean>`.
 
-for Kotlin script: change `isDisabled = true` to `isDisabled.set(true)`
+_Error message_
+
+```
+Val cannot be reassigned
+```
+
+_Solution for Kotlin script:_ change `isDisabled = true` to `isDisabled.set(true)`
 
 ### Properties `coverageEngine`, `intellijEngineVersion` and `jacocoEngineVersion` were removed.
+
+_Error messages:_
+
+```
+Using 'coverageEngine: Property<CoverageEngine>' is an error
+```
+```
+Using 'intellijEngineVersion: Property<String>' is an error
+```
+```
+Using 'jacocoEngineVersion: Property<String>' is an error
+```
+
+_Solution:_
 
 Use property `engine` - it combines version and coverage engine vendor.
 
@@ -62,14 +82,21 @@ kover {
 
 ### property `disabledProjects` was removed
 
-Use inclusion list in project filters
+_Error message:_
+
+```Using 'disabledProjects: Set<String>' is an error.```
+
+_Solution_
+
+- read about [merged reports changes](#foo)
+- use exclusion list in project filters of merged configuration extension
 
 ```
 koverMerged {
     enable()
     filters {
         projects {
-            includes.add(":path or unique project name")
+            excludes.add(":path or unique project name")
         }
     }
 }
@@ -88,9 +115,14 @@ TBD
 
 ## Kover extension for test task
 
-### type of `isDisabled` property changed from "Boolean" to `Property<Boolean>`".
+### type of `isDisabled` property changed from `Boolean` to `Property<Boolean>`.
+_Error message_
 
-Solution for Kotlin script: change `isDisabled = true` to `isDisabled.set(true)`
+```
+Val cannot be reassigned
+```
+
+_Solution for Kotlin script:_ change `isDisabled = true` to `isDisabled.set(true)`
 
 ### `binaryReportFile` was renamed to `reportFile`
 
@@ -98,11 +130,9 @@ Solution: change `binaryReportFile` to `reportFile`
 
 ### Type of `includes` property changed from `List<String>` to `ListProperty<String>`
 
-Solution for Kotlin: change `includes = listOf("com.example.*", "foo.bar.*")`
-to `includes.addAll("com.example.*", "foo.bar.*")`
+Solution:
 
-Solution for Groovy: change `includes = ["com.example.*", "foo.bar.*"]`
-to `includes.addAll("com.example.*", "foo.bar.*")`
+```includes.addAll("com.example.*", "foo.bar.*")```
 
 ### type of `excludes` property changed from `List<String>` to `ListProperty<String>`
 
@@ -180,11 +210,54 @@ kover {
 ```
 &ast; for `xmlReportFile` task use `koverMerged { ... }` extension of the project.
 
+## `KoverTaskExtension` configuration
+
+### Type of `excludes` and `includes` property changed from `List<String>` to `ListProperty<String>`
+_Error message:_
+```
+Val cannot be reassigned
+```
+
+_Solution:_
+
+```
+includes.addAll("com.example.*", "foo.bar.*")
+```
+and
+```
+excludes.addAll("com.example.*", "foo.bar.*")
+```
+
+
 ## `koverHtmlReport` and `koverMergedHtmlReport` tasks configuration
+
+### Class `KoverHtmlReportTask` was removed
+
+_Error message:_
+```
+Using 'KoverHtmlReportTask' is an error
+```
+
+_Solution:_
+
+Configure report by Kover project extension
+
+```
+kover {
+    htmlReport {
+        // HTML report settings
+    }
+}
+```
 
 ### Property `htmlReportDir` was removed
 
-Solution: use property in Kover extension at the root of the project
+_Error message:_
+```
+Using 'htmlReportDir: DirectoryProperty' is an error
+```
+
+Solution: use property `reportDir` in Kover extension at the root of the project
 
 ```
 kover {
@@ -197,7 +270,12 @@ kover {
  
 ### Property `includes` was removed
 
-Solution for Kotlin: use filter in Kover extension at the root of the project
+_Error message:_
+```
+Using 'includes: List<String>' is an error
+```
+
+_Solution for Kotlin:_ use filter in Kover extension at the root of the project
 
 ```
 kover {
@@ -209,7 +287,7 @@ kover {
 }
 ```
 
-Solution for Groovy: use filter in Kover extension at the root of the project
+_Solution for Groovy:_ use filter in Kover extension at the root of the project
 
 ```
 kover {
@@ -224,7 +302,12 @@ kover {
 
 ### Property `excludes` was removed
 
-Solution for Kotlin: use filter in Kover extension at the root of the project
+Error message:
+```
+Using 'excludes: List<String>' is an error
+```
+
+_Solution for Kotlin:_ use filter in Kover extension at the root of the project
 
 ```
 kover {
@@ -251,9 +334,16 @@ kover {
 
 ## `koverVerify` and `koverMergedVerify` tasks configuration
 
-### Function `rule` was removed
+### Function `rule` was removed for single-project verification
 
-Solution: use function in Kover extension at the root of the project
+Error message:
+```
+Using 'rule(Action<VerificationRule>): Unit' is an error
+```
+
+_Solution:_
+
+use function `rule` in Kover project extension
 
 ```
 kover {
@@ -268,6 +358,11 @@ kover {
 * For `koverMergedVerify` task use `koverMerged { ... }` extension of the project.
 
 ### Property `includes` was removed
+
+_Error message:_
+```
+Using 'includes: List<String>' is an error
+```
 
 Solution for Kotlin: use filter in Kover extension at the root of the project
 
@@ -296,7 +391,12 @@ kover {
 
 ### Property `excludes` was removed
 
-Solution for Kotlin: use filter in Kover extension at the root of the project
+_Error message:_
+```
+Using 'excludes: List<String>' is an error
+```
+
+_Solution for Kotlin:_ use filter in Kover extension at the root of the project
 
 ```
 kover {
@@ -308,7 +408,7 @@ kover {
 }
 ```
 
-Solution for Groovy: use filter in Kover extension at the root of the project
+_Solution for Groovy:_ use filter in Kover extension at the root of the project
 
 ```
 kover {

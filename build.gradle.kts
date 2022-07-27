@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.*
+
 plugins {
     kotlin("jvm") version "1.7.10"
 
@@ -17,6 +19,11 @@ sourceSets {
         compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
         runtimeClasspath += output + compileClasspath
     }
+}
+
+// adding the ability to use internal classes inside functional tests
+kotlin.target.compilations.run {
+    getByName("functionalTest").associateWith(getByName(KotlinCompilation.MAIN_COMPILATION_NAME))
 }
 
 dependencies {

@@ -60,7 +60,7 @@ public open class KoverVerificationTask : KoverReportTask() {
     // TODO delete in 0.7 version
     @Suppress("UNUSED_PARAMETER")
     @Deprecated(
-        message = "Function was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
+        message = "Function was removed in Kover API version 2, move it in 'verify {  }' in Kover project extension instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         level = DeprecationLevel.ERROR
     )
     public fun rule(configureRule: Action<VerificationRule>) {

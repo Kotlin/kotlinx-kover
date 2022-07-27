@@ -86,7 +86,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
     @Suppress("DEPRECATION")
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
+        message = "Property was removed in Kover API version 2, use `engine` property instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
@@ -94,7 +94,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
+        message = "Property was removed in Kover API version 2, use `engine.set(kotlinx.kover.api.IntellijEngine(\"version\"))` instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
@@ -102,7 +102,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 
     @get:Internal
     @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
+        message = "Property was removed in Kover API version 2, use `engine.set(kotlinx.kover.api.JacocoEngine(\"version\"))` instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
@@ -140,7 +140,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 // DEPRECATIONS
 // TODO delete in 0.7 version
 @Deprecated(
-    message = "Class was renamed in Kover API version 2",
+    message = "Class KoverExtension was renamed to KoverProjectConfig in Kover API version 2",
     replaceWith = ReplaceWith("KoverProjectConfig"),
     level = DeprecationLevel.ERROR
 )
@@ -152,7 +152,16 @@ public open class KoverProjectFilters @Inject constructor(private val objects: O
     internal val sourceSets: Property<KoverSourceSetFilter> = objects.property(KoverSourceSetFilter::class.java)
 
     /**
-     * Configures class filter.
+     * Configures class filter in order to include and exclude specific classes.
+     *
+     * Example:
+     *  ```
+     *  classes {
+     *      excludes += "com.example.FooBar"
+     *      includes += "com.example.*Bar"
+     *  }
+     *  ```
+     * Excludes have priority over includes.
      */
     public fun classes(config: Action<KoverClassFilter>) {
         val classFilter = objects.newInstance(KoverClassFilter::class.java)
@@ -346,12 +355,12 @@ public open class KoverMergedHtmlConfig @Inject constructor(private val objects:
 
 public open class KoverProjectsFilter {
     /**
-     * Specifies the projects involved in the merged tasks. Both the project name (if it is unique) and the project path can be used.
+     * Specifies the projects excluded from subprojects (included current project) using in the merged tasks. Both the project name (if it is unique) and the project path can be used.
      *
      * If empty, the current project and all subprojects are used.
      */
     @get:Input
-    public val includes: MutableList<String> = mutableListOf()
+    public val excludes: MutableList<String> = mutableListOf()
 }
 
 

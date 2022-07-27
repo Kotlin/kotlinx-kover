@@ -10,9 +10,9 @@ import org.gradle.api.tasks.*
 
 public sealed class CoverageEngineVariant(
     @get:Input
-    public val vendor: CoverageEngineVendor,
+    internal val vendor: CoverageEngineVendor,
     @get:Input
-    public val version: String
+    internal val version: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -37,7 +37,7 @@ public sealed class CoverageEngineVariant(
     }
 }
 
-public enum class CoverageEngineVendor {
+internal enum class CoverageEngineVendor {
     INTELLIJ,
     JACOCO
 }

@@ -176,27 +176,30 @@ private inline fun Project.mergedFilesProvider(
 
 
 private fun filterProjects(filters: KoverProjectsFilter, allProjects: Iterable<Project>): List<Project> {
-    if (filters.includes.isEmpty()) {
+    if (filters.excludes.isEmpty()) {
         return allProjects.toList()
     }
 
-    val projectsByPath = allProjects.associateBy { p -> p.path }
+    val projectsByPath = allProjects.associateBy { p -> p.path }.toMutableMap()
     val pathsByName = allProjects.associate { it.name to mutableListOf<String>() }
     allProjects.forEach { pathsByName.getValue(it.name) += it.path }
 
-    return filters.includes.map {
+    val excludedPaths = filters.excludes.map {
         if (it.startsWith(':')) {
             projectsByPath[it]
                 ?: throw GradleException("Kover configuring error: not found project '$it' for merged tasks")
+            it
         } else {
             val paths = pathsByName[it]
                 ?: throw GradleException("Kover configuring error: not found project '$it' for merged tasks")
             if (paths.size > 1) {
                 throw GradleException("Kover configuring error: ambiguous name of the project '$it' for merged tasks: suitable projects with paths $paths. Consider using fully-qualified name starting with ':'")
             }
-            projectsByPath[paths[0]]!!
+            paths[0]
         }
-    }
+    }.toSet()
+
+    return projectsByPath.filterNot { it.key in excludedPaths }.map { it.value }
 }
 
 
