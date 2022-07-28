@@ -81,7 +81,7 @@ private class CoverageArgumentProvider(
             Because android classes are not part of the project, in any case they do not get into the report,
             and they can be excluded from instrumentation.
 
-            FIXME Remove this code if the IntelliJ Agent stops changing project classes during instrumentation
+            FIXME Remove this code if the IntelliJ Agent stops changing project classes during instrumentation, see https://github.com/Kotlin/kotlinx-kover/issues/196
         */
         classFilter.excludes += "android.*"
         classFilter.excludes += "com.android.*"
