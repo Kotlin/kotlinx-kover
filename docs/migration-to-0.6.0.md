@@ -1,20 +1,149 @@
-# Main differences
-
 The new API allows you to configure Kover in a more flexible manner, while being more concise than the previous API.
-From now on, there is no need to configure each Kover task separately.
+From now on, there is no need to configure Kover or test tasks separately.
 
-In the new API, in order to respect upcoming Gradle conventions, the plugin should be explicitly applied to
-each project that needs coverage.
-To create merged tasks (that collect test coverage from different projects), enable it by `koverMerged.enable()` or 
+# Main differences
+- applying the plugin to the root project no longer causes it to be recursively applied to all subprojects - you must explicitly apply it to all projects that will be covered
+- merged tasks are not created by default. You must explicitly enable it if necessary (for details [see](#merged-report-changes))
+- the extension `kover {}` is used to configure tasks `koverXmlReport`, `koverHtmlReport`, `koverVerify`, test tasks, instead of configuring these tasks directly
+- the extension `koverMerged {}` is used to configure tasks `koverMergedXmlReport`, `koverMergedHtmlReport`, `koverMergedVerify`, instead of configuring these tasks directly
+- task `koverCollectReports` was removed
+
+# Merged report changes
+
+In the new API, merged tasks are not created by default. To create them, you need to use the plugin in the `koverMerged` extension, it is necessary to call the function `enable()`.
+e.g.
+```
+koverMerged.enable()
+```
+or
 ```
 koverMerged {
     enable()
 }
 ```
-in one project, which will be a merged report container.
+or 
+```
+extensions.configure<KoverMergedConfig> {
+    enable()
+}
+```
 
-To configure reports that collect coverage only for tests from one project, the `kover { }` project extension is used.
-To configure merged reports, the `koverMerged { }` project extension is used.
+Now any merged tasks settings occur only in the `koverMerged` extension.
+By default, tasks use the results of measuring the coverage of the project in which they were created and all subprojects.
+At the same time, it is important that the Kover plugin is used in all these projects, as well as that they use the same variant (vendor and version) of the coverage engine.
+
+For example, it can be done this way
+```
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlinx:kover:0.6.0-BETA")
+    }
+}
+
+apply(plugin = "kover")
+
+extensions.configure<KoverMergedConfig> {
+    enable()
+    // configure merged tasks
+}
+
+allprojects {
+    apply(plugin = "kover")
+
+    extensions.configure<KoverProjectConfig> {
+        // `true` - to disable the collection of coverage metrics for tests from this project
+        isDisabled.set(false)
+    
+        // configure engine variant 
+        engine.set(kotlinx.kover.api.IntellijEngine("1.0.657"))
+        
+        // configure project's tasks if needed
+    }
+}
+```
+
+In order not to use measurements from some projects now instead of `disabledProjects` property for `kover` extension you need to use `koverMerged` extension:
+```
+extensions.configure<KoverMergedConfig> {
+    enable()
+    filters {
+        projects {
+            excludes.addAll("project-to-exclude", ":path:to:exclude")
+        }
+    }
+}
+```
+
+Instead of configuring the merged XML report task 
+```
+koverMergedXmlReport {
+    // config task
+}
+```
+or
+```
+tasks.withType<KoverMergedXmlReportTask> {
+    // config task
+}
+```
+you need to configure `koverMerged` extension:
+```
+extensions.configure<KoverMergedConfig> {
+    enable()
+    xmlReport {
+        // config task
+    }
+}
+```
+
+Instead of configuring the merged HTML report task
+```
+koverMergedHtmlReport {
+    // config task
+}
+```
+or
+```
+tasks.withType<KoverMergedHtmlReportTask> {
+    // config task
+}
+```
+you need to configure `koverMerged` extension:
+```
+extensions.configure<KoverMergedConfig> {
+    enable()
+    htmlReport {
+        // config task
+    }
+}
+```
+
+
+Instead of configuring the merged verification report task
+```
+koverMergedVerify {
+    // config task
+}
+```
+or
+```
+tasks.withType<KoverMergedVerificationTask> {
+    // config task
+}
+```
+you need to configure `koverMerged` extension:
+```
+extensions.configure<KoverMergedConfig> {
+    enable()
+    verify {
+        // config task
+    }
+}
+```
 
 # Migration Issues
 
@@ -22,7 +151,7 @@ To configure merged reports, the `koverMerged { }` project extension is used.
 
 ### type of `isDisabled` property changed from `Boolean` to `Property<Boolean>`.
 
-_Error message_
+_Error message:_
 
 ```
 Val cannot be reassigned
@@ -88,7 +217,7 @@ _Error message:_
 
 _Solution_
 
-- read about [merged reports changes](#foo)
+- read about [merged reports changes](#merged-report-changes)
 - use exclusion list in project filters of merged configuration extension
 
 ```
@@ -111,7 +240,7 @@ instrumentation.
 
 ### property `runAllTestsForProjectTask` was removed
 
-TBD
+In the new API for single-project reports, it is impossible to call test tasks of another project. To account for coverage from tests of another module, use merged reports.
 
 ## Kover extension for test task
 
