@@ -12,55 +12,109 @@ internal enum class GradleScriptLanguage { KOTLIN, GROOVY }
 
 internal enum class ProjectType { KOTLIN_JVM, KOTLIN_MULTIPLATFORM, ANDROID }
 
-internal interface ProjectBuilder<B : ProjectBuilder<B>> {
-    fun sources(template: String): B
-
-    fun rule(name: String? = null, builder: RuleBuilder.() -> Unit): B
-
-    fun configTest(script: String): B
-    fun configTest(kotlin: String, groovy: String): B
-
-    fun config(script: String): B
-    fun config(kotlin: String, groovy: String): B
-
-    fun dependency(script: String): B
-    fun dependency(kotlin: String, groovy: String): B
+internal interface DiverseBuild {
+    fun addProject(name: String, path: String, builder: ProjectBuilder.() -> Unit)
+    fun prepare(): GradleRunner
 }
 
-internal interface RuleBuilder {
-    fun bound(builder: VerificationBound.() -> Unit)
+internal interface ProjectBuilder {
+    fun plugins(block: Plugins.() -> Unit)
+
+    fun repositories(block: Repositories.() -> Unit)
+
+    fun kover(config: TestKoverProjectConfig.() -> Unit)
+
+    fun koverMerged(config: TestKoverMergedConfig.() -> Unit)
+
+    fun testTasks(block: TestTaskConfig.() -> Unit)
+
+    fun subproject(path: String)
+
+    fun sourcesFrom(template: String)
 }
 
-internal interface TestCaseBuilder : ProjectBuilder<TestCaseBuilder> {
-    fun languages(vararg languages: GradleScriptLanguage): TestCaseBuilder
-    fun engines(vararg engines: CoverageEngine): TestCaseBuilder
-    fun types(vararg types: ProjectType): TestCaseBuilder
 
-    fun withLocalCache(): TestCaseBuilder
-
-    fun configKover(config: KoverRootConfig.() -> Unit): TestCaseBuilder
-
-    fun subproject(name: String, builder: ProjectBuilder<*>.() -> Unit): TestCaseBuilder
-
-    fun build(): GradleRunner
+interface Plugins {
+    fun kotlin(version: String? = null)
+    fun kover(version: String? = null)
 }
 
-internal data class ProjectSlice(val language: GradleScriptLanguage, val type: ProjectType, val engine: CoverageEngine?) {
-    fun encodedString(): String {
-        return "${language.ordinal}_${type.ordinal}_${engine?.ordinal?:"default"}"
-    }
+interface Repositories {
+    fun repository(name: String)
 }
 
-internal data class KoverRootConfig(
-    var disabled: Boolean? = null,
-    var intellijVersion: String? = null,
-    var jacocoVersion: String? = null,
-    var generateReportOnCheck: Boolean? = null,
-    var runAllTestsForProjectTask: Boolean? = null,
-    val disabledProjects: MutableSet<String> = mutableSetOf()
+interface TestTaskConfig {
+    fun excludes(vararg classes: String)
+    fun includes(vararg classes: String)
+}
+
+/**
+ * Same as [KoverProjectConfig]
+ */
+internal interface TestKoverProjectConfig {
+    var isDisabled: Boolean?
+
+    var engine: CoverageEngineVariant?
+
+    fun filters(config: TestKoverProjectFilters.() -> Unit)
+
+    fun instrumentation(config: KoverProjectInstrumentation.() -> Unit)
+
+    fun xmlReport(config: TestKoverProjectXmlConfig.() -> Unit)
+
+    fun htmlReport(config: TestKoverProjectHtmlConfig.() -> Unit)
+
+    fun verify(config: TestKoverVerifyConfig.() -> Unit)
+}
+
+
+internal interface TestKoverVerifyConfig {
+    val onCheck: Boolean?
+
+    fun rule(config: TestVerificationRule.() -> Unit)
+}
+
+internal interface TestKoverProjectXmlConfig {
+    var onCheck: Boolean?
+    var reportFile: File?
+
+    fun overrideFilters(config: TestKoverProjectFilters.() -> Unit)
+}
+
+internal interface TestKoverProjectHtmlConfig {
+    var onCheck: Boolean?
+    var reportDir: File?
+
+    fun overrideFilters(config: TestKoverProjectFilters.() -> Unit)
+}
+
+internal interface TestKoverProjectFilters {
+    fun classes(config: KoverClassFilter.() -> Unit)
+
+    fun sourceSets(config: KoverSourceSetFilter.() -> Unit)
+}
+
+internal interface TestKoverMergedConfig {
+    public fun enable()
+
+    public fun filters(config: TestKoverMergedFilters.() -> Unit)
+}
+
+public interface TestKoverMergedFilters {
+    public fun classes(config: KoverClassFilter.() -> Unit)
+
+    public fun projects(config: KoverProjectsFilter.() -> Unit)
+}
+
+
+internal data class ProjectSlice(
+    val language: GradleScriptLanguage,
+    val type: ProjectType,
+    val engine: CoverageEngineVendor?
 ) {
-    val isDefault =
-        disabled == null && intellijVersion == null && jacocoVersion == null && generateReportOnCheck == null
+    fun encodedString(): String {
+        return "${language.ordinal}_${type.ordinal}_${engine?.ordinal ?: "default"}"
+    }
 }
 
 internal interface GradleRunner {
@@ -69,7 +123,7 @@ internal interface GradleRunner {
 }
 
 internal interface RunResult {
-    val engine: CoverageEngine
+    val engine: CoverageEngineVendor
     val projectType: ProjectType
 
     fun subproject(name: String, checker: RunResult.() -> Unit)

@@ -1,6 +1,5 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.cases.utils.*
 import kotlinx.kover.test.functional.core.*
 import kotlinx.kover.test.functional.core.BaseGradleScriptTest
@@ -10,47 +9,59 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
 
     @Test
     fun testExclude() {
-        builder("Test exclusion of classes from instrumentation")
-            .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
-            .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
-            .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
-            .sources("simple")
-            .configTest(
-                """excludes = listOf("org.jetbrains.*Exa?ple*")""",
-                """excludes = ['org.jetbrains.*Exa?ple*']"""
-            )
-            .build()
-            .run("build") {
-                xml(defaultMergedXmlReport()) {
-                    classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
-                    classCounter("org.jetbrains.SecondClass").assertCovered()
-                }
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
+        build.addKoverRootProject {
+            sourcesFrom("simple")
+            testTasks {
+                excludes("org.jetbrains.*Exa?ple*")
             }
+        }
+        val runner = build.prepare()
+        runner.run("build", "koverXmlReport") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+
     }
 
     @Test
     fun testExcludeInclude() {
-        builder("Test inclusion and exclusion of classes in instrumentation")
-            .languages(GradleScriptLanguage.KOTLIN, GradleScriptLanguage.GROOVY)
-            .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
-            .engines(CoverageEngine.INTELLIJ, CoverageEngine.JACOCO)
-            .sources("simple")
-            .configTest(
-                """includes = listOf("org.jetbrains.*Cla?s")""",
-                """includes = ['org.jetbrains.*Cla?s']"""
-            )
-            .configTest(
-                """excludes = listOf("org.jetbrains.*Exa?ple*")""",
-                """excludes = ['org.jetbrains.*Exa?ple*']"""
-            )
-            .build()
-            .run("build") {
-                xml(defaultMergedXmlReport()) {
-                    classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
-                    classCounter("org.jetbrains.Unused").assertFullyMissed()
-                    classCounter("org.jetbrains.SecondClass").assertCovered()
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
+        build.addKoverRootProject {
+            sourcesFrom("simple")
+            testTasks {
+                includes("org.jetbrains.*Cla?s")
+                excludes("org.jetbrains.*Exa?ple*")
+            }
+        }
+        val runner = build.prepare()
+        runner.run("build", "koverXmlReport") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
+                classCounter("org.jetbrains.Unused").assertFullyMissed()
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+    }
+
+    @Test
+    fun testDisableInstrumentationOfTask() {
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, listOf(ProjectType.KOTLIN_JVM))
+        build.addKoverRootProject {
+            sourcesFrom("simple")
+            kover {
+                instrumentation {
+                    excludeTasks += "test"
                 }
             }
+        }
+        val runner = build.prepare()
+        runner.run("build", "koverXmlReport") {
+            // if task `test` is excluded from instrumentation then the binary report is not created for it
+            checkDefaultBinaryReport(false)
+        }
     }
 
 }
