@@ -28,6 +28,9 @@ internal val ALL_LANGUAGES = listOf(GradleScriptLanguage.KOTLIN, GradleScriptLan
 internal val ALL_ENGINES = listOf(CoverageEngineVendor.INTELLIJ, CoverageEngineVendor.JACOCO)
 internal val ALL_TYPES = listOf(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
 
+private val kotlinVersion = System.getProperty("kotlinVersion")
+    ?: throw Exception("System property 'kotlin-version' not defined for functional tests")
+
 internal open class BaseGradleScriptTest {
     @Rule
     @JvmField
@@ -52,7 +55,7 @@ internal open class BaseGradleScriptTest {
 internal fun DiverseBuild.addKoverRootProject(builder: ProjectBuilder.() -> Unit) {
     addProject("root", ":") {
         plugins {
-            kotlin("1.7.10")
+            kotlin(kotlinVersion)
             kover("DEV")
         }
 
