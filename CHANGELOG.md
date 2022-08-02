@@ -1,6 +1,8 @@
-0.6.0-BETA / 2022-08-02
+0.6.0-Beta / 2022-08-02
 ===================
 In this version, the plugin API has been fully redesigned. The new API allows you to configure Kover in a more flexible manner, there is no need to configure Kover or test tasks separately.
+
+Refer to [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0-Beta/docs/migration-to-0.6.0.md) in order to migrate.
 
 **This is a beta release, the stability of all features is not guaranteed. The beta version is released to collect feedback on the new API and its usability.**
 
