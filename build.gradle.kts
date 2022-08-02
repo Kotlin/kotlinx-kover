@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.plugin.*
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm")
 
     `java-gradle-plugin`
     `maven-publish`
@@ -13,6 +13,8 @@ repositories {
     gradlePluginPortal()
     google()
 }
+
+val kotlinVersion = property("kotlinVersion")
 
 sourceSets {
     create("functionalTest") {
@@ -31,23 +33,22 @@ dependencies {
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
 
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:${property("kotlin.version")}")
+    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     compileOnly("com.android.tools.build:gradle:4.2.2")
 
     testImplementation(kotlin("test"))
 
     "functionalTestImplementation"(gradleTestKit())
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:${property("kotlin.version")}")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:${property("kotlin.version")}")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-runner:${property("kotlin.version")}")
+    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
+    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
-
 
 
 tasks.register<Test>("functionalTest") {
@@ -67,6 +68,9 @@ tasks.register<Test>("functionalTest") {
         file
             .writeText(sourceSets["functionalTest"].compileClasspath.joinToString("\n"))
         systemProperties["plugin-classpath"] = file.absolutePath
+
+        // used in build scripts of functional tests
+        systemProperties["kotlinVersion"] = kotlinVersion
     }
 }
 

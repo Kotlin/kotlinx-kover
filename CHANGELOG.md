@@ -1,3 +1,24 @@
+0.6.0-Beta / 2022-08-02
+===================
+In this version, the plugin API has been fully redesigned. The new API allows you to configure Kover in a more flexible manner, there is no need to configure Kover or test tasks separately.
+
+Refer to [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0-Beta/docs/migration-to-0.6.0.md) in order to migrate.
+
+**This is a beta release, the stability of all features is not guaranteed. The beta version is released to collect feedback on the new API and its usability.**
+
+### Features
+* Implemented a new plugin API (#19)
+* Minimal and default agent versions upgraded to 1.0.675
+* Added support of instruction and branch counters for verification tasks (#128)
+
+### Bugfixes
+* Verification task is no longer executed if there are no rules (#168)
+
+### Internal features
+* Kotlin version upgraded to 1.7.10
+* instrumentation config added to the test framework
+* added test on instrumentation config
+
 0.5.1 / 2022-05-11
 ===================
 
