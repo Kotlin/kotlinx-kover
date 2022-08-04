@@ -15,13 +15,14 @@ Minimal supported `Gradle` version: `6.6`.
   - [Apply plugin to a project](#apply-plugin)
     - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
     - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
-  - [Merged reports](#merged-reports)
+  - [Cross-project coverage](#cross-project-coverage)
 - [Configuration](#configuration)
   - [Configuring project](#configuring-project)
   - [Configuring merged reports](#configuring-merged-reports)
   - [Configuring JVM test task](#configuring-jvm-test-task)
   - [Specifying Coverage Engine](#specifying-coverage-engine)
-- [Tasks](#kover-default-tasks)
+- [Kover single-project tasks](#kover-single-project-tasks)
+- [Kover merged tasks](#kover-merged-tasks)
 - [Implicit plugin dependencies](#implicit-plugin-dependencies)
 
 ## Features
@@ -95,7 +96,13 @@ apply plugin: 'kover'
 ```
 </details>
 
-### Merged reports
+### Cross-project coverage
+
+[Kover tasks that are created by default](#kover-single-project-tasks) designed to collect project coverage only by tests located in the same project.
+
+If it is necessary to find the coverage of the project code, the tests for which are in another project, or the coverage of all code in a multi-project build, then it is necessary to calculate the cross-module coverage.
+[Merged tasks](#kover-merged-tasks) are used to calculate such coverage.
+
 Merged reports are reports that combine statistics of code coverage by test tasks from several projects.
 
 At the same time, for each project, its configuration of instrumentation and special filters (non-class filters) is applied.
@@ -359,7 +366,6 @@ koverMerged {
 ```
 By default, merged reports include containing project along with all its subprojects.
 
-
 Merged reports can also be configured in a similar manner. To do this, you need to configure the extension in the containing project (where `koverMerged.enable()` is called)
 
 <details open>
@@ -530,13 +536,14 @@ kotlinx.kover.api.DefaultJacocoEngine.INSTANCE
 kotlinx.kover.api.JacocoEngine("0.8.8")
 ```
 
-## Kover default tasks
+## Kover single-project tasks
 Tasks that are created for a project where the Kover plugin is applied:
 - `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in the project.
 - `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in the project.
 - `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.
 - `koverVerify` - Verifies code coverage metrics of the project based on configured rules. Always is executed before `check` task.
 
+## Kover merged tasks
 Tasks that are created for project where the Kover plugin is applied and merged reports are enabled:
 - `koverMergedHtmlReport` - Generates code coverage HTML report for all enabled test tasks in all projects.
 - `koverMergedXmlReport` - Generates code coverage XML report for all enabled test tasks in all projects.
