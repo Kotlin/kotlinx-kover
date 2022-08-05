@@ -100,14 +100,16 @@ apply plugin: 'kover'
 
 [Kover tasks that are created by default](#kover-single-project-tasks) designed to collect project coverage only by tests located in the same project.
 
-If it is necessary to find the coverage of the project code, the tests for which are in another project, or the coverage of all code in a multi-project build, then it is necessary to calculate the cross-module coverage.
-[Merged tasks](#kover-merged-tasks) are used to calculate such coverage.
+In order to find the coverage of the project code, the tests for which are in another project, or the coverage of all the code in a multi-project build,
+it is necessary to calculate the cross-module coverage.
+[Merged tasks](#kover-merged-tasks) are used to calculate such a coverage.
 
 Merged reports are reports that combine statistics of code coverage by test tasks from several projects.
 
 At the same time, for each project, its configuration of instrumentation and special filters (non-class filters) is applied.
 
-In all projects used for merged reports, a Kover plugin must be applied, as well as all Coverage Engines must match.
+For every Gradle project participating in the merged report, both Kover plugin should be applied
+and Coverage Engine types and versions should be identical.
 
 See how to enable merge reports in [this section](#configuring-merged-reports).
 
