@@ -4,21 +4,15 @@
 
 package kotlinx.kover.test.functional.cases.utils
 
-import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.core.ProjectType
 
 
-internal fun defaultTestTask(engine: CoverageEngineVendor, projectType: ProjectType): String {
-    val extension = if (engine == CoverageEngineVendor.INTELLIJ) "ic" else "exec"
+internal fun defaultTestTask(projectType: ProjectType): String {
     return when (projectType) {
-        ProjectType.KOTLIN_JVM -> "test.$extension"
-        ProjectType.KOTLIN_MULTIPLATFORM -> "jvmTest.$extension"
-        ProjectType.ANDROID -> "jvmTest.$extension"
+        ProjectType.KOTLIN_JVM -> "test"
+        ProjectType.KOTLIN_MULTIPLATFORM -> "jvmTest"
+        ProjectType.ANDROID -> "jvmTest"
     }
-}
-
-internal fun defaultBinaryReport(engine: CoverageEngineVendor, projectType: ProjectType): String {
-    return "kover/" + defaultTestTask(engine, projectType)
 }
 
 internal fun defaultMergedXmlReport() = "reports/kover/merged/xml/report.xml"
@@ -28,3 +22,5 @@ internal fun defaultXmlReport() = "reports/kover/xml/report.xml"
 internal fun defaultHtmlReport() = "reports/kover/html"
 
 internal fun errorsDirectory() = "kover/errors"
+
+internal fun binaryReportsDirectory() = "kover"

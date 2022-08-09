@@ -224,6 +224,8 @@ Examples `my.package.ClassName` or `my.*.*Name` are allowed, while `my/package/C
 
 Exclusion rules have priority over inclusion ones.
 
+Exclusion and inclusion rules from the [test task](#configuring-jvm-test-task) (if at least one of them is not empty) take precedence over rules from the [common class filter](#configuring-project).
+
 ### Configuring project
 In the project in which the plugin is applied, you can configure instrumentation and default Kover tasks:
 

@@ -4,7 +4,6 @@
 
 package kotlinx.kover.engines.intellij
 
-import kotlinx.kover.api.*
 import kotlinx.kover.engines.commons.*
 import org.gradle.api.Task
 import java.io.*
@@ -14,9 +13,9 @@ private const val calculateForUnloadedClasses = false // a flag to calculate cov
 private const val appendToDataFile = true // a flag to use data file as initial coverage
 private const val samplingMode = false //a flag to run coverage in sampling mode or in tracing mode otherwise
 
-internal fun Task.buildIntellijAgentJvmArgs(jarFile: File, reportFile: File, classFilter: KoverClassFilter): MutableList<String> {
+internal fun Task.buildIntellijAgentJvmArgs(jarFile: File, reportFile: File, filters: AgentFilters): MutableList<String> {
     val argsFile = File(temporaryDir, "intellijagent.args")
-    argsFile.writeAgentArgs(reportFile, classFilter)
+    argsFile.writeAgentArgs(reportFile, filters)
 
     return mutableListOf(
         "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
@@ -27,7 +26,7 @@ internal fun Task.buildIntellijAgentJvmArgs(jarFile: File, reportFile: File, cla
     )
 }
 
-private fun File.writeAgentArgs(reportFile: File, classFilter: KoverClassFilter) {
+private fun File.writeAgentArgs(reportFile: File, filters: AgentFilters) {
     reportFile.parentFile.mkdirs()
     val binaryPath = reportFile.canonicalPath
 
@@ -37,16 +36,16 @@ private fun File.writeAgentArgs(reportFile: File, classFilter: KoverClassFilter)
         pw.appendLine(calculateForUnloadedClasses.toString())
         pw.appendLine(appendToDataFile.toString())
         pw.appendLine(samplingMode.toString())
-        classFilter.includes.forEach { i ->
+        filters.includesClasses.forEach { i ->
             pw.appendLine(i.wildcardsToRegex())
         }
 
-        if (classFilter.excludes.isNotEmpty()) {
+        val excludesClasses = filters.excludesClasses
+        if (excludesClasses.isNotEmpty()) {
             pw.appendLine("-exclude")
-        }
-
-        classFilter.excludes.forEach { e ->
-            pw.appendLine(e.wildcardsToRegex())
+            excludesClasses.forEach { e ->
+                pw.appendLine(e.wildcardsToRegex())
+            }
         }
     }
 }

@@ -123,9 +123,6 @@ internal interface GradleRunner {
 }
 
 internal interface RunResult {
-    val engine: CoverageEngineVendor
-    val projectType: ProjectType
-
     fun subproject(name: String, checker: RunResult.() -> Unit)
 
     fun output(checker: String.() -> Unit)
@@ -135,15 +132,26 @@ internal interface RunResult {
     fun xml(filename: String, checker: XmlReport.() -> Unit)
 
     fun outcome(taskName: String, checker: TaskOutcome.() -> Unit)
+
+    val defaultBinaryReport: String
 }
 
 
-internal class Counter(val type: String, val missed: Int, val covered: Int) {
-    val isEmpty: Boolean
-        get() = missed == 0 && covered == 0
+internal interface Counter {
+    fun assertAbsent()
+
+    fun assertFullyMissed()
+
+    fun assertCovered()
+
+    fun assertTotal(expectedTotal: Int)
+
+    fun assertCovered(covered: Int, missed: Int)
+
+    fun assertFullyCovered()
 }
 
 internal interface XmlReport {
-    fun classCounter(className: String, type: String = "INSTRUCTION"): Counter?
-    fun methodCounter(className: String, methodName: String, type: String = "INSTRUCTION"): Counter?
+    fun classCounter(className: String, type: String = "INSTRUCTION"): Counter
+    fun methodCounter(className: String, methodName: String, type: String = "INSTRUCTION"): Counter
 }

@@ -27,7 +27,17 @@ internal fun Test.applyToTestTask(
                 projectExtension.instrumentation.excludeTasks.contains(name))
     }
 
-    jvmArgumentProviders.add(CoverageArgumentProvider(this, engineProvider, disabledProvider, extension))
+    val filtersProvider = project.filtersProvider(projectExtension, extension)
+
+    jvmArgumentProviders.add(
+        CoverageArgumentProvider(
+            this,
+            filtersProvider,
+            engineProvider,
+            disabledProvider,
+            extension.reportFile
+        )
+    )
 
     val sourceErrorProvider = project.provider {
         File(extension.reportFile.get().asFile.parentFile, "coverage-error.log")
@@ -43,10 +53,11 @@ private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): Kove
         extensions.create(KoverNames.TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
 
     taskExtension.isDisabled.set(false)
+    val layout = project.layout
     taskExtension.reportFile.set(project.provider {
         val engine = projectExtension.engine.get()
         val suffix = if (engine.vendor == CoverageEngineVendor.INTELLIJ) ".ic" else ".exec"
-        project.layout.buildDirectory.get().file("kover/$name$suffix")
+        layout.buildDirectory.get().file("kover/$name$suffix")
     })
 
     return taskExtension
@@ -55,9 +66,10 @@ private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): Kove
 
 private class CoverageArgumentProvider(
     private val task: Task,
+    @get:Nested val filtersProvider: Provider<AgentFilters>,
     @get:Nested val engineProvider: Provider<EngineDetails>,
     @get:Input val disabledProvider: Provider<Boolean>,
-    @get:Nested val taskExtension: KoverTaskExtension
+    @get:OutputFile val reportFileProvider: Provider<RegularFile>
 ) : CommandLineArgumentProvider, Named {
     @Internal
     override fun getName(): String {
@@ -69,11 +81,9 @@ private class CoverageArgumentProvider(
             return mutableListOf()
         }
 
-        val reportFile = taskExtension.reportFile.get().asFile
-        val classFilter = KoverClassFilter()
+        val reportFile = reportFileProvider.get().asFile
+        var filters = filtersProvider.get()
 
-        classFilter.includes += taskExtension.includes.get()
-        classFilter.excludes += taskExtension.excludes.get()
         /*
             The instrumentation of android classes often causes errors when using third-party
             frameworks (see https://github.com/Kotlin/kotlinx-kover/issues/89).
@@ -83,10 +93,9 @@ private class CoverageArgumentProvider(
 
             FIXME Remove this code if the IntelliJ Agent stops changing project classes during instrumentation, see https://github.com/Kotlin/kotlinx-kover/issues/196
         */
-        classFilter.excludes += "android.*"
-        classFilter.excludes += "com.android.*"
+        filters = filters.appendExcludedTo("android.*", "com.android.*")
 
-        return EngineManager.buildAgentArgs(engineProvider.get(), task, reportFile, classFilter)
+        return EngineManager.buildAgentArgs(engineProvider.get(), task, reportFile, filters)
     }
 }
 
@@ -124,6 +133,24 @@ private class MoveIntellijErrorLogAction(
         if (origin.exists() && origin.isFile) {
             origin.copyTo(targetFile.get(), true)
             origin.delete()
+        }
+    }
+}
+
+private fun Project.filtersProvider(
+    projectConfig: KoverProjectConfig,
+    taskConfig: KoverTaskExtension
+): Provider<AgentFilters> {
+    return provider {
+        val overrideExcludes = taskConfig.excludes.get()
+        val overrideIncludes = taskConfig.includes.get()
+        val commonClassFilter = projectConfig.filters.classes.orNull
+
+        if (commonClassFilter == null || overrideIncludes.isNotEmpty() || overrideExcludes.isNotEmpty()) {
+            // the rules from the task take precedence over the common filters
+            AgentFilters(overrideIncludes, overrideExcludes)
+        } else {
+            AgentFilters(commonClassFilter.includes.toList(), commonClassFilter.excludes.toList())
         }
     }
 }

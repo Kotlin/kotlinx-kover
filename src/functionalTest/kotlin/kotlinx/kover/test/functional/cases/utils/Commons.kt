@@ -4,22 +4,18 @@
 
 package kotlinx.kover.test.functional.cases.utils
 
-import kotlinx.kover.api.*
-import kotlinx.kover.test.functional.core.*
 import kotlinx.kover.test.functional.core.RunResult
 import org.gradle.testkit.runner.*
 import kotlin.test.*
 
 internal fun RunResult.checkDefaultBinaryReport(mustExist: Boolean = true) {
-    val binary: String = defaultBinaryReport(engine, projectType)
-
     if (mustExist) {
-        file(binary) {
+        file(defaultBinaryReport) {
             assertTrue { exists() }
             assertTrue { length() > 0 }
         }
     } else {
-        file(binary) {
+        file(defaultBinaryReport) {
             assertFalse { exists() }
         }
     }
@@ -58,49 +54,3 @@ internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist
         }
     }
 }
-
-internal fun RunResult.checkIntellijErrors(errorExpected: Boolean = false) {
-    if (engine != CoverageEngineVendor.INTELLIJ) return
-
-    file(errorsDirectory()) {
-        if (this.exists() && !errorExpected) {
-            val errorLogs = this.listFiles()?.map { it.name } ?: emptyList()
-            throw AssertionError("Detected IntelliJ Coverage Engine errors: $errorLogs")
-        }
-    }
-}
-
-internal fun Counter?.assertAbsent() {
-    assertNull(this)
-}
-
-internal fun Counter?.assertFullyMissed() {
-    assertNotNull(this)
-    assertTrue { this.missed > 0 }
-    assertEquals(0, this.covered)
-}
-
-internal fun Counter?.assertCovered() {
-    assertNotNull(this)
-    assertTrue { this.covered > 0 }
-}
-
-
-internal fun Counter?.assertTotal(count: Int) {
-    assertNotNull(this)
-    assertEquals(count, covered + missed)
-}
-
-internal fun Counter?.assertCovered(covered: Int, missed: Int) {
-    assertNotNull(this)
-    assertEquals(covered, this.covered)
-    assertEquals(missed, this.missed)
-}
-
-internal fun Counter?.assertFullyCovered() {
-    assertNotNull(this)
-    assertTrue { this.covered > 0 }
-    assertEquals(0, this.missed)
-}
-
-

@@ -1,6 +1,5 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.assertFullyCovered
 import kotlinx.kover.test.functional.cases.utils.defaultXmlReport
 import kotlinx.kover.test.functional.cases.utils.defaultMergedXmlReport
 import kotlinx.kover.test.functional.core.BaseGradleScriptTest

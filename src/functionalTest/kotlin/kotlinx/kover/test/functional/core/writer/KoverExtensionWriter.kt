@@ -11,13 +11,21 @@ import kotlinx.kover.test.functional.core.TestKoverProjectConfigState
 import java.io.*
 
 internal fun PrintWriter.printKover(kover: TestKoverProjectConfigState?, slice: ProjectSlice, indents: Int) {
-    if (kover == null) return
+    if (kover == null) {
+        if (slice.engine != null) {
+            indented(indents, "kover {")
+            printEngine(null, slice, indents + 1)
+            indented(indents, "}")
+        }
+        return
+    }
 
     indented(indents, "kover {")
     printDisabled(kover.isDisabled, slice, indents + 1)
     printEngine(kover.engine, slice, indents + 1)
     printInstrumentation(kover.instrumentation, slice, indents + 1)
     printFilters(kover.filters, slice, indents + 1)
+    printXmlReport(kover.xml, slice, indents + 1)
     printVerify(kover.verify, slice, indents + 1)
     indented(indents, "}")
 }
@@ -75,6 +83,24 @@ private fun PrintWriter.printFilters(state: TestKoverProjectFiltersState, slice:
         indented(indents + 1, "}")
     }
 
+    indented(indents, "}")
+}
+
+private fun PrintWriter.printXmlReport(state: TestKoverProjectXmlConfigState, slice: ProjectSlice, indents: Int) {
+    val overrideFilters = state.overrideFilters
+    if (state.onCheck == null && state.reportFile == null && overrideFilters == null) return
+
+    indented(indents, "xmlReport {")
+    if (overrideFilters != null) {
+        indented(indents + 1, "overrideFilters {")
+        val classFilter = overrideFilters.classes
+        if (classFilter != null) {
+            indented(indents + 2, "classes {")
+            printClassFilter(classFilter, slice, indents + 3)
+            indented(indents + 2, "}")
+        }
+        indented(indents + 1, "}")
+    }
     indented(indents, "}")
 }
 
