@@ -21,13 +21,13 @@ internal object EngineManager {
         details: EngineDetails,
         task: Task,
         reportFile: File,
-        classFilter: KoverClassFilter
+        filters: AgentFilters
     ): MutableList<String> {
         return if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
-            task.buildIntellijAgentJvmArgs(details.jarFile, reportFile, classFilter)
+            task.buildIntellijAgentJvmArgs(details.jarFile, reportFile, filters)
         } else {
             reportFile.parentFile.mkdirs()
-            task.buildJacocoAgentJvmArgs(details.jarFile, reportFile, classFilter)
+            task.buildJacocoAgentJvmArgs(details.jarFile, reportFile, filters)
         }
     }
 

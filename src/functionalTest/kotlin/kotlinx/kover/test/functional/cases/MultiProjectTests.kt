@@ -71,36 +71,6 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
             }
         }
     }
-//
-//    @Test
-//    fun testLinkedProjectsReports() {
-//        builder("Testing the generation of project reports with running all tests for all projects")
-//            .types(ProjectType.KOTLIN_JVM, ProjectType.KOTLIN_MULTIPLATFORM)
-//            .engines(CoverageEngineVendor.INTELLIJ, CoverageEngineVendor.JACOCO)
-//            .configKover { runAllTestsForProjectTask = true }
-//            .sources("multiproject-user")
-//            .subproject(subprojectName) {
-//                sources("multiproject-common")
-//            }
-//            .build()
-//            .run("koverReport") {
-//                xml(defaultXmlReport()) {
-//                    classCounter("org.jetbrains.CommonClass").assertAbsent()
-//                    classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
-//                    classCounter("org.jetbrains.UserClass").assertFullyCovered()
-//                }
-//
-//                subproject(subprojectName) {
-//                    xml(defaultXmlReport()) {
-//                        classCounter("org.jetbrains.UserClass").assertAbsent()
-//
-//                        // common class fully covered because calls from the root project are counted too
-//                        classCounter("org.jetbrains.CommonClass").assertFullyCovered()
-//                        classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()
-//                    }
-//                }
-//            }
-//    }
 
     @Test
     fun testDisabledKover() {

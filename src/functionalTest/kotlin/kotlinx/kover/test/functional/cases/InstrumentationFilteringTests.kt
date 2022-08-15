@@ -23,7 +23,6 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
                 classCounter("org.jetbrains.SecondClass").assertCovered()
             }
         }
-
     }
 
     @Test
@@ -34,6 +33,65 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             testTasks {
                 includes("org.jetbrains.*Cla?s")
                 excludes("org.jetbrains.*Exa?ple*")
+            }
+        }
+        val runner = build.prepare()
+        runner.run("build", "koverXmlReport") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
+                classCounter("org.jetbrains.Unused").assertFullyMissed()
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+    }
+    @Test
+    fun testExcludeByKoverExtension() {
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
+        build.addKoverRootProject {
+            sourcesFrom("simple")
+            kover {
+                filters {
+                    classes {
+                        excludes += "org.jetbrains.*Exa?ple*"
+                    }
+                }
+                xmlReport {
+                    overrideFilters {
+                        classes {
+                            // override class filter (discard all rules) to in order for all classes to be included in the report
+                        }
+                    }
+                }
+            }
+        }
+        val runner = build.prepare()
+        runner.run("build", "koverXmlReport") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+    }
+
+    @Test
+    fun testExcludeIncludeByKoverExtension() {
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
+        build.addKoverRootProject {
+            sourcesFrom("simple")
+            kover {
+                filters {
+                    classes {
+                        includes += "org.jetbrains.*Cla?s"
+                        excludes += "org.jetbrains.*Exa?ple*"
+                    }
+                }
+                xmlReport {
+                    overrideFilters {
+                        classes {
+                            // override class filter (discard all rules) to in order for all classes to be included in the report
+                        }
+                    }
+                }
             }
         }
         val runner = build.prepare()
