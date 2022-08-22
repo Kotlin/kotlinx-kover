@@ -124,26 +124,26 @@ Rule 'missed packages' violated:
   lines missed count for package 'org.jetbrains.kover.test.functional.verification' is 23, but expected maximum is 1
   lines missed count for package 'org.jetbrains.kover.test.functional.verification.subpackage' is 24, but expected maximum is 1
 """)
-                assertJaCoCoResult("""Rule violated for bundle :: lines covered ratio is 0.46, but expected minimum is 0.58
-Rule violated for bundle :: lines covered count is 41, but expected maximum is 3
-Rule violated for package org.jetbrains.kover.test.functional.verification: instructions covered ratio is 0, but expected minimum is 1
-Rule violated for package org.jetbrains.kover.test.functional.verification: lines missed count is 23, but expected maximum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond: branches covered count is 1, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.FullyCovered: instructions missed ratio is 0, but expected minimum is 1
+                assertJaCoCoResult("""Rule violated for bundle :: lines covered count is 41, but expected maximum is 3
+Rule violated for bundle :: lines covered ratio is 0.46, but expected minimum is 0.58
 Rule violated for class org.jetbrains.kover.test.functional.verification.FullyCovered: branches covered count is 0, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst: instructions missed ratio is 0, but expected minimum is 1
+Rule violated for class org.jetbrains.kover.test.functional.verification.FullyCovered: instructions missed ratio is 0, but expected minimum is 1
 Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst: branches covered count is 2, but expected minimum is 1000
+Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst: instructions missed ratio is 0, but expected minimum is 1
+Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond: branches covered count is 1, but expected minimum is 1000
+Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond: instructions missed ratio is 0, but expected minimum is 1
 Rule violated for class org.jetbrains.kover.test.functional.verification.Uncovered: branches covered count is 0, but expected minimum is 1000
+Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered: branches covered count is 0, but expected minimum is 1000
+Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered: instructions missed ratio is 0, but expected minimum is 1
+Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst: branches covered count is 0, but expected minimum is 1000
+Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst: instructions missed ratio is 0, but expected minimum is 1
+Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond: branches covered count is 1, but expected minimum is 1000
+Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond: instructions missed ratio is 0, but expected minimum is 1
+Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubUncovered: branches covered count is 0, but expected minimum is 1000
 Rule violated for package org.jetbrains.kover.test.functional.verification.subpackage: instructions covered ratio is 0, but expected minimum is 1
 Rule violated for package org.jetbrains.kover.test.functional.verification.subpackage: lines missed count is 24, but expected maximum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst: branches covered count is 0, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond: branches covered count is 1, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubUncovered: branches covered count is 0, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered: branches covered count is 0, but expected minimum is 1000""")
+Rule violated for package org.jetbrains.kover.test.functional.verification: instructions covered ratio is 0, but expected minimum is 1
+Rule violated for package org.jetbrains.kover.test.functional.verification: lines missed count is 23, but expected maximum is 1""")
             }
         }
     }

@@ -92,7 +92,7 @@ internal fun Task.jacocoVerification(
         }
     }
 
-    return ant.violations
+    return ant.violations?.orderViolations()
 }
 
 private fun Task.callJacocoAntReportTask(
@@ -144,6 +144,12 @@ private val GroovyObject.violations: String?
         ).invoke(project, *arrayOfNulls(0))
         return properties["jacocoErrors"] as String?
     }
+
+private fun String.orderViolations(): String {
+    val treeSet = TreeSet<String>()
+    this.lineSequence().forEach { treeSet += it }
+    return treeSet.joinToString("\n")
+}
 
 @Suppress("UNUSED_PARAMETER")
 private inline fun GroovyObject.invokeWithBody(
