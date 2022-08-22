@@ -20,7 +20,7 @@ internal class ReportVerificationBound(
     val id: Int,
     val minValue: BigDecimal?,
     val maxValue: BigDecimal?,
-    val counter: CounterType,
+    val metric: CounterType,
     val valueType: VerificationValueType
 )
 

@@ -15,6 +15,7 @@ import org.gradle.process.ExecOperations
 import java.io.*
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.TreeMap
 
 @Suppress("UNUSED_PARAMETER")
 internal fun Task.intellijVerification(
@@ -185,7 +186,7 @@ private fun ReportVerificationRule.targetToReporter(): String {
 }
 
 private fun ReportVerificationBound.counterToReporter(): String {
-    return when (counter) {
+    return when (metric) {
         CounterType.LINE -> "LINE"
         CounterType.INSTRUCTION -> "INSTRUCTION"
         CounterType.BRANCH -> "BRANCH"
@@ -211,20 +212,26 @@ private fun ReportVerificationBound.valueToReporter(value: BigDecimal): BigDecim
 
 @Suppress("UNCHECKED_CAST")
 private fun processViolationsModel(violations: Map<String, Any>): ViolationsResult {
-    val rules = mutableMapOf<Int, RuleViolation>()
+    val rules = TreeMap<Int, RuleViolation>()
     try {
         violations.forEach { (ruleId, boundViolations) ->
-            val bounds = mutableMapOf<Int, BoundViolation>()
+            val bounds = TreeMap<Int, BoundViolation>()
             (boundViolations as Map<String, Any>).forEach { (id, v) ->
                 val minViolations = (v as Map<String, Map<String, Any>>)["min"]
                 val maxViolations = v["max"]
 
-                val min =
-                    minViolations?.mapValues { it.value.let { v -> if (v is String) v.toBigDecimal() else v as BigDecimal } }
-                        ?: emptyMap()
-                val max =
-                    maxViolations?.mapValues { it.value.let { v -> if (v is String) v.toBigDecimal() else v as BigDecimal } }
-                        ?: emptyMap()
+                val min = minViolations
+                    ?.mapValues { it.value.let { v -> if (v is String) v.toBigDecimal() else v as BigDecimal } }
+                    //make stable order for entity names
+                    ?.let { TreeMap(it) }
+                    ?: emptyMap()
+
+
+                val max = maxViolations
+                    ?.mapValues { it.value.let { v -> if (v is String) v.toBigDecimal() else v as BigDecimal } }
+                    //make stable order for entity names
+                    ?.let { TreeMap(it) }
+                    ?: emptyMap()
 
                 bounds[id.toInt()] = BoundViolation(min, max)
             }
@@ -244,53 +251,64 @@ private fun raiseViolations(result: ViolationsResult, rules: Iterable<ReportVeri
     result.ruleViolations.forEach { (ruleId, rv) ->
         val rule = rulesMap[ruleId]
             ?: throw Exception("Error occurred while parsing verification error: unmapped rule with ID $ruleId")
-        val ruleName = if (rule.name != null) " '${rule.name}' " else " "
+        val ruleName = if (rule.name != null) " '${rule.name}'" else ""
+
+        messageBuilder.appendLine("Rule${ruleName} violated:")
 
         val boundsMap = rule.bounds.associateBy { b -> b.id }
-
-        val boundMessages = rv.boundViolations.mapNotNull { (boundId, v) ->
+        rv.boundViolations.forEach { (boundId, v) ->
             val bound = boundsMap[boundId]
                 ?: throw Exception("Error occurred while parsing verification error: unmapped bound with ID $boundId")
-            val minViolation = v.min["all"]
-            val maxViolation = v.max["all"]
 
-            if (minViolation != null) {
-                "${bound.readableValueType} is ${minViolation.fromRateIfNeeded(bound)}, but expected minimum is ${bound.minValue}"
-            } else if (maxViolation != null) {
-                "${bound.readableValueType} is ${maxViolation.fromRateIfNeeded(bound)}, but expected maximum is ${bound.maxValue}"
-            } else {
-                null
+            v.min.forEach { (name, value) ->
+                messageBuilder.appendLine(bound.formatViolation(value, rule.target, name, false))
             }
-        }
-
-        if (boundMessages.size > 1) {
-            messageBuilder.append(
-                "Rule${ruleName}violated:" + boundMessages.joinToString("\n  ", "\n  ")
-            )
-        } else {
-            messageBuilder.append("Rule${ruleName}violated: ${boundMessages[0]}")
+            v.max.forEach { (name, value) ->
+                messageBuilder.appendLine(bound.formatViolation(value, rule.target, name, true))
+            }
         }
     }
 
     return messageBuilder.toString()
 }
 
-private fun BigDecimal.fromRateIfNeeded(bound: ReportVerificationBound): BigDecimal {
-    return if (bound.valueType == COVERED_PERCENTAGE || bound.valueType == MISSED_PERCENTAGE) {
-        this.multiply(ONE_HUNDRED)
+private fun ReportVerificationBound.formatViolation(
+    value: BigDecimal,
+    entityType: VerificationTarget,
+    entityName: String,
+    isMax: Boolean
+): String {
+    val directionText = if (isMax) "maximum" else "minimum"
+
+    val metricText = when (metric) {
+        CounterType.LINE -> "lines"
+        CounterType.INSTRUCTION -> "instructions"
+        CounterType.BRANCH -> "branches"
+    }
+
+    val valueTypeText = when (valueType) {
+        COVERED_COUNT -> "covered count"
+        MISSED_COUNT -> "missed count"
+        COVERED_PERCENTAGE -> "covered percentage"
+        MISSED_PERCENTAGE -> "missed percentage"
+    }
+
+    val entityText = when (entityType) {
+        VerificationTarget.ALL -> ""
+        VerificationTarget.CLASS -> " for class '$entityName'"
+        VerificationTarget.PACKAGE -> " for package '$entityName'"
+    }
+
+    val actual = if (valueType == COVERED_PERCENTAGE || valueType == MISSED_PERCENTAGE) {
+        value.multiply(ONE_HUNDRED)
     } else {
-        this
+        value
     }
+
+    val expected = if (isMax) maxValue else minValue
+
+    return "  $metricText $valueTypeText$entityText is $actual, but expected $directionText is $expected"
 }
-
-private val ReportVerificationBound.readableValueType: String
-    get() = when (valueType) {
-        COVERED_COUNT -> "covered lines count"
-        MISSED_COUNT -> "missed lines count"
-        COVERED_PERCENTAGE -> "covered lines percentage"
-        MISSED_PERCENTAGE -> "missed lines percentage"
-    }
-
 
 private data class ViolationsResult(val ruleViolations: Map<Int, RuleViolation>)
 

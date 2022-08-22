@@ -99,10 +99,12 @@ private class RunResultImpl(
 
     override val defaultBinaryReport: String
         get() {
-            // IntelliJ is a default Engine
-            val extension = if (slice?.engine == CoverageEngineVendor.JACOCO) "exec" else "ic"
+            val extension = if (engineVendor == CoverageEngineVendor.JACOCO) "exec" else "ic"
             return binaryReportsDirectory() + "/" + defaultTestTask(slice?.type ?: ProjectType.KOTLIN_JVM) + "." + extension
         }
+
+    // IntelliJ is a default Engine
+    val engineVendor: CoverageEngineVendor = slice?.engine ?: CoverageEngineVendor.INTELLIJ
 
     private val buildScriptFile: File = buildFile()
     private val buildScript: String by lazy { buildScriptFile.readText() }
@@ -132,10 +134,16 @@ private class RunResultImpl(
         File(buildDir, name).checker()
     }
 
-    override fun xml(filename: String, checker: XmlReport.() -> Unit) {
+    override fun xml(filename: String, checker: XmlReportChecker.() -> Unit) {
         val xmlFile = File(buildDir, filename)
         if (!xmlFile.exists()) throw IllegalStateException("XML file '$filename' not found")
-        XmlReportImpl(this, xmlFile).checker()
+        XmlReportCheckerImpl(this, xmlFile).checker()
+    }
+
+    override fun verification(checker: VerifyReportChecker.() -> Unit) {
+        val verificationResultFile = File(buildDir, "reports/kover/verification/errors.txt")
+        if (!verificationResultFile.exists()) throw IllegalStateException("Verification result file '$verificationResultFile' not found")
+        VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
     }
 
     override fun outcome(taskName: String, checker: TaskOutcome.() -> Unit) {
@@ -186,8 +194,20 @@ private class CounterImpl(val context: RunResultImpl, val symbol: String, val ty
     }
 }
 
+private class VerifyReportCheckerImpl(val context: RunResultImpl, val content: String): VerifyReportChecker {
+    override fun assertIntelliJResult(expected: String) {
+        if (context.engineVendor != CoverageEngineVendor.INTELLIJ) return
+        assertEquals(expected, content, "Unexpected verification result for IntelliJ Engine")
+    }
 
-private class XmlReportImpl(val context: RunResultImpl, file: File) : XmlReport {
+    override fun assertJaCoCoResult(expected: String) {
+        if (context.engineVendor != CoverageEngineVendor.JACOCO) return
+        assertEquals(expected, content, "Unexpected verification result for JaCoCo Engine")
+    }
+
+}
+
+private class XmlReportCheckerImpl(val context: RunResultImpl, file: File) : XmlReportChecker {
     private val document = DocumentBuilderFactory.newInstance()
         // This option disables checking the dtd file for JaCoCo XML file
         .also { it.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false) }
