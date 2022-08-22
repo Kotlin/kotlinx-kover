@@ -124,6 +124,7 @@ Rule 'missed packages' violated:
   lines missed count for package 'org.jetbrains.kover.test.functional.verification' is 23, but expected maximum is 1
   lines missed count for package 'org.jetbrains.kover.test.functional.verification.subpackage' is 24, but expected maximum is 1
 """)
+
                 assertJaCoCoResult("""Rule violated for bundle :: lines covered count is 41, but expected maximum is 3
 Rule violated for bundle :: lines covered ratio is 0.46, but expected minimum is 0.58
 Rule violated for class org.jetbrains.kover.test.functional.verification.FullyCovered: branches covered count is 0, but expected minimum is 1000
