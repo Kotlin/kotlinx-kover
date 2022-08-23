@@ -43,9 +43,20 @@ internal fun Task.jacocoVerification(
     callJacocoAntReportTask(projectFiles, classpath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
             rules.forEach {
-                invokeWithBody("rule", mapOf("element" to "BUNDLE")) {
+                val entityType = when(it.target) {
+                    VerificationTarget.ALL -> "BUNDLE"
+                    VerificationTarget.CLASS -> "CLASS"
+                    VerificationTarget.PACKAGE -> "PACKAGE"
+                }
+                invokeWithBody("rule", mapOf("element" to entityType)) {
                     it.bounds.forEach { b ->
-                        val limitArgs = mutableMapOf("counter" to "LINE")
+                        val limitArgs = mutableMapOf<String, String>()
+                        limitArgs["counter"] = when(b.metric) {
+                            CounterType.LINE -> "LINE"
+                            CounterType.INSTRUCTION -> "INSTRUCTION"
+                            CounterType.BRANCH -> "BRANCH"
+                        }
+
                         var min: BigDecimal? = b.minValue
                         var max: BigDecimal? = b.maxValue
                         when (b.valueType) {
@@ -81,7 +92,7 @@ internal fun Task.jacocoVerification(
         }
     }
 
-    return ant.violations
+    return ant.violations?.orderViolations()
 }
 
 private fun Task.callJacocoAntReportTask(
@@ -133,6 +144,12 @@ private val GroovyObject.violations: String?
         ).invoke(project, *arrayOfNulls(0))
         return properties["jacocoErrors"] as String?
     }
+
+private fun String.orderViolations(): String {
+    val treeSet = TreeSet<String>()
+    this.lineSequence().forEach { treeSet += it }
+    return treeSet.joinToString("\n")
+}
 
 @Suppress("UNUSED_PARAMETER")
 private inline fun GroovyObject.invokeWithBody(

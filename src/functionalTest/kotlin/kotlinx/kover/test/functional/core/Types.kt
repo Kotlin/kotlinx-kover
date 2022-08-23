@@ -129,7 +129,9 @@ internal interface RunResult {
 
     fun file(name: String, checker: File.() -> Unit)
 
-    fun xml(filename: String, checker: XmlReport.() -> Unit)
+    fun xml(filename: String, checker: XmlReportChecker.() -> Unit)
+
+    fun verification(checker: VerifyReportChecker.() -> Unit)
 
     fun outcome(taskName: String, checker: TaskOutcome.() -> Unit)
 
@@ -151,7 +153,12 @@ internal interface Counter {
     fun assertFullyCovered()
 }
 
-internal interface XmlReport {
+internal interface VerifyReportChecker {
+    fun assertIntelliJResult(expected: String)
+    fun assertJaCoCoResult(expected: String)
+}
+
+internal interface XmlReportChecker {
     fun classCounter(className: String, type: String = "INSTRUCTION"): Counter
     fun methodCounter(className: String, methodName: String, type: String = "INSTRUCTION"): Counter
 }
