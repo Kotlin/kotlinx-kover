@@ -98,6 +98,8 @@ internal interface TestKoverMergedConfig {
     public fun enable()
 
     public fun filters(config: TestKoverMergedFilters.() -> Unit)
+
+    public fun verify(config: TestKoverVerifyConfig.() -> Unit)
 }
 
 public interface TestKoverMergedFilters {
