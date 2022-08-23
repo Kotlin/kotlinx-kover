@@ -52,7 +52,7 @@ internal class KotlinMultiplatformPluginAdapter : LookupAdapter() {
     @Suppress("UNCHECKED_CAST")
     fun findByReflection(project: Project): Dirs {
         val extension =
-            project.extensions.findByName("kotlin")?.let { BeanDynamicObject(it) } ?: return Dirs()
+            project.extensions.findByName("kotlin-multiplatform")?.let { BeanDynamicObject(it) } ?: return Dirs()
 
         val targets = (extension.getProperty("targets") as NamedDomainObjectCollection<GroovyObject>).filter {
             val platformTypeName = (it.getProperty("platformType") as Named).name
