@@ -2,14 +2,14 @@
 ===================
 Note that this is a full changelog relative to `0.6.0` version. Changelog relative to `0.6.0-Beta` can be found at the end of the changelog.
 
-In this version, the plugin API has been fully redesigned. The new API allows you to configure Kover in a more flexible manner, there is no need to configure Kover or test tasks separately.
+In this version, the plugin API has been completely redesigned. The new API allows you to configure Kover in a more flexible manner, there is no need to configure Kover or test tasks separately.
 
-Refer to [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md) in order to migrate.
+Please refer to [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md) in order to migrate from previous versions.
 
 ### Features
 * Implemented a new plugin API (#19)
 * Added support of instruction and branch counters for verification tasks (#128)
-* Ordered report tasks before verification (#209)
+* Ordered report tasks before verification tasks (#209)
 * Minimal and default agent versions upgraded to 1.0.680
 
 ### Bugfixes
