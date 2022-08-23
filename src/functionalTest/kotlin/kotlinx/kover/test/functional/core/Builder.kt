@@ -211,12 +211,18 @@ internal class RepositoriesState : Repositories {
 internal class TestKoverMergedConfigState : TestKoverMergedConfig {
     var enabled: Boolean = false
     val filters: TestKoverMergedFiltersState = TestKoverMergedFiltersState()
+    val verify: TestKoverVerifyConfigState = TestKoverVerifyConfigState()
+
     override fun enable() {
         enabled = true
     }
 
     override fun filters(config: TestKoverMergedFilters.() -> Unit) {
         filters.also(config)
+    }
+
+    override fun verify(config: TestKoverVerifyConfig.() -> Unit) {
+        verify.also(config)
     }
 }
 

@@ -92,6 +92,8 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
         // TODO `onlyIf` block moved out from config lambda because of bug in Kotlin compiler - it implicitly adds closure on `Project` inside onlyIf's lambda
         verifyTask.onlyIf { extension.verify.hasActiveRules() }
 
+        // ordering of task calls, so that if a verification error occurs, reports are generated and the values can be viewed in them
+        verifyTask.shouldRunAfter(xmlTask, htmlTask)
 
         container.tasks.create(MERGED_REPORT_TASK_NAME) {
             it.group = VERIFICATION_GROUP

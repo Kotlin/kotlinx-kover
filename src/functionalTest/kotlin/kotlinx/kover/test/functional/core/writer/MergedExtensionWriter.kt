@@ -14,6 +14,7 @@ internal fun PrintWriter.printKoverMerged(merged: TestKoverMergedConfigState?, s
     indented(indents, "koverMerged {")
     printEnabled(merged.enabled, indents + 1)
     printFilters(merged.filters, slice, indents + 1)
+    printVerify(merged.verify, slice, indents + 1)
     indented(indents, "}")
 }
 
