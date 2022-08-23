@@ -1,3 +1,42 @@
+0.6.0 / 2022-08-23
+===================
+Note that this is a full changelog relative to `0.6.0` version. Changelog relative to `0.6.0-Beta` can be found at the end of the changelog.
+
+In this version, the plugin API has been completely redesigned. The new API allows you to configure Kover in a more flexible manner, there is no need to configure Kover or test tasks separately.
+
+Please refer to [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md) in order to migrate from previous versions.
+
+### Features
+* Implemented a new plugin API (#19)
+* Added support of instruction and branch counters for verification tasks (#128)
+* Ordered report tasks before verification tasks (#209)
+* Minimal and default agent versions upgraded to 1.0.680
+
+### Bugfixes
+* Verification task is no longer executed if there are no rules (#168)
+* Added instrumentation filtering by common filters (#201)
+* Fixed instrumentation counter in IntelliJ verifier (#210, #211, #212)
+
+### Internal features
+* Kotlin version upgraded to 1.7.10
+* instrumentation config added to the test framework
+* added test on instrumentation config
+
+#### Documentation
+* Updated docs for onCheck properties (#213)
+
+### Changelog relative to version `0.6.0-Beta`
+#### Features
+* Ordered report tasks before verification (#209)
+* Minimal and default agent versions upgraded to 1.0.680
+
+#### Bugfixes
+* Added instrumentation filtering by common filters (#201)
+* Fixed instrumentation counter in IntelliJ verifier (#210, #211, #212)
+
+#### Documentation
+* Updated docs for onCheck properties (#213)
+
 0.6.0-Beta / 2022-08-02
 ===================
 In this version, the plugin API has been fully redesigned. The new API allows you to configure Kover in a more flexible manner, there is no need to configure Kover or test tasks separately.

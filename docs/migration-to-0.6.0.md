@@ -1,4 +1,4 @@
-# Kover migration guide from 0.5.x to 0.6.0-Beta
+# Kover migration guide from 0.5.x to 0.6.0
 
 The new API allows you to configure Kover in a more flexible manner, while being more concise than the previous API.
 From now on, there is no need to configure Kover or test tasks separately.
