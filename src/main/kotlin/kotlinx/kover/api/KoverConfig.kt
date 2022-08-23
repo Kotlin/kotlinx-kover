@@ -190,7 +190,7 @@ public open class KoverProjectXmlConfig @Inject constructor(objects: ObjectFacto
     internal val filters: KoverProjectFilters = objects.newInstance(KoverProjectFilters::class.java, objects)
 
     /**
-     * Specifies whether the XML report generation task should be executed before the `check` task.
+     * Specifies whether the XML report generation task should be executed before the `check` task (if it exists) of the current project.
      *
      * `false` by default.
      */
@@ -216,7 +216,7 @@ public open class KoverProjectHtmlConfig @Inject constructor(private val objects
     internal val taskFilters: KoverProjectFilters = objects.newInstance(KoverProjectFilters::class.java, objects)
 
     /**
-     * Specifies whether the HTML report generation task should be executed before the `check` task.
+     * Specifies whether the HTML report generation task should be executed before the `check` task (if it exists) of the current project.
      *
      * `false` by default.
      */
@@ -311,7 +311,7 @@ public open class KoverMergedXmlConfig @Inject constructor(private val objects: 
     internal val classFilter: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
 
     /**
-     * Specifies whether the merged XML report generation task should be executed before the `check` task.
+     * Specifies whether the merged XML report generation task should be executed before the `check` task (if it exists) of the current project.
      */
     public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
 
@@ -334,7 +334,7 @@ public open class KoverMergedHtmlConfig @Inject constructor(private val objects:
     internal val classFilter: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
 
     /**
-     * Specifies whether the merged HTML report generation task should be executed before the `check` task.
+     * Specifies whether the merged HTML report generation task should be executed before the `check` task (if it exists) of the current project.
      */
     public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
 
@@ -368,7 +368,7 @@ public open class KoverVerifyConfig @Inject constructor(private val objects: Obj
     internal val rules: ListProperty<VerificationRule> = objects.listProperty(VerificationRule::class.java)
 
     /**
-     * Specifies whether the verification task should be executed before the `check` task.
+     * Specifies whether the verification task should be executed before the `check` task (if it exists) of the current project.
      *
      * By default, `true` for project reports and `false` for merged.
      */
