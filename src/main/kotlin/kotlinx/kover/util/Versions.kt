@@ -19,13 +19,21 @@ internal class SemVer(val major: Int, val minor: Int, val patch: Int): Comparabl
     }
 
     override fun compareTo(other: SemVer): Int {
-        val majorCompare = major.compareTo(other.major)
-        if (majorCompare != 0) return majorCompare
-
-        val minorCompare = minor.compareTo(other.minor)
-        if (minorCompare != 0) return minorCompare
-
+        major.compareTo(other.major).takeIf { it != 0 }?.let { return it }
+        minor.compareTo(other.minor).takeIf { it != 0 }?.let { return it }
         return patch.compareTo(other.patch)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        other ?: return false
+        return other is SemVer && this.compareTo(other) == 0
+    }
+
+    override fun hashCode(): Int {
+        var result = major.hashCode()
+        result = 31 * result + minor.hashCode()
+        result = 31 * result + patch.hashCode()
+        return result
     }
 }
 

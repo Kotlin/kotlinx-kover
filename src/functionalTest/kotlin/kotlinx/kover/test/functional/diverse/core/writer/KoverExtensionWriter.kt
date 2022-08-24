@@ -63,7 +63,7 @@ private fun PrintWriter.printDisabled(isDisabled: Boolean?, slice: ProjectSlice,
     }
 }
 
-private fun PrintWriter.printFilters(state: kotlinx.kover.test.functional.diverse.core.TestKoverProjectFiltersState, slice: ProjectSlice, indents: Int) {
+private fun PrintWriter.printFilters(state: TestKoverProjectFiltersState, slice: ProjectSlice, indents: Int) {
     val classes = state.classes
     val sourceSets = state.sourceSets
     if (sourceSets == null && classes == null) return
@@ -87,7 +87,7 @@ private fun PrintWriter.printFilters(state: kotlinx.kover.test.functional.divers
     indented(indents, "}")
 }
 
-private fun PrintWriter.printXmlReport(state: kotlinx.kover.test.functional.diverse.core.TestKoverProjectXmlConfigState, slice: ProjectSlice, indents: Int) {
+private fun PrintWriter.printXmlReport(state: TestKoverProjectXmlConfigState, slice: ProjectSlice, indents: Int) {
     val overrideFilters = state.overrideFilters
     if (state.onCheck == null && state.reportFile == null && overrideFilters == null) return
 

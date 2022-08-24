@@ -8,11 +8,7 @@ internal class InstrumentationFilteringTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testExclude() {
-        val build = diverseBuild(
-            kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES,
-            kotlinx.kover.test.functional.diverse.core.ALL_ENGINES,
-            kotlinx.kover.test.functional.diverse.core.ALL_TYPES
-        )
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
         build.addKoverRootProject {
             sourcesFrom("simple")
             testTasks {
@@ -30,11 +26,7 @@ internal class InstrumentationFilteringTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testExcludeInclude() {
-        val build = diverseBuild(
-            kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES,
-            kotlinx.kover.test.functional.diverse.core.ALL_ENGINES,
-            kotlinx.kover.test.functional.diverse.core.ALL_TYPES
-        )
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
         build.addKoverRootProject {
             sourcesFrom("simple")
             testTasks {
@@ -53,11 +45,7 @@ internal class InstrumentationFilteringTests : AbstractDiverseGradleTest() {
     }
     @Test
     fun testExcludeByKoverExtension() {
-        val build = diverseBuild(
-            kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES,
-            kotlinx.kover.test.functional.diverse.core.ALL_ENGINES,
-            kotlinx.kover.test.functional.diverse.core.ALL_TYPES
-        )
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
         build.addKoverRootProject {
             sourcesFrom("simple")
             kover {
@@ -86,11 +74,7 @@ internal class InstrumentationFilteringTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testExcludeIncludeByKoverExtension() {
-        val build = diverseBuild(
-            kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES,
-            kotlinx.kover.test.functional.diverse.core.ALL_ENGINES,
-            kotlinx.kover.test.functional.diverse.core.ALL_TYPES
-        )
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
         build.addKoverRootProject {
             sourcesFrom("simple")
             kover {
@@ -121,9 +105,7 @@ internal class InstrumentationFilteringTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testDisableInstrumentationOfTask() {
-        val build = diverseBuild(
-            kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES,
-            kotlinx.kover.test.functional.diverse.core.ALL_ENGINES, listOf(ProjectType.KOTLIN_JVM))
+        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, listOf(ProjectType.KOTLIN_JVM))
         build.addKoverRootProject {
             sourcesFrom("simple")
             kover {

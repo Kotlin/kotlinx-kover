@@ -8,7 +8,7 @@ internal class ReportsFilteringTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testExclude() {
-        val build = diverseBuild(languages = kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES)
+        val build = diverseBuild(languages = ALL_LANGUAGES)
         build.addKoverRootProject {
             sourcesFrom("simple")
 
@@ -31,7 +31,7 @@ internal class ReportsFilteringTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testExcludeInclude() {
-        val build = diverseBuild(languages = kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES)
+        val build = diverseBuild(languages = ALL_LANGUAGES)
         build.addKoverRootProject {
             sourcesFrom("simple")
 

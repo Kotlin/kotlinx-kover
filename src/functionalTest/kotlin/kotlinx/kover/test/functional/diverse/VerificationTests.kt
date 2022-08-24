@@ -12,7 +12,7 @@ import kotlin.test.*
 internal class VerificationTests : AbstractDiverseGradleTest() {
     @Test
     fun testVerified() {
-        val build = diverseBuild(languages = kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES, engines = kotlinx.kover.test.functional.diverse.core.ALL_ENGINES)
+        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
         build.addKoverRootProject {
             sourcesFrom("simple")
 
@@ -39,7 +39,7 @@ internal class VerificationTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testVerificationError() {
-        val build = diverseBuild(languages = kotlinx.kover.test.functional.diverse.core.ALL_LANGUAGES, engines = kotlinx.kover.test.functional.diverse.core.ALL_ENGINES)
+        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
         build.addKoverRootProject {
             sourcesFrom("verification")
 

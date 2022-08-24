@@ -13,7 +13,7 @@ internal class MultiProjectTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testMergedReports() {
-        val build = diverseBuild(engines = kotlinx.kover.test.functional.diverse.core.ALL_ENGINES, types = kotlinx.kover.test.functional.diverse.core.ALL_TYPES)
+        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
         val subPath = build.addKoverSubproject(subprojectName) {
             sourcesFrom("multiproject-common")
         }
@@ -40,7 +40,7 @@ internal class MultiProjectTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testIsolatedProjectsReports() {
-        val build = diverseBuild(engines = kotlinx.kover.test.functional.diverse.core.ALL_ENGINES, types = kotlinx.kover.test.functional.diverse.core.ALL_TYPES)
+        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
         val subPath = build.addKoverSubproject(subprojectName) {
             sourcesFrom("multiproject-common")
         }
@@ -73,7 +73,7 @@ internal class MultiProjectTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testDisabledKover() {
-        val build = diverseBuild(engines = kotlinx.kover.test.functional.diverse.core.ALL_ENGINES, types = kotlinx.kover.test.functional.diverse.core.ALL_TYPES)
+        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
         val subPath = build.addKoverSubproject(subprojectName) {
             sourcesFrom("multiproject-common")
             kover {
@@ -108,7 +108,7 @@ internal class MultiProjectTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testExcludeProject() {
-        val build = diverseBuild(engines = kotlinx.kover.test.functional.diverse.core.ALL_ENGINES, types = kotlinx.kover.test.functional.diverse.core.ALL_TYPES)
+        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
         val subPath = build.addKoverSubproject(subprojectName) {
             sourcesFrom("multiproject-common")
         }
@@ -150,7 +150,7 @@ internal class MultiProjectTests : AbstractDiverseGradleTest() {
 
     @Test
     fun testExcludeProjectByPath() {
-        val build = diverseBuild(engines = kotlinx.kover.test.functional.diverse.core.ALL_ENGINES, types = kotlinx.kover.test.functional.diverse.core.ALL_TYPES)
+        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
         val subPath = build.addKoverSubproject(subprojectName) {
             sourcesFrom("multiproject-common")
         }
