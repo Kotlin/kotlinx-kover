@@ -1,0 +1,291 @@
+/*
+ * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.kover.test.functional.diverse.core
+
+import kotlinx.kover.api.*
+import kotlinx.kover.test.functional.common.*
+import org.gradle.testkit.runner.*
+import org.w3c.dom.*
+import java.io.*
+import javax.xml.parsers.*
+import kotlin.test.*
+
+
+internal class DiverseGradleRunner(private val projects: Map<ProjectSlice, File>, private val extraArgs: List<String>) :
+    GradleRunner {
+
+    override fun run(vararg args: String, checker: RunResult.() -> Unit): DiverseGradleRunner {
+        val argsList = listOf(*args) + extraArgs
+        projects.forEach { (slice, project) ->
+            try {
+                val gradleResult = project.gradleBuild(argsList)
+                RunResultImpl(slice, project, gradleResult).apply(checker)
+            } catch (e: Throwable) {
+                throw AssertionError("Error occurred in test for project $slice", e)
+            }
+        }
+        return this
+    }
+    override fun runWithError(vararg args: String, errorChecker: RunResult.() -> Unit): DiverseGradleRunner {
+        val argsList = listOf(*args) + extraArgs
+        projects.forEach { (slice, project) ->
+            try {
+                project.gradleBuild(argsList)
+                throw AssertionError("Assertion error expected in test for project $slice")
+            } catch (e: UnexpectedBuildFailure) {
+                RunResultImpl(slice, project, e.buildResult).apply(errorChecker)
+            }
+        }
+        return this
+    }
+}
+
+internal class SingleGradleRunnerImpl(private val projectDir: File) : GradleRunner {
+    override fun run(vararg args: String, checker: RunResult.() -> Unit): SingleGradleRunnerImpl {
+        val buildResult = projectDir.gradleBuild(listOf(*args))
+        RunResultImpl(null, projectDir, buildResult).apply(checker)
+        return this
+    }
+
+    override fun runWithError(vararg args: String, errorChecker: RunResult.() -> Unit): SingleGradleRunnerImpl {
+        try {
+            projectDir.gradleBuild(listOf(*args))
+            throw AssertionError("Assertion error expected in test")
+        } catch (e: UnexpectedBuildFailure) {
+            RunResultImpl(null, projectDir, e.buildResult).apply(errorChecker)
+        }
+        return this
+    }
+}
+
+
+private class RunResultImpl(
+    private val slice: ProjectSlice?,
+    private val dir: File,
+    private val result: BuildResult,
+    private val path: String = ":"
+) : RunResult {
+    val buildDir: File = File(dir, "build")
+
+    override val defaultBinaryReport: String
+        get() {
+            val testTaskName = defaultTestTaskName(slice?.type ?: ProjectType.KOTLIN_JVM)
+            val extension = engineVendor.reportFileExtension
+            return "${binaryReportsDirectory()}/$testTaskName.$extension"
+        }
+
+    // IntelliJ is a default Engine
+    val engineVendor: CoverageEngineVendor = slice?.engine ?: CoverageEngineVendor.INTELLIJ
+
+    private val buildScriptFile: File = buildFile()
+    private val buildScript: String by lazy { buildScriptFile.readText() }
+
+    init {
+        checkIntellijErrors()
+    }
+
+    override fun subproject(name: String, checker: RunResult.() -> Unit) {
+        RunResultImpl(slice, File(dir, name), result, "$path$name:").also(checker)
+    }
+
+    private fun RunResult.checkIntellijErrors() {
+        file(errorsDirectory()) {
+            if (this.exists()) {
+                val errorLogs = this.listFiles()?.map { it.name } ?: return@file
+                throw AssertionError("Detected Coverage Agent errors: $errorLogs")
+            }
+        }
+    }
+
+    override fun output(checker: String.() -> Unit) {
+        result.output.checker()
+    }
+
+    override fun file(name: String, checker: File.() -> Unit) {
+        File(buildDir, name).checker()
+    }
+
+    override fun xml(filename: String, checker: XmlReportChecker.() -> Unit) {
+        val xmlFile = File(buildDir, filename)
+        if (!xmlFile.exists()) throw IllegalStateException("XML file '$filename' not found")
+        XmlReportCheckerImpl(this, xmlFile).checker()
+    }
+
+    override fun verification(checker: VerifyReportChecker.() -> Unit) {
+        val verificationResultFile = File(buildDir, "reports/kover/verification/errors.txt")
+        if (!verificationResultFile.exists()) throw IllegalStateException("Verification result file '$verificationResultFile' not found")
+        VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
+    }
+
+    override fun outcome(taskName: String, checker: TaskOutcome.() -> Unit) {
+        result.task(path + taskName)?.outcome?.checker()
+            ?: throw IllegalArgumentException("Task '$taskName' with path '$path$taskName' not found in build result")
+    }
+
+    private fun buildFile(): File {
+        val file = File(dir, "build.gradle")
+        if (file.exists() && file.isFile) return file
+
+        return File(dir, "build.gradle.kts")
+    }
+}
+private data class CounterValues(val missed: Int, val covered: Int)
+private class CounterImpl(val context: RunResultImpl, val symbol: String, val type: String, val values: CounterValues?):
+    Counter {
+    override fun assertAbsent() {
+        assertNull(values, "Counter '$symbol' with type '$type' isn't absent")
+    }
+
+    override fun assertFullyMissed() {
+        assertNotNull(values, "Counter '$symbol' with type '$type' isn't fully missed because it absent")
+        assertTrue(values.missed > 0, "Counter '$symbol' with type '$type' isn't fully missed")
+        assertEquals(0, values.covered, "Counter '$symbol' with type '$type' isn't fully missed")
+    }
+
+    override fun assertCovered() {
+        assertNotNull(values, "Counter '$symbol' with type '$type' isn't covered because it absent")
+        assertTrue(values.covered > 0, "Counter '$symbol' with type '$type' isn't covered")
+    }
+
+    override fun assertTotal(expectedTotal: Int) {
+        assertNotNull(values, "Counter '$symbol' with type '$type' is absent so total value can't be checked")
+        val actual = values.covered + values.missed
+        assertEquals(expectedTotal, actual, "Expected total value $expectedTotal but actual $actual for counter '$symbol' with type '$type'")
+    }
+
+    override fun assertCovered(covered: Int, missed: Int) {
+        assertNotNull(values, "Counter '$symbol' with type '$type' is absent so covered can't be checked")
+        assertEquals(covered, values.covered, "Expected covered value $covered but actual ${values.covered} for counter '$symbol' with type '$type'")
+        assertEquals(missed, values.missed, "Expected covered value $missed but actual ${values.missed} for counter '$symbol' with type '$type'")
+    }
+
+    override fun assertFullyCovered() {
+        assertNotNull(values, "Counter '$symbol' with type '$type' is absent so fully covered can't be checked")
+        assertTrue(values.covered > 0, "Counter '$symbol' with type '$type' isn't fully covered")
+        assertEquals(0, values.missed, "Counter '$symbol' with type '$type' isn't fully covered")
+    }
+}
+
+private class VerifyReportCheckerImpl(val context: RunResultImpl, val content: String): VerifyReportChecker {
+    override fun assertIntelliJResult(expected: String) {
+        if (context.engineVendor != CoverageEngineVendor.INTELLIJ) return
+        assertEquals(expected, content, "Unexpected verification result for IntelliJ Engine")
+    }
+
+    override fun assertJaCoCoResult(expected: String) {
+        if (context.engineVendor != CoverageEngineVendor.JACOCO) return
+        assertEquals(expected, content, "Unexpected verification result for JaCoCo Engine")
+    }
+
+}
+
+private class XmlReportCheckerImpl(val context: RunResultImpl, file: File) : XmlReportChecker {
+    private val document = DocumentBuilderFactory.newInstance()
+        // This option disables checking the dtd file for JaCoCo XML file
+        .also { it.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false) }
+        .newDocumentBuilder().parse(file)
+
+    override fun classCounter(className: String, type: String): Counter {
+        val correctedClassName = className.replace('.', '/')
+        val packageName = correctedClassName.substringBeforeLast('/')
+
+        val reportElement = ((document.getElementsByTagName("report").item(0)) as Element)
+
+        val values = reportElement
+            .filter("package", "name", packageName)
+            ?.filter("class", "name", correctedClassName)
+            ?.filter("counter", "type", type)
+            ?.let {
+                CounterValues(
+                    it.getAttribute("missed").toInt(),
+                    it.getAttribute("covered").toInt()
+                )
+            }
+
+        return CounterImpl(context, className, type, values)
+    }
+
+    override fun methodCounter(className: String, methodName: String, type: String): Counter {
+        val correctedClassName = className.replace('.', '/')
+        val packageName = correctedClassName.substringBeforeLast('/')
+
+        val reportElement = ((document.getElementsByTagName("report").item(0)) as Element)
+
+        val values = reportElement
+            .filter("package", "name", packageName)
+            ?.filter("class", "name", correctedClassName)
+            ?.filter("method", "name", methodName)
+            ?.filter("counter", "type", type)
+            ?.let {
+                CounterValues(
+                    it.getAttribute("missed").toInt(),
+                    it.getAttribute("covered").toInt()
+                )
+            }
+
+        return CounterImpl(context, "$className#$methodName", type, values)
+    }
+}
+
+private fun Element.filter(tag: String, attributeName: String, attributeValue: String): Element? {
+    val elements = getElementsByTagName(tag)
+    for (i in 0 until elements.length) {
+        val element = elements.item(i) as Element
+        if (element.parentNode == this) {
+            if (element.getAttribute(attributeName) == attributeValue) {
+                return element
+            }
+        }
+    }
+    return null
+}
+
+internal fun RunResult.checkDefaultBinaryReport(mustExist: Boolean = true) {
+    if (mustExist) {
+        file(defaultBinaryReport) {
+            assertTrue { exists() }
+            assertTrue { length() > 0 }
+        }
+    } else {
+        file(defaultBinaryReport) {
+            assertFalse { exists() }
+        }
+    }
+}
+
+internal fun RunResult.checkDefaultMergedReports(mustExist: Boolean = true) {
+    checkReports(defaultMergedXmlReport(), defaultMergedHtmlReport(), mustExist)
+}
+
+internal fun RunResult.checkDefaultReports(mustExist: Boolean = true) {
+    checkReports(defaultXmlReport(), defaultHtmlReport(), mustExist)
+}
+
+internal fun RunResult.checkOutcome(taskName: String, outcome: TaskOutcome) {
+    outcome(taskName) {
+        assertEquals(outcome, this)
+    }
+}
+
+internal fun RunResult.checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
+    if (mustExist) {
+        file(xmlPath) {
+            assertTrue("XML file must exist '$xmlPath'") { exists() }
+            assertTrue { length() > 0 }
+        }
+        file(htmlPath) {
+            assertTrue { exists() }
+            assertTrue { isDirectory }
+        }
+    } else {
+        file(xmlPath) {
+            assertFalse { exists() }
+        }
+        file(htmlPath) {
+            assertFalse { exists() }
+        }
+    }
+}
+

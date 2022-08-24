@@ -4,6 +4,7 @@
 
 package kotlinx.kover.json
 
+import kotlinx.kover.util.json.*
 import java.io.File
 import java.math.BigDecimal
 import kotlin.test.*
