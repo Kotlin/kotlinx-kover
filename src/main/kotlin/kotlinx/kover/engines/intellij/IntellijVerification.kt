@@ -17,7 +17,6 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.TreeMap
 
-@Suppress("UNUSED_PARAMETER")
 internal fun Task.intellijVerification(
     exec: ExecOperations,
     projectFiles: Map<String, ProjectFiles>,
@@ -28,19 +27,19 @@ internal fun Task.intellijVerification(
     val aggRequest = File(temporaryDir, "agg-request.json")
     val groupedRules = groupRules(classFilter, rules)
     aggRequest.writeAggJson(projectFiles, groupedRules)
-    exec.javaexec { e ->
-        e.mainClass.set("com.intellij.rt.coverage.aggregate.Main")
-        e.classpath = classpath
-        e.args = mutableListOf(aggRequest.canonicalPath)
+    exec.javaexec {
+        mainClass.set("com.intellij.rt.coverage.aggregate.Main")
+        this@javaexec.classpath = classpath
+        args = mutableListOf(aggRequest.canonicalPath)
     }
 
     val verifyRequest = File(temporaryDir, "verify-request.json")
     val verifyResponseFile = File(temporaryDir, "verify-result.json")
     verifyRequest.writeVerifyJson(groupedRules, verifyResponseFile)
-    exec.javaexec { e ->
-        e.mainClass.set("com.intellij.rt.coverage.verify.Main")
-        e.classpath = classpath
-        e.args = mutableListOf(verifyRequest.canonicalPath)
+    exec.javaexec {
+        mainClass.set("com.intellij.rt.coverage.verify.Main")
+        this@javaexec.classpath = classpath
+        args = mutableListOf(verifyRequest.canonicalPath)
     }
 
     val violations = verifyResponseFile.readJsonObject()

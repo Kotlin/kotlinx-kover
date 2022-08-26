@@ -17,6 +17,7 @@ import org.gradle.api.artifacts.*
 import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.testing.*
+import org.gradle.kotlin.dsl.*
 import org.gradle.configurationcache.extensions.*
 import java.io.*
 
@@ -26,8 +27,8 @@ internal fun Project.applyToProject() {
 
     val engineProvider = engineProvider(config, extension.engine)
 
-    tasks.withType(Test::class.java).configureEach { t ->
-        t.applyToTestTask(extension, engineProvider)
+    tasks.withType<Test>().configureEach {
+        applyToTestTask(extension, engineProvider)
     }
 
     val testsProvider = instrumentedTasksProvider(extension)
@@ -72,16 +73,17 @@ internal fun Project.applyToProject() {
     verifyTask.shouldRunAfter(xmlTask, htmlTask)
 
     tasks.create(KoverNames.REPORT_TASK_NAME) {
-        it.group = KoverNames.VERIFICATION_GROUP
-        it.dependsOn(xmlTask)
-        it.dependsOn(htmlTask)
-        it.description = "Generates code coverage HTML and XML reports for all enabled test tasks in one project."
+        group = KoverNames.VERIFICATION_GROUP
+        dependsOn(xmlTask)
+        dependsOn(htmlTask)
+        description = "Generates code coverage HTML and XML reports for all enabled test tasks in one project."
     }
 
 
-    tasks.configureEach {
-        if (it.name == KoverNames.CHECK_TASK_NAME) {
-            it.dependsOn(provider {
+    tasks
+        .matching { it.name == KoverNames.CHECK_TASK_NAME }
+        .configureEach {
+            dependsOn(provider {
                 // don't add dependency if Kover is disabled
                 if (extension.isDisabled.get()) {
                     return@provider emptyList<Task>()
@@ -100,7 +102,6 @@ internal fun Project.applyToProject() {
                 }
                 tasks
             })
-        }
     }
 }
 
@@ -112,13 +113,13 @@ private inline fun <reified T : KoverReportTask> Project.createTask(
     testsProvider: Provider<List<Test>>,
     crossinline block: (T) -> Unit
 ): T {
-    val task = tasks.create(taskName, T::class.java) {
-        it.files.put(path, projectFilesProvider(extension, filters.sourceSets))
-        it.engine.set(engineProvider)
-        it.dependsOn(testsProvider)
-        it.classFilter.set(filters.classes)
-        it.group = KoverNames.VERIFICATION_GROUP
-        block(it)
+    val task = tasks.create<T>(taskName) {
+        files.put(path, projectFilesProvider(extension, filters.sourceSets))
+        engine.set(engineProvider)
+        dependsOn(testsProvider)
+        classFilter.set(filters.classes)
+        group = KoverNames.VERIFICATION_GROUP
+        block(this)
     }
 
     // TODO `onlyIf` block moved out from config lambda because of bug in Kotlin compiler - it implicitly adds closure on `Project` inside onlyIf's lambda
@@ -131,7 +132,7 @@ private inline fun <reified T : KoverReportTask> Project.createTask(
 }
 
 private fun Project.createProjectExtension(): KoverProjectConfig {
-    val extension = extensions.create(KoverNames.PROJECT_EXTENSION_NAME, KoverProjectConfig::class.java, objects)
+    val extension = extensions.create(KoverNames.PROJECT_EXTENSION_NAME, KoverProjectConfig::class)
     // default values
 
     extension.isDisabled.set(false)
@@ -157,10 +158,10 @@ private fun Project.createEngineConfig(engineVariantProvider: Provider<CoverageE
     config.isTransitive = true
     config.description = "Kotlin Kover Plugin configuration for Coverage Engine"
 
-    config.defaultDependencies { default ->
+    config.defaultDependencies {
         val variant = engineVariantProvider.get()
         EngineManager.dependencies(variant).forEach {
-            default.add(dependencies.create(it))
+            add(dependencies.create(it))
         }
     }
     return config
@@ -200,10 +201,10 @@ internal fun Project.projectFiles(
 }
 
 internal fun Project.instrumentedTasks(extension: KoverProjectConfig): List<Test> {
-    return tasks.withType(Test::class.java).asSequence()
+    return tasks.withType<Test>().asSequence()
         // task can be disabled in the project extension
         .filterNot { extension.instrumentation.excludeTasks.contains(it.name) }
-        .filterNot { t -> t.extensions.getByType(KoverTaskExtension::class.java).isDisabled.get() }
+        .filterNot { t -> t.extensions.getByType<KoverTaskExtension>().isDisabled.get() }
         .toList()
 }
 
@@ -217,10 +218,10 @@ private fun Project.binaryReports(extension: KoverProjectConfig): List<File> {
         return emptyList()
     }
 
-    return tasks.withType(Test::class.java).asSequence()
+    return tasks.withType<Test>().asSequence()
         // task can be disabled in the project extension
         .filterNot { extension.instrumentation.excludeTasks.contains(it.name) }
-        .map { t -> t.extensions.getByType(KoverTaskExtension::class.java) }
+        .map { t -> t.extensions.getByType<KoverTaskExtension>() }
         // process binary report only from tasks with enabled cover
         .filterNot { e -> e.isDisabled.get() }
         .map { e -> e.reportFile.get().asFile }

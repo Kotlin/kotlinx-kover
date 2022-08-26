@@ -1,7 +1,10 @@
-import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version embeddedKotlinVersion
+
+    `kotlin-dsl`
 
     `java-gradle-plugin`
     `maven-publish`
@@ -14,7 +17,7 @@ repositories {
     google()
 }
 
-val kotlinVersion = property("kotlinVersion")
+val kotlinVersion = embeddedKotlinVersion //property("kotlinVersion")
 
 sourceSets {
     create("functionalTest") {
@@ -37,6 +40,7 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:4.2.2")
 
     testImplementation(kotlin("test"))
+    testImplementation(gradleTestKit())
 
     "functionalTestImplementation"(gradleTestKit())
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
@@ -65,8 +69,7 @@ tasks.register<Test>("functionalTest") {
     // Create a configuration to register the dependencies against
     doFirst {
         val file = File(temporaryDir, "plugin-classpath.txt")
-        file
-            .writeText(sourceSets["functionalTest"].compileClasspath.joinToString("\n"))
+        file.writeText(sourceSets["functionalTest"].compileClasspath.joinToString("\n"))
         systemProperties["plugin-classpath"] = file.absolutePath
 
         // used in build scripts of functional tests
@@ -77,7 +80,7 @@ tasks.register<Test>("functionalTest") {
 tasks.check { dependsOn("functionalTest") }
 
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         allWarningsAsErrors = true
 
@@ -104,7 +107,7 @@ publishing {
 
     addMavenRepository(project)
     addMavenMetadata()
-    publications.withType(MavenPublication::class).all {
+    publications.withType<MavenPublication>().all {
         signPublicationIfKeyPresent(project)
     }
 }

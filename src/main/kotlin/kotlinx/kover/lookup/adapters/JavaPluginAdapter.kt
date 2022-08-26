@@ -7,6 +7,7 @@ package kotlinx.kover.lookup.adapters
 import kotlinx.kover.api.*
 import kotlinx.kover.lookup.LookupAdapter
 import org.gradle.api.*
+import org.gradle.kotlin.dsl.*
 import org.gradle.api.tasks.*
 
 /**
@@ -18,9 +19,7 @@ internal class JavaPluginAdapter : LookupAdapter() {
     override fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): Dirs {
         project.plugins.findPlugin("java") ?: return Dirs()
 
-        val sourceSetContainer = project.extensions.findByType(
-            SourceSetContainer::class.java
-        ) ?: return Dirs()
+        val sourceSetContainer = project.extensions.findByType<SourceSetContainer>() ?: return Dirs()
 
         val sourceSets = sourceSetContainer.filter { filterSourceSet(it.name, sourceSetFilters) }
 

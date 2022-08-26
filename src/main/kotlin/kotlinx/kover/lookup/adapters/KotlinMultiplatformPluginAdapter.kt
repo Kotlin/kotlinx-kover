@@ -12,6 +12,7 @@ import org.gradle.api.file.*
 import org.gradle.internal.metaobject.*
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.jetbrains.kotlin.gradle.plugin.*
+import org.gradle.kotlin.dsl.*
 
 /**
  * Adapter to get sources and outputs of Kotlin Multi-Platform Gradle plugin.
@@ -23,7 +24,7 @@ internal class KotlinMultiplatformPluginAdapter : LookupAdapter() {
         project.plugins.findPlugin("kotlin-multiplatform") ?: return Dirs()
 
         val extension = try {
-            project.extensions.findByType(KotlinMultiplatformExtension::class.java) ?: return Dirs()
+            project.extensions.findByType<KotlinMultiplatformExtension>() ?: return Dirs()
         } catch (e: ClassNotFoundException) {
             return findByReflection(project)
         } catch (e: NoClassDefFoundError) {

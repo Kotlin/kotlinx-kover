@@ -34,7 +34,7 @@ fun MavenPublication.signPublicationIfKeyPresent(project: Project) {
 }
 
 fun PublishingExtension.addMavenMetadata() {
-    publications.withType(MavenPublication::class) {
+    publications.withType<MavenPublication>().configureEach {
         pom {
             if (!name.isPresent) {
                 name.set(artifactId)
