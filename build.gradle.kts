@@ -17,7 +17,7 @@ repositories {
     google()
 }
 
-val kotlinVersion = embeddedKotlinVersion //property("kotlinVersion")
+val kotlinVersion = embeddedKotlinVersion
 
 sourceSets {
     create("functionalTest") {
@@ -55,8 +55,8 @@ java {
 }
 
 
-tasks.register<Test>("functionalTest") {
-    group = "verification"
+val functionalTest by tasks.registering(Test::class) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
     testClassesDirs = sourceSets["functionalTest"].output.classesDirs
     classpath = sourceSets["functionalTest"].runtimeClasspath
 
@@ -77,7 +77,7 @@ tasks.register<Test>("functionalTest") {
     }
 }
 
-tasks.check { dependsOn("functionalTest") }
+tasks.check { dependsOn(functionalTest) }
 
 
 tasks.withType<KotlinCompile>().configureEach {
@@ -107,7 +107,7 @@ publishing {
 
     addMavenRepository(project)
     addMavenMetadata()
-    publications.withType<MavenPublication>().all {
+    publications.withType<MavenPublication>().configureEach {
         signPublicationIfKeyPresent(project)
     }
 }
