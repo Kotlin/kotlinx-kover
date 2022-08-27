@@ -6,12 +6,13 @@ import org.gradle.api.*
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
+import org.gradle.kotlin.dsl.*
 
 // TODO make internal in 0.7 version - for now it public to save access to deprecated fields to print deprecation message
 @CacheableTask
 public open class KoverVerificationTask : KoverReportTask() {
     @get:Nested
-    internal val rules: ListProperty<VerificationRule> = project.objects.listProperty(VerificationRule::class.java)
+    internal val rules: ListProperty<VerificationRule> = project.objects.listProperty()
 
     @get:OutputFile
     internal val resultFile: RegularFileProperty = project.objects.fileProperty()

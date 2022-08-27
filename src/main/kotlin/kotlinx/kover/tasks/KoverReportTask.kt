@@ -9,6 +9,7 @@ import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
+import org.gradle.kotlin.dsl.*
 import org.gradle.configurationcache.extensions.*
 import org.gradle.process.*
 import java.io.*
@@ -16,14 +17,13 @@ import java.io.*
 // TODO make internal in 0.7 version - for now it public to save access to deprecated fields to print deprecation message
 public abstract class KoverReportTask : DefaultTask() {
     @get:Nested
-    internal val files: MapProperty<String, ProjectFiles> =
-        project.objects.mapProperty(String::class.java, ProjectFiles::class.java)
+    internal val files: MapProperty<String, ProjectFiles> = project.objects.mapProperty()
 
     @get:Nested
-    internal val classFilter: Property<KoverClassFilter> = project.objects.property(KoverClassFilter::class.java)
+    internal val classFilter: Property<KoverClassFilter> = project.objects.property()
 
     @get:Nested
-    internal val engine: Property<EngineDetails> = project.objects.property(EngineDetails::class.java)
+    internal val engine: Property<EngineDetails> = project.objects.property()
 
     // exec operations to launch Java applications
     @get:Internal

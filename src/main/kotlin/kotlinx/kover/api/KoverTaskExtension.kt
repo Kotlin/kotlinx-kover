@@ -9,19 +9,21 @@ import org.gradle.api.model.*
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import org.gradle.kotlin.dsl.*
 import java.io.*
+import javax.inject.Inject
 
 /**
  * Extension for Kover plugin that additionally configures test tasks and
  * runs them with coverage agent to generate coverage execution data.
  */
-public open class KoverTaskExtension(objects: ObjectFactory) {
+public open class KoverTaskExtension @Inject constructor(objects: ObjectFactory) {
     /**
      * Specifies whether instrumentation is disabled for an extended test task.
      */
     @get:Input
     @get:JvmName("getIsDisabled")
-    public val isDisabled: Property<Boolean> = objects.property(Boolean::class.java)
+    public val isDisabled: Property<Boolean> = objects.property()
 
     /**
      * Specifies file path of generated binary file with coverage data.
@@ -38,7 +40,7 @@ public open class KoverTaskExtension(objects: ObjectFactory) {
      * It's possible to use `*` and `?` wildcards.
      */
     @get:Input
-    public val includes: ListProperty<String> = objects.listProperty(String::class.java)
+    public val includes: ListProperty<String> = objects.listProperty()
 
     /**
      * Specifies class instrumentation exclusion rules.
@@ -49,7 +51,7 @@ public open class KoverTaskExtension(objects: ObjectFactory) {
      * It's possible to use `*` and `?` wildcards.
      */
     @get:Input
-    public val excludes: ListProperty<String> = objects.listProperty(String::class.java)
+    public val excludes: ListProperty<String> = objects.listProperty()
 
 
     // DEPRECATIONS
@@ -60,5 +62,5 @@ public open class KoverTaskExtension(objects: ObjectFactory) {
         replaceWith = ReplaceWith("reportFile"),
         level = DeprecationLevel.ERROR
     )
-    public val binaryReportFile:  Property<File> = objects.property(File::class.java)
+    public val binaryReportFile:  Property<File> = objects.property()
 }

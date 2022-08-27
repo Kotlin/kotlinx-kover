@@ -10,32 +10,32 @@ import org.gradle.api.model.*
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import org.gradle.kotlin.dsl.*
 import javax.annotation.*
 import javax.inject.*
 
 public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory) {
-    internal val filters: KoverProjectFilters = objects.newInstance(KoverProjectFilters::class.java, objects)
+    internal val filters: KoverProjectFilters = objects.newInstance()
 
-    internal val instrumentation: KoverProjectInstrumentation =
-        objects.newInstance(KoverProjectInstrumentation::class.java)
+    internal val instrumentation: KoverProjectInstrumentation = objects.newInstance()
 
-    internal val xmlReport: KoverProjectXmlConfig = objects.newInstance(KoverProjectXmlConfig::class.java, objects)
+    internal val xmlReport: KoverProjectXmlConfig = objects.newInstance()
 
-    internal val htmlReport: KoverProjectHtmlConfig = objects.newInstance(KoverProjectHtmlConfig::class.java, objects)
+    internal val htmlReport: KoverProjectHtmlConfig = objects.newInstance()
 
-    internal val verify: KoverVerifyConfig = objects.newInstance(KoverVerifyConfig::class.java, objects)
+    internal val verify: KoverVerifyConfig = objects.newInstance(objects)
 
     /**
      * Specifies whether instrumentation is disabled for all test tasks of current project.
      *
      * `false` by default.
      */
-    public val isDisabled: Property<Boolean> = objects.property(Boolean::class.java)
+    public val isDisabled: Property<Boolean> = objects.property()
 
     /**
      * Specifies the coverage engine variant to be used to collect execution data.
      */
-    public val engine: Property<CoverageEngineVariant> = objects.property(CoverageEngineVariant::class.java)
+    public val engine: Property<CoverageEngineVariant> = objects.property()
 
     /**
      * Configures filtering for all Kover's tasks of current project by class names and source sets.
@@ -90,7 +90,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
-    public val coverageEngine: Property<CoverageEngine> = objects.property(CoverageEngine::class.java)
+    public val coverageEngine: Property<CoverageEngine> = objects.property()
 
     @get:Internal
     @Deprecated(
@@ -98,7 +98,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
-    public val intellijEngineVersion: Property<String> = objects.property(String::class.java)
+    public val intellijEngineVersion: Property<String> = objects.property()
 
     @get:Internal
     @Deprecated(
@@ -106,7 +106,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
         replaceWith = ReplaceWith("engine"),
         level = DeprecationLevel.ERROR
     )
-    public val jacocoEngineVersion: Property<String> = objects.property(String::class.java)
+    public val jacocoEngineVersion: Property<String> = objects.property()
 
     @get:Internal
     @Deprecated(
@@ -147,9 +147,9 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
 public open class KoverExtension
 
 public open class KoverProjectFilters @Inject constructor(private val objects: ObjectFactory) {
-    internal val classes: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
+    internal val classes: Property<KoverClassFilter> = objects.property()
 
-    internal val sourceSets: Property<KoverSourceSetFilter> = objects.property(KoverSourceSetFilter::class.java)
+    internal val sourceSets: Property<KoverSourceSetFilter> = objects.property()
 
     /**
      * Configures class filter in order to include and exclude specific classes.
@@ -164,7 +164,7 @@ public open class KoverProjectFilters @Inject constructor(private val objects: O
      * Excludes have priority over includes.
      */
     public fun classes(config: Action<KoverClassFilter>) {
-        val classFilter = objects.newInstance(KoverClassFilter::class.java)
+        val classFilter = objects.newInstance<KoverClassFilter>()
         config.execute(classFilter)
         classes.set(classFilter)
     }
@@ -173,7 +173,7 @@ public open class KoverProjectFilters @Inject constructor(private val objects: O
      * Configures source set filter.
      */
     public fun sourceSets(config: Action<KoverSourceSetFilter>) {
-        val sourceSetFilters = objects.newInstance(KoverSourceSetFilter::class.java)
+        val sourceSetFilters = objects.newInstance<KoverSourceSetFilter>()
         config.execute(sourceSetFilters)
         sourceSets.set(sourceSetFilters)
     }
@@ -187,14 +187,14 @@ public open class KoverProjectInstrumentation {
 }
 
 public open class KoverProjectXmlConfig @Inject constructor(objects: ObjectFactory) {
-    internal val filters: KoverProjectFilters = objects.newInstance(KoverProjectFilters::class.java, objects)
+    internal val filters: KoverProjectFilters = objects.newInstance()
 
     /**
      * Specifies whether the XML report generation task should be executed before the `check` task (if it exists) of the current project.
      *
      * `false` by default.
      */
-    public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
+    public val onCheck: Property<Boolean> = objects.property()
 
     /**
      * Specifies file path of generated XML report file with coverage data.
@@ -213,14 +213,14 @@ public open class KoverProjectXmlConfig @Inject constructor(objects: ObjectFacto
 }
 
 public open class KoverProjectHtmlConfig @Inject constructor(private val objects: ObjectFactory) {
-    internal val taskFilters: KoverProjectFilters = objects.newInstance(KoverProjectFilters::class.java, objects)
+    internal val taskFilters: KoverProjectFilters = objects.newInstance()
 
     /**
      * Specifies whether the HTML report generation task should be executed before the `check` task (if it exists) of the current project.
      *
      * `false` by default.
      */
-    public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
+    public val onCheck: Property<Boolean> = objects.property()
 
     /**
      * Specifies directory path of generated HTML report.
@@ -240,11 +240,11 @@ public open class KoverProjectHtmlConfig @Inject constructor(private val objects
 
 
 public open class KoverMergedConfig @Inject constructor(objects: ObjectFactory) {
-    internal var isEnabled: Property<Boolean> = objects.property(Boolean::class.java)
-    internal val filters: KoverMergedFilters = objects.newInstance(KoverMergedFilters::class.java, objects)
-    internal val xmlReport: KoverMergedXmlConfig = objects.newInstance(KoverMergedXmlConfig::class.java, objects)
-    internal val htmlReport: KoverMergedHtmlConfig = objects.newInstance(KoverMergedHtmlConfig::class.java, objects)
-    internal val verify: KoverVerifyConfig = objects.newInstance(KoverVerifyConfig::class.java, objects)
+    internal val isEnabled: Property<Boolean> = objects.property()
+    internal val filters: KoverMergedFilters = objects.newInstance()
+    internal val xmlReport: KoverMergedXmlConfig = objects.newInstance()
+    internal val htmlReport: KoverMergedHtmlConfig = objects.newInstance()
+    internal val verify: KoverVerifyConfig = objects.newInstance()
 
     /**
      * Create Kover tasks for generating merged reports.
@@ -283,15 +283,15 @@ public open class KoverMergedConfig @Inject constructor(objects: ObjectFactory) 
 }
 
 public open class KoverMergedFilters @Inject constructor(private val objects: ObjectFactory) {
-    internal val classes: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
+    internal val classes: Property<KoverClassFilter> = objects.property()
 
-    internal val projects: Property<KoverProjectsFilter> = objects.property(KoverProjectsFilter::class.java)
+    internal val projects: Property<KoverProjectsFilter> = objects.property()
 
     /**
      * Configures class filter.
      */
     public fun classes(config: Action<KoverClassFilter>) {
-        val classFilter = objects.newInstance(KoverClassFilter::class.java)
+        val classFilter = objects.newInstance<KoverClassFilter>()
         config.execute(classFilter)
         classes.set(classFilter)
     }
@@ -300,7 +300,7 @@ public open class KoverMergedFilters @Inject constructor(private val objects: Ob
      * Configures projects filter.
      */
     public fun projects(config: Action<KoverProjectsFilter>) {
-        val projectsFilters = objects.newInstance(KoverProjectsFilter::class.java)
+        val projectsFilters = objects.newInstance<KoverProjectsFilter>()
         config.execute(projectsFilters)
         projects.set(projectsFilters)
     }
@@ -308,12 +308,12 @@ public open class KoverMergedFilters @Inject constructor(private val objects: Ob
 
 
 public open class KoverMergedXmlConfig @Inject constructor(private val objects: ObjectFactory) {
-    internal val classFilter: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
+    internal val classFilter: Property<KoverClassFilter> = objects.property()
 
     /**
      * Specifies whether the merged XML report generation task should be executed before the `check` task (if it exists) of the current project.
      */
-    public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
+    public val onCheck: Property<Boolean> = objects.property()
 
     /**
      * Specifies file path of generated XML report file with coverage data.
@@ -324,19 +324,19 @@ public open class KoverMergedXmlConfig @Inject constructor(private val objects: 
      * Override class filter for the merged XML report generation task.
      */
     public fun overrideClassFilter(config: Action<KoverClassFilter>) {
-        val newClassFilter = objects.newInstance(KoverClassFilter::class.java)
+        val newClassFilter = objects.newInstance<KoverClassFilter>()
         config.execute(newClassFilter)
         classFilter.set(newClassFilter)
     }
 }
 
 public open class KoverMergedHtmlConfig @Inject constructor(private val objects: ObjectFactory) {
-    internal val classFilter: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
+    internal val classFilter: Property<KoverClassFilter> = objects.property()
 
     /**
      * Specifies whether the merged HTML report generation task should be executed before the `check` task (if it exists) of the current project.
      */
-    public val onCheck: Property<Boolean> = objects.property(Boolean::class.java)
+    public val onCheck: Property<Boolean> = objects.property()
 
     /**
      * Specifies directory path of generated HTML report.
@@ -347,7 +347,7 @@ public open class KoverMergedHtmlConfig @Inject constructor(private val objects:
      * Override class filter for the merged HTML report generation task.
      */
     public fun overrideClassFilter(config: Action<KoverClassFilter>) {
-        val newClassFilter = objects.newInstance(KoverClassFilter::class.java)
+        val newClassFilter = objects.newInstance<KoverClassFilter>()
         config.execute(newClassFilter)
         classFilter.set(newClassFilter)
     }
@@ -365,20 +365,20 @@ public open class KoverProjectsFilter {
 
 
 public open class KoverVerifyConfig @Inject constructor(private val objects: ObjectFactory) {
-    internal val rules: ListProperty<VerificationRule> = objects.listProperty(VerificationRule::class.java)
+    internal val rules: ListProperty<VerificationRule> = objects.listProperty()
 
     /**
      * Specifies whether the verification task should be executed before the `check` task (if it exists) of the current project.
      *
      * By default, `true` for project reports and `false` for merged.
      */
-    public val onCheck: Property<Boolean> = objects.property(Boolean::class.java).value(true)
+    public val onCheck: Property<Boolean> = objects.property<Boolean>().value(true)
 
     /**
      * Add new coverage verification rule to check after test task execution.
      */
     public fun rule(configureRule: Action<VerificationRule>) {
-        rules.add(objects.newInstance(VerificationRule::class.java, objects).also { configureRule.execute(it) })
+        rules.add(objects.newInstance<VerificationRule>().also { configureRule.execute(it) })
     }
 }
 
@@ -424,10 +424,10 @@ public open class KoverSourceSetFilter {
 public open class VerificationRule @Inject constructor(private val objects: ObjectFactory) {
     @get:Nested
     @get:Optional
-    internal val classFilter: Property<KoverClassFilter> = objects.property(KoverClassFilter::class.java)
+    internal val classFilter: Property<KoverClassFilter> = objects.property()
 
     @get:Nested
-    internal val bounds: ListProperty<VerificationBound> = objects.listProperty(VerificationBound::class.java)
+    internal val bounds: ListProperty<VerificationBound> = objects.listProperty()
 
     /**
      * Specifies that the rule will be checked during verification.
@@ -454,7 +454,7 @@ public open class VerificationRule @Inject constructor(private val objects: Obje
      */
     public fun overrideClassFilter(config: Action<KoverClassFilter>) {
         if (!classFilter.isPresent) {
-            classFilter.set(objects.newInstance(KoverClassFilter::class.java))
+            classFilter.set(objects.newInstance<KoverClassFilter>())
         }
         config.execute(classFilter.get())
     }
@@ -463,7 +463,7 @@ public open class VerificationRule @Inject constructor(private val objects: Obje
      * Add a constraint on the value of the code coverage metric.
      */
     public fun bound(configureBound: Action<VerificationBound>) {
-        bounds.add(objects.newInstance(VerificationBound::class.java).also { configureBound.execute(it) })
+        bounds.add(objects.newInstance<VerificationBound>().also { configureBound.execute(it) })
     }
 }
 

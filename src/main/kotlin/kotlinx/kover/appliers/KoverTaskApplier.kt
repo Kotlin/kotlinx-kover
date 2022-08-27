@@ -5,15 +5,23 @@
 package kotlinx.kover.appliers
 
 import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.*
-import kotlinx.kover.tasks.*
-import org.gradle.api.*
+import kotlinx.kover.engines.commons.AgentFilters
+import kotlinx.kover.engines.commons.EngineManager
+import kotlinx.kover.tasks.EngineDetails
+import org.gradle.api.Action
+import org.gradle.api.Named
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.RegularFile
-import org.gradle.api.provider.*
-import org.gradle.api.tasks.*
-import org.gradle.api.tasks.testing.*
-import org.gradle.process.*
-import java.io.*
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.create
+import org.gradle.process.CommandLineArgumentProvider
+import java.io.File
 
 
 internal fun Test.applyToTestTask(
@@ -49,16 +57,16 @@ internal fun Test.applyToTestTask(
 }
 
 private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): KoverTaskExtension {
-    val taskExtension =
-        extensions.create(KoverNames.TASK_EXTENSION_NAME, KoverTaskExtension::class.java, project.objects)
+    val taskExtension = extensions.create<KoverTaskExtension>(KoverNames.TASK_EXTENSION_NAME, project.objects)
 
-    taskExtension.isDisabled.set(false)
-    val layout = project.layout
-    taskExtension.reportFile.set(project.provider {
-        val engine = projectExtension.engine.get()
+    taskExtension.isDisabled.convention(false)
+
+    val reportFile = project.layout.buildDirectory.zip(projectExtension.engine) { buildDir, engine ->
         val suffix = if (engine.vendor == CoverageEngineVendor.INTELLIJ) ".ic" else ".exec"
-        layout.buildDirectory.get().file("kover/$name$suffix")
-    })
+        buildDir.file("kover/$name$suffix")
+    }
+
+    taskExtension.reportFile.convention(reportFile)
 
     return taskExtension
 }

@@ -1,7 +1,10 @@
-import org.jetbrains.kotlin.gradle.plugin.*
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+
+    `kotlin-dsl`
 
     `java-gradle-plugin`
     `maven-publish`
@@ -51,8 +54,8 @@ java {
 }
 
 
-tasks.register<Test>("functionalTest") {
-    group = "verification"
+val functionalTest by tasks.registering(Test::class) {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
     testClassesDirs = sourceSets["functionalTest"].output.classesDirs
     classpath = sourceSets["functionalTest"].runtimeClasspath
 
@@ -65,8 +68,7 @@ tasks.register<Test>("functionalTest") {
     // Create a configuration to register the dependencies against
     doFirst {
         val file = File(temporaryDir, "plugin-classpath.txt")
-        file
-            .writeText(sourceSets["functionalTest"].compileClasspath.joinToString("\n"))
+        file.writeText(sourceSets["functionalTest"].compileClasspath.joinToString("\n"))
         systemProperties["plugin-classpath"] = file.absolutePath
 
         // used in build scripts of functional tests
@@ -74,10 +76,10 @@ tasks.register<Test>("functionalTest") {
     }
 }
 
-tasks.check { dependsOn("functionalTest") }
+tasks.check { dependsOn(functionalTest) }
 
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         allWarningsAsErrors = true
 
@@ -104,7 +106,7 @@ publishing {
 
     addMavenRepository(project)
     addMavenMetadata()
-    publications.withType(MavenPublication::class).all {
+    publications.withType<MavenPublication>().configureEach {
         signPublicationIfKeyPresent(project)
     }
 }

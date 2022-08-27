@@ -32,10 +32,10 @@ internal fun Task.intellijReport(
     val argsFile = File(temporaryDir, "intellijreport.json")
     argsFile.writeReportsJson(projectFiles, filters, xmlFile, htmlDir)
 
-    exec.javaexec { e ->
-        e.mainClass.set("com.intellij.rt.coverage.report.Main")
-        e.classpath = classpath
-        e.args = mutableListOf(argsFile.canonicalPath)
+    exec.javaexec {
+        mainClass.set("com.intellij.rt.coverage.report.Main")
+        this@javaexec.classpath = classpath
+        args = mutableListOf(argsFile.canonicalPath)
     }
 }
 
