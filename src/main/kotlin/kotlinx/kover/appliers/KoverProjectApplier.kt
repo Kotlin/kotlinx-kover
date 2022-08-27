@@ -135,19 +135,19 @@ private fun Project.createProjectExtension(): KoverProjectConfig {
     val extension = extensions.create(KoverNames.PROJECT_EXTENSION_NAME, KoverProjectConfig::class)
     // default values
 
-    extension.isDisabled.set(false)
-    extension.engine.set(DefaultIntellijEngine)
-    extension.filters.classes.set(KoverClassFilter())
-    extension.filters.sourceSets.set(KoverSourceSetFilter())
-    extension.xmlReport.reportFile.set(layout.buildDirectory.file(KoverPaths.PROJECT_XML_REPORT_DEFAULT_PATH))
-    extension.xmlReport.onCheck.set(false)
-    extension.xmlReport.filters.classes.set(extension.filters.classes)
-    extension.xmlReport.filters.sourceSets.set(extension.filters.sourceSets)
-    extension.htmlReport.reportDir.set(layout.buildDirectory.dir(KoverPaths.PROJECT_HTML_REPORT_DEFAULT_PATH))
-    extension.htmlReport.onCheck.set(false)
-    extension.htmlReport.taskFilters.classes.set(extension.filters.classes)
-    extension.htmlReport.taskFilters.sourceSets.set(extension.filters.sourceSets)
-    extension.verify.onCheck.set(true)
+    extension.isDisabled.convention(false)
+    extension.engine.convention(DefaultIntellijEngine)
+    extension.filters.classes.convention(KoverClassFilter())
+    extension.filters.sourceSets.convention(KoverSourceSetFilter())
+    extension.xmlReport.reportFile.convention(layout.buildDirectory.file(KoverPaths.PROJECT_XML_REPORT_DEFAULT_PATH))
+    extension.xmlReport.onCheck.convention(false)
+    extension.xmlReport.filters.classes.convention(extension.filters.classes)
+    extension.xmlReport.filters.sourceSets.convention(extension.filters.sourceSets)
+    extension.htmlReport.reportDir.convention(layout.buildDirectory.dir(KoverPaths.PROJECT_HTML_REPORT_DEFAULT_PATH))
+    extension.htmlReport.onCheck.convention(false)
+    extension.htmlReport.taskFilters.classes.convention(extension.filters.classes)
+    extension.htmlReport.taskFilters.sourceSets.convention(extension.filters.sourceSets)
+    extension.verify.onCheck.convention(true)
 
     return extension
 }

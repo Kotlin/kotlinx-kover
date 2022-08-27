@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version embeddedKotlinVersion
+    kotlin("jvm")
 
     `kotlin-dsl`
 
@@ -17,7 +17,7 @@ repositories {
     google()
 }
 
-val kotlinVersion = embeddedKotlinVersion
+val kotlinVersion = property("kotlinVersion")
 
 sourceSets {
     create("functionalTest") {
