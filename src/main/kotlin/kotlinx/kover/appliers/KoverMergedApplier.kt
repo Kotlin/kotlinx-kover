@@ -187,13 +187,16 @@ private inline fun Project.mergedFilesProvider(
 
 
 private fun filterProjects(filters: KoverProjectsFilter, allProjects: Iterable<Project>): List<Project> {
+
+    val actualProjects = allProjects.filter { it.buildFile.exists() }
+
     if (filters.excludes.isEmpty()) {
-        return allProjects.toList()
+        return actualProjects.toList()
     }
 
-    val projectsByPath = allProjects.associateBy { p -> p.path }.toMutableMap()
-    val pathsByName = allProjects.associate { it.name to mutableListOf<String>() }
-    allProjects.forEach { pathsByName.getValue(it.name) += it.path }
+    val projectsByPath = actualProjects.associateBy { p -> p.path }.toMutableMap()
+    val pathsByName = actualProjects.associate { it.name to mutableListOf<String>() }
+    actualProjects.forEach { pathsByName.getValue(it.name) += it.path }
 
     val excludedPaths = filters.excludes.map {
         if (it.startsWith(':')) {
