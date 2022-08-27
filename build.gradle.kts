@@ -40,7 +40,6 @@ dependencies {
     compileOnly("com.android.tools.build:gradle:4.2.2")
 
     testImplementation(kotlin("test"))
-    testImplementation(gradleTestKit())
 
     "functionalTestImplementation"(gradleTestKit())
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
