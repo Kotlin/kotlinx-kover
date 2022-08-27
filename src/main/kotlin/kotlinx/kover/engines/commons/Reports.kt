@@ -5,6 +5,7 @@
 package kotlinx.kover.engines.commons
 
 import kotlinx.kover.api.*
+import java.io.File
 import java.math.BigDecimal
 
 
@@ -25,6 +26,11 @@ internal class ReportVerificationBound(
 )
 
 private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()
+
+internal fun String.wildcardsToClassFileRegex(): String {
+    val filenameWithWildcards = "*" + File.separatorChar + this.replace('.', File.separatorChar) + ".class"
+    return filenameWithWildcards.wildcardsToRegex()
+}
 
 /**
  * Replaces characters `*` or `.` to `.*` and `.` regexp characters.

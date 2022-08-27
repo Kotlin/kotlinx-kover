@@ -9,7 +9,7 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
 
     @Test
     fun testExclude() {
-        val build = diverseBuild(languages = ALL_LANGUAGES)
+        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
         build.addKoverRootProject {
             sourcesFrom("simple")
 
@@ -32,7 +32,7 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
 
     @Test
     fun testExcludeInclude() {
-        val build = diverseBuild(languages = ALL_LANGUAGES)
+        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
         build.addKoverRootProject {
             sourcesFrom("simple")
 
