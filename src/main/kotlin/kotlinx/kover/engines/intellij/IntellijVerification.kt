@@ -4,22 +4,29 @@
 
 package kotlinx.kover.engines.intellij
 
-import kotlinx.kover.api.*
+import kotlinx.kover.api.CounterType
+import kotlinx.kover.api.KoverClassFilter
+import kotlinx.kover.api.VerificationTarget
 import kotlinx.kover.api.VerificationValueType.*
-import kotlinx.kover.engines.commons.*
-import kotlinx.kover.json.*
-import kotlinx.kover.tasks.*
-import org.gradle.api.*
-import org.gradle.api.file.*
+import kotlinx.kover.engines.commons.ONE_HUNDRED
+import kotlinx.kover.engines.commons.ReportVerificationBound
+import kotlinx.kover.engines.commons.ReportVerificationRule
+import kotlinx.kover.engines.commons.wildcardsToRegex
+import kotlinx.kover.json.readJsonObject
+import kotlinx.kover.json.writeJsonObject
+import kotlinx.kover.tasks.ProjectFiles
+import org.gradle.api.GradleException
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.gradle.process.ExecOperations
-import java.io.*
+import java.io.File
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.util.TreeMap
+import java.util.*
 
 internal fun Task.intellijVerification(
     exec: ExecOperations,
-    projectFiles: Map<String, ProjectFiles>,
+    projectFiles: ProjectFiles,
     classFilter: KoverClassFilter,
     rules: List<ReportVerificationRule>,
     classpath: FileCollection
@@ -97,12 +104,12 @@ private fun Task.groupRules(
 }
  */
 private fun File.writeAggJson(
-    projectFiles: Map<String, ProjectFiles>,
+    projectFiles: ProjectFiles,
     groups: List<RulesGroup>
 ) {
     writeJsonObject(mapOf(
-        "reports" to projectFiles.flatMap { it.value.binaryReportFiles }.map { mapOf("ic" to it) },
-        "modules" to projectFiles.map { mapOf("sources" to it.value.sources, "output" to it.value.outputs) },
+        "reports" to mapOf("ic" to projectFiles.binaryReportFiles),
+        "modules" to mapOf("sources" to projectFiles.sources, "output" to projectFiles.outputs),
         "result" to groups.map { group ->
             mapOf(
                 "aggregatedReportFile" to group.aggFile,

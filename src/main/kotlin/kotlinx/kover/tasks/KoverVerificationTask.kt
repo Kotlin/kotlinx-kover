@@ -4,13 +4,20 @@ import kotlinx.kover.api.*
 import kotlinx.kover.engines.commons.*
 import org.gradle.api.*
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
+import org.gradle.process.ExecOperations
+import javax.inject.Inject
 
 // TODO make internal in 0.7 version - for now it public to save access to deprecated fields to print deprecation message
 @CacheableTask
-public open class KoverVerificationTask : KoverReportTask() {
+public open class KoverVerificationTask @Inject constructor(
+    private val objects: ObjectFactory,
+    // exec operations to launch Java applications
+    private val exec: ExecOperations,
+): KoverReportTask(objects) {
     @get:Nested
     internal val rules: ListProperty<VerificationRule> = project.objects.listProperty()
 
@@ -24,7 +31,7 @@ public open class KoverVerificationTask : KoverReportTask() {
             engine.get(),
             this,
             exec,
-            files.get(),
+            files,
             classFilter.get(),
             reportRules,
         )

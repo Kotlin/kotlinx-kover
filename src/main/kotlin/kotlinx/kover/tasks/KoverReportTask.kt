@@ -4,48 +4,54 @@
 
 package kotlinx.kover.tasks
 
-import kotlinx.kover.api.*
-import org.gradle.api.*
-import org.gradle.api.file.*
-import org.gradle.api.provider.*
+import kotlinx.kover.api.CoverageEngineVariant
+import kotlinx.kover.api.KoverClassFilter
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.FileCollection
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
-import org.gradle.kotlin.dsl.*
-import org.gradle.configurationcache.extensions.*
-import org.gradle.process.*
-import java.io.*
+import org.gradle.kotlin.dsl.newInstance
+import org.gradle.kotlin.dsl.property
+import org.gradle.process.ExecOperations
+import java.io.File
+import javax.inject.Inject
 
 // TODO make internal in 0.7 version - for now it public to save access to deprecated fields to print deprecation message
-public abstract class KoverReportTask : DefaultTask() {
-    @get:Nested
-    internal val files: MapProperty<String, ProjectFiles> = project.objects.mapProperty()
+public abstract class KoverReportTask @Inject constructor(
+    private val objects: ObjectFactory,
+) : DefaultTask() {
 
     @get:Nested
-    internal val classFilter: Property<KoverClassFilter> = project.objects.property()
+//    internal val files: MapProperty<String, ProjectFiles> = objects.mapProperty()
+    internal val files: ProjectFiles = objects.newInstance()
 
     @get:Nested
-    internal val engine: Property<EngineDetails> = project.objects.property()
+    internal val classFilter: Property<KoverClassFilter> = objects.property()
 
-    // exec operations to launch Java applications
-    @get:Internal
-    protected val exec: ExecOperations = project.serviceOf()
+    @get:Nested
+    internal val engine: Property<EngineDetails> = objects.property()
 
-    @get:Internal
-    protected val projectPath: String = project.path
-
+//    @get:Internal
+//    protected val projectPath: String = path
 }
 
-open class ProjectFiles(
-    @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    val binaryReportFiles: FileCollection,
+abstract class ProjectFiles {
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    val sources: FileCollection,
+    @get:SkipWhenEmpty
+    abstract val binaryReportFiles: ConfigurableFileCollection
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val sources: ConfigurableFileCollection
 
     @get:Classpath
-    val outputs: FileCollection
-)
+    abstract val outputs: ConfigurableFileCollection
+}
+
 
 internal class EngineDetails(
     @get:Nested val variant: CoverageEngineVariant,

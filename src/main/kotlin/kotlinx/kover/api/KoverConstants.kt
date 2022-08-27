@@ -4,9 +4,18 @@
 
 package kotlinx.kover.api
 
+import org.gradle.api.Named
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.attributes.AttributeContainer
+import org.gradle.api.attributes.Category
+import org.gradle.api.attributes.Usage
+import org.gradle.api.model.ObjectFactory
+import org.gradle.kotlin.dsl.named
+import org.gradle.language.base.plugins.LifecycleBasePlugin
+
 public object KoverNames {
-    public const val CHECK_TASK_NAME = "check"
-    public const val VERIFICATION_GROUP = "verification"
+    public const val CHECK_TASK_NAME = LifecycleBasePlugin.CHECK_TASK_NAME
+    public const val VERIFICATION_GROUP = LifecycleBasePlugin.VERIFICATION_GROUP
 
     public const val PROJECT_EXTENSION_NAME = "kover"
     public const val MERGED_EXTENSION_NAME = "koverMerged"
@@ -23,6 +32,11 @@ public object KoverNames {
     public const val VERIFY_TASK_NAME = "koverVerify"
 
     public const val CONFIGURATION_NAME = "KoverEngineConfig"
+    public const val CONFIGURATION_AGGREGATE_NAME = "koverAggregate"
+    public const val CONFIGURATION_SOURCE_FILES_PRODUCER_NAME = "koverSourcesElements"
+    public const val CONFIGURATION_SOURCE_FILES_CONSUMER_NAME = "koverSources"
+    public const val CONFIGURATION_BINARY_REPORT_PRODUCER_FILES_NAME = "koverBinaryReportElements"
+    public const val CONFIGURATION_BINARY_REPORT_CONSUMER_FILES_NAME = "koverBinaryReports"
 }
 
 public object KoverPaths {
@@ -43,5 +57,6 @@ public object KoverVersions {
 }
 
 public object KoverMigrations {
-    public const val MIGRATION_0_5_TO_0_6 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md"
+    public const val MIGRATION_0_5_TO_0_6 =
+        "https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md"
 }

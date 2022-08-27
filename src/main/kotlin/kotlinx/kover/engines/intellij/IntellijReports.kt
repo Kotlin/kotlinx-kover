@@ -4,18 +4,18 @@
 
 package kotlinx.kover.engines.intellij
 
-import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.*
-import kotlinx.kover.json.*
-import kotlinx.kover.tasks.*
-import org.gradle.api.*
-import org.gradle.api.file.*
+import kotlinx.kover.api.KoverClassFilter
+import kotlinx.kover.engines.commons.wildcardsToRegex
+import kotlinx.kover.json.writeJsonObject
+import kotlinx.kover.tasks.ProjectFiles
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.gradle.process.ExecOperations
-import java.io.*
+import java.io.File
 
 internal fun Task.intellijReport(
     exec: ExecOperations,
-    projectFiles: Map<String, ProjectFiles>,
+    projectFiles: ProjectFiles,
     filters: KoverClassFilter,
     xmlFile: File?,
     htmlDir: File?,
@@ -79,14 +79,14 @@ JSON example:
 ```
  */
 private fun File.writeReportsJson(
-    projectFiles: Map<String, ProjectFiles>,
+    projectFiles: ProjectFiles,
     classFilter: KoverClassFilter,
     xmlFile: File?,
     htmlDir: File?
 ) {
     writeJsonObject(mutableMapOf<String, Any>(
-        "reports" to projectFiles.flatMap { it.value.binaryReportFiles }.map { mapOf("ic" to it) },
-        "modules" to projectFiles.map { mapOf("sources" to it.value.sources, "output" to it.value.outputs) },
+        "reports" to mapOf("ic" to projectFiles.binaryReportFiles),
+        "modules" to mapOf("sources" to projectFiles.sources, "output" to projectFiles.outputs),
     ).also {
         if (classFilter.includes.isNotEmpty()) {
             it["include"] = mapOf("classes" to classFilter.includes.map { c -> c.wildcardsToRegex() })

@@ -4,20 +4,23 @@
 
 package kotlinx.kover.engines.jacoco
 
-import groovy.lang.*
-import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.ReportVerificationRule
+import groovy.lang.Closure
+import groovy.lang.GroovyObject
+import kotlinx.kover.api.CounterType
+import kotlinx.kover.api.VerificationTarget
+import kotlinx.kover.api.VerificationValueType
 import kotlinx.kover.engines.commons.ONE_HUNDRED
-import kotlinx.kover.tasks.*
-import org.gradle.api.*
-import org.gradle.api.file.*
-import org.gradle.internal.reflect.*
-import java.io.*
-import java.math.*
+import kotlinx.kover.engines.commons.ReportVerificationRule
+import kotlinx.kover.tasks.ProjectFiles
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
+import org.gradle.internal.reflect.JavaMethod
+import java.io.File
+import java.math.BigDecimal
 import java.util.*
 
 internal fun Task.jacocoReport(
-    projectFiles: Map<String, ProjectFiles>,
+    projectFiles: ProjectFiles,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
@@ -36,14 +39,14 @@ internal fun Task.jacocoReport(
 
 
 internal fun Task.jacocoVerification(
-    projectFiles: Map<String, ProjectFiles>,
+    projectFiles: ProjectFiles,
     rules: List<ReportVerificationRule>,
     classpath: FileCollection
 ): String? {
     callJacocoAntReportTask(projectFiles, classpath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
             rules.forEach {
-                val entityType = when(it.target) {
+                val entityType = when (it.target) {
                     VerificationTarget.ALL -> "BUNDLE"
                     VerificationTarget.CLASS -> "CLASS"
                     VerificationTarget.PACKAGE -> "PACKAGE"
@@ -51,7 +54,7 @@ internal fun Task.jacocoVerification(
                 invokeWithBody("rule", mapOf("element" to entityType)) {
                     it.bounds.forEach { b ->
                         val limitArgs = mutableMapOf<String, String>()
-                        limitArgs["counter"] = when(b.metric) {
+                        limitArgs["counter"] = when (b.metric) {
                             CounterType.LINE -> "LINE"
                             CounterType.INSTRUCTION -> "INSTRUCTION"
                             CounterType.BRANCH -> "BRANCH"
@@ -63,14 +66,17 @@ internal fun Task.jacocoVerification(
                             VerificationValueType.COVERED_COUNT -> {
                                 limitArgs["value"] = "COVEREDCOUNT"
                             }
+
                             VerificationValueType.MISSED_COUNT -> {
                                 limitArgs["value"] = "MISSEDCOUNT"
                             }
+
                             VerificationValueType.COVERED_PERCENTAGE -> {
                                 limitArgs["value"] = "COVEREDRATIO"
                                 min = min?.divide(ONE_HUNDRED)
                                 max = max?.divide(ONE_HUNDRED)
                             }
+
                             VerificationValueType.MISSED_PERCENTAGE -> {
                                 limitArgs["value"] = "MISSEDRATIO"
                                 min = min?.divide(ONE_HUNDRED)
@@ -96,7 +102,7 @@ internal fun Task.jacocoVerification(
 }
 
 private fun Task.callJacocoAntReportTask(
-    projectFiles: Map<String, ProjectFiles>,
+    projectFiles: ProjectFiles,
     classpath: FileCollection,
     block: GroovyObject.() -> Unit
 ) {
@@ -110,25 +116,16 @@ private fun Task.callJacocoAntReportTask(
         )
     )
 
-    val sources: MutableList<File> = mutableListOf()
-    val outputs: MutableList<File> = mutableListOf()
-    val binaries: MutableList<File> = mutableListOf()
-    projectFiles.forEach { pf ->
-        binaries += pf.value.binaryReportFiles
-        sources += pf.value.sources
-        outputs += pf.value.outputs
-    }
-
     builder.invokeWithBody("jacocoReport") {
         invokeWithBody("executiondata") {
-            project.files(binaries).addToAntBuilder(this, "resources")
+            project.files(projectFiles.binaryReportFiles).addToAntBuilder(this, "resources")
         }
         invokeWithBody("structure", mapOf("name" to project.path)) {
             invokeWithBody("sourcefiles") {
-                project.files(sources).addToAntBuilder(this, "resources")
+                project.files(projectFiles.sources).addToAntBuilder(this, "resources")
             }
             invokeWithBody("classfiles") {
-                project.files(outputs).addToAntBuilder(this, "resources")
+                project.files(projectFiles.outputs).addToAntBuilder(this, "resources")
             }
         }
         block()

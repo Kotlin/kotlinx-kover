@@ -20,7 +20,6 @@ internal object DirsLookup {
         KotlinAndroidPluginAdapter()
     )
 
-    @Suppress("UNUSED_PARAMETER")
     fun lookup(project: Project, sourceSetFilters: KoverSourceSetFilter): ProjectDirectories {
         val srcDirs = HashMap<String, File>()
         val outDirs = HashMap<String, File>()

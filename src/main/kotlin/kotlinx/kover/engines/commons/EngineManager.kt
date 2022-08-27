@@ -4,15 +4,24 @@
 
 package kotlinx.kover.engines.commons
 
-import kotlinx.kover.api.*
-import kotlinx.kover.engines.intellij.*
-import kotlinx.kover.engines.jacoco.*
-import kotlinx.kover.tasks.*
-import org.gradle.api.*
+import kotlinx.kover.api.CoverageEngineVariant
+import kotlinx.kover.api.CoverageEngineVendor
+import kotlinx.kover.api.KoverClassFilter
+import kotlinx.kover.engines.intellij.buildIntellijAgentJvmArgs
+import kotlinx.kover.engines.intellij.getIntellijDependencies
+import kotlinx.kover.engines.intellij.intellijReport
+import kotlinx.kover.engines.intellij.intellijVerification
+import kotlinx.kover.engines.jacoco.buildJacocoAgentJvmArgs
+import kotlinx.kover.engines.jacoco.getJacocoDependencies
+import kotlinx.kover.engines.jacoco.jacocoReport
+import kotlinx.kover.engines.jacoco.jacocoVerification
+import kotlinx.kover.tasks.EngineDetails
+import kotlinx.kover.tasks.ProjectFiles
+import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.*
-import org.gradle.process.*
-import java.io.*
+import org.gradle.api.file.ArchiveOperations
+import org.gradle.process.ExecOperations
+import java.io.File
 
 
 @Suppress("UNUSED_PARAMETER")
@@ -35,7 +44,7 @@ internal object EngineManager {
         details: EngineDetails,
         task: Task,
         exec: ExecOperations,
-        projectFiles: Map<String, ProjectFiles>,
+        projectFiles: ProjectFiles,
         classFilter: KoverClassFilter,
         xmlFile: File?,
         htmlDir: File?
@@ -51,7 +60,7 @@ internal object EngineManager {
         details: EngineDetails,
         task: Task,
         exec: ExecOperations,
-        projectFiles: Map<String, ProjectFiles>,
+        projectFiles: ProjectFiles,
         classFilter: KoverClassFilter,
         rules: List<ReportVerificationRule>,
     ): String? {
