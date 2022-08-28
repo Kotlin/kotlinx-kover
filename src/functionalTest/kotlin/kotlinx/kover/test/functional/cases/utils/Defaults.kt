@@ -7,7 +7,7 @@ package kotlinx.kover.test.functional.cases.utils
 import kotlinx.kover.test.functional.core.ProjectType
 
 
-internal fun defaultTestTask(projectType: ProjectType): String {
+internal fun defaultTestTaskName(projectType: ProjectType): String {
     return when (projectType) {
         ProjectType.KOTLIN_JVM -> "test"
         ProjectType.KOTLIN_MULTIPLATFORM -> "jvmTest"
