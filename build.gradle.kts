@@ -81,7 +81,7 @@ tasks.check { dependsOn(functionalTest) }
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
-        allWarningsAsErrors = true
+//        allWarningsAsErrors = true
 
         // Kover works with the stdlib of at least version `1.4.x`
         languageVersion = "1.4"

@@ -246,6 +246,8 @@ repositories { mavenCentral() }
 
 dependencies {
     testImplementation(kotlin("test"))
+
+    koverAggregate(project(":subprojects:alpha-project"))
 }
 
 kover {
@@ -283,17 +285,19 @@ class MyTest {
                 assertEquals(
                     TaskOutcome.SUCCESS,
                     result.task(":tasks")?.outcome,
-                    result.output
+                    result.output.prependIndent("  | "),
                 )
             }
 
         gradleRunner
             .withArguments("check", "--stacktrace", "--info")
+            .forwardOutput()
+            .withDebug(true)
             .build().also { result ->
                 assertEquals(
                     TaskOutcome.SUCCESS,
                     result.task(":subprojects:alpha-project:test")?.outcome,
-                    result.output
+                    result.output.prependIndent("  | "),
                 )
             }
 
@@ -304,7 +308,7 @@ class MyTest {
                 assertEquals(
                     TaskOutcome.SUCCESS,
                     result.task(":koverMergedReport")?.outcome,
-                    result.output
+                    result.output.prependIndent("  | "),
                 )
             }
     }

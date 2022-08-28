@@ -99,8 +99,8 @@ private class RunResultImpl(
 
     override val defaultBinaryReport: String
         get() {
-            val extension = if (engineVendor == CoverageEngineVendor.JACOCO) "exec" else "ic"
-            return binaryReportsDirectory() + "/" + defaultTestTask(slice?.type ?: ProjectType.KOTLIN_JVM) + "." + extension
+            val extension = engineVendor.reportFileExtension
+            return "${binaryReportsDirectory()}/${defaultTestTask(slice?.type ?: ProjectType.KOTLIN_JVM)}.$extension"
         }
 
     // IntelliJ is a default Engine

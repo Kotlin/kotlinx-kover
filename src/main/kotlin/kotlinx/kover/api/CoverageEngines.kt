@@ -37,9 +37,14 @@ public sealed class CoverageEngineVariant(
     }
 }
 
-internal enum class CoverageEngineVendor {
-    INTELLIJ,
-    JACOCO
+/**
+ * @param[reportFileExtension] The coverage report file extension, without the first `.`
+ */
+internal enum class CoverageEngineVendor(
+    val reportFileExtension: String
+) {
+    INTELLIJ("ic"),
+    JACOCO("exec"),
 }
 
 // TODO make internal in 0.7 version

@@ -1,13 +1,17 @@
 package kotlinx.kover.tasks
 
-import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.*
-import org.gradle.api.*
+import kotlinx.kover.api.KoverMigrations
+import kotlinx.kover.api.VerificationRule
+import kotlinx.kover.engines.commons.EngineManager
+import kotlinx.kover.engines.commons.ReportVerificationBound
+import kotlinx.kover.engines.commons.ReportVerificationRule
+import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
-import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.listProperty
 import org.gradle.process.ExecOperations
 import javax.inject.Inject
 
@@ -17,7 +21,7 @@ public open class KoverVerificationTask @Inject constructor(
     private val objects: ObjectFactory,
     // exec operations to launch Java applications
     private val exec: ExecOperations,
-): KoverReportTask(objects) {
+) : KoverReportTask(objects) {
     @get:Nested
     internal val rules: ListProperty<VerificationRule> = project.objects.listProperty()
 

@@ -12,26 +12,30 @@ import org.gradle.api.Action
 import org.gradle.api.Named
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.*
 import org.gradle.process.CommandLineArgumentProvider
 import java.io.File
 
 
 internal fun Test.applyToTestTask(
     projectExtension: KoverProjectConfig,
-    engineProvider: Provider<EngineDetails>
+    engineProvider: Provider<EngineDetails>,
+    objects: ObjectFactory,
+    layout: ProjectLayout,
 ) {
-    val extension = createTaskExtension(projectExtension)
+    val extension = createTaskExtension(projectExtension,  layout, objects,)
 
     val disabledProvider = project.provider {
-        (projectExtension.isDisabled.get() || extension.isDisabled.get() ||
+        (projectExtension.isDisabled.get() || extension.disabled.get() ||
                 projectExtension.instrumentation.excludeTasks.contains(name))
     }
 
@@ -47,23 +51,35 @@ internal fun Test.applyToTestTask(
         )
     )
 
-    val sourceErrorProvider = project.provider {
-        File(extension.reportFile.get().asFile.parentFile, "coverage-error.log")
+    val sourceErrorProvider = extension.reportFile.map {
+        it.asFile.parentFile.resolve("coverage-error.log")
     }
+    outputs.file(sourceErrorProvider)
+
     val targetErrorProvider = project.layout.buildDirectory.file("kover/errors/$name.log").map { it.asFile }
+    outputs.file(targetErrorProvider)
 
     doFirst(BinaryReportCleanupAction(disabledProvider, extension.reportFile, engineProvider.map { e -> e.variant }))
     doLast(MoveIntellijErrorLogAction(sourceErrorProvider, targetErrorProvider))
 }
 
-private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): KoverTaskExtension {
-    val taskExtension = extensions.create<KoverTaskExtension>(KoverNames.TASK_EXTENSION_NAME, project.objects)
+private fun Test.createTaskExtension(
+    projectExtension: KoverProjectConfig,
+    layout: ProjectLayout,
+    objects: ObjectFactory,
+): KoverTaskExtension {
+//    val taskExtension = extensions.create<KoverTaskExtension>(KoverNames.TASK_EXTENSION_NAME,  )
 
-    taskExtension.isDisabled.convention(false)
+    val taskExtension = objects.newInstance<KoverTaskExtension>()
+    extensions.add<KoverTaskExtension>(KoverNames.TASK_EXTENSION_NAME, taskExtension)
 
-    val reportFile = project.layout.buildDirectory.zip(projectExtension.engine) { buildDir, engine ->
-        val suffix = if (engine.vendor == CoverageEngineVendor.INTELLIJ) ".ic" else ".exec"
-        buildDir.file("kover/$name$suffix")
+    outputs.file(taskExtension.reportFile).withPropertyName("kover.reportFile")
+
+    taskExtension.disabled.convention(false)
+
+    val reportFile = layout.buildDirectory.zip(projectExtension.engine) { buildDir, engine ->
+        val suffix = engine.vendor.reportFileExtension
+        buildDir.file("kover/$name.$suffix")
     }
 
     taskExtension.reportFile.convention(reportFile)
@@ -134,7 +150,7 @@ private class BinaryReportCleanupAction(
 
 private class MoveIntellijErrorLogAction(
     private val sourceFile: Provider<File>,
-    private val targetFile: Provider<File>
+    private val targetFile: Provider<File>,
 ) : Action<Task> {
     override fun execute(task: Task) {
         val origin = sourceFile.get()

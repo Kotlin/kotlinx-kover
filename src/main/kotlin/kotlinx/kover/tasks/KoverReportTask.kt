@@ -38,14 +38,14 @@ public abstract class KoverReportTask @Inject constructor(
 }
 
 abstract class ProjectFiles {
-
+    // TODO re-enable incremental paths options
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    @get:SkipWhenEmpty
+//    @get:PathSensitive(PathSensitivity.RELATIVE)
+//    @get:SkipWhenEmpty
     abstract val binaryReportFiles: ConfigurableFileCollection
 
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
+//    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val sources: ConfigurableFileCollection
 
     @get:Classpath
@@ -58,14 +58,3 @@ internal class EngineDetails(
     @get:Internal val jarFile: File,
     @get:Internal val classpath: FileCollection
 )
-
-
-
-
-
-
-
-
-
-
-

@@ -5,7 +5,7 @@
 package kotlinx.kover.appliers
 
 import kotlinx.kover.api.*
-import kotlinx.kover.api.KoverNames.CONFIGURATION_NAME
+import kotlinx.kover.api.KoverNames.CONFIGURATION_ENGINE_NAME
 import kotlinx.kover.api.KoverNames.HTML_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.VERIFY_TASK_NAME
 import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
@@ -17,22 +17,22 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.FileTree
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.TaskCollection
 import org.gradle.api.tasks.testing.Test
-import org.gradle.configurationcache.extensions.serviceOf
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.findByType
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.*
 
 internal class KoverProjectApplier(
     private val objects: ObjectFactory,
     private val providers: ProviderFactory,
-    private val sourceFilesConsumer: NamedDomainObjectProvider<Configuration>,
-    private val binaryReportFilesConsumer: NamedDomainObjectProvider<Configuration>,
+    private val archiveOperations: ArchiveOperations,
+    private val layout: ProjectLayout,
+
+    private val sourceFilesProducer: NamedDomainObjectProvider<Configuration>,
+    private val binaryReportFilesProducer: NamedDomainObjectProvider<Configuration>,
 ) {
 
     fun applyToProject(target: Project) = with(target) {
@@ -42,7 +42,7 @@ internal class KoverProjectApplier(
         val engineProvider = engineProvider(config, extension.engine)
 
         tasks.withType<Test>().configureEach {
-            applyToTestTask(extension, engineProvider)
+            applyToTestTask(extension, engineProvider, objects, layout)
         }
 
         val instrumentedTasks = instrumentedTasks(extension)
@@ -79,14 +79,17 @@ internal class KoverProjectApplier(
             it.rules.convention(extension.verify.rules)
             it.resultFile.convention(layout.buildDirectory.file(KoverPaths.PROJECT_VERIFICATION_REPORT_DEFAULT_PATH))
             it.description = "Verifies code coverage metrics of one project based on specified rules."
+
+            it.onlyIf { t -> (t as? KoverVerificationTask)?.rules?.orNull?.hasActiveRules() == true }
+
+            // ordering of task calls, so that if a verification error occurs, reports are generated and the values can be viewed in them
+            it.shouldRunAfter(xmlTask, htmlTask)
         }
         // TODO `onlyIf` block moved out from config lambda because of bug in Kotlin compiler - it implicitly adds closure on `Project` inside onlyIf's lambda
-        verifyTask.onlyIf { extension.verify.hasActiveRules() }
+//        it.onlyIf { extension.verify.hasActiveRules() }
 
-        // ordering of task calls, so that if a verification error occurs, reports are generated and the values can be viewed in them
-        verifyTask.shouldRunAfter(xmlTask, htmlTask)
 
-        tasks.create(KoverNames.REPORT_TASK_NAME) {
+        val koverReportTask = tasks.create(KoverNames.REPORT_TASK_NAME) {
             group = KoverNames.VERIFICATION_GROUP
             dependsOn(xmlTask)
             dependsOn(htmlTask)
@@ -95,33 +98,32 @@ internal class KoverProjectApplier(
 
         val koverReportTasks = tasks.withType<KoverReportTask>()
 
-        sourceFilesConsumer.configure {
-            outgoing {
-                artifacts(
-                    providers.provider {
-                        koverReportTasks.map { task ->
-                            task.files.sources
-                        }
+        sourceFilesProducer.configure {
+            // TODO fix underlying concurrent list modification error, and remove .toList() workaround
+            koverReportTasks.toList().forEach { task ->
+                task.files.sources.files.toList().forEach { file ->
+                    outgoing.artifact(file) {
+                        builtBy(task)
                     }
-                ) {
-                    builtBy(koverReportTasks)
                 }
             }
         }
 
-        binaryReportFilesConsumer.configure {
-            outgoing {
-                artifacts(
-                    providers.provider {
-                        koverReportTasks.map { task ->
-                            task.files.binaryReportFiles
-                        }
-                    }
-                ) {
-                    builtBy(koverReportTasks)
+        binaryReportFilesProducer.configure {
+            koverReportTasks.forEach { task ->
+                logger.lifecycle("binaryReportFilesConsumer ${task.name}")
+                logger.lifecycle("binaryReportFilesConsumer ${task.name} ${task.files.binaryReportFiles.files.joinToString()}")
+                task.files.binaryReportFiles.files.forEach { file ->
+                    logger.lifecycle("binaryReportFilesConsumer getting $file")
+                    outgoing.artifact(file) { builtBy(task) }
                 }
             }
         }
+
+        tasks.matching { it.name == KoverNames.CHECK_TASK_NAME }
+            .configureEach {
+                dependsOn(koverReportTask)
+            }
 
 //    tasks
 //        .matching { it.name == KoverNames.CHECK_TASK_NAME }
@@ -155,15 +157,16 @@ internal class KoverProjectApplier(
         engineProvider: Provider<EngineDetails>,
         instrumentedTasks: TaskCollection<Test>,
         crossinline block: (T) -> Unit
-    ): T {
+    ): Provider<T> {
         val dirsLookup = filters.sourceSets.map {
             DirsLookup.lookup(project, it)
         }
-        val task = tasks.create<T>(taskName) {
+        val task = tasks.register<T>(taskName) {
 
-            files.binaryReportFiles.from(
-                binaryReports(extension)
-            )
+            // TODO fix 'path must not be null/empty' error when collecting these reports
+//            files.binaryReportFiles.from(
+//                { binaryReports(extension) }
+//            )
             files.sources.from(dirsLookup.map { it.sources })
             files.outputs.from(dirsLookup.map { it.outputs })
 //            files.put(path, projectFilesProvider(extension, filters.sourceSets))
@@ -172,13 +175,17 @@ internal class KoverProjectApplier(
             classFilter.convention(filters.classes)
             group = KoverNames.VERIFICATION_GROUP
             block(this)
+
+            enabled = extension.isDisabled.get()
         }
 
         // TODO `onlyIf` block moved out from config lambda because of bug in Kotlin compiler - it implicitly adds closure on `Project` inside onlyIf's lambda
         // execute task only if Kover not disabled for project
-        task.onlyIf { !extension.isDisabled.get() }
+//        task.onlyIf { !extension.isDisabled.get() }
         // execute task only if there is at least one binary report
 //        task.onlyIf { t -> (t as KoverReportTask).files.get().any { f -> !f.value.binaryReportFiles.isEmpty } }
+
+        logger.lifecycle("[KoverProjectApplier] finished registering task ${task.name}")
 
         return task
     }
@@ -203,7 +210,7 @@ internal class KoverProjectApplier(
     }
 
     private fun Project.createEngineConfig(engineVariantProvider: Provider<CoverageEngineVariant>): Configuration {
-        val config = project.configurations.create(CONFIGURATION_NAME)
+        val config = project.configurations.create(CONFIGURATION_ENGINE_NAME)
         config.isVisible = false
         config.isTransitive = true
         config.description = "Kotlin Kover Plugin configuration for Coverage Engine"
@@ -221,7 +228,6 @@ internal class KoverProjectApplier(
         config: Configuration,
         engineVariantProvider: Provider<CoverageEngineVariant>
     ): Provider<EngineDetails> {
-        val archiveOperations: ArchiveOperations = project.serviceOf()
         return project.provider { engineByVariant(engineVariantProvider.get(), config, archiveOperations) }
     }
 
@@ -243,7 +249,7 @@ internal class KoverProjectApplier(
 
 
     private fun Project.binaryReports(extension: KoverProjectConfig): FileTree {
-        return fileTree({
+        return fileTree(
             tasks
                 .matching { extension.isDisabled.orNull == false }
                 .withType<Test>()
@@ -253,15 +259,14 @@ internal class KoverProjectApplier(
                     when {
                         it.name in extension.instrumentation.excludeTasks -> false
                         ext == null -> false
-                        ext.isDisabled.orNull == true -> false
+                        ext.disabled.orNull == true -> false
                         ext.reportFile.orNull?.asFile?.exists() == false -> false
 
                         else -> true
                     }
                 }.map {
-                    it.extensions.getByType<KoverTaskExtension>().reportFile
+                    it.extensions.getByType<KoverTaskExtension>().reportFile.asFile
                 }
-        }
         )
     }
 
@@ -284,8 +289,11 @@ internal class KoverProjectApplier(
 
 
     internal fun KoverVerifyConfig.hasActiveRules(): Boolean {
-        return rules.get().any { rule -> rule.isEnabled }
+        return rules.get().hasActiveRules()
     }
+
+    internal fun List<VerificationRule>.hasActiveRules(): Boolean =
+        any { rule -> rule.isEnabled }
 
 }
 
@@ -303,5 +311,5 @@ internal fun Project.instrumentedTasks(extension: KoverProjectConfig): TaskColle
     return tasks.withType<Test>()
         // task can be disabled in the project extension
         .matching { it.name !in extension.instrumentation.excludeTasks }
-        .matching { it.extensions.findByType<KoverTaskExtension>()?.isDisabled?.orNull == true }
+        .matching { it.extensions.findByType<KoverTaskExtension>()?.disabled?.orNull == true }
 }

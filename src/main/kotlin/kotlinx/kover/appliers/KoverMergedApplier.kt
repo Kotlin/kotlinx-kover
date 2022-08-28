@@ -5,7 +5,7 @@
 package kotlinx.kover.appliers
 
 import kotlinx.kover.api.*
-import kotlinx.kover.api.KoverNames.CONFIGURATION_NAME
+import kotlinx.kover.api.KoverNames.CONFIGURATION_ENGINE_NAME
 import kotlinx.kover.api.KoverNames.MERGED_HTML_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.MERGED_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.MERGED_VERIFY_TASK_NAME
@@ -15,52 +15,40 @@ import kotlinx.kover.api.KoverPaths.MERGED_HTML_REPORT_DEFAULT_PATH
 import kotlinx.kover.api.KoverPaths.MERGED_VERIFICATION_REPORT_DEFAULT_PATH
 import kotlinx.kover.api.KoverPaths.MERGED_XML_REPORT_DEFAULT_PATH
 import kotlinx.kover.tasks.*
-import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.Test
-import org.gradle.configurationcache.extensions.serviceOf
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 
-internal fun Project.applyMerged(
-    sourceFilesProducer: Configuration,
-    binaryReportFilesProducer: Configuration,
+
+internal class KoverMergedApplier(
+    private val container: Project,
+    private val archiveOperations: ArchiveOperations,
+    private val sourceFilesConsumer: Configuration,
+    private val binaryReportFilesConsumer: Configuration,
 ) {
-    val extension = createMergedExtension()
-    ProcessMergeExtensionAction(
-        extension,
-        sourceFilesProducer,
-        binaryReportFilesProducer,
-    ).execute(this)
-}
 
-private fun Project.createMergedExtension(): KoverMergedConfig {
-    return extensions.create<KoverMergedConfig>(KoverNames.MERGED_EXTENSION_NAME).apply {
-        isEnabled.convention(false)
-        filters.classes.convention(KoverClassFilter())
-        filters.projects.convention(KoverProjectsFilter())
-        xmlReport.onCheck.convention(false)
-        xmlReport.reportFile.convention(layout.buildDirectory.file(MERGED_XML_REPORT_DEFAULT_PATH))
-        xmlReport.classFilter.convention(filters.classes)
-        htmlReport.onCheck.convention(false)
-        htmlReport.reportDir.convention(layout.buildDirectory.dir(MERGED_HTML_REPORT_DEFAULT_PATH))
-        htmlReport.classFilter.convention(filters.classes)
-        verify.onCheck.convention(false)
-    }
-}
+    val extension: KoverMergedConfig =
+        container.extensions.create<KoverMergedConfig>(KoverNames.MERGED_EXTENSION_NAME).apply {
+            isEnabled.convention(false)
+            filters.classes.convention(KoverClassFilter())
+            filters.projects.convention(KoverProjectsFilter())
+            xmlReport.onCheck.convention(false)
+            xmlReport.reportFile.convention(container.layout.buildDirectory.file(MERGED_XML_REPORT_DEFAULT_PATH))
+            xmlReport.classFilter.convention(filters.classes)
+            htmlReport.onCheck.convention(false)
+            htmlReport.reportDir.convention(container.layout.buildDirectory.dir(MERGED_HTML_REPORT_DEFAULT_PATH))
+            htmlReport.classFilter.convention(filters.classes)
+            verify.onCheck.convention(false)
+        }
 
-private class ProcessMergeExtensionAction(
-    private val extension: KoverMergedConfig,
-    private val sourceFilesProducer: Configuration,
-    private val binaryReportFilesProducer: Configuration,
-) : Action<Project> {
-    override fun execute(container: Project) {
+    fun execute() {
         // don't create tasks if merge wasn't enabled
 //        if (!extension.isEnabled.get()) {
 //            return
@@ -106,6 +94,8 @@ private class ProcessMergeExtensionAction(
             it.rules.convention(extension.verify.rules)
             it.resultFile.convention(container.layout.buildDirectory.file(MERGED_VERIFICATION_REPORT_DEFAULT_PATH))
             it.description = "Verifies code coverage metrics of specified projects based on specified rules."
+
+            it.onlyIf { t -> (t as? KoverVerificationTask)?.rules?.orNull?.any { r -> r.isEnabled } == true }
         }
         // TODO `onlyIf` block moved out from config lambda because of bug in Kotlin compiler - it implicitly adds closure on `Project` inside onlyIf's lambda
 //        verifyTask.onlyIf { extension.verify.hasActiveRules() }
@@ -150,18 +140,18 @@ private class ProcessMergeExtensionAction(
 //        crossinline filterExtractor: (KoverProjectConfig) -> KoverSourceSetFilter,
         crossinline block: (T) -> Unit
     ): Provider<T> {
-        return tasks.register<T>(taskName) {
+        val task = tasks.register<T>(taskName) {
 //            files.convention(mergedFilesProvider(extensionByProject, filterExtractor))
 
             files.sources.from(
-                sourceFilesProducer
+                sourceFilesConsumer
                     .incoming
                     .artifactView { lenient(true) }
                     .files
             )
 
             files.binaryReportFiles.from(
-                binaryReportFilesProducer
+                binaryReportFilesConsumer
                     .incoming
                     .artifactView { lenient(true) }
                     .files
@@ -178,7 +168,9 @@ private class ProcessMergeExtensionAction(
         // execute task only if there is at least one binary report
 //    task.onlyIf { t -> (t as KoverReportTask).files.get().any { f -> !f.value.binaryReportFiles.isEmpty } }
 
-//    return task
+
+        logger.lifecycle("[KoverMergedApplier] finished registering task ${task.name}")
+        return task
     }
 
     private fun Project.projectsExtensionsProvider(
@@ -245,9 +237,8 @@ private class ProcessMergeExtensionAction(
 
 
     private fun Project.engineProvider(extensionByProject: Provider<Map<Project, KoverProjectConfig>>): Provider<EngineDetails> {
-        val archiveOperations: ArchiveOperations = this.serviceOf()
         // configuration already created in all projects at this moment because merge tasks creates in afterEvaluate step
-        val config = configurations.getByName(CONFIGURATION_NAME)
+        val config = configurations.getByName(CONFIGURATION_ENGINE_NAME)
         // the plugin is always applied to the containing project
         val containerEngine = extensions.getByType<KoverProjectConfig>().engine
 

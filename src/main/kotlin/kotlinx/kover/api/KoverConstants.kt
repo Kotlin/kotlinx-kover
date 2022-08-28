@@ -4,13 +4,6 @@
 
 package kotlinx.kover.api
 
-import org.gradle.api.Named
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.attributes.AttributeContainer
-import org.gradle.api.attributes.Category
-import org.gradle.api.attributes.Usage
-import org.gradle.api.model.ObjectFactory
-import org.gradle.kotlin.dsl.named
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 public object KoverNames {
@@ -31,7 +24,7 @@ public object KoverNames {
     public const val REPORT_TASK_NAME = "koverReport"
     public const val VERIFY_TASK_NAME = "koverVerify"
 
-    public const val CONFIGURATION_NAME = "KoverEngineConfig"
+    public const val CONFIGURATION_ENGINE_NAME = "KoverEngineConfig"
     public const val CONFIGURATION_AGGREGATE_NAME = "koverAggregate"
     public const val CONFIGURATION_SOURCE_FILES_PRODUCER_NAME = "koverSourcesElements"
     public const val CONFIGURATION_SOURCE_FILES_CONSUMER_NAME = "koverSources"

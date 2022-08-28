@@ -52,9 +52,10 @@ internal fun AttributeContainer.koverBinaryReport(objects: ObjectFactory) {
  *
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
-internal fun Configuration.isProducer() {
-    isCanBeResolved = true
-    isCanBeConsumed = false
+internal fun Configuration.asProducer() {
+    isCanBeResolved = false
+    // this configuration produces modules that can be consumed by other projects
+    isCanBeConsumed = true
 }
 
 /**
@@ -62,8 +63,9 @@ internal fun Configuration.isProducer() {
  *
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
-internal fun Configuration.isConsumer() {
-    isCanBeResolved = false
-    isCanBeConsumed = true
+internal fun Configuration.asConsumer() {
+    isCanBeResolved = true
+    // this config consumes modules from OTHER projects, and cannot be consumed by other projects
+    isCanBeConsumed = false
 }
 
