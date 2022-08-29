@@ -62,8 +62,8 @@ private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): Kove
     taskExtension.isDisabled.convention(false)
 
     val reportFile = project.layout.buildDirectory.zip(projectExtension.engine) { buildDir, engine ->
-        val suffix = if (engine.vendor == CoverageEngineVendor.INTELLIJ) ".ic" else ".exec"
-        buildDir.file("kover/$name$suffix")
+        val suffix = engine.vendor.reportFileExtension
+        buildDir.file("kover/$name.$suffix")
     }
 
     taskExtension.reportFile.convention(reportFile)
