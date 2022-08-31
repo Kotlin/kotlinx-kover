@@ -6,8 +6,9 @@ package kotlinx.kover.engines.jacoco
 
 import groovy.lang.*
 import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.ReportVerificationRule
+import kotlinx.kover.engines.commons.*
 import kotlinx.kover.engines.commons.ONE_HUNDRED
+import kotlinx.kover.engines.commons.ReportVerificationRule
 import kotlinx.kover.tasks.*
 import org.gradle.api.*
 import org.gradle.api.file.*
@@ -18,11 +19,12 @@ import java.util.*
 
 internal fun Task.jacocoReport(
     projectFiles: Map<String, ProjectFiles>,
+    filters: KoverClassFilter,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
 ) {
-    callJacocoAntReportTask(projectFiles, classpath) {
+    callJacocoAntReportTask(projectFiles, filters, classpath) {
         if (xmlFile != null) {
             xmlFile.parentFile.mkdirs()
             invokeMethod("xml", mapOf("destfile" to xmlFile))
@@ -37,10 +39,11 @@ internal fun Task.jacocoReport(
 
 internal fun Task.jacocoVerification(
     projectFiles: Map<String, ProjectFiles>,
+    filters: KoverClassFilter,
     rules: List<ReportVerificationRule>,
     classpath: FileCollection
 ): String? {
-    callJacocoAntReportTask(projectFiles, classpath) {
+    callJacocoAntReportTask(projectFiles, filters, classpath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
             rules.forEach {
                 val entityType = when(it.target) {
@@ -97,6 +100,7 @@ internal fun Task.jacocoVerification(
 
 private fun Task.callJacocoAntReportTask(
     projectFiles: Map<String, ProjectFiles>,
+    filters: KoverClassFilter,
     classpath: FileCollection,
     block: GroovyObject.() -> Unit
 ) {
@@ -119,6 +123,26 @@ private fun Task.callJacocoAntReportTask(
         outputs += pf.value.outputs
     }
 
+
+    val filteredOutput = if (filters.excludes.isNotEmpty() || filters.includes.isNotEmpty()) {
+        val excludeRegexes = filters.excludes.map { Regex(it.wildcardsToClassFileRegex()) }
+        val includeRegexes = filters.includes.map { Regex(it.wildcardsToClassFileRegex()) }
+        val trees = outputs.map {
+            project.fileTree(it).filter { file ->
+                // the `canonicalPath` is used because a `File.separatorChar` was used to construct the class-file regex
+                val path = file.canonicalPath
+                // if the inclusion rules are declared, then the file must fit at least one of them
+                (includeRegexes.isEmpty() || includeRegexes.any { regex -> path.matches(regex) })
+                        // if the exclusion rules are declared, then the file should not fit any of them
+                        && excludeRegexes.none { regex -> path.matches(regex) }
+            }
+        }
+        project.files(trees)
+    } else {
+        project.files(outputs)
+    }
+
+
     builder.invokeWithBody("jacocoReport") {
         invokeWithBody("executiondata") {
             project.files(binaries).addToAntBuilder(this, "resources")
@@ -128,7 +152,7 @@ private fun Task.callJacocoAntReportTask(
                 project.files(sources).addToAntBuilder(this, "resources")
             }
             invokeWithBody("classfiles") {
-                project.files(outputs).addToAntBuilder(this, "resources")
+                filteredOutput.addToAntBuilder(this, "resources")
             }
         }
         block()

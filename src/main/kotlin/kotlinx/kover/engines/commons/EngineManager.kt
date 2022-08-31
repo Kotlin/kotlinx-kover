@@ -43,7 +43,7 @@ internal object EngineManager {
         if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
             task.intellijReport(exec, projectFiles, classFilter, xmlFile, htmlDir, details.classpath)
         } else {
-            task.jacocoReport(projectFiles, xmlFile, htmlDir, details.classpath)
+            task.jacocoReport(projectFiles, classFilter, xmlFile, htmlDir, details.classpath)
         }
     }
 
@@ -58,7 +58,7 @@ internal object EngineManager {
         return if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
             task.intellijVerification(exec, projectFiles, classFilter, rules, details.classpath)
         } else {
-            task.jacocoVerification(projectFiles, rules, details.classpath)
+            task.jacocoVerification(projectFiles, classFilter, rules, details.classpath)
         }
     }
 
