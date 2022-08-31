@@ -9,7 +9,7 @@ import java.io.File
 import java.math.BigDecimal
 import kotlin.test.*
 
-class JsonTest {
+class JsonTests {
     private val encodingText = """{
   "field": "text",
   "numberField": 42,
