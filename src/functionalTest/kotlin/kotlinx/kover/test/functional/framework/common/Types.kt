@@ -68,9 +68,6 @@ internal data class BuildSlice(
     }
 }
 
-
-internal const val SAMPLES_SOURCES_PATH = "src/functionalTest/templates/sources"
-
 internal fun File.sub(relativePath: String): File = File(this, relativePath)
 internal val File.uri: String get() = "file://${this.canonicalPath}"
 

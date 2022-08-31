@@ -23,8 +23,6 @@ private fun File.writeProject(config: TestProjectConfig, slice: BuildSlice) {
     this.sub("build.${slice.scriptExtension}").writeBuildScript(config, slice)
 }
 
-
-
 private fun File.writeSources(config: TestProjectConfig, slice: BuildSlice) {
     fun File.copyInto(targetFile: File) {
         listFiles()?.forEach { src ->
@@ -60,6 +58,9 @@ internal fun File.writeSettings(build: TestBuildConfig) {
         }
     }
 }
+
+private const val SAMPLES_SOURCES_PATH = "src/functionalTest/templates/sources"
+
 
 private const val LOCAL_CACHE = """
 buildCache {

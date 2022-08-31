@@ -7,7 +7,7 @@ import kotlinx.kover.test.functional.framework.starter.*
 
 internal class ReportsFilteringTests {
 
-    @SlicedGeneratedTest(allLanguages = true)
+    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
     fun BuildConfigurator.testExclude() {
         addKoverProject {
             sourcesFrom("simple")
@@ -28,7 +28,7 @@ internal class ReportsFilteringTests {
         }
     }
 
-    @SlicedGeneratedTest(allLanguages = true)
+    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
     fun BuildConfigurator.testExcludeInclude() {
         addKoverProject {
             sourcesFrom("simple")

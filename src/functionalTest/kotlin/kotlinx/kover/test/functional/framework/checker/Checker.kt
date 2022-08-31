@@ -73,8 +73,8 @@ internal abstract class CheckerContextWrapper(private val origin: CheckerContext
         origin.verification(checker)
     }
 
-    override fun outcome(taskName: String, checker: TaskOutcome.() -> Unit) {
-        origin.outcome(taskName, checker)
+    override fun outcome(taskNameOrPath: String, checker: TaskOutcome.() -> Unit) {
+        origin.outcome(taskNameOrPath, checker)
     }
 
     override fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
@@ -118,7 +118,7 @@ private class CheckerContextImpl(
     override val defaultBinaryReport: String
         get() {
             val extension = if (engine.vendor == CoverageEngineVendor.JACOCO) "exec" else "ic"
-            return binaryReportsDirectory + "/" + defaultTestTask(pluginType!!) + "." + extension
+            return binaryReportsDirectory + "/" + defaultTestTaskName(pluginType!!) + "." + extension
         }
 
 
@@ -165,10 +165,14 @@ private class CheckerContextImpl(
         VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
     }
 
-    override fun outcome(taskName: String, checker: TaskOutcome.() -> Unit) {
-        val taskPath = (if (path == ":") "" else path) + ":" + taskName
+    override fun outcome(taskNameOrPath: String, checker: TaskOutcome.() -> Unit) {
+        val taskPath = if (taskNameOrPath.startsWith(":")) {
+            taskNameOrPath
+        } else {
+            if (path == ":") ":$taskNameOrPath" else "$path:$taskNameOrPath"
+        }
         result.task(taskPath)?.outcome?.checker()
-            ?: throw IllegalArgumentException("Task '$taskName' with path '$taskPath' not found in build result")
+            ?: throw IllegalArgumentException("Task '$taskNameOrPath' with path '$taskPath' not found in build result")
     }
 
     override fun checkDefaultBinaryReport(mustExist: Boolean) {

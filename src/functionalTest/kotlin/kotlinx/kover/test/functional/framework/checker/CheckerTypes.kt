@@ -38,7 +38,7 @@ internal interface CheckerContext {
 
     fun verification(checker: VerifyReportChecker.() -> Unit)
 
-    fun outcome(taskName: String, checker: TaskOutcome.() -> Unit)
+    fun outcome(taskNameOrPath: String, checker: TaskOutcome.() -> Unit)
 
     val defaultBinaryReport: String
     fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean)

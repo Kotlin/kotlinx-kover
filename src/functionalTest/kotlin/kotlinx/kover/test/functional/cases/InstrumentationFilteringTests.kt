@@ -104,7 +104,7 @@ internal class InstrumentationFilteringTests {
             sourcesFrom("simple")
             kover {
                 instrumentation {
-                    excludeTasks += defaultTestTask(slice.type)
+                    excludeTasks += defaultTestTaskName(slice.type)
                 }
             }
         }
