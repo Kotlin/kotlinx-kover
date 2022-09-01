@@ -579,3 +579,7 @@ repositories {
 }
 ```
 </details>
+
+## Building and Contributing
+
+See [Contributing Guidelines](CONTRIBUTING.md).
