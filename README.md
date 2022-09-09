@@ -24,6 +24,7 @@ Minimal supported `Gradle` version: `6.6`.
 - [Kover single-project tasks](#kover-single-project-tasks)
 - [Kover merged tasks](#kover-merged-tasks)
 - [Implicit plugin dependencies](#implicit-plugin-dependencies)
+- [Building and contributing](#building-and-contributing)
 
 ## Features
 
