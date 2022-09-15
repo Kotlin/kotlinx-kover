@@ -6,7 +6,7 @@ package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.checker.*
-import kotlinx.kover.test.functional.framework.common.nextReleaseKoverVersion
+import kotlinx.kover.test.functional.framework.common.recentKoverVersion
 import kotlinx.kover.test.functional.framework.starter.*
 import kotlin.test.*
 
@@ -16,8 +16,8 @@ internal class ExamplesTests {
     fun CheckerContext.buildAndCheckVersions() {
         allProjects {
             // check version of Kover plugin if applied
-            if (koverVersion != null) {
-                assertEquals(koverVersion, nextReleaseKoverVersion)
+            if (definedKoverVersion != null) {
+                assertEquals(definedKoverVersion, recentKoverVersion)
             }
 
             // check version of engine, it should be default

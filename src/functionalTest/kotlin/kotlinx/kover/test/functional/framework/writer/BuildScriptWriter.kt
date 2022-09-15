@@ -19,7 +19,7 @@ internal fun File.writeBuildScript(projectConfig: TestProjectConfig, slice: Buil
     }
 }
 
-private fun ScriptAppender.writePlugins(plugins: TestPluginsConfig) {
+private fun FormattedScriptAppender.writePlugins(plugins: TestPluginsConfig) {
     block("plugins", plugins.useKotlin || plugins.useKover) {
         lineIf(plugins.useKotlin) {
             val name = when {
@@ -45,13 +45,13 @@ private fun ScriptAppender.writePlugins(plugins: TestPluginsConfig) {
     }
 }
 
-private fun ScriptAppender.writeRepositories(repositories: List<String>) {
+private fun FormattedScriptAppender.writeRepositories(repositories: List<String>) {
     blockForEach(repositories, "repositories", repositories.isNotEmpty()) { repository ->
         line(repository)
     }
 }
 
-private fun ScriptAppender.writeDependencies(projectDependencies: List<String>) {
+private fun FormattedScriptAppender.writeDependencies(projectDependencies: List<String>) {
     val subprojectsPart = projectDependencies.joinToString(separator = "\n") {
         if (language == ScriptLanguage.KOTLIN) "implementation(project(\"$it\"))" else "implementation project('$it')"
     }
@@ -68,7 +68,7 @@ private fun ScriptAppender.writeDependencies(projectDependencies: List<String>) 
     }
 }
 
-private fun ScriptAppender.writeTestTasks(state: TestTaskConfig) {
+private fun FormattedScriptAppender.writeTestTasks(state: TestTaskConfig) {
     val testTaskName = when {
         type == KotlinPluginType.JVM -> "test"
         type == KotlinPluginType.MULTIPLATFORM && language == ScriptLanguage.KOTLIN -> "named(\"jvmTest\").configure"

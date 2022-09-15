@@ -9,12 +9,11 @@ import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.configurator.TestVerifyConfig
 
-internal fun ScriptAppender.writeKover(kover: TestKoverConfig?) {
+internal fun FormattedScriptAppender.writeKover(kover: TestKoverConfig?) {
     if (kover == null) {
-        if (engineForced != null) {
-            block("kover") {
-                writeEngine(null)
-            }
+        // if where is no such block in test script but test generated for specific overridden engine - add `kover` block to the script file
+        block("kover", overriddenEngine != null) {
+            writeEngine(null)
         }
         return
     }
@@ -30,12 +29,12 @@ internal fun ScriptAppender.writeKover(kover: TestKoverConfig?) {
 }
 
 
-private fun ScriptAppender.writeEngine(engineFromConfig: CoverageEngineVariant?) {
-    if (engineFromConfig == null && engineForced == null) return
+private fun FormattedScriptAppender.writeEngine(engineFromConfig: CoverageEngineVariant?) {
+    if (engineFromConfig == null && overriddenEngine == null) return
 
-    val value = if (engineForced != null) {
+    val value = if (overriddenEngine != null) {
         val clazz =
-            if (engineForced == CoverageEngineVendor.INTELLIJ) DefaultIntellijEngine::class else DefaultJacocoEngine::class
+            if (overriddenEngine == CoverageEngineVendor.INTELLIJ) DefaultIntellijEngine::class else DefaultJacocoEngine::class
         clazz.obj(language)
     } else {
         val clazz =
@@ -51,7 +50,7 @@ private fun ScriptAppender.writeEngine(engineFromConfig: CoverageEngineVariant?)
     line("engine".setProperty(value, language))
 }
 
-private fun ScriptAppender.writeDisabled(isDisabled: Boolean?) {
+private fun FormattedScriptAppender.writeDisabled(isDisabled: Boolean?) {
     if (isDisabled == null) return
 
     if (language == ScriptLanguage.KOTLIN) {
@@ -61,7 +60,7 @@ private fun ScriptAppender.writeDisabled(isDisabled: Boolean?) {
     }
 }
 
-private fun ScriptAppender.writeFilters(state: TestKoverFiltersConfig) {
+private fun FormattedScriptAppender.writeFilters(state: TestKoverFiltersConfig) {
     val classes = state.classes
     val sourceSets = state.sourceSets
 
@@ -78,7 +77,7 @@ private fun ScriptAppender.writeFilters(state: TestKoverFiltersConfig) {
     }
 }
 
-private fun ScriptAppender.writeXmlReport(state: TestXmlConfig) {
+private fun FormattedScriptAppender.writeXmlReport(state: TestXmlConfig) {
     val overrideFilters = state.overrideFilters
 
     block("xmlReport", state.onCheck != null || state.reportFile != null || overrideFilters != null) {
@@ -91,14 +90,14 @@ private fun ScriptAppender.writeXmlReport(state: TestXmlConfig) {
     }
 }
 
-private fun ScriptAppender.writeInstrumentation(state: KoverProjectInstrumentation) {
+private fun FormattedScriptAppender.writeInstrumentation(state: KoverProjectInstrumentation) {
     block("instrumentation", state.excludeTasks.isNotEmpty()) {
         line("excludeTasks".addAllList(state.excludeTasks, language))
     }
 }
 
 
-internal fun ScriptAppender.writeClassFilterContent(classFilter: KoverClassFilter) {
+internal fun FormattedScriptAppender.writeClassFilterContent(classFilter: KoverClassFilter) {
     if (classFilter.excludes.isNotEmpty()) {
         line("excludes".addAllList(classFilter.excludes, language))
     }
@@ -107,7 +106,7 @@ internal fun ScriptAppender.writeClassFilterContent(classFilter: KoverClassFilte
     }
 }
 
-internal fun ScriptAppender.writeVerify(conf: TestVerifyConfig) {
+internal fun FormattedScriptAppender.writeVerify(conf: TestVerifyConfig) {
     val onCheck = conf.onCheck
     val rules = conf.rules
 

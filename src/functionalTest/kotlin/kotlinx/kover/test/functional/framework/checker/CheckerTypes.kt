@@ -10,8 +10,7 @@ import org.gradle.testkit.runner.*
 import java.io.*
 
 internal interface CheckerContext {
-    // TODO support value if plugin was applied in subproject
-    val koverVersion: String?
+    val definedKoverVersion: String?
 
     val engine: CoverageEngineVariant
 

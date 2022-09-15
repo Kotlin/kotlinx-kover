@@ -83,8 +83,8 @@ private class ExampleInterceptor : InvocationInterceptor {
     ) {
         if (invocationContext.arguments.isEmpty()) {
             throw IllegalStateException(
-                "Parameter with type '${BuildConfigurator::class.qualifiedName}' is expected for a test. " +
-                        "Moreover, it can be a receiver, for example 'fun ${BuildConfigurator::class.simpleName}.myTest()'"
+                "Parameter with type '${CheckerContext::class.qualifiedName}' is expected for a test. " +
+                        "Moreover, it can be a receiver, for example 'fun ${CheckerContext::class.simpleName}.myTest()'"
             )
         }
         val checkerContext = invocationContext.arguments[0] as NamedCheckerContext

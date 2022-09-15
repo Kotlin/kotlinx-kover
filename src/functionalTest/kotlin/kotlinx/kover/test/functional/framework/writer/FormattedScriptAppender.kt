@@ -11,28 +11,28 @@ import java.io.*
 internal fun File.writeScript(
     language: ScriptLanguage,
     type: KotlinPluginType,
-    engineForced: CoverageEngineVendor?,
-    block: ScriptAppender.() -> Unit
+    overriddenEngine: CoverageEngineVendor?,
+    block: FormattedScriptAppender.() -> Unit
 ) {
     this.printWriter().use {
-        object : ScriptAppender(language, type, engineForced, 0) {
-            override fun doWrite(text: String) = it.print(text)
+        FormattedScriptAppender(language, type, overriddenEngine) { string ->
+           it.print(string)
         }.block()
     }
 }
 
-internal abstract class ScriptAppender(
+internal class FormattedScriptAppender(
     val language: ScriptLanguage,
     val type: KotlinPluginType,
-    val engineForced: CoverageEngineVendor?,
-    private val indents: Int
+    val overriddenEngine: CoverageEngineVendor?,
+    val appender: (String) -> Unit
 ) {
-    abstract fun doWrite(text: String)
+    private var indents: Int = 0
 
     fun line(line: String) {
-        doWrite(indent(indents))
-        doWrite(line)
-        doWrite("\n")
+        appender(indent(indents))
+        appender(line)
+        appender("\n")
     }
 
     inline fun lineIf(shouldWrite: Boolean, producer: () -> String) {
@@ -44,24 +44,17 @@ internal abstract class ScriptAppender(
         if (shouldWrite) line(line)
     }
 
-    inline fun block(name: String, shouldWrite: Boolean = true, content: ScriptAppender.() -> Unit) {
+    inline fun block(name: String, shouldWrite: Boolean = true, content: FormattedScriptAppender.() -> Unit) {
         if (!shouldWrite) return
         line("$name {")
-        stepInto().content()
+        indents++
+        content()
+        indents--
         line("}")
     }
 
-    inline fun <T> blockForEach(values: Iterable<T>, prefixLine: String,  shouldWrite: Boolean = true, content: ScriptAppender.(T) -> Unit) {
+    inline fun <T> blockForEach(values: Iterable<T>, prefixLine: String,  shouldWrite: Boolean = true, content: FormattedScriptAppender.(T) -> Unit) {
         values.forEach { value -> block(prefixLine, shouldWrite) { content(value) } }
-    }
-
-
-    private fun stepInto(): ScriptAppender {
-        return object : ScriptAppender(language, type, engineForced, indents + 1) {
-            override fun doWrite(text: String) {
-                this@ScriptAppender.doWrite(text)
-            }
-        }
     }
 
     private fun indent(count: Int): String {

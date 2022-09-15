@@ -35,8 +35,8 @@ internal fun File.createCheckerContext(result: BuildResult): CheckerContext {
 }
 
 internal abstract class CheckerContextWrapper(private val origin: CheckerContext) : CheckerContext {
-    override val koverVersion: String?
-        get() = origin.koverVersion
+    override val definedKoverVersion: String?
+        get() = origin.definedKoverVersion
     override val engine: CoverageEngineVariant
         get() = origin.engine
     override val language: ScriptLanguage
@@ -112,8 +112,8 @@ private class CheckerContextImpl(
     override val language = if (buildFile.name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
     override val pluginType = buildScript.kotlinPluginType(language)
     override val output: String = result.output
-    override val koverVersion: String? = buildScript.koverVersion()
-    override val engine: CoverageEngineVariant = buildScript.engine()
+    override val definedKoverVersion: String? = buildScript.definedKoverVersion()
+    override val engine: CoverageEngineVariant = buildScript.definedEngine() ?: DefaultIntellijEngine
 
     override val defaultBinaryReport: String
         get() {
@@ -229,13 +229,51 @@ private class CheckerContextImpl(
     }
 }
 
+/**
+ * Regex for finding the version of the applied Kover plugin.
+ *
+ * Examples:
+ *   - `id("org.jetbrains.kotlinx.kover") version "x.x.x"`
+ *   - `id 'org.jetbrains.kotlinx.kover' version 'x.x.x'`
+ */
 private val pluginRegex =
     """id\(?\s*["']org.jetbrains.kotlinx.kover["']\s*\)?\s+version\s+["']([^"^']+)["']""".toRegex()
+
+/**
+ * Regex for finding the version of the Kover plugin applied in the legacy style.
+ *
+ * Examples:
+ *   - `classpath("org.jetbrains.kotlinx:kover:x.x.x")`
+ *   - `classpath 'org.jetbrains.kotlinx:kover:x.x.x'`
+ */
 private val dependencyRegex = """classpath\(?\s*["']org.jetbrains.kotlinx:kover:([^"^']+)["']""".toRegex()
+
+/**
+ * Regex for finding the custom version of the IntelliJ Coverage Engine.
+ *
+ * Examples:
+ *   - `kotlinx.kover.api.IntellijEngine("x.x.x")`
+ *   - `kotlinx.kover.api.IntellijEngine('x.x.x')`
+ */
 private val intellijEngineRegex = """IntellijEngine\s*\(\s*["']([^"^']+)["']\s*\)""".toRegex()
+
+/**
+ * Regex for finding the custom version of the JaCoCo Coverage Engine.
+ *
+ * Examples:
+ *   - `kotlinx.kover.api.JacocoEngine("x.x.x")`
+ *   - `kotlinx.kover.api.JacocoEngine('x.x.x')`
+ */
 private val jacocoEngineRegex = """JacocoEngine\s*\(\s*["']([^"^']+)["']\s*\)""".toRegex()
 
-private val includeRegex = """include\s*\(\s*["']([^"^']+)["']\s*\)""".toRegex()
+/**
+ * Regex for finding paths of the subprojects. *Subprojects with redefined paths are not supported!*
+ *
+ * Examples:
+ *   - `include(":subproject")`
+ *   - `include(':subproject')`
+ */
+private val includeRegex = """include\s*\(\s*["']([^"']+)["']\s*\)""".toRegex()
 
 private fun File.buildFile(): File {
     var file = this.sub("build.gradle")
@@ -290,7 +328,7 @@ private fun String.kotlinPluginType(language: ScriptLanguage): KotlinPluginType?
     }
 }
 
-internal fun String.engine(): CoverageEngineVariant {
+internal fun String.definedEngine(): CoverageEngineVariant? {
     when {
         contains("DefaultIntellijEngine") -> return DefaultIntellijEngine
         contains("DefaultJacocoEngine") -> return DefaultJacocoEngine
@@ -304,11 +342,10 @@ internal fun String.engine(): CoverageEngineVariant {
     if (intellijEngineVersion != null) return IntellijEngine(intellijEngineVersion)
     if (jacocoEngineVersion != null) return JacocoEngine(jacocoEngineVersion)
 
-    return DefaultIntellijEngine
+    return null
 }
 
-// TODO support value if plugin was applied in subproject
-internal fun String.koverVersion(): String? {
+internal fun String.definedKoverVersion(): String? {
     val pluginVersion = pluginRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
     val dependencyVersion = dependencyRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
 
@@ -398,8 +435,7 @@ private class CounterImpl(
     val symbol: String,
     val type: String,
     val values: CounterValues?
-) :
-    Counter {
+) : Counter {
     override fun assertAbsent() {
         assertNull(values, "Counter '$symbol' with type '$type' isn't absent")
     }

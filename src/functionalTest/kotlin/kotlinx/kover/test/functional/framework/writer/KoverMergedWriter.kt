@@ -6,7 +6,7 @@ package kotlinx.kover.test.functional.framework.writer
 
 import kotlinx.kover.test.functional.framework.configurator.*
 
-internal fun ScriptAppender.writeKoverMerged(merged: TestKoverMergedConfig?) {
+internal fun FormattedScriptAppender.writeKoverMerged(merged: TestKoverMergedConfig?) {
     block("koverMerged", merged != null) {
         writeEnabled(merged!!.enabled)
         writeFilters(merged.filters)
@@ -14,11 +14,11 @@ internal fun ScriptAppender.writeKoverMerged(merged: TestKoverMergedConfig?) {
     }
 }
 
-private fun ScriptAppender.writeEnabled(isEnabled: Boolean) {
+private fun FormattedScriptAppender.writeEnabled(isEnabled: Boolean) {
     lineIf(isEnabled, "enable()")
 }
 
-private fun ScriptAppender.writeFilters(state: TestKoverMergedFiltersConfig) {
+private fun FormattedScriptAppender.writeFilters(state: TestKoverMergedFiltersConfig) {
     val classes = state.classes
     val projects = state.projects
 

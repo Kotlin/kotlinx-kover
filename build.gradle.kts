@@ -18,7 +18,6 @@ repositories {
 }
 
 val kotlinVersion = property("kotlinVersion")
-val koverVersion = property("version")
 
 sourceSets {
     create("functionalTest") {
@@ -79,7 +78,8 @@ val functionalTest by tasks.registering(Test::class) {
 
         // used in build scripts of functional tests
         systemProperties["kotlinVersion"] = kotlinVersion
-        systemProperties["koverVersion"] = koverVersion
+        systemProperties["koverVersion"] = project.property("version")
+        systemProperties["recentKoverVersion"] = project.property("recentVersion")
         systemProperties["infoLogsEnabled"] = project.logger.isInfoEnabled
     }
 }
