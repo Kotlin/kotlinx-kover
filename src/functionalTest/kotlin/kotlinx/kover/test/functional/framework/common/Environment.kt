@@ -10,7 +10,7 @@ internal val koverVersion = System.getProperty("koverVersion")
     ?: throw Exception("System property 'koverVersion' not defined for functional tests")
 
 internal val recentKoverVersion = System.getProperty("recentKoverVersion")
-    ?: throw Exception("System property 'koverVersion' not defined for functional tests")
+    ?: throw Exception("System property 'recentKoverVersion' not defined for functional tests")
 
 internal val kotlinVersion = System.getProperty("kotlinVersion")
     ?: throw Exception("System property 'kotlinVersion' not defined for functional tests")
