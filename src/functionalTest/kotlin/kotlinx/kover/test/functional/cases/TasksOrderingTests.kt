@@ -1,15 +1,12 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.*
-import kotlinx.kover.test.functional.core.*
-import kotlinx.kover.test.functional.core.BaseGradleScriptTest
-import kotlin.test.*
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
 
-internal class TasksOrderingTests : BaseGradleScriptTest() {
-    @Test
-    fun testProjectTasks() {
-        val build = diverseBuild()
-        build.addKoverRootProject {
+internal class TasksOrderingTests {
+    @GeneratedTest
+    fun BuildConfigurator.testProjectTasks() {
+        addKoverProject {
             sourcesFrom("simple")
             kover {
                 verify {
@@ -21,17 +18,15 @@ internal class TasksOrderingTests : BaseGradleScriptTest() {
                 }
             }
         }
-        val runner = build.prepare()
-        runner.runWithError("koverVerify", "koverReport") {
+        runWithError("koverVerify", "koverReport") {
             // reports should be generated even if verification failed with an error
             checkDefaultReports()
         }
     }
 
-    @Test
-    fun testMergedTasks() {
-        val build = diverseBuild()
-        build.addKoverRootProject {
+    @GeneratedTest
+    fun BuildConfigurator.testMergedTasks() {
+        addKoverProject {
             sourcesFrom("simple")
             koverMerged {
                 enable()
@@ -44,8 +39,7 @@ internal class TasksOrderingTests : BaseGradleScriptTest() {
                 }
             }
         }
-        val runner = build.prepare()
-        runner.runWithError("koverMergedVerify", "koverMergedReport") {
+        runWithError("koverMergedVerify", "koverMergedReport") {
             // reports should be generated even if verification failed with an error
             checkDefaultMergedReports()
         }

@@ -1,38 +1,30 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.*
-import kotlinx.kover.test.functional.core.*
-import org.gradle.testkit.runner.GradleRunner
-import org.gradle.testkit.runner.TaskOutcome
-import java.nio.file.Files
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlinx.kover.test.functional.framework.checker.*
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
+import org.gradle.testkit.runner.*
+import kotlin.test.*
 
-internal class MultiProjectTests : BaseGradleScriptTest() {
-    private val subprojectName = "common"
-    private val rootName = "kover-functional-test"
+internal class MultiProjectTests {
+    private val subprojectPath = ":common"
 
-
-    @Test
-    fun testMergedReports() {
-        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
-        val subPath = build.addKoverSubproject(subprojectName) {
+    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    fun BuildConfigurator.testMergedReports() {
+        addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
         }
 
-        build.addKoverRootProject {
+        addKoverProject {
             sourcesFrom("multiproject-user")
-            subproject(subPath)
+            dependencyOnProject(subprojectPath)
 
             koverMerged {
                 enable()
             }
         }
 
-
-        val runner = build.prepare()
-        runner.run(":koverMergedXmlReport") {
+        run(":koverMergedXmlReport") {
             xml(defaultMergedXmlReport()) {
                 classCounter("org.jetbrains.CommonClass").assertFullyCovered()
                 classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()
@@ -41,28 +33,25 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testIsolatedProjectsReports() {
-        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
-        val subPath = build.addKoverSubproject(subprojectName) {
+    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    fun BuildConfigurator.testIsolatedProjectsReports() {
+        addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
         }
 
-        build.addKoverRootProject {
+        addKoverProject {
             sourcesFrom("multiproject-user")
-            subproject(subPath)
+            dependencyOnProject(subprojectPath)
         }
 
-
-        val runner = build.prepare()
-        runner.run("koverXmlReport") {
+        run("koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.CommonClass").assertAbsent()
                 classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
                 classCounter("org.jetbrains.UserClass").assertFullyCovered()
             }
 
-            subproject(subprojectName) {
+            subproject(subprojectPath) {
                 xml(defaultXmlReport()) {
                     classCounter("org.jetbrains.UserClass").assertAbsent()
 
@@ -74,33 +63,31 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testDisabledKover() {
-        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
-        val subPath = build.addKoverSubproject(subprojectName) {
+    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    fun BuildConfigurator.testDisabledKover() {
+        addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
                 isDisabled = true
             }
         }
 
-        build.addKoverRootProject {
+        addKoverProject {
             sourcesFrom("multiproject-user")
-            subproject(subPath)
+            dependencyOnProject(subprojectPath)
             kover {
                 isDisabled = true
             }
         }
 
-        val runner = build.prepare()
-        runner.run("koverReport", "koverVerify") {
+        run("koverReport", "koverVerify") {
             checkDefaultBinaryReport(false)
 
             checkOutcome("koverHtmlReport", TaskOutcome.SKIPPED)
             checkOutcome("koverXmlReport", TaskOutcome.SKIPPED)
             checkOutcome("koverVerify", TaskOutcome.SKIPPED)
 
-            subproject(subprojectName) {
+            subproject(subprojectPath) {
                 checkDefaultBinaryReport(false)
                 checkOutcome("koverHtmlReport", TaskOutcome.SKIPPED)
                 checkOutcome("koverXmlReport", TaskOutcome.SKIPPED)
@@ -109,29 +96,27 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testExcludeProject() {
-        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
-        val subPath = build.addKoverSubproject(subprojectName) {
+    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    fun BuildConfigurator.testExcludeProject() {
+        addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
         }
 
-        build.addKoverRootProject {
+        addKoverProject {
             sourcesFrom("multiproject-user")
-            subproject(subPath)
+            dependencyOnProject(subprojectPath)
 
             koverMerged {
                 enable()
                 filters {
                     projects {
-                        excludes += subprojectName
+                        excludes += subprojectPath.removePrefix(":")
                     }
                 }
             }
         }
 
-        val runner = build.prepare()
-        runner.run("koverMergedReport") {
+        run("koverMergedReport") {
             checkDefaultBinaryReport()
             checkDefaultReports(false)
             checkDefaultMergedReports()
@@ -143,7 +128,7 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
                 classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
             }
 
-            subproject(subprojectName) {
+            subproject(subprojectPath) {
                 checkDefaultBinaryReport(false)
                 checkDefaultMergedReports(false)
                 checkDefaultReports(false)
@@ -151,29 +136,27 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testExcludeProjectByPath() {
-        val build = diverseBuild(engines = ALL_ENGINES, types = ALL_TYPES)
-        val subPath = build.addKoverSubproject(subprojectName) {
+    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    fun BuildConfigurator.testExcludeProjectByPath() {
+        addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
         }
 
-        build.addKoverRootProject {
+        addKoverProject {
             sourcesFrom("multiproject-user")
-            subproject(subPath)
+            dependencyOnProject(subprojectPath)
 
             koverMerged {
                 enable()
                 filters {
                     projects {
-                        excludes += subPath
+                        excludes += subprojectPath
                     }
                 }
             }
         }
 
-        val runner = build.prepare()
-        runner.run("koverMergedReport") {
+        run("koverMergedReport") {
             checkDefaultBinaryReport()
             checkDefaultReports(false)
             checkDefaultMergedReports()
@@ -185,7 +168,7 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
                 classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
             }
 
-            subproject(subprojectName) {
+            subproject(subprojectPath) {
                 checkDefaultBinaryReport(false)
                 checkDefaultMergedReports(false)
                 checkDefaultReports(false)
@@ -193,119 +176,17 @@ internal class MultiProjectTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testNestedProjectInsideEmptyProject() {
-
-        val projectDir = Files.createTempDirectory("nested-project").toFile()
-
-        projectDir.resolve("settings.gradle.kts").apply {
-            //language=kts
-            writeText(
-                """  
-rootProject.name = "nested-project"
-
-include(":subprojects:alpha-project")
-                """.trimIndent()
-            )
+    /*
+    Test on error-fix "Kover plugin not applied in projects" when there are empty nested subproject.
+    Issue https://github.com/Kotlin/kotlinx-kover/issues/222
+     */
+    @TemplateTest("nested-project", [":koverMergedReport"])
+    fun CheckerContext.testNestedProjectInsideEmptyProject() {
+        outcome(":subprojects:alpha-project:test") {
+            assertEquals(TaskOutcome.SUCCESS, this)
         }
-
-        projectDir.resolve("build.gradle.kts").apply {
-            //language=kts
-            writeText(
-                """
-plugins {
-    base
-    id("org.jetbrains.kotlinx.kover")
-}
-
-repositories { mavenCentral() }
-
-kover {
-    isDisabled.set(false) 
-}
-
-koverMerged {
-    enable() 
-}
-                """.trimIndent()
-            )
+        outcome(":koverMergedReport") {
+            assertEquals(TaskOutcome.SUCCESS, this)
         }
-
-
-        projectDir.resolve("subprojects/alpha-project/build.gradle.kts").apply {
-            parentFile.mkdirs()
-            //language=kts
-            writeText(
-                """
-plugins {
-    kotlin("jvm") version embeddedKotlinVersion
-    id("org.jetbrains.kotlinx.kover")
-}
-
-repositories { mavenCentral() }
-
-dependencies {
-    testImplementation(kotlin("test"))
-}
-
-kover {
-    isDisabled.set(false) 
-}
-                """.trimIndent()
-            )
-        }
-
-        projectDir.resolve("subprojects/alpha-project/src/test/kotlin/MyTest.kt").apply {
-            parentFile.mkdirs()
-            //language=kotlin
-            writeText(
-                """
-import kotlin.test.*
-
-class MyTest {
-    @Test
-    fun foo() {
-      assertEquals("123", 123.toString())
-    }
-}
-            """.trimIndent()
-            )
-        }
-
-        val gradleRunner = GradleRunner.create()
-            .withProjectDir(projectDir)
-            .withPluginClasspath()
-
-        gradleRunner
-            .withArguments(":tasks", "--stacktrace", "--info")
-            .build().also { result ->
-                assertTrue(result.output.contains("koverMergedReport"))
-                assertEquals(
-                    TaskOutcome.SUCCESS,
-                    result.task(":tasks")?.outcome,
-                    result.output
-                )
-            }
-
-        gradleRunner
-            .withArguments("check", "--stacktrace", "--info")
-            .build().also { result ->
-                assertEquals(
-                    TaskOutcome.SUCCESS,
-                    result.task(":subprojects:alpha-project:test")?.outcome,
-                    result.output
-                )
-            }
-
-        gradleRunner
-            .withArguments(":koverMergedReport", "--stacktrace", "--info")
-            .build().also { result ->
-                assertTrue(result.output.contains("koverMergedReport"))
-                assertEquals(
-                    TaskOutcome.SUCCESS,
-                    result.task(":koverMergedReport")?.outcome,
-                    result.output
-                )
-            }
     }
 }

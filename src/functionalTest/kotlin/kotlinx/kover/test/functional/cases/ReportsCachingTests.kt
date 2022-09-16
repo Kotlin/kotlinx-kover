@@ -1,32 +1,29 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.*
-import kotlinx.kover.test.functional.core.*
-import kotlinx.kover.test.functional.core.ALL_ENGINES
-import kotlinx.kover.test.functional.core.BaseGradleScriptTest
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
 import org.gradle.testkit.runner.*
-import kotlin.test.*
 
-internal class ReportsCachingTests : BaseGradleScriptTest() {
-    @Test
-    fun testCaching() {
-        val build = diverseBuild(engines = ALL_ENGINES, withCache = true)
-        build.addKoverRootProject {
+internal class ReportsCachingTests {
+    @SlicedGeneratedTest(allEngines = true)
+    fun BuildConfigurator.testCaching() {
+        useLocalCache()
+
+        addKoverProject {
             sourcesFrom("simple")
         }
-        val runner = build.prepare()
-        runner.run("koverReport") {
+        run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
             checkOutcome("test", TaskOutcome.SUCCESS)
             checkOutcome("koverXmlReport", TaskOutcome.SUCCESS)
             checkOutcome("koverHtmlReport", TaskOutcome.SUCCESS)
         }
-        runner.run("clean") {
+        run("clean", "--build-cache") {
             checkDefaultBinaryReport(false)
             checkDefaultReports(false)
         }
-        runner.run("koverReport") {
+        run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
             checkOutcome("test", TaskOutcome.FROM_CACHE)
@@ -35,25 +32,25 @@ internal class ReportsCachingTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testProjectReportCaching() {
-        val build = diverseBuild(engines = ALL_ENGINES, withCache = true)
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(allEngines = true)
+    fun BuildConfigurator.testProjectReportCaching() {
+        useLocalCache()
+
+        addKoverProject {
             sourcesFrom("simple")
         }
-        val runner = build.prepare()
-        runner.run("koverReport") {
+        run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
             checkOutcome("test", TaskOutcome.SUCCESS)
             checkOutcome("koverXmlReport", TaskOutcome.SUCCESS)
             checkOutcome("koverHtmlReport", TaskOutcome.SUCCESS)
         }
-        runner.run("clean") {
+        run("clean", "--build-cache") {
             checkDefaultBinaryReport(false)
             checkDefaultReports(false)
         }
-        runner.run("koverReport") {
+        run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
             checkOutcome("test", TaskOutcome.FROM_CACHE)

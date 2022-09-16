@@ -42,6 +42,9 @@ dependencies {
     testImplementation(kotlin("test"))
 
     "functionalTestImplementation"(gradleTestKit())
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter:5.9.0")
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-params:5.9.0")
+
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
     "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
     "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
@@ -59,6 +62,8 @@ val functionalTest by tasks.registering(Test::class) {
     testClassesDirs = sourceSets["functionalTest"].output.classesDirs
     classpath = sourceSets["functionalTest"].runtimeClasspath
 
+    // use JUnit 5
+    useJUnitPlatform()
 
     // While gradle testkit supports injection of the plugin classpath it doesn't allow using dependency notation
     // to determine the actual runtime classpath for the plugin. It uses isolation, so plugins applied by the build
@@ -73,6 +78,9 @@ val functionalTest by tasks.registering(Test::class) {
 
         // used in build scripts of functional tests
         systemProperties["kotlinVersion"] = kotlinVersion
+        systemProperties["koverVersion"] = project.property("version")
+        systemProperties["recentKoverVersion"] = project.property("recentVersion")
+        systemProperties["infoLogsEnabled"] = project.logger.isInfoEnabled
     }
 }
 

@@ -1,16 +1,15 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.*
-import kotlinx.kover.test.functional.core.*
-import kotlinx.kover.test.functional.core.BaseGradleScriptTest
-import kotlin.test.*
+import kotlinx.kover.test.functional.framework.checker.*
+import kotlinx.kover.test.functional.framework.common.*
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
 
-internal class ReportsFilteringTests : BaseGradleScriptTest() {
+internal class ReportsFilteringTests {
 
-    @Test
-    fun testExclude() {
-        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    fun BuildConfigurator.testExclude() {
+        addKoverProject {
             sourcesFrom("simple")
 
             kover {
@@ -21,8 +20,7 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
                 }
             }
         }
-        val runner = build.prepare()
-        runner.run("koverXmlReport") {
+        run("koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertAbsent()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
@@ -30,10 +28,9 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testExcludeInclude() {
-        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    fun BuildConfigurator.testExcludeInclude() {
+        addKoverProject {
             sourcesFrom("simple")
 
             kover {
@@ -45,8 +42,7 @@ internal class ReportsFilteringTests : BaseGradleScriptTest() {
                 }
             }
         }
-        val runner = build.prepare()
-        runner.run("koverXmlReport") {
+        run("koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertAbsent()
                 classCounter("org.jetbrains.Unused").assertAbsent()

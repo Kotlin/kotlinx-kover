@@ -236,7 +236,7 @@ In the project in which the plugin is applied, you can configure instrumentation
 ```kotlin
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine.set(DefaultIntellijEngine) // change Coverage Engine
+    engine.set(DefaultIntellijEngine) // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks 
             includes += "com.example.*" // class inclusion rules
@@ -249,7 +249,7 @@ kover {
     }
 
     xmlReport {
-        onCheck.set(false) // true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
         reportFile.set(layout.buildDirectory.file("my-project-report/result.xml")) // change report file name
         overrideFilters { 
             classes { // override common class filter
@@ -260,7 +260,7 @@ kover {
     }
 
     htmlReport {
-        onCheck.set(false) // true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
         reportDir.set(layout.buildDirectory.dir("my-project-report/html-result")) // change report directory
         overrideFilters { 
             classes { // override common class filter
@@ -271,9 +271,9 @@ kover {
     }
 
     verify {
-        onCheck.set(true) // true to run koverVerify task during the execution of the check task (if it exists) of the current project 
+        onCheck.set(true) // set to true to run koverVerify task during the execution of the check task (if it exists) of the current project 
         rule { // add verification rule
-            isEnabled = true // false to disable rule checking
+            isEnabled = true // set to false to disable rule checking
             name = null // custom name for the rule
             target = kotlinx.kover.api.VerificationTarget.ALL // specify by which entity the code for separate coverage evaluation will be grouped
             
@@ -300,7 +300,7 @@ kover {
 ```groovy
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE // change Coverage Engine
+    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE // // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks 
           includes.add("com.example.*") // class inclusion rules
@@ -313,7 +313,7 @@ kover {
     }
 
     xmlReport {
-        onCheck.set(false) // true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
         reportFile.set(layout.buildDirectory.file("my-project-report/result.xml")) // change report file name
         overrideFilters {
             classes { // override common class filter
@@ -324,7 +324,7 @@ kover {
     }
 
     htmlReport {
-        onCheck.set(false) // true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
         reportDir.set(layout.buildDirectory.dir("my-project-report/html-result")) // change report directory
         overrideFilters {
             classes { // override common class filter
@@ -335,9 +335,9 @@ kover {
     }
 
     verify {
-      onCheck.set(true) // true to run koverVerify task during the execution of the check task (if it exists) of the current project
+      onCheck.set(true) // set to true to run koverVerify task during the execution of the check task (if it exists) of the current project
       rule { // add verification rule
-          enabled = true // false to disable rule checking
+          enabled = true // set to false to disable rule checking
           name = null // custom name for the rule
           target = 'ALL' // specify by which entity the code for separate coverage evaluation will be grouped
   
@@ -378,7 +378,7 @@ Merged reports can also be configured in a similar manner. To do this, you need 
 
 ```kotlin
 koverMerged {
-    enable()  // create Kover merged reports
+    enable()  // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
   
     filters { // common filters for all default Kover merged tasks
         classes { // common class filter for all default Kover merged tasks 
@@ -393,7 +393,7 @@ koverMerged {
 
 
     xmlReport {
-        onCheck.set(false) // true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
         reportFile.set(layout.buildDirectory.file("my-merged-report/result.xml")) // change report file name
         overrideClassFilter { // override common class filter
             includes += "com.example2.*" // override class inclusion rules
@@ -402,7 +402,7 @@ koverMerged {
     }
 
     htmlReport {
-        onCheck.set(false) // true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
         reportDir.set(layout.buildDirectory.dir("my-merged-report/html-result")) // change report directory
         overrideClassFilter { // override common class filter
             includes += "com.example2.*" // override class inclusion rules
@@ -411,9 +411,9 @@ koverMerged {
     }
 
     verify {
-        onCheck.set(true) // true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project 
+        onCheck.set(true) // set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project 
         rule { // add verification rule
-            isEnabled = true // false to disable rule checking
+            isEnabled = true // set to false to disable rule checking
             name = null // custom name for the rule
             target = kotlinx.kover.api.VerificationTarget.ALL // specify by which entity the code for separate coverage evaluation will be grouped
       
@@ -439,7 +439,7 @@ koverMerged {
 
 ```groovy
 koverMerged {
-    enable()  // create Kover merged reports
+    enable()  // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
   
     filters { // common filters for all default Kover merged tasks
         classes { // common class filter for all default Kover merged tasks 
@@ -454,7 +454,7 @@ koverMerged {
   
   
     xmlReport {
-        onCheck.set(false) // true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
         reportFile.set(layout.buildDirectory.file("my-merged-report/result.xml")) // change report file name
         overrideClassFilter { // override common class filter
             includes.add("com.example2.*") // override class inclusion rules
@@ -463,7 +463,7 @@ koverMerged {
     }
   
     htmlReport {
-        onCheck.set(false) // true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false) // set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
         reportDir.set(layout.buildDirectory.dir("my-merged-report/html-result")) // change report directory
         overrideClassFilter { // override common class filter
             includes.add("com.example2.*") // override class inclusion rules
@@ -472,9 +472,9 @@ koverMerged {
     }
   
     verify {
-        onCheck.set(true) // true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project
+        onCheck.set(true) // set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project
         rule { // add verification rule
-            isEnabled = true // false to disable rule checking
+            isEnabled = true // set to false to disable rule checking
             name = null // custom name for the rule
             target = 'ALL' // specify by which entity the code for separate coverage evaluation will be grouped
       

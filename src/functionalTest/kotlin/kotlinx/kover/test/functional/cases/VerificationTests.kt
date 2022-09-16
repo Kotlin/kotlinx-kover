@@ -5,15 +5,14 @@
 package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.api.*
-import kotlinx.kover.test.functional.core.*
-import kotlinx.kover.test.functional.core.BaseGradleScriptTest
-import kotlin.test.*
+import kotlinx.kover.test.functional.framework.common.*
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
 
-internal class VerificationTests : BaseGradleScriptTest() {
-    @Test
-    fun testVerified() {
-        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
-        build.addKoverRootProject {
+internal class VerificationTests {
+    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    fun BuildConfigurator.testVerified() {
+        addKoverProject {
             sourcesFrom("simple")
 
             kover {
@@ -34,13 +33,12 @@ internal class VerificationTests : BaseGradleScriptTest() {
             }
         }
 
-        build.prepare().run("koverVerify", "--stacktrace")
+        run("koverVerify", "--stacktrace")
     }
 
-    @Test
-    fun testVerificationError() {
-        val build = diverseBuild(languages = ALL_LANGUAGES, engines = ALL_ENGINES)
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    fun BuildConfigurator.testVerificationError() {
+        addKoverProject {
             sourcesFrom("verification")
 
             kover {
@@ -96,7 +94,7 @@ internal class VerificationTests : BaseGradleScriptTest() {
             }
         }
 
-        build.prepare().runWithError("koverHtmlReport", "koverVerify") {
+        runWithError("koverHtmlReport", "koverVerify") {
             verification {
                 assertIntelliJResult("""Rule 'counts rule' violated:
   lines covered percentage is 46.590900, but expected minimum is 58

@@ -1,23 +1,22 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.*
-import kotlinx.kover.test.functional.core.*
-import kotlinx.kover.test.functional.core.BaseGradleScriptTest
-import kotlin.test.*
+import kotlinx.kover.test.functional.framework.checker.*
+import kotlinx.kover.test.functional.framework.common.*
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
 
-internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
+internal class InstrumentationFilteringTests {
 
-    @Test
-    fun testExclude() {
-        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(all = true)
+    fun BuildConfigurator.testExclude() {
+        addKoverProject {
             sourcesFrom("simple")
             testTasks {
                 excludes("org.jetbrains.*Exa?ple*")
             }
         }
-        val runner = build.prepare()
-        runner.run("build", "koverXmlReport") {
+
+        run("build", "koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
@@ -25,18 +24,16 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testExcludeInclude() {
-        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(all = true)
+    fun BuildConfigurator.testExcludeInclude() {
+        addKoverProject {
             sourcesFrom("simple")
             testTasks {
                 includes("org.jetbrains.*Cla?s")
                 excludes("org.jetbrains.*Exa?ple*")
             }
         }
-        val runner = build.prepare()
-        runner.run("build", "koverXmlReport") {
+        run("build", "koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
                 classCounter("org.jetbrains.Unused").assertFullyMissed()
@@ -44,10 +41,10 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
             }
         }
     }
-    @Test
-    fun testExcludeByKoverExtension() {
-        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
-        build.addKoverRootProject {
+
+    @SlicedGeneratedTest(all = true)
+    fun BuildConfigurator.testExcludeByKoverExtension() {
+        addKoverProject {
             sourcesFrom("simple")
             kover {
                 filters {
@@ -64,8 +61,7 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
                 }
             }
         }
-        val runner = build.prepare()
-        runner.run("build", "koverXmlReport") {
+        run("build", "koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
@@ -73,10 +69,9 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testExcludeIncludeByKoverExtension() {
-        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, ALL_TYPES)
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(all = true)
+    fun BuildConfigurator.testExcludeIncludeByKoverExtension() {
+        addKoverProject {
             sourcesFrom("simple")
             kover {
                 filters {
@@ -94,8 +89,7 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
                 }
             }
         }
-        val runner = build.prepare()
-        runner.run("build", "koverXmlReport") {
+        run("build", "koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
                 classCounter("org.jetbrains.Unused").assertFullyMissed()
@@ -104,19 +98,17 @@ internal class InstrumentationFilteringTests : BaseGradleScriptTest() {
         }
     }
 
-    @Test
-    fun testDisableInstrumentationOfTask() {
-        val build = diverseBuild(ALL_LANGUAGES, ALL_ENGINES, listOf(ProjectType.KOTLIN_JVM))
-        build.addKoverRootProject {
+    @SlicedGeneratedTest(all = true)
+    fun SlicedBuildConfigurator.testDisableInstrumentationOfTask() {
+        addKoverProject {
             sourcesFrom("simple")
             kover {
                 instrumentation {
-                    excludeTasks += "test"
+                    excludeTasks += defaultTestTaskName(slice.type)
                 }
             }
         }
-        val runner = build.prepare()
-        runner.run("build", "koverXmlReport") {
+        run("koverXmlReport") {
             // if task `test` is excluded from instrumentation then the binary report is not created for it
             checkDefaultBinaryReport(false)
         }

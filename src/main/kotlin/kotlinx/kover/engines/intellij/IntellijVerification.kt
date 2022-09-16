@@ -7,8 +7,8 @@ package kotlinx.kover.engines.intellij
 import kotlinx.kover.api.*
 import kotlinx.kover.api.VerificationValueType.*
 import kotlinx.kover.engines.commons.*
-import kotlinx.kover.json.*
 import kotlinx.kover.tasks.*
+import kotlinx.kover.util.json.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.process.ExecOperations

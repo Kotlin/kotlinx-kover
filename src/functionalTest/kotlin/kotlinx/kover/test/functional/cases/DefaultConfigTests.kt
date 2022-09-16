@@ -1,26 +1,19 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.cases.utils.*
-import kotlinx.kover.test.functional.core.*
-import kotlin.test.*
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
 
-internal class DefaultConfigTests : BaseGradleScriptTest() {
-    @Test
-    fun testImplicitConfigs() {
-        val build = diverseBuild(
-            languages = ALL_LANGUAGES,
-            types = ALL_TYPES
-        )
-        build.addKoverRootProject {
+internal class DefaultConfigTests {
+
+    @SlicedGeneratedTest(allLanguages = true, allTypes = true)
+    fun BuildConfigurator.testImplicitConfigs() {
+        addKoverProject {
             sourcesFrom("simple")
         }
-        val runner = build.prepare()
 
-        runner.run("koverReport") {
+        run("koverReport") {
             checkDefaultBinaryReport()
             checkDefaultReports()
         }
-
     }
-
 }

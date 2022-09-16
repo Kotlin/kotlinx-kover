@@ -1,21 +1,19 @@
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.core.*
-import kotlin.test.*
+import kotlinx.kover.test.functional.framework.configurator.*
+import kotlinx.kover.test.functional.framework.starter.*
 
-internal class ConfigurationCacheTests : BaseGradleScriptTest() {
-    @Test
-    fun testConfigCache() {
-        val build = diverseBuild()
-        build.addKoverRootProject {
+internal class ConfigurationCacheTests {
+    @GeneratedTest
+    fun BuildConfigurator.testConfigCache() {
+        addKoverProject {
             sourcesFrom("simple")
             koverMerged {
                 enable()
             }
         }
 
-        val runner = build.prepare()
-        runner.run(
+        run(
             "build",
             "koverMergedReport",
             "koverMergedVerify",
