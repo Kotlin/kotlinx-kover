@@ -58,6 +58,7 @@ internal class FormattedScriptAppender(
     }
 
     private fun indent(count: Int): String {
+        // In most cases, the nesting depth is no more than 5, so for optimization we use literals for frequently used indents
         return when (count) {
             0 -> ""
             1 -> "    "

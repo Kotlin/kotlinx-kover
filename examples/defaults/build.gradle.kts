@@ -13,7 +13,7 @@ dependencies {
 
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine.set(kotlinx.kover.api.DefaultIntellijEngine) // change Coverage Engine
+    engine.set(kotlinx.kover.api.DefaultIntellijEngine) // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks
             includes += "com.example.*" // class inclusion rules

@@ -235,7 +235,7 @@ In the project in which the plugin is applied, you can configure instrumentation
 ```kotlin
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine.set(DefaultIntellijEngine) // change Coverage Engine
+    engine.set(DefaultIntellijEngine) // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks 
             includes += "com.example.*" // class inclusion rules
@@ -299,7 +299,7 @@ kover {
 ```groovy
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE // change Coverage Engine
+    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE // // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks 
           includes.add("com.example.*") // class inclusion rules

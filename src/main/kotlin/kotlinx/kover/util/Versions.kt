@@ -7,7 +7,8 @@ package kotlinx.kover.util
 internal class SemVer(val major: Int, val minor: Int, val patch: Int): Comparable<SemVer> {
     companion object {
         fun ofThreePartOrNull(version: String): SemVer? {
-            val parts = version.split(".")
+
+            val parts = version.substringBefore('-').split(".")
             if (parts.size != 3) return null
 
             val major = parts[0].toIntOrNull()?: return null
