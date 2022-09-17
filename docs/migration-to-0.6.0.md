@@ -268,10 +268,10 @@ Solution:
 #### type of `excludes` property changed from `List<String>` to `ListProperty<String>`
 
 Solution for Kotlin: change `excludes = listOf("com.example.*", "foo.bar.*")`
-to `includes.addAll("com.example.*", "foo.bar.*")`
+to `excludes.addAll("com.example.*", "foo.bar.*")`
 
 Solution for Groovy: change `excludes = ["com.example.*", "foo.bar.*"]`
-to `includes.addAll("com.example.*", "foo.bar.*")`
+to `excludes.addAll("com.example.*", "foo.bar.*")`
 
 ### `koverXmlReport` and `koverMergedXmlReport` tasks configuration
 
