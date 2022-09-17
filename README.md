@@ -188,24 +188,47 @@ android {
 <details>
 <summary>Groovy</summary>
 
+`build.gradle` (Project)
 ```groovy
-android {
-    // other Android declarations
+plugin {
+    // ...
+    id 'org.jetbrains.kotlinx.kover' version "0.6.0"
+}
 
-    testOptions {
-        unitTests.all {
-            if (name == "testDebugUnitTest") {
-                kover {
-                    disabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
-                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin")) // set file name of binary report
-                    includes = ['com.example.*'] // see "Instrumentation inclusion rules" below
-                    excludes = ['com.example.subpackage.*'] // see "Instrumentation exclusion rules" below
-                }
-            }
+koverMerged {
+    enable()
+
+    filters {
+        classes {
+            excludes.add "*.databinding.*" // ViewBinding
         }
     }
 }
 ```
+
+`build.gradle` (Module)
+```groovy
+plugins {
+    // ...
+    id 'org.jetbrains.kotlinx.kover'
+}
+
+android {
+    // ...
+}
+
+dependencies {
+    // ...
+}
+
+kover {
+    instrumentation {
+        excludeTasks.add "testReleaseUnitTest"
+    }
+}
+```
+
+An example is available here: https://github.com/Kotlin/kotlinx-kover/tree/main/examples/android_groovy
 </details>
 
 
