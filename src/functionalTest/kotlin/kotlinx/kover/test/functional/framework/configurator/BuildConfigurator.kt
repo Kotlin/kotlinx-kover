@@ -137,10 +137,15 @@ private class KoverConfiguratorImpl : KoverConfigurator, TestKoverConfig {
 
 private class KoverFiltersConfiguratorImpl : KoverFiltersConfigurator, TestKoverFiltersConfig {
     override var classes: KoverClassFilter? = null
+    override var annotations: KoverAnnotationFilter? = null
     override var sourceSets: KoverSourceSetFilter? = null
 
     override fun classes(config: KoverClassFilter.() -> Unit) {
         classes = KoverClassFilter().also(config)
+    }
+
+    override fun annotations(config: KoverAnnotationFilter.() -> Unit) {
+        annotations = KoverAnnotationFilter().also(config)
     }
 
     override fun sourceSets(config: KoverSourceSetFilter.() -> Unit) {
@@ -158,6 +163,22 @@ private class KoverXmlConfiguratorImpl : KoverXmlConfigurator, TestXmlConfig {
             overrideFilters = KoverFiltersConfiguratorImpl()
         }
         overrideFilters!!.also(config)
+    }
+}
+
+private class KoverMergedXmlConfiguratorImpl : KoverMergedXmlConfigurator, TestMergedXmlConfig {
+    override var onCheck: Boolean? = null
+    override var reportFile: File? = null
+
+    override var overrideClassFilter: KoverClassFilter? = null
+    override var overrideAnnotationFilter: KoverAnnotationFilter? = null
+
+    override fun overrideClassFilter(config: KoverClassFilter.() -> Unit) {
+        overrideClassFilter = KoverClassFilter().also(config)
+    }
+
+    override fun overrideAnnotationFilter(config: KoverAnnotationFilter.() -> Unit) {
+        overrideAnnotationFilter = KoverAnnotationFilter().also(config)
     }
 }
 
@@ -194,6 +215,7 @@ private class KoverMergedConfiguratorImpl : KoverMergedConfigurator, TestKoverMe
     override var enabled: Boolean = false
     override val filters: KoverMergedFiltersConfiguratorImpl = KoverMergedFiltersConfiguratorImpl()
     override val verify: TestVerifyConfiguratorImpl = TestVerifyConfiguratorImpl()
+    override val xml: KoverMergedXmlConfiguratorImpl = KoverMergedXmlConfiguratorImpl()
 
     override fun enable() {
         enabled = true
@@ -203,6 +225,10 @@ private class KoverMergedConfiguratorImpl : KoverMergedConfigurator, TestKoverMe
         filters.also(config)
     }
 
+    override fun xmlReport(config: KoverMergedXmlConfigurator.() -> Unit) {
+        xml.also(config)
+    }
+
     override fun verify(config: KoverVerifyConfigurator.() -> Unit) {
         verify.also(config)
     }
@@ -210,10 +236,15 @@ private class KoverMergedConfiguratorImpl : KoverMergedConfigurator, TestKoverMe
 
 private class KoverMergedFiltersConfiguratorImpl : KoverMergedFiltersConfigurator, TestKoverMergedFiltersConfig {
     override var classes: KoverClassFilter? = null
+    override var annotations: KoverAnnotationFilter? = null
     override var projects: KoverProjectsFilter? = null
 
     override fun classes(config: KoverClassFilter.() -> Unit) {
         classes = KoverClassFilter().also(config)
+    }
+
+    override fun annotations(config: KoverAnnotationFilter.() -> Unit) {
+        annotations = KoverAnnotationFilter().also(config)
     }
 
     override fun projects(config: KoverProjectsFilter.() -> Unit) {

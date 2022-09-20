@@ -19,7 +19,7 @@ import java.util.*
 
 internal fun Task.jacocoReport(
     projectFiles: Map<String, ProjectFiles>,
-    filters: KoverClassFilter,
+    filters: ReportFilters,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
@@ -39,7 +39,7 @@ internal fun Task.jacocoReport(
 
 internal fun Task.jacocoVerification(
     projectFiles: Map<String, ProjectFiles>,
-    filters: KoverClassFilter,
+    filters: ReportFilters,
     rules: List<ReportVerificationRule>,
     classpath: FileCollection
 ): String? {
@@ -100,7 +100,7 @@ internal fun Task.jacocoVerification(
 
 private fun Task.callJacocoAntReportTask(
     projectFiles: Map<String, ProjectFiles>,
-    filters: KoverClassFilter,
+    filters: ReportFilters,
     classpath: FileCollection,
     block: GroovyObject.() -> Unit
 ) {
@@ -124,9 +124,9 @@ private fun Task.callJacocoAntReportTask(
     }
 
 
-    val filteredOutput = if (filters.excludes.isNotEmpty() || filters.includes.isNotEmpty()) {
-        val excludeRegexes = filters.excludes.map { Regex(it.wildcardsToClassFileRegex()) }
-        val includeRegexes = filters.includes.map { Regex(it.wildcardsToClassFileRegex()) }
+    val filteredOutput = if (filters.excludesClasses.isNotEmpty() || filters.includesClasses.isNotEmpty()) {
+        val excludeRegexes = filters.excludesClasses.map { Regex(it.wildcardsToClassFileRegex()) }
+        val includeRegexes = filters.includesClasses.map { Regex(it.wildcardsToClassFileRegex()) }
         val trees = outputs.map {
             project.fileTree(it).filter { file ->
                 // the `canonicalPath` is used because a `File.separatorChar` was used to construct the class-file regex

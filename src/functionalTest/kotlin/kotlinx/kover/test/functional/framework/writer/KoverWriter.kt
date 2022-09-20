@@ -62,11 +62,15 @@ private fun FormattedScriptAppender.writeDisabled(isDisabled: Boolean?) {
 
 private fun FormattedScriptAppender.writeFilters(state: TestKoverFiltersConfig) {
     val classes = state.classes
+    val annotations = state.annotations
     val sourceSets = state.sourceSets
 
-    block("filters", (sourceSets != null || classes != null)) {
+    block("filters", (sourceSets != null || classes != null || annotations != null)) {
         block("classes", classes != null && (classes.excludes.isNotEmpty() || classes.includes.isNotEmpty())) {
             writeClassFilterContent(classes!!)
+        }
+        block("annotations", annotations != null && annotations.excludes.isNotEmpty()) {
+            line("excludes".addAllList(annotations!!.excludes, language))
         }
         block("sourceSets", sourceSets != null) {
             if (sourceSets!!.excludes.isNotEmpty()) {
@@ -83,8 +87,12 @@ private fun FormattedScriptAppender.writeXmlReport(state: TestXmlConfig) {
     block("xmlReport", state.onCheck != null || state.reportFile != null || overrideFilters != null) {
         block("overrideFilters", overrideFilters != null) {
             val classFilter = overrideFilters?.classes
+            val annotations = overrideFilters?.annotations
             block("classes", classFilter != null) {
                 writeClassFilterContent(classFilter!!)
+            }
+            block("annotations", annotations != null && annotations.excludes.isNotEmpty()) {
+                line("excludes".addAllList(annotations!!.excludes, language))
             }
         }
     }
@@ -117,8 +125,11 @@ internal fun FormattedScriptAppender.writeVerify(conf: TestVerifyConfig) {
             lineIf(rule.isEnabled != null, "isEnabled = ${rule.isEnabled}")
             lineIf(rule.name != null, "name = ${rule.name?.asTextLiteral()}")
             lineIf(rule.target != null, "target = ${rule.target?.enum(language)}")
-            block("overrideClassFilter {", rule.overrideClassFilter != null) {
+            block("overrideClassFilter", rule.overrideClassFilter != null) {
                 writeClassFilterContent(rule.overrideClassFilter!!)
+            }
+            block("overrideAnnotationFilter", rule.overrideAnnotationFilter != null) {
+                line("excludes".addAllList(rule.overrideAnnotationFilter!!.excludes, language))
             }
             blockForEach(rule.bounds, "bound") { bound ->
                 lineIf(bound.minValue != null, "minValue = ${bound.minValue}")

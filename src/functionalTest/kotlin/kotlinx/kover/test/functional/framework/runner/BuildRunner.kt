@@ -33,7 +33,7 @@ ${this.buildScript()}
 
         try {
             this.checkResult(runResult, description, run.errorExpected, run.checker)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             if (run.errorExpected) {
                 return@forEachIndexed
             } else {

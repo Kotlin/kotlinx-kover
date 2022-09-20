@@ -25,7 +25,7 @@ public open class KoverHtmlTask : KoverReportTask() {
             this,
             exec,
             projectFiles,
-            classFilter.get(),
+            getReportFilters(),
             null,
             reportDirFile
         )
