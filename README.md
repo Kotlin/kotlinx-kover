@@ -243,7 +243,7 @@ kover {
             excludes += listOf("com.example.subpackage.*") // class exclusion rules
         }
         annotations { // common annotation filter for all default Kover tasks in this project
-            excludes += listOf("com.example.Annotation", "*Generated") // exclude classes and functions marked by specified annotations
+            excludes += listOf("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
         }
     }
 
@@ -259,7 +259,7 @@ kover {
                 includes += "com.example2.*" // override class inclusion rules
                 excludes += listOf("com.example2.subpackage.*") // override class exclusion rules
             }
-            annotations { // override common annotation filter for XML report
+            annotations { // override common annotation filter for XML report (filtering will take place only by the annotations specified here)
                 excludes += listOf("com.example2.Annotation")
             }
         }
@@ -273,7 +273,7 @@ kover {
                 includes += "com.example2.*" // class inclusion rules
                 excludes += listOf("com.example2.subpackage.*") // override class exclusion rules
             }
-            annotations { // override common annotation filter for HTML report
+            annotations { // override common annotation filter for HTML report (filtering will take place only by the annotations specified here)
                 excludes += listOf("com.example2.Annotation")
             }
         }
@@ -290,8 +290,8 @@ kover {
                 includes += "com.example.verify.*" // override class inclusion rules
                 excludes += listOf("com.example.verify.subpackage.*") // override class exclusion rules
             }
-            overrideAnnotationFilter { // override common annotation filter
-                excludes += "*verify.*Generated" // classes and functions marked only by these annotations will be excluded from this rule
+            overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+                excludes += "*verify.*Generated" // declarations marked only by these annotations will be excluded from this rule
             }
 
             bound { // add rule bound
@@ -319,7 +319,7 @@ kover {
           excludes.addAll("com.example.subpackage.*") // class exclusion rules
         }
         annotations { // common annotation filter for all default Kover tasks in this project
-            excludes.addAll("com.example.Annotation", "*Generated") // exclude classes and functions marked by specified annotations
+            excludes.addAll("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
         }
     }
 
@@ -335,7 +335,7 @@ kover {
                 includes.add("com.example2.*") // override class inclusion rules
                 excludes.addAll("com.example2.subpackage.*") // override class exclusion rules
             }
-            annotations { // override common annotation filter for XML report
+            annotations { // override common annotation filter for XML report (filtering will take place only by the annotations specified here)
                 excludes.addAll("com.example2.Annotation") 
             }
         }
@@ -349,7 +349,7 @@ kover {
               includes.add("com.example2.*") // class inclusion rules
               excludes.addAll("com.example2.subpackage.*") // override class exclusion rules
             }
-            annotations { // override common annotation filter for HTML report
+            annotations { // override common annotation filter for HTML report (filtering will take place only by the annotations specified here)
                 excludes.addAll("com.example2.Annotation")
             }
         }
@@ -366,8 +366,8 @@ kover {
               includes.add("com.example.verify.*") // override class inclusion rules
               excludes.addAll("com.example.verify.subpackage.*") // override class exclusion rules
           }
-          overrideAnnotationFilter { // override common annotation filter
-            excludes += "*verify.*Generated" // classes and functions marked only by these annotations will be excluded from this rule
+          overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes += "*verify.*Generated" // declarations marked only by these annotations will be excluded from this rule
           }
   
           bound { // add rule bound
@@ -410,7 +410,7 @@ koverMerged {
           excludes += listOf("com.example.subpackage.*") // class exclusion rules
         }
         annotations { // common annotation filter for all default Kover merged tasks
-            excludes += listOf("com.example.Annotation", "*Generated") // exclude classes and functions marked by specified annotations
+            excludes += listOf("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
         }
         projects { // common projects filter for all default Kover merged tasks
             excludes += listOf("project1", ":child:project") // Specifies the projects excluded from the merged tasks
@@ -425,8 +425,8 @@ koverMerged {
             includes += "com.example2.*" // override class inclusion rules
             excludes += listOf("com.example2.subpackage.*") // override class exclusion rules 
         }
-        overrideAnnotationFilter { // override common annotation filter
-            excludes += "*OverrideGenerated" // classes and functions marked only by specified annotations will be excluded from merged XML report
+        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes += "*OverrideGenerated" // declarations marked only by specified annotations will be excluded from merged XML report
         }
     }
 
@@ -437,8 +437,8 @@ koverMerged {
             includes += "com.example2.*" // override class inclusion rules
             excludes += listOf("com.example2.subpackage.*") // override class exclusion rules 
         }
-        overrideAnnotationFilter { // override common annotation filter
-            excludes += "*OverrideGenerated" // classes and functions marked only by specified annotations will be excluded from merged HTML report
+        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes += "*OverrideGenerated" // declarations marked only by specified annotations will be excluded from merged HTML report
         }
     }
 
@@ -453,8 +453,8 @@ koverMerged {
                 includes += "com.example.verify.*" // override class inclusion rules
                 excludes += listOf("com.example.verify.subpackage.*") // override class exclusion rules
             }
-            overrideAnnotationFilter { // override common annotation filter
-                excludes += "*verify.*Generated" // classes and functions marked only by these annotations will be excluded from this rule
+            overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+                excludes += "*verify.*Generated" // declarations marked only by these annotations will be excluded from this rule
             }
       
             bound { // add rule bound
@@ -483,7 +483,7 @@ koverMerged {
         }
 
         annotations { // common annotation filter for all default Kover merged tasks
-            excludes.addAll("com.example.Annotation", "*Generated") // exclude classes and functions marked by specified annotations
+            excludes.addAll("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
         }
     
         projects { // common projects filter for all default Kover merged tasks
@@ -500,8 +500,8 @@ koverMerged {
             excludes.addAll("com.example2.subpackage.*") // override class exclusion rules 
         }
 
-        overrideAnnotationFilter { // override common annotation filter
-            excludes.addAll("*OverrideGenerated") // classes and functions marked only by specified annotations will be excluded from merged XML report
+        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes.addAll("*OverrideGenerated") // declarations marked only by specified annotations will be excluded from merged XML report
         }
     }
   
@@ -512,8 +512,8 @@ koverMerged {
             includes.add("com.example2.*") // override class inclusion rules
             excludes.addAll("com.example2.subpackage.*") // override class exclusion rules 
         }
-        overrideAnnotationFilter { // override common annotation filter
-            excludes.addAll("*OverrideGenerated") // classes and functions marked only by specified annotations will be excluded from merged HTML report
+        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+            excludes.addAll("*OverrideGenerated") // declarations marked only by specified annotations will be excluded from merged HTML report
         }
     }
   
@@ -528,8 +528,8 @@ koverMerged {
                 includes.add("com.example.verify.*") // override class inclusion rules
                 excludes.addAll("com.example.verify.subpackage.*") // override class exclusion rules
             }
-            overrideAnnotationFilter { // override common annotation filter
-                excludes.addAll("*verify.*Generated") // classes and functions marked only by these annotations will be excluded from this rule
+            overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
+                excludes.addAll("*verify.*Generated") // declarations marked only by these annotations will be excluded from this rule
             }
       
             bound { // add rule bound

@@ -30,8 +30,8 @@ internal class AnnotationFilterTests {
                         bound {
                             counter = LINE
                             valueType = COVERED_COUNT
-                            minValue = 6
-                            maxValue = 6
+                            minValue = 9
+                            maxValue = 9
                         }
                     }
                 }
@@ -78,8 +78,8 @@ internal class AnnotationFilterTests {
                         bound {
                             counter = LINE
                             valueType = COVERED_COUNT
-                            minValue = 11
-                            maxValue = 11
+                            minValue = 15
+                            maxValue = 15
                         }
                     }
                 }
@@ -112,8 +112,8 @@ internal class AnnotationFilterTests {
                         bound {
                             counter = LINE
                             valueType = COVERED_COUNT
-                            minValue = 6
-                            maxValue = 6
+                            minValue = 9
+                            maxValue = 9
                         }
                     }
                 }
@@ -162,8 +162,8 @@ internal class AnnotationFilterTests {
                         bound {
                             counter = LINE
                             valueType = COVERED_COUNT
-                            minValue = 11
-                            maxValue = 11
+                            minValue = 15
+                            maxValue = 15
                         }
                     }
                 }

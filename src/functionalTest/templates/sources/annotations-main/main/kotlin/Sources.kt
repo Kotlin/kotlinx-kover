@@ -49,4 +49,11 @@ fun notExcluded() {
     println("inlinedExcluded")
 }
 
+fun createLambda(): () -> Unit {
+    println("lambda factory")
+    val l = @Exclude {
+        println("inside lambda")
+    }
+    return l
+}
 

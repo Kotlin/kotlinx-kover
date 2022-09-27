@@ -17,6 +17,9 @@ class TestClass {
 
         inlinedExcluded()
         // don't call `inlinedNotExcluded` and `notExcluded` - they must be executed transitive through `inlinedExcluded`
+
+        val lambda = createLambda()
+        lambda()
     }
 
 }
