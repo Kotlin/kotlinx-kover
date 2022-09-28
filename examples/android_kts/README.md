@@ -1,0 +1,1 @@
+To use Kover in an Android Project, run `./gradlew koverMergedHtmlReport`
