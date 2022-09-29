@@ -158,7 +158,10 @@ tasks.test {
 ```
 </details>
 
-**For other platforms (Android, Kotlin-Multiplatform) the names may differ, and you may also have several test tasks, so you first need to determine the name of the required task.**
+**For other platforms (like Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
+
+
+### Configuring Android test task
 
 Example of configuring test task for build type `debug` in Android:
 <details open>
