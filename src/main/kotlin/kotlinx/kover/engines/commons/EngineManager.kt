@@ -36,14 +36,14 @@ internal object EngineManager {
         task: Task,
         exec: ExecOperations,
         projectFiles: Map<String, ProjectFiles>,
-        classFilter: KoverClassFilter,
+        filters: ReportFilters,
         xmlFile: File?,
         htmlDir: File?
     ) {
         if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
-            task.intellijReport(exec, projectFiles, classFilter, xmlFile, htmlDir, details.classpath)
+            task.intellijReport(exec, projectFiles, filters, xmlFile, htmlDir, details.classpath)
         } else {
-            task.jacocoReport(projectFiles, classFilter, xmlFile, htmlDir, details.classpath)
+            task.jacocoReport(projectFiles, filters, xmlFile, htmlDir, details.classpath)
         }
     }
 
@@ -52,13 +52,13 @@ internal object EngineManager {
         task: Task,
         exec: ExecOperations,
         projectFiles: Map<String, ProjectFiles>,
-        classFilter: KoverClassFilter,
+        filters: ReportFilters,
         rules: List<ReportVerificationRule>,
     ): String? {
         return if (details.variant.vendor == CoverageEngineVendor.INTELLIJ) {
-            task.intellijVerification(exec, projectFiles, classFilter, rules, details.classpath)
+            task.intellijVerification(exec, projectFiles, filters, rules, details.classpath)
         } else {
-            task.jacocoVerification(projectFiles, classFilter, rules, details.classpath)
+            task.jacocoVerification(projectFiles, filters, rules, details.classpath)
         }
     }
 

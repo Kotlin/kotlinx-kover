@@ -13,7 +13,8 @@ internal class ReportVerificationRule(
     val id: Int,
     val name: String?,
     val target: VerificationTarget,
-    val filters: KoverClassFilter?,
+    val classFilter: KoverClassFilter?,
+    val annotationFilter: KoverAnnotationFilter?,
     val bounds: List<ReportVerificationBound>
 )
 

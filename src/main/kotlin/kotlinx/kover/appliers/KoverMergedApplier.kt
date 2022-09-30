@@ -37,13 +37,16 @@ private fun Project.createMergedExtension(): KoverMergedConfig {
     return extensions.create<KoverMergedConfig>(KoverNames.MERGED_EXTENSION_NAME).apply {
         isEnabled.convention(false)
         filters.classes.convention(KoverClassFilter())
+        filters.annotations.convention(KoverAnnotationFilter())
         filters.projects.convention(KoverProjectsFilter())
         xmlReport.onCheck.convention(false)
         xmlReport.reportFile.convention(layout.buildDirectory.file(MERGED_XML_REPORT_DEFAULT_PATH))
         xmlReport.classFilter.convention(filters.classes)
+        xmlReport.annotationFilter.convention(filters.annotations)
         htmlReport.onCheck.convention(false)
         htmlReport.reportDir.convention(layout.buildDirectory.dir(MERGED_HTML_REPORT_DEFAULT_PATH))
         htmlReport.classFilter.convention(filters.classes)
+        htmlReport.annotationFilter.convention(filters.annotations)
         verify.onCheck.convention(false)
     }
 }
@@ -62,6 +65,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
         val xmlTask = container.createMergedTask<KoverXmlTask>(
             MERGED_XML_REPORT_TASK_NAME,
             extension.xmlReport.classFilter,
+            extension.xmlReport.annotationFilter,
             extensionByProject,
             engineProvider,
             testsProvider,
@@ -74,6 +78,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
         val htmlTask = container.createMergedTask<KoverHtmlTask>(
             MERGED_HTML_REPORT_TASK_NAME,
             extension.htmlReport.classFilter,
+            extension.htmlReport.annotationFilter,
             extensionByProject,
             engineProvider,
             testsProvider,
@@ -86,6 +91,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
         val verifyTask = container.createMergedTask<KoverVerificationTask>(
             MERGED_VERIFY_TASK_NAME,
             extension.filters.classes,
+            extension.filters.annotations,
             extensionByProject,
             engineProvider,
             testsProvider,
@@ -132,6 +138,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
 private inline fun <reified T : KoverReportTask> Project.createMergedTask(
     taskName: String,
     classFilter: Provider<KoverClassFilter>,
+    annotationFilter: Provider<KoverAnnotationFilter>,
     extensionByProject: Provider<Map<Project, KoverProjectConfig>>,
     engineProvider: Provider<EngineDetails>,
     testsProvider: Provider<List<Test>>,
@@ -144,6 +151,7 @@ private inline fun <reified T : KoverReportTask> Project.createMergedTask(
         dependsOn(testsProvider)
 
         this@create.classFilter.convention(classFilter)
+        this@create.annotationFilter.convention(annotationFilter)
         group = VERIFICATION_GROUP
         block(this)
     }

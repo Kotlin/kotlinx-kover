@@ -46,11 +46,13 @@ internal interface TestKoverConfig {
 internal interface TestKoverMergedConfig {
     val enabled: Boolean
     val filters: TestKoverMergedFiltersConfig
+    val xml: TestMergedXmlConfig
     val verify: TestVerifyConfig
 }
 
 internal interface TestKoverFiltersConfig {
     val classes: KoverClassFilter?
+    val annotations: KoverAnnotationFilter?
     val sourceSets: KoverSourceSetFilter?
 }
 
@@ -58,6 +60,13 @@ internal interface TestXmlConfig {
     val onCheck: Boolean?
     val reportFile: File?
     val overrideFilters: TestKoverFiltersConfig?
+}
+
+internal interface TestMergedXmlConfig {
+    val onCheck: Boolean?
+    val reportFile: File?
+    val overrideClassFilter: KoverClassFilter?
+    val overrideAnnotationFilter: KoverAnnotationFilter?
 }
 
 internal interface TestHtmlConfig {
@@ -85,5 +94,6 @@ internal interface TestPluginsConfig {
 
 internal interface TestKoverMergedFiltersConfig {
     val classes: KoverClassFilter?
+    val annotations: KoverAnnotationFilter?
     val projects: KoverProjectsFilter?
 }

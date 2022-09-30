@@ -118,6 +118,7 @@ private inline fun <reified T : KoverReportTask> Project.createTask(
         engine.set(engineProvider)
         dependsOn(testsProvider)
         classFilter.set(filters.classes)
+        annotationFilter.set(filters.annotations)
         group = KoverNames.VERIFICATION_GROUP
         block(this)
     }
@@ -138,14 +139,17 @@ private fun Project.createProjectExtension(): KoverProjectConfig {
     extension.isDisabled.convention(false)
     extension.engine.convention(DefaultIntellijEngine)
     extension.filters.classes.convention(KoverClassFilter())
+    extension.filters.annotations.convention(KoverAnnotationFilter())
     extension.filters.sourceSets.convention(KoverSourceSetFilter())
     extension.xmlReport.reportFile.convention(layout.buildDirectory.file(KoverPaths.PROJECT_XML_REPORT_DEFAULT_PATH))
     extension.xmlReport.onCheck.convention(false)
     extension.xmlReport.filters.classes.convention(extension.filters.classes)
+    extension.xmlReport.filters.annotations.convention(extension.filters.annotations)
     extension.xmlReport.filters.sourceSets.convention(extension.filters.sourceSets)
     extension.htmlReport.reportDir.convention(layout.buildDirectory.dir(KoverPaths.PROJECT_HTML_REPORT_DEFAULT_PATH))
     extension.htmlReport.onCheck.convention(false)
     extension.htmlReport.taskFilters.classes.convention(extension.filters.classes)
+    extension.htmlReport.taskFilters.annotations.convention(extension.filters.annotations)
     extension.htmlReport.taskFilters.sourceSets.convention(extension.filters.sourceSets)
     extension.verify.onCheck.convention(true)
 

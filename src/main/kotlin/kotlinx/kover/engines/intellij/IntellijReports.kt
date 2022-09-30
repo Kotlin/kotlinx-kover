@@ -4,8 +4,6 @@
 
 package kotlinx.kover.engines.intellij
 
-import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.*
 import kotlinx.kover.tasks.*
 import kotlinx.kover.util.json.*
 import org.gradle.api.*
@@ -16,7 +14,7 @@ import java.io.*
 internal fun Task.intellijReport(
     exec: ExecOperations,
     projectFiles: Map<String, ProjectFiles>,
-    filters: KoverClassFilter,
+    filters: ReportFilters,
     xmlFile: File?,
     htmlDir: File?,
     classpath: FileCollection
@@ -29,8 +27,20 @@ internal fun Task.intellijReport(
         htmlDir.mkdirs()
     }
 
+
+    val aggRequest = File(temporaryDir, "agg-request.json")
+    val aggEntry =
+        AggregatorEntry(File(temporaryDir, "agg-ic.ic"), File(temporaryDir, "agg-smap.smap"), filters)
+    aggRequest.writeAggJson(projectFiles, listOf(aggEntry))
+    exec.javaexec {
+        mainClass.set("com.intellij.rt.coverage.aggregate.Main")
+        this@javaexec.classpath = classpath
+        args = mutableListOf(aggRequest.canonicalPath)
+    }
+
+    val sources = projectFiles.flatMap { it.value.sources }
     val argsFile = File(temporaryDir, "intellijreport.json")
-    argsFile.writeReportsJson(projectFiles, filters, xmlFile, htmlDir)
+    argsFile.writeReportsJson(sources, aggEntry, xmlFile, htmlDir)
 
     exec.javaexec {
         mainClass.set("com.intellij.rt.coverage.report.Main")
@@ -43,57 +53,25 @@ internal fun Task.intellijReport(
 JSON format:
 ```
 {
-  reports: [{ic: "path", smap: "path" [OPTIONAL]}, ...],
-  modules: [{output: ["path1", "path2"], sources: ["source1", â€¦]}, {â€¦}],
-  xml: "path" [OPTIONAL],
-  html: "directory" [OPTIONAL],
-  include: {
-        classes: ["regex1", "regex2"] [OPTIONAL]
-   } [OPTIONAL],
-  exclude: {
-        classes: ["regex1", "regex2"] [OPTIONAL]
-   } [OPTIONAL],
-}
-```
-
-
-JSON example:
-```
-{
-  "reports": [
-        {"ic": "/path/to/binary/report/result.ic"}
-  ],
-  "html": "/path/to/html",
-  "modules": [
-    {
-      "output": [
-        "/build/output"
-      ],
-      "sources": [
-        "/sources/java",
-        "/sources/kotlin"
-      ]
-    }
-  ]
+  "format": "kover-agg",
+  "reports": [{ic: String, "smap": String}], // single element
+  "modules": [{sources: [String...]}],       // single element
+  "xml": String, // optional
+  "html": String // optional
 }
 ```
  */
 private fun File.writeReportsJson(
-    projectFiles: Map<String, ProjectFiles>,
-    classFilter: KoverClassFilter,
+    sources: List<File>,
+    aggregatorEntry: AggregatorEntry,
     xmlFile: File?,
     htmlDir: File?
 ) {
-    writeJsonObject(mutableMapOf<String, Any>(
-        "reports" to projectFiles.flatMap { it.value.binaryReportFiles }.map { mapOf("ic" to it) },
-        "modules" to projectFiles.map { mapOf("sources" to it.value.sources, "output" to it.value.outputs) },
+    writeJsonObject(mutableMapOf(
+        "format" to "kover-agg",
+        "reports" to listOf(mapOf("ic" to aggregatorEntry.ic, "smap" to aggregatorEntry.smap)),
+        "modules" to listOf(mapOf("sources" to sources) ),
     ).also {
-        if (classFilter.includes.isNotEmpty()) {
-            it["include"] = mapOf("classes" to classFilter.includes.map { c -> c.wildcardsToRegex() })
-        }
-        if (classFilter.excludes.isNotEmpty()) {
-            it["exclude"] = mapOf("classes" to classFilter.excludes.map { c -> c.wildcardsToRegex() })
-        }
         xmlFile?.also { f ->
             it["xml"] = f
         }

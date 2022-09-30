@@ -20,7 +20,7 @@ public open class KoverXmlTask : KoverReportTask() {
             this,
             exec,
             projectFiles,
-            classFilter.get(),
+            getReportFilters(),
             reportFile.get().asFile,
             null
         )

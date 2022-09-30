@@ -23,6 +23,9 @@ public abstract class KoverReportTask : DefaultTask() {
     internal val classFilter: Property<KoverClassFilter> = project.objects.property()
 
     @get:Nested
+    internal val annotationFilter: Property<KoverAnnotationFilter> = project.objects.property()
+
+    @get:Nested
     internal val engine: Property<EngineDetails> = project.objects.property()
 
     // exec operations to launch Java applications
@@ -31,6 +34,16 @@ public abstract class KoverReportTask : DefaultTask() {
 
     @get:Internal
     protected val projectPath: String = project.path
+
+    @Internal
+    internal fun getReportFilters(): ReportFilters {
+        val classFilterValue = classFilter.get()
+        return ReportFilters(
+            classFilterValue.includes.toSet(),
+            classFilterValue.excludes.toSet(),
+            annotationFilter.get().excludes.toSet()
+        )
+    }
 
 }
 
@@ -53,8 +66,14 @@ internal class EngineDetails(
     @get:Internal val classpath: FileCollection
 )
 
-
-
+internal data class ReportFilters(
+    @get:Input
+    val includesClasses: Set<String>,
+    @get:Input
+    val excludesClasses: Set<String>,
+    @get:Input
+    val excludesAnnotations: Set<String>
+)
 
 
 

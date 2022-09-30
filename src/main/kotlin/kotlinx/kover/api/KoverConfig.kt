@@ -148,7 +148,7 @@ public open class KoverExtension
 
 public open class KoverProjectFilters @Inject constructor(private val objects: ObjectFactory) {
     internal val classes: Property<KoverClassFilter> = objects.property()
-
+    internal val annotations: Property<KoverAnnotationFilter> = objects.property()
     internal val sourceSets: Property<KoverSourceSetFilter> = objects.property()
 
     /**
@@ -167,6 +167,22 @@ public open class KoverProjectFilters @Inject constructor(private val objects: O
         val classFilter = objects.newInstance<KoverClassFilter>()
         config.execute(classFilter)
         classes.set(classFilter)
+    }
+
+    /**
+     * Configures class filter in order to exclude declarations marked by specific annotations.
+     *
+     * Example:
+     *  ```
+     *  annotations {
+     *      excludes += "com.example.Generated"
+     *  }
+     *  ```
+     */
+    public fun annotations(config: Action<KoverAnnotationFilter>) {
+        val annotationFilter = objects.newInstance<KoverAnnotationFilter>()
+        config.execute(annotationFilter)
+        annotations.set(annotationFilter)
     }
 
     /**
@@ -284,7 +300,7 @@ public open class KoverMergedConfig @Inject constructor(objects: ObjectFactory) 
 
 public open class KoverMergedFilters @Inject constructor(private val objects: ObjectFactory) {
     internal val classes: Property<KoverClassFilter> = objects.property()
-
+    internal val annotations: Property<KoverAnnotationFilter> = objects.property()
     internal val projects: Property<KoverProjectsFilter> = objects.property()
 
     /**
@@ -294,6 +310,22 @@ public open class KoverMergedFilters @Inject constructor(private val objects: Ob
         val classFilter = objects.newInstance<KoverClassFilter>()
         config.execute(classFilter)
         classes.set(classFilter)
+    }
+
+    /**
+     * Configures class filter in order to exclude declarations marked by specific annotations.
+     *
+     * Example:
+     *  ```
+     *  annotations {
+     *      excludes += "com.example.Generated"
+     *  }
+     *  ```
+     */
+    public fun annotations(config: Action<KoverAnnotationFilter>) {
+        val newAnnotationFilter = objects.newInstance<KoverAnnotationFilter>()
+        config.execute(newAnnotationFilter)
+        annotations.set(newAnnotationFilter)
     }
 
     /**
@@ -309,6 +341,7 @@ public open class KoverMergedFilters @Inject constructor(private val objects: Ob
 
 public open class KoverMergedXmlConfig @Inject constructor(private val objects: ObjectFactory) {
     internal val classFilter: Property<KoverClassFilter> = objects.property()
+    internal val annotationFilter: Property<KoverAnnotationFilter> = objects.property()
 
     /**
      * Specifies whether the merged XML report generation task should be executed before the `check` task (if it exists) of the current project.
@@ -328,10 +361,29 @@ public open class KoverMergedXmlConfig @Inject constructor(private val objects: 
         config.execute(newClassFilter)
         classFilter.set(newClassFilter)
     }
+
+    /**
+     * Override annotation filter for the merged XML report generation task.
+     *
+     * To filter the merged XML report, only the annotations specified in this block will be used, the common annotation filter will be removed.
+     *
+     * Example:
+     *  ```
+     *  overrideAnnotationFilter {
+     *      excludes += "com.example.Generated"
+     *  }
+     *  ```
+     */
+    public fun overrideAnnotationFilter(config: Action<KoverAnnotationFilter>) {
+        val newAnnotationFilter = objects.newInstance<KoverAnnotationFilter>()
+        config.execute(newAnnotationFilter)
+        annotationFilter.set(newAnnotationFilter)
+    }
 }
 
 public open class KoverMergedHtmlConfig @Inject constructor(private val objects: ObjectFactory) {
     internal val classFilter: Property<KoverClassFilter> = objects.property()
+    internal val annotationFilter: Property<KoverAnnotationFilter> = objects.property()
 
     /**
      * Specifies whether the merged HTML report generation task should be executed before the `check` task (if it exists) of the current project.
@@ -350,6 +402,24 @@ public open class KoverMergedHtmlConfig @Inject constructor(private val objects:
         val newClassFilter = objects.newInstance<KoverClassFilter>()
         config.execute(newClassFilter)
         classFilter.set(newClassFilter)
+    }
+
+    /**
+     * Override annotation filter for the merged HTML report generation task.
+     *
+     * To filter the merged HTML report, only the annotations specified in this block will be used, the common annotation filter will be removed.
+     *
+     * Example:
+     *  ```
+     *  overrideAnnotationFilter {
+     *      excludes += "com.example.Generated"
+     *  }
+     *  ```
+     */
+    public fun overrideAnnotationFilter(config: Action<KoverAnnotationFilter>) {
+        val newAnnotationFilter = objects.newInstance<KoverAnnotationFilter>()
+        config.execute(newAnnotationFilter)
+        annotationFilter.set(newAnnotationFilter)
     }
 }
 
@@ -406,6 +476,18 @@ public open class KoverClassFilter {
     public val excludes: MutableList<String> = mutableListOf()
 }
 
+public open class KoverAnnotationFilter {
+
+    /**
+     * Specifies annotations that should be used to mark declarations that should be excluded from reports
+     *
+     * Elements are represented as a set of fully-qualified names of the annotations.
+     * It's possible to use `*` and `?` wildcards.
+     */
+    @get:Input
+    public val excludes: MutableList<String> = mutableListOf()
+}
+
 public open class KoverSourceSetFilter {
     /**
      * Not implemented in beta version.
@@ -425,6 +507,10 @@ public open class VerificationRule @Inject constructor(private val objects: Obje
     @get:Nested
     @get:Optional
     internal val classFilter: Property<KoverClassFilter> = objects.property()
+
+    @get:Nested
+    @get:Optional
+    internal val annotationFilter: Property<KoverAnnotationFilter> = objects.property()
 
     @get:Nested
     internal val bounds: ListProperty<VerificationBound> = objects.listProperty()
@@ -457,6 +543,24 @@ public open class VerificationRule @Inject constructor(private val objects: Obje
             classFilter.set(objects.newInstance<KoverClassFilter>())
         }
         config.execute(classFilter.get())
+    }
+
+    /**
+     * Override annotation filter for the verification rule.
+     *
+     * To filter the verification rule, only the annotations specified in this block will be used, the common annotation filter will be removed.
+     *
+     * Example:
+     *  ```
+     *  overrideAnnotationFilter {
+     *      excludes += "com.example.Generated"
+     *  }
+     *  ```
+     */
+    public fun overrideAnnotationFilter(config: Action<KoverAnnotationFilter>) {
+        val newAnnotationFilter = objects.newInstance<KoverAnnotationFilter>()
+        config.execute(newAnnotationFilter)
+        annotationFilter.set(newAnnotationFilter)
     }
 
     /**

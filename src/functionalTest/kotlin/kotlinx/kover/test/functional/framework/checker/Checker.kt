@@ -21,7 +21,7 @@ internal fun File.checkResult(
 ) {
     try {
         createCheckerContext(result).also(checker)
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
         if (!errorExpected) throw e
     }
 

@@ -20,13 +20,13 @@ import java.util.TreeMap
 internal fun Task.intellijVerification(
     exec: ExecOperations,
     projectFiles: Map<String, ProjectFiles>,
-    classFilter: KoverClassFilter,
+    filters: ReportFilters,
     rules: List<ReportVerificationRule>,
     classpath: FileCollection
 ): String? {
     val aggRequest = File(temporaryDir, "agg-request.json")
-    val groupedRules = groupRules(classFilter, rules)
-    aggRequest.writeAggJson(projectFiles, groupedRules)
+    val groupedRules = groupRules(filters, rules)
+    aggRequest.writeAggJson(projectFiles, groupedRules.keys.toList())
     exec.javaexec {
         mainClass.set("com.intellij.rt.coverage.aggregate.Main")
         this@javaexec.classpath = classpath
@@ -51,74 +51,28 @@ internal fun Task.intellijVerification(
     }
 }
 
-private data class RulesGroup(
-    val aggFile: File,
-    val filters: KoverClassFilter,
-    val rules: List<ReportVerificationRule>
-)
-
 private fun Task.groupRules(
-    commonClassFilter: KoverClassFilter,
+    commonFilters: ReportFilters,
     allRules: List<ReportVerificationRule>
-): List<RulesGroup> {
-    val result = mutableListOf<RulesGroup>()
-    val commonAggFile = File(temporaryDir, "aggregated-common.ic")
-    val commonRules = mutableListOf<ReportVerificationRule>()
-    result += RulesGroup(commonAggFile, commonClassFilter, commonRules)
+): Map<AggregatorEntry, List<ReportVerificationRule>> {
+    val groupedMap = mutableMapOf<ReportFilters, MutableList<ReportVerificationRule>>()
 
     allRules.forEach {
-        if (it.filters == null) {
-            commonRules += it
-        } else {
-            result += RulesGroup(File(temporaryDir, "aggregated-${result.size}.ic"), it.filters, listOf(it))
-        }
+        val excludesClasses = it.classFilter?.excludes ?: commonFilters.excludesClasses
+        val includesClasses = it.classFilter?.includes ?: commonFilters.includesClasses
+        val excludesAnnotations = it.annotationFilter?.excludes ?: commonFilters.excludesAnnotations
+
+        val filters = ReportFilters(includesClasses.toSet(), excludesClasses.toSet(), excludesAnnotations.toSet())
+        groupedMap.computeIfAbsent(filters) { mutableListOf() } += it
     }
-    return result
-}
 
-/*
-{
-  "reports": [{"ic": "path"}, ...],
-  "modules": [{"output": ["path1", "path2"], "sources": ["source1",...]},... ],
-  "result": [{
-    "filters": {   // optional
-      "include": { // optional
-        "classes": [ String,... ]
-      },
-      "exclude": { // optional
-        "classes": [ String,... ]
-      }
-    },
-    "aggregatedReportFile": String,
-  },...
-  ]
-
-  }
-}
- */
-private fun File.writeAggJson(
-    projectFiles: Map<String, ProjectFiles>,
-    groups: List<RulesGroup>
-) {
-    writeJsonObject(mapOf(
-        "reports" to projectFiles.flatMap { it.value.binaryReportFiles }.map { mapOf("ic" to it) },
-        "modules" to projectFiles.map { mapOf("sources" to it.value.sources, "output" to it.value.outputs) },
-        "result" to groups.map { group ->
-            mapOf(
-                "aggregatedReportFile" to group.aggFile,
-                "filters" to mutableMapOf<String, Any>().also {
-                    if (group.filters.includes.isNotEmpty()) {
-                        it["include"] =
-                            mapOf("classes" to group.filters.includes.map { c -> c.wildcardsToRegex() })
-                    }
-                    if (group.filters.excludes.isNotEmpty()) {
-                        it["exclude"] =
-                            mapOf("classes" to group.filters.excludes.map { c -> c.wildcardsToRegex() })
-                    }
-                }
-            )
-        }
-    ))
+    var i = 0
+    return groupedMap.entries.associate { (filters, rules) ->
+        val aggFile = File(temporaryDir, "agg-ic-$i.ic")
+        val smapFile = File(temporaryDir, "agg-smap-$i.smap")
+        i++
+        AggregatorEntry(aggFile, smapFile, filters) to rules
+    }
 }
 
 /*
@@ -142,16 +96,17 @@ private fun File.writeAggJson(
 }
  */
 private fun File.writeVerifyJson(
-    groups: List<RulesGroup>,
+    entries: Map<AggregatorEntry, List<ReportVerificationRule>>,
     result: File,
 ) {
     val rulesArray = mutableListOf<Map<String, Any>>()
 
-    groups.forEach { group ->
-        group.rules.forEach { rule ->
+    entries.forEach { entry ->
+        entry.value.forEach { rule ->
             rulesArray += mapOf(
                 "id" to rule.id,
-                "aggregatedReportFile" to group.aggFile,
+                "aggregatedReportFile" to entry.key.ic,
+                "smapFile" to entry.key.smap,
                 "targetType" to rule.targetToReporter(),
                 "bounds" to rule.bounds.map { b ->
                     mutableMapOf(

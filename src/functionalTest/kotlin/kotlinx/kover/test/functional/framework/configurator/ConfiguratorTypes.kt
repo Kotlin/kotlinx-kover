@@ -6,11 +6,6 @@ package kotlinx.kover.test.functional.framework.configurator
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.checker.CheckerContext
-import kotlinx.kover.test.functional.framework.common.*
-import kotlinx.kover.test.functional.framework.common.BuildSlice
-import kotlinx.kover.test.functional.framework.starter.*
-import kotlinx.kover.test.functional.framework.starter.SlicedBuildConfigurator
-import org.gradle.api.*
 import java.io.*
 
 
@@ -89,10 +84,16 @@ internal class VerificationRuleConfigurator {
     var target: VerificationTarget? = null
 
     var overrideClassFilter: KoverClassFilter? = null
+    var overrideAnnotationFilter: KoverAnnotationFilter? = null
+
     val bounds: MutableList<VerificationBoundConfigurator> = mutableListOf()
 
-    fun overrideClassFilter(config: Action<KoverClassFilter>) {
-        overrideClassFilter = KoverClassFilter().also { config.execute(it) }
+    fun overrideClassFilter(config: KoverClassFilter.() -> Unit) {
+        overrideClassFilter = KoverClassFilter().also(config)
+    }
+
+    fun overrideAnnotationFilter(config: KoverAnnotationFilter.() -> Unit) {
+        overrideAnnotationFilter = KoverAnnotationFilter().also(config)
     }
 
     fun bound(configureBound: VerificationBoundConfigurator.() -> Unit) {
@@ -110,6 +111,8 @@ internal class VerificationBoundConfigurator {
 internal interface KoverFiltersConfigurator {
     fun classes(config: KoverClassFilter.() -> Unit)
 
+    fun annotations(config: KoverAnnotationFilter.() -> Unit)
+
     fun sourceSets(config: KoverSourceSetFilter.() -> Unit)
 }
 
@@ -119,25 +122,38 @@ interface TestTaskConfigurator {
 }
 
 internal interface KoverMergedConfigurator {
-    public fun enable()
+    fun enable()
 
-    public fun filters(config: KoverMergedFiltersConfigurator.() -> Unit)
+    fun filters(config: KoverMergedFiltersConfigurator.() -> Unit)
 
-    public fun verify(config: KoverVerifyConfigurator.() -> Unit)
+    fun xmlReport(config: KoverMergedXmlConfigurator.() -> Unit)
+
+    fun verify(config: KoverVerifyConfigurator.() -> Unit)
 }
 
-public interface KoverMergedFiltersConfigurator {
-    public fun classes(config: KoverClassFilter.() -> Unit)
+internal interface KoverMergedFiltersConfigurator {
+    fun classes(config: KoverClassFilter.() -> Unit)
 
-    public fun projects(config: KoverProjectsFilter.() -> Unit)
+    fun annotations(config: KoverAnnotationFilter.() -> Unit)
+
+    fun projects(config: KoverProjectsFilter.() -> Unit)
 }
 
-interface PluginsConfigurator {
+internal interface KoverMergedXmlConfigurator {
+    var onCheck: Boolean?
+    var reportFile: File?
+
+    fun overrideClassFilter(config: KoverClassFilter.() -> Unit)
+
+    fun overrideAnnotationFilter(config: KoverAnnotationFilter.() -> Unit)
+}
+
+internal interface PluginsConfigurator {
     fun kotlin(version: String? = null)
     fun kover(version: String? = null)
 }
 
-interface RepositoriesConfigurator {
+internal interface RepositoriesConfigurator {
     fun repository(name: String)
 }
 
