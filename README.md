@@ -158,54 +158,118 @@ tasks.test {
 ```
 </details>
 
-**For other platforms (Android, Kotlin-Multiplatform) the names may differ, and you may also have several test tasks, so you first need to determine the name of the required task.**
+**For other platforms (like Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
+
+
+### Configuring Android test task
 
 Example of configuring test task for build type `debug` in Android:
 <details open>
 <summary>Kotlin</summary>
 
+`build.gradle.kts` (Project)
 ```kotlin
-android {
-    // other Android declarations
+buildscript {
+    // ...
+    dependencies {
+        // ...
+        classpath("org.jetbrains.kotlinx:kover:0.6.0")
+    }
+}
 
-    testOptions {
-        unitTests.all {
-            if (it.name == "testDebugUnitTest") {
-                it.extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-                    isDisabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
-                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin")) // set file name of binary report
-                    includes = listOf("com.example.*") // see "Instrumentation inclusion rules" below
-                    excludes = listOf("com.example.subpackage.*") // see "Instrumentation exclusion rules" below
-                }
-            }
+plugins {
+    id("org.jetbrains.kotlinx.kover") version "0.6.0"
+}
+
+koverMerged {
+    enable()
+
+    filters {
+        classes {
+            excludes.addAll(
+                listOf(
+                    "*Fragment",
+                    "*Fragment\$*",
+                    "*Activity",
+                    "*Activity\$*",
+                    "*.databinding.*", // ViewBinding
+                    "org.jetbrains.kover_android_kts_example.BuildConfig"
+                )
+            )
         }
     }
 }
 ```
-    
+
+`build.gradle.kts` (Module)
+```kotlin
+plugins {
+    // ...
+    id("org.jetbrains.kotlinx.kover")
+}
+
+android {
+    // ...
+}
+
+dependencies {
+    // ...
+}
+
+kover {
+    instrumentation {
+        excludeTasks.add "testReleaseUnitTest"
+    }
+}
+```
+
+An example is available here: https://github.com/Kotlin/kotlinx-kover/tree/main/examples/android_kts
 </details>
 
 <details>
 <summary>Groovy</summary>
 
+`build.gradle` (Project)
 ```groovy
-android {
-    // other Android declarations
+plugin {
+    // ...
+    id 'org.jetbrains.kotlinx.kover' version "0.6.0"
+}
 
-    testOptions {
-        unitTests.all {
-            if (name == "testDebugUnitTest") {
-                kover {
-                    disabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
-                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin")) // set file name of binary report
-                    includes = ['com.example.*'] // see "Instrumentation inclusion rules" below
-                    excludes = ['com.example.subpackage.*'] // see "Instrumentation exclusion rules" below
-                }
-            }
+koverMerged {
+    enable()
+
+    filters {
+        classes {
+            excludes.add "*.databinding.*" // ViewBinding
         }
     }
 }
 ```
+
+`build.gradle` (Module)
+```groovy
+plugins {
+    // ...
+    id 'org.jetbrains.kotlinx.kover'
+}
+
+android {
+    // ...
+}
+
+dependencies {
+    // ...
+}
+
+kover {
+    instrumentation {
+        excludeTasks.add "testReleaseUnitTest"
+    }
+}
+```
+
+An example is available here: https://github.com/Kotlin/kotlinx-kover/tree/main/examples/android_groovy
 </details>
 
 

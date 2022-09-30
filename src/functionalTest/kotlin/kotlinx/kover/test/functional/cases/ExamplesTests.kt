@@ -12,7 +12,7 @@ import kotlin.test.*
 
 
 internal class ExamplesTests {
-    @ExamplesTest
+    @ExamplesTest(excludes = ["android_groovy", "android_kts"])
     fun CheckerContext.buildAndCheckVersions() {
         allProjects {
             // check version of Kover plugin if applied
