@@ -23,6 +23,7 @@ Minimal supported `Gradle` version: `6.6`.
   - [Specifying Coverage Engine](#specifying-coverage-engine)
 - [Kover single-project tasks](#kover-single-project-tasks)
 - [Kover merged tasks](#kover-merged-tasks)
+- [Example of configuring Android application](#example-of-configuring-android-application) 
 - [Implicit plugin dependencies](#implicit-plugin-dependencies)
 - [Building and contributing](#building-and-contributing)
 
@@ -44,7 +45,7 @@ In top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.6.0"
+     id("org.jetbrains.kotlinx.kover") version "0.6.1"
 }
 ```
 </details>
@@ -54,7 +55,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.6.0'
+    id 'org.jetbrains.kotlinx.kover' version '0.6.1'
 }
 ```
 </details>
@@ -72,7 +73,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover:0.6.0")
+        classpath("org.jetbrains.kotlinx:kover:0.6.1")
     }
 }
 
@@ -89,7 +90,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover:0.6.0'
+        classpath 'org.jetbrains.kotlinx:kover:0.6.1'
     }
 }
   
@@ -158,118 +159,54 @@ tasks.test {
 ```
 </details>
 
-**For other platforms (like Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
-
-
-### Configuring Android test task
+**For other platforms (like Android or Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
 
 Example of configuring test task for build type `debug` in Android:
 <details open>
 <summary>Kotlin</summary>
 
-`build.gradle.kts` (Project)
 ```kotlin
-buildscript {
-    // ...
-    dependencies {
-        // ...
-        classpath("org.jetbrains.kotlinx:kover:0.6.0")
-    }
-}
+android {
+    // other Android declarations
 
-plugins {
-    id("org.jetbrains.kotlinx.kover") version "0.6.0"
-}
-
-koverMerged {
-    enable()
-
-    filters {
-        classes {
-            excludes.addAll(
-                listOf(
-                    "*Fragment",
-                    "*Fragment\$*",
-                    "*Activity",
-                    "*Activity\$*",
-                    "*.databinding.*", // ViewBinding
-                    "org.jetbrains.kover_android_kts_example.BuildConfig"
-                )
-            )
+    testOptions {
+        unitTests.all {
+            if (it.name == "testDebugUnitTest") {
+                it.extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
+                    isDisabled.set(false) // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
+                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin")) // set file name of binary report
+                    includes = listOf("com.example.*") // see "Instrumentation inclusion rules" below
+                    excludes = listOf("com.example.subpackage.*") // see "Instrumentation exclusion rules" below
+                }
+            }
         }
     }
 }
 ```
 
-`build.gradle.kts` (Module)
-```kotlin
-plugins {
-    // ...
-    id("org.jetbrains.kotlinx.kover")
-}
-
-android {
-    // ...
-}
-
-dependencies {
-    // ...
-}
-
-kover {
-    instrumentation {
-        excludeTasks.add "testReleaseUnitTest"
-    }
-}
-```
-
-An example is available here: https://github.com/Kotlin/kotlinx-kover/tree/main/examples/android_kts
 </details>
 
 <details>
 <summary>Groovy</summary>
 
-`build.gradle` (Project)
 ```groovy
-plugin {
-    // ...
-    id 'org.jetbrains.kotlinx.kover' version "0.6.0"
-}
+android {
+    // other Android declarations
 
-koverMerged {
-    enable()
-
-    filters {
-        classes {
-            excludes.add "*.databinding.*" // ViewBinding
+    testOptions {
+        unitTests.all {
+            if (name == "testDebugUnitTest") {
+                kover {
+                    disabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
+                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin")) // set file name of binary report
+                    includes = ['com.example.*'] // see "Instrumentation inclusion rules" below
+                    excludes = ['com.example.subpackage.*'] // see "Instrumentation exclusion rules" below
+                }
+            }
         }
     }
 }
 ```
-
-`build.gradle` (Module)
-```groovy
-plugins {
-    // ...
-    id 'org.jetbrains.kotlinx.kover'
-}
-
-android {
-    // ...
-}
-
-dependencies {
-    // ...
-}
-
-kover {
-    instrumentation {
-        excludeTasks.add "testReleaseUnitTest"
-    }
-}
-```
-
-An example is available here: https://github.com/Kotlin/kotlinx-kover/tree/main/examples/android_groovy
 </details>
 
 
@@ -668,6 +605,108 @@ Tasks that are created for project where the Kover plugin is applied and merged 
 - `koverMergedReport` - Executes both `koverMergedXmlReport` and `koverMergedHtmlReport` tasks.
 - `koverMergedVerify` - Verifies code coverage metrics of all projects based on specified rules. Always executes before `check` task.
 
+### Example of configuring Android application
+
+Example of configuring test task for build type `debug` in Android:
+<details open>
+<summary>Kotlin</summary>
+
+`build.gradle.kts` (Project)
+```kotlin
+buildscript {
+    // ...
+    dependencies {
+        // ...
+        classpath("org.jetbrains.kotlinx:kover:0.6.1")
+    }
+}
+
+plugins {
+    id("org.jetbrains.kotlinx.kover") version "0.6.1"
+}
+
+koverMerged {
+    enable()
+
+    filters {
+        classes {
+            excludes += "*.databinding.*" // exclude classes by mask
+        }
+    }
+}
+```
+
+`build.gradle.kts` (Module)
+```kotlin
+plugins {
+    // ...
+    id("org.jetbrains.kotlinx.kover")
+}
+
+android {
+    // ...
+}
+
+dependencies {
+    // ...
+}
+
+kover {
+    instrumentation {
+        excludeTasks += "testReleaseUnitTest" // exclude testReleaseUnitTest from instrumentation
+    }
+}
+```
+
+An example is available [here](examples/android_kts)
+</details>
+
+<details>
+<summary>Groovy</summary>
+
+`build.gradle` (Project)
+```groovy
+plugin {
+    // ...
+    id 'org.jetbrains.kotlinx.kover' version "0.6.1"
+}
+
+koverMerged {
+    enable()
+
+    filters {
+        classes {
+            excludes.add "*.databinding.*" // exclude classes by mask
+        }
+    }
+}
+```
+
+`build.gradle` (Module)
+```groovy
+plugins {
+    // ...
+    id 'org.jetbrains.kotlinx.kover'
+}
+
+android {
+    // ...
+}
+
+dependencies {
+    // ...
+}
+
+kover {
+    instrumentation {
+        excludeTasks.add "testReleaseUnitTest" // exclude testReleaseUnitTest from instrumentation
+    }
+}
+```
+
+An example is available [here](examples/android_groovy)
+
+</details>
 
 ## Implicit plugin dependencies
 While the plugin is being applied, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
