@@ -3,13 +3,14 @@
 
 ### Features
 * Implemented filtering of reports by annotation (#121)
-* Minimal and default agent versions upgraded to `1.0.682`
+* Minimal and default agent versions upgraded to `1.0.683`
 
 ### Bugfixes
 * Added filtering out projects without a build file (#222)
 * Added JaCoCo reports filtering (#220)
 * Fixed coverage for function reference (#148)
 * Fixed incorrect multiplatform lookup adapter (#193)
+* Fixed `ArrayIndexOutOfBoundsException` during class instrumentation (#166)
 
 ### Internal features
 * Upgraded Gradle version to `7.5.1`
