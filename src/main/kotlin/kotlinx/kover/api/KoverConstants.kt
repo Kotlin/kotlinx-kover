@@ -36,8 +36,8 @@ public object KoverPaths {
 }
 
 public object KoverVersions {
-    internal const val MINIMAL_INTELLIJ_VERSION = "1.0.682"
-    internal const val DEFAULT_INTELLIJ_VERSION = "1.0.682"
+    internal const val MINIMAL_INTELLIJ_VERSION = "1.0.683"
+    internal const val DEFAULT_INTELLIJ_VERSION = "1.0.683"
 
     internal const val DEFAULT_JACOCO_VERSION = "0.8.8"
 }

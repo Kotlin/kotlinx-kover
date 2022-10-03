@@ -629,7 +629,7 @@ kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
 
 #### IntelliJ Coverage Engine with custom version
 ```
-kotlinx.kover.api.IntellijEngine("1.0.680")
+kotlinx.kover.api.IntellijEngine("1.0.683")
 ```
 
 #### JaCoCo Coverage Engine with default version
