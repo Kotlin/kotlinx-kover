@@ -8,5 +8,5 @@ object Versions {
 
     const val ANDROID_GRADLE_PLUGIN = "7.2.2"
     const val KOTLIN = "1.7.10"
-    const val KOVER = "0.6.0"
+    const val KOVER = "0.6.1"
 }

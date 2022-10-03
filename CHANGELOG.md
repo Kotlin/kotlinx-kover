@@ -1,3 +1,28 @@
+0.6.1 / 2022-10-03
+===================
+
+### Features
+* Implemented filtering of reports by annotation (#121)
+* Minimal and default agent versions upgraded to `1.0.683`
+
+### Bugfixes
+* Added filtering out projects without a build file (#222)
+* Added JaCoCo reports filtering (#220)
+* Fixed coverage for function reference (#148)
+* Fixed incorrect multiplatform lookup adapter (#193)
+* Fixed `ArrayIndexOutOfBoundsException` during class instrumentation (#166)
+
+### Internal features
+* Upgraded Gradle version to `7.5.1`
+* Rewritten functional tests infrastructure
+* Added example projects
+* XML and HTML report generation moved to Kover Aggregator
+
+### Documentation
+* Added contribution guide
+* Added section `Building and contributing` into Table of contents
+* Fix migration to `0.6.0` documentation
+
 0.6.0 / 2022-08-23
 ===================
 Note that this is a full changelog relative to `0.6.0` version. Changelog relative to `0.6.0-Beta` can be found at the end of the changelog.
