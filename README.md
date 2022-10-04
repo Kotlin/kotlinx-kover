@@ -123,7 +123,7 @@ However, in some cases, custom settings are needed - this can be done by configu
 
 
 ### Configuring JVM test task
-In rare cases, you may need to disable instrumentation for certain classes if it causes execution errors.
+In rare cases, you may need to disable instrumentation for certain classes if it causes execution errors like `No instrumentation registered! Must run under a registering instrumentation.`.
 It may also be convenient to ignore the test task when calculating coverage.
 You may configure the Kover extension for it.
 
