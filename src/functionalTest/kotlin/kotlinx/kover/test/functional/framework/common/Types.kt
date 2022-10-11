@@ -5,6 +5,7 @@
 package kotlinx.kover.test.functional.framework.common
 
 import kotlinx.kover.api.*
+import kotlinx.kover.tools.commons.*
 import java.io.File
 
 internal enum class ScriptLanguage { KOTLIN, GROOVY }
@@ -47,7 +48,7 @@ internal val BuildSlice.testPath: String
 internal data class BuildSlice(
     val language: ScriptLanguage,
     val type: KotlinPluginType,
-    val engine: CoverageEngineVendor?
+    val toolVendor: CoverageToolVendor?
 ) {
     override fun toString(): String {
         val languageText = when (language) {
@@ -59,12 +60,12 @@ internal data class BuildSlice(
             KotlinPluginType.MULTIPLATFORM -> "KMP"
             KotlinPluginType.ANDROID -> "Android"
         }
-        val engineText = when(engine) {
-            CoverageEngineVendor.INTELLIJ -> "IntelliJ"
-            CoverageEngineVendor.JACOCO -> "JaCoCo"
+        val toolText = when(toolVendor) {
+            CoverageToolVendor.KOVER -> "Kover"
+            CoverageToolVendor.JACOCO -> "JaCoCo"
             null -> "Default"
         }
-        return "language=$languageText, type=$typeText, engine=$engineText"
+        return "language=$languageText, type=$typeText, tool=$toolText"
     }
 }
 

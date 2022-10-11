@@ -2,9 +2,9 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.engines.intellij
+package kotlinx.kover.tools.kover
 
-import kotlinx.kover.engines.commons.*
+import kotlinx.kover.tools.commons.*
 import org.gradle.api.Task
 import java.io.*
 
@@ -13,8 +13,8 @@ private const val calculateForUnloadedClasses = false // a flag to calculate cov
 private const val appendToDataFile = true // a flag to use data file as initial coverage
 private const val samplingMode = false //a flag to run coverage in sampling mode or in tracing mode otherwise
 
-internal fun Task.buildIntellijAgentJvmArgs(jarFile: File, reportFile: File, filters: AgentFilters): MutableList<String> {
-    val argsFile = File(temporaryDir, "intellijagent.args")
+internal fun Task.buildKoverAgentJvmArgs(jarFile: File, reportFile: File, filters: AgentFilters): MutableList<String> {
+    val argsFile = File(temporaryDir, "kover-agent.args")
     argsFile.writeAgentArgs(reportFile, filters)
 
     return mutableListOf(

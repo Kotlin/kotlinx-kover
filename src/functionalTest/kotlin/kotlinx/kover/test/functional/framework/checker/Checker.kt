@@ -6,6 +6,7 @@ package kotlinx.kover.test.functional.framework.checker
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.common.*
+import kotlinx.kover.tools.commons.*
 import org.gradle.testkit.runner.*
 import org.w3c.dom.*
 import java.io.*
@@ -37,8 +38,8 @@ internal fun File.createCheckerContext(result: BuildResult): CheckerContext {
 internal abstract class CheckerContextWrapper(private val origin: CheckerContext) : CheckerContext {
     override val definedKoverVersion: String?
         get() = origin.definedKoverVersion
-    override val engine: CoverageEngineVariant
-        get() = origin.engine
+    override val toolVariant: CoverageToolVariant
+        get() = origin.toolVariant
     override val language: ScriptLanguage
         get() = origin.language
     override val output: String
@@ -113,17 +114,16 @@ private class CheckerContextImpl(
     override val pluginType = buildScript.kotlinPluginType(language)
     override val output: String = result.output
     override val definedKoverVersion: String? = buildScript.definedKoverVersion()
-    override val engine: CoverageEngineVariant = buildScript.definedEngine() ?: DefaultIntellijEngine
+    override val toolVariant: CoverageToolVariant = buildScript.definedTool() ?: DefaultKoverTool
 
     override val defaultBinaryReport: String
         get() {
-            val extension = if (engine.vendor == CoverageEngineVendor.JACOCO) "exec" else "ic"
-            return binaryReportsDirectory + "/" + defaultTestTaskName(pluginType!!) + "." + extension
+            return binaryReportsDirectory + "/" + defaultTestTaskName(pluginType!!) + "." + toolVariant.vendor.reportFileExtension
         }
 
 
     init {
-        checkIntellijErrors()
+        checkKoverToolErrors()
     }
 
     override fun subproject(path: String, checker: CheckerContext.() -> Unit) {
@@ -136,7 +136,7 @@ private class CheckerContextImpl(
         projects.forEach { subproject(it.key, checker) }
     }
 
-    private fun checkIntellijErrors() {
+    private fun checkKoverToolErrors() {
         file(errorsDirectory()) {
             if (this.exists()) {
                 val errorLogs = this.listFiles()?.map { it.name } ?: return@file
@@ -249,22 +249,22 @@ private val pluginRegex =
 private val dependencyRegex = """classpath\(?\s*["']org.jetbrains.kotlinx:kover:([^"^']+)["']""".toRegex()
 
 /**
- * Regex for finding the custom version of the IntelliJ Coverage Engine.
+ * Regex for finding the custom version of the Kover Coverage Tool.
  *
  * Examples:
- *   - `kotlinx.kover.api.IntellijEngine("x.x.x")`
- *   - `kotlinx.kover.api.IntellijEngine('x.x.x')`
+ *   - `kotlinx.kover.api.KoverTool("x.x.x")`
+ *   - `kotlinx.kover.api.KoverTool('x.x.x')`
  */
-private val intellijEngineRegex = """IntellijEngine\s*\(\s*["']([^"^']+)["']\s*\)""".toRegex()
+private val koverToolRegex = """KoverTool\s*\(\s*["']([^"^']+)["']\s*\)""".toRegex()
 
 /**
- * Regex for finding the custom version of the JaCoCo Coverage Engine.
+ * Regex for finding the custom version of the JaCoCo Coverage Tool.
  *
  * Examples:
- *   - `kotlinx.kover.api.JacocoEngine("x.x.x")`
- *   - `kotlinx.kover.api.JacocoEngine('x.x.x')`
+ *   - `kotlinx.kover.api.JacocoTool("x.x.x")`
+ *   - `kotlinx.kover.api.JacocoTool('x.x.x')`
  */
-private val jacocoEngineRegex = """JacocoEngine\s*\(\s*["']([^"^']+)["']\s*\)""".toRegex()
+private val jacocoToolRegex = """JacocoTool\s*\(\s*["']([^"^']+)["']\s*\)""".toRegex()
 
 /**
  * Regex for finding paths of the subprojects. *Subprojects with redefined paths are not supported!*
@@ -328,19 +328,19 @@ private fun String.kotlinPluginType(language: ScriptLanguage): KotlinPluginType?
     }
 }
 
-internal fun String.definedEngine(): CoverageEngineVariant? {
+internal fun String.definedTool(): CoverageToolVariant? {
     when {
-        contains("DefaultIntellijEngine") -> return DefaultIntellijEngine
-        contains("DefaultJacocoEngine") -> return DefaultJacocoEngine
+        contains("DefaultKoverTool") -> return DefaultKoverTool
+        contains("DefaultJacocoTool") -> return DefaultJacocoTool
     }
 
-    val intellijEngineVersion = intellijEngineRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
-    val jacocoEngineVersion = jacocoEngineRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
-    if (intellijEngineVersion != null && jacocoEngineVersion != null) {
-        throw Exception("Both coverage engines used in build script")
+    val koverToolVersion = koverToolRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
+    val jacocoToolVersion = jacocoToolRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
+    if (koverToolVersion != null && jacocoToolVersion != null) {
+        throw Exception("Both coverage tools used in build script")
     }
-    if (intellijEngineVersion != null) return IntellijEngine(intellijEngineVersion)
-    if (jacocoEngineVersion != null) return JacocoEngine(jacocoEngineVersion)
+    if (koverToolVersion != null) return KoverTool(koverToolVersion)
+    if (jacocoToolVersion != null) return JacocoTool(jacocoToolVersion)
 
     return null
 }
@@ -404,14 +404,14 @@ private class XmlReportCheckerImpl(val context: CheckerContextImpl, file: File) 
 }
 
 private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val content: String) : VerifyReportChecker {
-    override fun assertIntelliJResult(expected: String) {
-        if (context.engine.vendor != CoverageEngineVendor.INTELLIJ) return
-        assertEquals(expected, content, "Unexpected verification result for IntelliJ Engine")
+    override fun assertKoverResult(expected: String) {
+        if (context.toolVariant.vendor != CoverageToolVendor.KOVER) return
+        assertEquals(expected, content, "Unexpected verification result for Kover Tool")
     }
 
     override fun assertJaCoCoResult(expected: String) {
-        if (context.engine.vendor != CoverageEngineVendor.JACOCO) return
-        assertEquals(expected, content, "Unexpected verification result for JaCoCo Engine")
+        if (context.toolVariant.vendor != CoverageToolVendor.JACOCO) return
+        assertEquals(expected, content, "Unexpected verification result for JaCoCo Tool")
     }
 }
 

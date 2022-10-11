@@ -6,16 +6,17 @@ package kotlinx.kover.test.functional.framework.writer
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.common.*
+import kotlinx.kover.tools.commons.*
 import java.io.*
 
 internal fun File.writeScript(
     language: ScriptLanguage,
     type: KotlinPluginType,
-    overriddenEngine: CoverageEngineVendor?,
+    overriddenTool: CoverageToolVendor?,
     block: FormattedScriptAppender.() -> Unit
 ) {
     this.printWriter().use {
-        FormattedScriptAppender(language, type, overriddenEngine) { string ->
+        FormattedScriptAppender(language, type, overriddenTool) { string ->
            it.print(string)
         }.block()
     }
@@ -24,7 +25,7 @@ internal fun File.writeScript(
 internal class FormattedScriptAppender(
     val language: ScriptLanguage,
     val type: KotlinPluginType,
-    val overriddenEngine: CoverageEngineVendor?,
+    val overriddenTool: CoverageToolVendor?,
     val appender: (String) -> Unit
 ) {
     private var indents: Int = 0

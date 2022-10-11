@@ -2,7 +2,7 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.engines.commons
+package kotlinx.kover.tools.commons
 
 import org.gradle.api.tasks.Input
 

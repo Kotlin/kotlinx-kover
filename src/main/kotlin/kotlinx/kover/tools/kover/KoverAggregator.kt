@@ -2,9 +2,9 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.engines.intellij
+package kotlinx.kover.tools.kover
 
-import kotlinx.kover.engines.commons.*
+import kotlinx.kover.tools.commons.*
 import kotlinx.kover.tasks.*
 import kotlinx.kover.util.json.*
 import java.io.*

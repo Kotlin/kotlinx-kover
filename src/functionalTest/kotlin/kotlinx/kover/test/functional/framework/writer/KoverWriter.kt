@@ -8,19 +8,20 @@ import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.configurator.TestVerifyConfig
+import kotlinx.kover.tools.commons.*
 
 internal fun FormattedScriptAppender.writeKover(kover: TestKoverConfig?) {
     if (kover == null) {
-        // if where is no such block in test script but test generated for specific overridden engine - add `kover` block to the script file
-        block("kover", overriddenEngine != null) {
-            writeEngine(null)
+        // if where is no such block in test script but test generated for specific overridden tool - add `kover` block to the script file
+        block("kover", overriddenTool != null) {
+            writeTool(null)
         }
         return
     }
 
     block("kover") {
         writeDisabled(kover.isDisabled)
-        writeEngine(kover.engine)
+        writeTool(kover.tool)
         writeInstrumentation(kover.instrumentation)
         writeFilters(kover.filters)
         writeXmlReport(kover.xml)
@@ -29,25 +30,25 @@ internal fun FormattedScriptAppender.writeKover(kover: TestKoverConfig?) {
 }
 
 
-private fun FormattedScriptAppender.writeEngine(engineFromConfig: CoverageEngineVariant?) {
-    if (engineFromConfig == null && overriddenEngine == null) return
+private fun FormattedScriptAppender.writeTool(toolFromConfig: CoverageToolVariant?) {
+    if (toolFromConfig == null && overriddenTool == null) return
 
-    val value = if (overriddenEngine != null) {
+    val value = if (overriddenTool != null) {
         val clazz =
-            if (overriddenEngine == CoverageEngineVendor.INTELLIJ) DefaultIntellijEngine::class else DefaultJacocoEngine::class
+            if (overriddenTool == CoverageToolVendor.KOVER) DefaultKoverTool::class else DefaultJacocoTool::class
         clazz.obj(language)
     } else {
         val clazz =
-            if (engineFromConfig!!.vendor == CoverageEngineVendor.INTELLIJ) IntellijEngine::class else JacocoEngine::class
+            if (toolFromConfig!!.vendor == CoverageToolVendor.KOVER) KoverTool::class else JacocoTool::class
         val new = if (language == ScriptLanguage.KOTLIN) {
             clazz.qualifiedName
         } else {
             clazz.qualifiedName
         }
-        "$new(\"${engineFromConfig.version}\")"
+        "$new(\"${toolFromConfig.version}\")"
     }
 
-    line("engine".setProperty(value, language))
+    line("tool".setProperty(value, language))
 }
 
 private fun FormattedScriptAppender.writeDisabled(isDisabled: Boolean?) {

@@ -33,9 +33,19 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
     public val isDisabled: Property<Boolean> = objects.property()
 
     /**
-     * Specifies the coverage engine variant to be used to collect execution data.
+     * Property is deprecated, please use property [tool].
      */
-    public val engine: Property<CoverageEngineVariant> = objects.property()
+    @Deprecated(
+        message = "Property was renamed to [tool]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("tool"),
+        level = DeprecationLevel.ERROR
+    )
+    public val engine: Property<CoverageToolVariant> = objects.property()
+
+    /**
+     * Specifies the coverage tool variant to be used to collect execution data.
+     */
+    public val tool: Property<CoverageToolVariant> = objects.property()
 
     /**
      * Configures filtering for all Kover's tasks of current project by class names and source sets.
@@ -80,71 +90,7 @@ public open class KoverProjectConfig @Inject constructor(objects: ObjectFactory)
         config.execute(verify)
     }
 
-
-    // DEPRECATIONS
-    // TODO delete in 0.7 version
-    @Suppress("DEPRECATION")
-    @get:Internal
-    @Deprecated(
-        message = "Property was removed in Kover API version 2, use `engine` property instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
-        replaceWith = ReplaceWith("engine"),
-        level = DeprecationLevel.ERROR
-    )
-    public val coverageEngine: Property<CoverageEngine> = objects.property()
-
-    @get:Internal
-    @Deprecated(
-        message = "Property was removed in Kover API version 2, use `engine.set(kotlinx.kover.api.IntellijEngine(\"version\"))` instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
-        replaceWith = ReplaceWith("engine"),
-        level = DeprecationLevel.ERROR
-    )
-    public val intellijEngineVersion: Property<String> = objects.property()
-
-    @get:Internal
-    @Deprecated(
-        message = "Property was removed in Kover API version 2, use `engine.set(kotlinx.kover.api.JacocoEngine(\"version\"))` instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
-        replaceWith = ReplaceWith("engine"),
-        level = DeprecationLevel.ERROR
-    )
-    public val jacocoEngineVersion: Property<String> = objects.property()
-
-    @get:Internal
-    @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
-        level = DeprecationLevel.ERROR
-    )
-    public var generateReportOnCheck: Boolean = true
-
-    @get:Internal
-    @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
-        level = DeprecationLevel.ERROR
-    )
-    public var disabledProjects: Set<String> = emptySet()
-
-    @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
-        level = DeprecationLevel.ERROR
-    )
-    @get:Internal
-    public var instrumentAndroidPackage: Boolean = false
-
-    @Deprecated(
-        message = "Property was removed in Kover API version 2. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_5_TO_0_6}",
-        level = DeprecationLevel.ERROR
-    )
-    @get:Internal
-    public var runAllTestsForProjectTask: Boolean = false
 }
-
-// DEPRECATIONS
-// TODO delete in 0.7 version
-@Deprecated(
-    message = "Class KoverExtension was renamed to KoverProjectConfig in Kover API version 2",
-    replaceWith = ReplaceWith("KoverProjectConfig"),
-    level = DeprecationLevel.ERROR
-)
-public open class KoverExtension
 
 public open class KoverProjectFilters @Inject constructor(private val objects: ObjectFactory) {
     internal val classes: Property<KoverClassFilter> = objects.property()

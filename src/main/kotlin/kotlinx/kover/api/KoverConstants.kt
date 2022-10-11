@@ -22,7 +22,7 @@ public object KoverNames {
     public const val REPORT_TASK_NAME = "koverReport"
     public const val VERIFY_TASK_NAME = "koverVerify"
 
-    public const val CONFIGURATION_NAME = "KoverEngineConfig"
+    public const val CONFIGURATION_NAME = "KoverConfig"
 }
 
 public object KoverPaths {
@@ -36,12 +36,13 @@ public object KoverPaths {
 }
 
 public object KoverVersions {
-    internal const val MINIMAL_INTELLIJ_VERSION = "1.0.683"
-    internal const val DEFAULT_INTELLIJ_VERSION = "1.0.683"
+    internal const val MINIMAL_KOVER_TOOL_VERSION = "1.0.683"
+    internal const val DEFAULT_KOVER_TOOL_VERSION = "1.0.683"
 
-    internal const val DEFAULT_JACOCO_VERSION = "0.8.8"
+    internal const val DEFAULT_JACOCO_TOOL_VERSION = "0.8.8"
 }
 
 public object KoverMigrations {
     public const val MIGRATION_0_5_TO_0_6 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md"
+    public const val MIGRATION_0_6_TO_0_7 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.7.0-Beta/docs/migration-to-0.7.0.md"
 }

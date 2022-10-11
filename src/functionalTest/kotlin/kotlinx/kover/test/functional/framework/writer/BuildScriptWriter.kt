@@ -9,7 +9,7 @@ import kotlinx.kover.test.functional.framework.configurator.*
 import java.io.*
 
 internal fun File.writeBuildScript(projectConfig: TestProjectConfig, slice: BuildSlice) {
-    this.writeScript(slice.language, slice.type, slice.engine) {
+    this.writeScript(slice.language, slice.type, slice.toolVendor) {
         writePlugins(projectConfig.plugins)
         writeRepositories(projectConfig.repositories)
         writeDependencies(projectConfig.projectDependencies)

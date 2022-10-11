@@ -5,7 +5,7 @@ import kotlinx.kover.test.functional.framework.starter.*
 import org.gradle.testkit.runner.*
 
 internal class ReportsCachingTests {
-    @SlicedGeneratedTest(allEngines = true)
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testCaching() {
         useLocalCache()
 
@@ -32,7 +32,7 @@ internal class ReportsCachingTests {
         }
     }
 
-    @SlicedGeneratedTest(allEngines = true)
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testProjectReportCaching() {
         useLocalCache()
 

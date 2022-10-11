@@ -8,6 +8,7 @@ import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.checker.*
 import kotlinx.kover.test.functional.framework.common.recentKoverVersion
 import kotlinx.kover.test.functional.framework.starter.*
+import kotlinx.kover.tools.commons.*
 import kotlin.test.*
 
 
@@ -20,11 +21,11 @@ internal class ExamplesTests {
                 assertEquals(definedKoverVersion, recentKoverVersion)
             }
 
-            // check version of engine, it should be default
-            if (engine.vendor == CoverageEngineVendor.INTELLIJ) {
-                assertEquals(engine.version, KoverVersions.DEFAULT_INTELLIJ_VERSION)
+            // check version of tool, it should be default
+            if (toolVariant.vendor == CoverageToolVendor.KOVER) {
+                assertEquals(toolVariant.version, KoverVersions.DEFAULT_KOVER_TOOL_VERSION)
             } else {
-                assertEquals(engine.version, KoverVersions.DEFAULT_JACOCO_VERSION)
+                assertEquals(toolVariant.version, KoverVersions.DEFAULT_JACOCO_TOOL_VERSION)
             }
         }
     }

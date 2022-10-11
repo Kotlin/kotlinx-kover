@@ -2,7 +2,7 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.engines.intellij
+package kotlinx.kover.tools.kover
 
 import kotlinx.kover.tasks.*
 import kotlinx.kover.util.json.*
@@ -11,7 +11,7 @@ import org.gradle.api.file.*
 import org.gradle.process.ExecOperations
 import java.io.*
 
-internal fun Task.intellijReport(
+internal fun Task.koverReport(
     exec: ExecOperations,
     projectFiles: Map<String, ProjectFiles>,
     filters: ReportFilters,
@@ -39,7 +39,7 @@ internal fun Task.intellijReport(
     }
 
     val sources = projectFiles.flatMap { it.value.sources }
-    val argsFile = File(temporaryDir, "intellijreport.json")
+    val argsFile = File(temporaryDir, "kover-report.json")
     argsFile.writeReportsJson(sources, aggEntry, xmlFile, htmlDir)
 
     exec.javaexec {

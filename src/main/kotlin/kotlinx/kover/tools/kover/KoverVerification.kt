@@ -2,11 +2,11 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.engines.intellij
+package kotlinx.kover.tools.kover
 
 import kotlinx.kover.api.*
 import kotlinx.kover.api.VerificationValueType.*
-import kotlinx.kover.engines.commons.*
+import kotlinx.kover.tools.commons.*
 import kotlinx.kover.tasks.*
 import kotlinx.kover.util.json.*
 import org.gradle.api.*
@@ -17,7 +17,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.TreeMap
 
-internal fun Task.intellijVerification(
+internal fun Task.koverVerification(
     exec: ExecOperations,
     projectFiles: Map<String, ProjectFiles>,
     filters: ReportFilters,

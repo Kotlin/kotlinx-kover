@@ -35,7 +35,7 @@ internal interface TestProjectConfig {
 
 internal interface TestKoverConfig {
     val isDisabled: Boolean?
-    val engine: CoverageEngineVariant?
+    val tool: CoverageToolVariant?
     val filters: TestKoverFiltersConfig
     val instrumentation: KoverProjectInstrumentation
     val xml: TestXmlConfig

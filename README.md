@@ -4,7 +4,7 @@
 [![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
-**Kover** - Gradle plugin for Kotlin code coverage agents: [IntelliJ](https://github.com/JetBrains/intellij-coverage)
+**Kover** - Gradle plugin for Kotlin code coverage tools: [Kover](https://github.com/JetBrains/intellij-coverage)
 and [JaCoCo](https://github.com/jacoco/jacoco).
 
 Minimal supported `Gradle` version: `6.6`.
@@ -20,7 +20,7 @@ Minimal supported `Gradle` version: `6.6`.
   - [Configuring project](#configuring-project)
   - [Configuring merged reports](#configuring-merged-reports)
   - [Configuring JVM test task](#configuring-jvm-test-task)
-  - [Specifying Coverage Engine](#specifying-coverage-engine)
+  - [Specifying Coverage Tool](#specifying-coverage-tool)
 - [Kover single-project tasks](#kover-single-project-tasks)
 - [Kover merged tasks](#kover-merged-tasks)
 - [Example of configuring Android application](#example-of-configuring-android-application) 
@@ -111,7 +111,7 @@ Merged reports are reports that combine statistics of code coverage by test task
 At the same time, for each project, its configuration of instrumentation and special filters (non-class filters) is applied.
 
 For every Gradle project participating in the merged report, both Kover plugin should be applied
-and Coverage Engine types and versions should be identical.
+and Coverage Tool types and versions should be identical.
 
 See how to enable merge reports in [this section](#configuring-merged-reports).
 
@@ -237,7 +237,7 @@ In the project in which the plugin is applied, you can configure instrumentation
 ```kotlin
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine.set(DefaultIntellijEngine) // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
+    tool.set(DefaultKoverTool) // to change tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks in this project
             includes += "com.example.*" // class inclusion rules
@@ -313,7 +313,7 @@ kover {
 ```groovy
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE // // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
+    tool = kotlinx.kover.api.DefaultKoverTool.INSTANCE // // to change tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks in this project
           includes.add("com.example.*") // class inclusion rules
@@ -383,7 +383,7 @@ kover {
 ```
 </details>
 
-Engine version is specified separately, see [specifying coverage engine](#specifying-coverage-engine) section.
+Tool version is specified additionally, see [specifying coverage tool](#specifying-coverage-tool) section.
 
 ### Configuring merged reports
 
@@ -546,13 +546,13 @@ koverMerged {
 </details>
 
 
-### Specifying Coverage Engine
-#### IntelliJ Coverage Engine with default version
+### Specifying Coverage Tool
+#### Kover Coverage Tool with default version
 <details open>
 <summary>Kotlin</summary>
 
 ```kotlin
-kotlinx.kover.api.DefaultIntellijEngine
+kotlinx.kover.api.DefaultKoverTool
 ```
 </details>
 
@@ -560,21 +560,21 @@ kotlinx.kover.api.DefaultIntellijEngine
 <summary>Groovy</summary>
 
 ```groovy
-kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
+kotlinx.kover.api.DefaultKoverTool.INSTANCE
 ```
 </details>
 
-#### IntelliJ Coverage Engine with custom version
+#### Kover Coverage Tool with custom version
 ```
-kotlinx.kover.api.IntellijEngine("1.0.683")
+kotlinx.kover.api.KoverTool("1.0.683")
 ```
 
-#### JaCoCo Coverage Engine with default version
+#### JaCoCo Coverage Tool with default version
 <details open>
 <summary>Kotlin</summary>
 
 ```kotlin
-kotlinx.kover.api.DefaultJacocoEngine
+kotlinx.kover.api.DefaultJacocoTool
 ```
 </details>
 
@@ -582,13 +582,13 @@ kotlinx.kover.api.DefaultJacocoEngine
 <summary>Groovy</summary>
 
 ```groovy
-kotlinx.kover.api.DefaultJacocoEngine.INSTANCE
+kotlinx.kover.api.DefaultJacocoTool.INSTANCE
 ```
 </details>
 
-#### JaCoCo Coverage Engine with custom version
+#### JaCoCo Coverage Tool with custom version
 ```
-kotlinx.kover.api.JacocoEngine("0.8.8")
+kotlinx.kover.api.JacocoTool("0.8.8")
 ```
 
 ## Kover single-project tasks
@@ -709,7 +709,7 @@ An example is available [here](examples/android_groovy)
 </details>
 
 ## Implicit plugin dependencies
-While the plugin is being applied, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
+While the plugin is being applied, the artifacts of the JaCoCo or Kover toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
 
 For the plugin to work correctly, you need to make sure that the `mavenCentral` (or any of its mirrors) is added to the repository list of the project in which the plugin is applied, if it doesn't already exist (usually this is the root project):
 
