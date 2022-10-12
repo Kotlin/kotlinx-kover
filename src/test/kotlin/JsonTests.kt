@@ -11,7 +11,7 @@ import kotlin.test.*
 
 class JsonTests {
     private val file = File("my-test-file")
-    private val maskedFilePath = file.canonicalPath.replace("\\", "\\\\")
+    private val escapedFilePath = file.canonicalPath.replace("\\", "\\\\")
 
     private val encodingText = """{
   "field": "text",
@@ -19,7 +19,7 @@ class JsonTests {
   "array": [
     "array \" value",
     true,
-    "$maskedFilePath"
+    "$escapedFilePath"
   ],
   "BD": "230"
 }"""
