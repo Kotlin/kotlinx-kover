@@ -10,13 +10,16 @@ import java.math.BigDecimal
 import kotlin.test.*
 
 class JsonTests {
+    private val file = File("my-test-file")
+    private val escapedFilePath = file.canonicalPath.replace("\\", "\\\\")
+
     private val encodingText = """{
   "field": "text",
   "numberField": 42,
   "array": [
     "array \" value",
     true,
-    "/\\test"
+    "$escapedFilePath"
   ],
   "BD": "230"
 }"""
@@ -24,7 +27,7 @@ class JsonTests {
     private val encodingObject = mapOf(
         "field" to "text",
         "numberField" to 42,
-        "array" to listOf("array \" value", true, File("/\\test")),
+        "array" to listOf("array \" value", true, file),
         "BD" to 230.toBigDecimal()
     )
 
