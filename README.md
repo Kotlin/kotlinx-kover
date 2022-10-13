@@ -237,7 +237,7 @@ In the project in which the plugin is applied, you can configure instrumentation
 ```kotlin
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    tool.set(DefaultKoverTool) // to change tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
+    tool.set(DefaultKoverTool) // to change the tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks in this project
             includes += "com.example.*" // class inclusion rules
