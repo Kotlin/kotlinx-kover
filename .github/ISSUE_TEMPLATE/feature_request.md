@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for Kover
 title: ''
-labels: Feature, REPORTED
+labels: Feature, S: untriaged
 assignees: shanshin
 
 ---

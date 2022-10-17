@@ -2,7 +2,7 @@
 name: Question
 about: Find out how to use the plugin
 title: ''
-labels: Question, REPORTED
+labels: Question, S: untriaged
 assignees: shanshin
 
 ---
