@@ -2,30 +2,37 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: Bug, S: untriaged
-assignees: shanshin
+labels: 'Bug, S: untriaged'
+assignees: ''
 
 ---
 
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**Errors**
-If present, stacktraces or files from `build/kover/errors` directory
+**To Reproduce**
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Reproducer**
-A link to your project, if it is open source. Otherwise, please try to reproduce the problem on a small project. 
-If this is not feasible, give an example of the code on which the problem manifests itself. 
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
 
-**Reports**
-If applicable, report files or screenshots.
+**Desktop (please complete the following information):**
+ - OS: [e.g. iOS]
+ - Browser [e.g. chrome, safari]
+ - Version [e.g. 22]
 
-**Environment**
- - Kover Gradle Plugin version: [e.g. 0.6.1]
- - Gradle version: [e.g. 7.5.1]
- - Kotlin project type: [e.g. Kotlin/JVM, Kotlin/Multiplatform, Kotlin/Android]
- - Coverage Engine version (if customized in build script): [e.g. DefaultJacocoEngine, KoverEngine("1.0.656")]
- - Other context important for this bug: [e.g. OS version]
+**Smartphone (please complete the following information):**
+ - Device: [e.g. iPhone6]
+ - OS: [e.g. iOS8.1]
+ - Browser [e.g. stock browser, safari]
+ - Version [e.g. 22]
+
+**Additional context**
+Add any other context about the problem here.
