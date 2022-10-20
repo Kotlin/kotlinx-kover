@@ -3,13 +3,13 @@
  */
 package kotlinx.kover.tools.kover
 
-import kotlinx.kover.api.KoverVersions.MINIMAL_KOVER_TOOL_VERSION
+import kotlinx.kover.api.KoverVersions.KOVER_TOOL_MINIMAL_VERSION
 import kotlinx.kover.util.SemVer
 import org.gradle.api.*
 
 internal fun getKoverDependencies(toolVersion: String): List<String> {
-    if (toolVersion.isLowVersion(MINIMAL_KOVER_TOOL_VERSION)) {
-        throw GradleException("Kover tool version $toolVersion is too low, minimal version is $MINIMAL_KOVER_TOOL_VERSION")
+    if (toolVersion.isLowVersion(KOVER_TOOL_MINIMAL_VERSION)) {
+        throw GradleException("Kover tool version $toolVersion is too low, minimal version is $KOVER_TOOL_MINIMAL_VERSION")
     }
     return listOf(
         "org.jetbrains.intellij.deps:intellij-coverage-agent:$toolVersion",

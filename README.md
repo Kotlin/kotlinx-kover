@@ -237,7 +237,7 @@ In the project in which the plugin is applied, you can configure instrumentation
 ```kotlin
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    tool.set(DefaultKoverTool) // to change the tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
+    tool.set(KoverToolDefault) // to change the tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks in this project
             includes += "com.example.*" // class inclusion rules
@@ -313,7 +313,7 @@ kover {
 ```groovy
 kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    tool = kotlinx.kover.api.DefaultKoverTool.INSTANCE // // to change tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
+    tool = kotlinx.kover.api.KoverToolDefault.INSTANCE // // to change tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
     filters { // common filters for all default Kover tasks
         classes { // common class filter for all default Kover tasks in this project
           includes.add("com.example.*") // class inclusion rules
@@ -552,7 +552,7 @@ koverMerged {
 <summary>Kotlin</summary>
 
 ```kotlin
-kotlinx.kover.api.DefaultKoverTool
+kotlinx.kover.api.KoverToolDefault
 ```
 </details>
 
@@ -560,7 +560,7 @@ kotlinx.kover.api.DefaultKoverTool
 <summary>Groovy</summary>
 
 ```groovy
-kotlinx.kover.api.DefaultKoverTool.INSTANCE
+kotlinx.kover.api.KoverToolDefault.INSTANCE
 ```
 </details>
 
@@ -574,7 +574,7 @@ kotlinx.kover.api.KoverTool("1.0.683")
 <summary>Kotlin</summary>
 
 ```kotlin
-kotlinx.kover.api.DefaultJacocoTool
+kotlinx.kover.api.JacocoToolDefault
 ```
 </details>
 
@@ -582,7 +582,7 @@ kotlinx.kover.api.DefaultJacocoTool
 <summary>Groovy</summary>
 
 ```groovy
-kotlinx.kover.api.DefaultJacocoTool.INSTANCE
+kotlinx.kover.api.JacocoToolDefault.INSTANCE
 ```
 </details>
 

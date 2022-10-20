@@ -36,10 +36,30 @@ public object KoverPaths {
 }
 
 public object KoverVersions {
-    internal const val MINIMAL_KOVER_TOOL_VERSION = "1.0.683"
-    internal const val DEFAULT_KOVER_TOOL_VERSION = "1.0.683"
+    internal const val KOVER_TOOL_MINIMAL_VERSION = "1.0.683"
+    internal const val KOVER_TOOL_DEFAULT_VERSION = "1.0.683"
+    internal const val JACOCO_TOOL_DEFAULT_VERSION = "0.8.8"
 
-    internal const val DEFAULT_JACOCO_TOOL_VERSION = "0.8.8"
+    // DEPRECATIONS
+    // TODO delete deprecations in 0.8.x
+    @Deprecated(
+        message = "Constant was renamed to [KOVER_TOOL_MINIMAL_VERSION]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("KOVER_TOOL_MINIMAL_VERSION"),
+        level = DeprecationLevel.ERROR
+    )
+    internal const val MINIMAL_INTELLIJ_VERSION = KOVER_TOOL_MINIMAL_VERSION
+    @Deprecated(
+        message = "Constant was renamed to [KOVER_TOOL_DEFAULT_VERSION]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("KOVER_TOOL_DEFAULT_VERSION"),
+        level = DeprecationLevel.ERROR
+    )
+    internal const val DEFAULT_INTELLIJ_VERSION = KOVER_TOOL_DEFAULT_VERSION
+    @Deprecated(
+        message = "Constant was renamed to [JACOCO_TOOL_DEFAULT_VERSION]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("JACOCO_TOOL_DEFAULT_VERSION"),
+        level = DeprecationLevel.ERROR
+    )
+    internal const val DEFAULT_JACOCO_VERSION = JACOCO_TOOL_DEFAULT_VERSION
 }
 
 public object KoverMigrations {

@@ -137,7 +137,7 @@ private fun Project.createProjectExtension(): KoverProjectConfig {
     // default values
 
     extension.isDisabled.convention(false)
-    extension.tool.convention(DefaultKoverTool)
+    extension.tool.convention(KoverToolDefault)
     extension.filters.classes.convention(KoverClassFilter())
     extension.filters.annotations.convention(KoverAnnotationFilter())
     extension.filters.sourceSets.convention(KoverSourceSetFilter())

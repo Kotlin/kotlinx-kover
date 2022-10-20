@@ -13,7 +13,7 @@ dependencies {
 
 kover {
     isDisabled.set(false)
-    tool.set(kotlinx.kover.api.DefaultKoverTool)
+    tool.set(kotlinx.kover.api.KoverToolDefault)
     filters {
         classes {
             includes += "com.example.*"

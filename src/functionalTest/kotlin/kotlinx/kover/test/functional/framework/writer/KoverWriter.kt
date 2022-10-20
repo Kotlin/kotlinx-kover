@@ -35,7 +35,7 @@ private fun FormattedScriptAppender.writeTool(toolFromConfig: CoverageToolVarian
 
     val value = if (overriddenTool != null) {
         val clazz =
-            if (overriddenTool == CoverageToolVendor.KOVER) DefaultKoverTool::class else DefaultJacocoTool::class
+            if (overriddenTool == CoverageToolVendor.KOVER) KoverToolDefault::class else JacocoToolDefault::class
         clazz.obj(language)
     } else {
         val clazz =

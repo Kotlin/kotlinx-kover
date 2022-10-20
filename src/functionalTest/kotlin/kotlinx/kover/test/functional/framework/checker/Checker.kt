@@ -114,7 +114,7 @@ private class CheckerContextImpl(
     override val pluginType = buildScript.kotlinPluginType(language)
     override val output: String = result.output
     override val definedKoverVersion: String? = buildScript.definedKoverVersion()
-    override val toolVariant: CoverageToolVariant = buildScript.definedTool() ?: DefaultKoverTool
+    override val toolVariant: CoverageToolVariant = buildScript.definedTool() ?: KoverToolDefault
 
     override val defaultBinaryReport: String
         get() {
@@ -330,8 +330,8 @@ private fun String.kotlinPluginType(language: ScriptLanguage): KotlinPluginType?
 
 internal fun String.definedTool(): CoverageToolVariant? {
     when {
-        contains("DefaultKoverTool") -> return DefaultKoverTool
-        contains("DefaultJacocoTool") -> return DefaultJacocoTool
+        contains("KoverToolDefault") -> return KoverToolDefault
+        contains("JacocoToolDefault") -> return JacocoToolDefault
     }
 
     val koverToolVersion = koverToolRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)

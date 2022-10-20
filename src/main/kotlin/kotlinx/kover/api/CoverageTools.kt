@@ -4,8 +4,8 @@
 
 package kotlinx.kover.api
 
-import kotlinx.kover.api.KoverVersions.DEFAULT_KOVER_TOOL_VERSION
-import kotlinx.kover.api.KoverVersions.DEFAULT_JACOCO_TOOL_VERSION
+import kotlinx.kover.api.KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
+import kotlinx.kover.api.KoverVersions.KOVER_TOOL_DEFAULT_VERSION
 import kotlinx.kover.tools.commons.*
 import org.gradle.api.tasks.*
 
@@ -44,9 +44,9 @@ public sealed class CoverageToolVariant(
 public class KoverTool(version: String): CoverageToolVariant(CoverageToolVendor.KOVER, version)
 
 /**
- * Kover Coverage Tool with default version [DEFAULT_KOVER_TOOL_VERSION].
+ * Kover Coverage Tool with default version [KOVER_TOOL_DEFAULT_VERSION].
  */
-public object DefaultKoverTool: CoverageToolVariant(CoverageToolVendor.KOVER, DEFAULT_KOVER_TOOL_VERSION)
+public object KoverToolDefault: CoverageToolVariant(CoverageToolVendor.KOVER, KOVER_TOOL_DEFAULT_VERSION)
 
 /**
  * Coverage Tool by [JaCoCo](https://www.jacoco.org/jacoco/).
@@ -54,9 +54,9 @@ public object DefaultKoverTool: CoverageToolVariant(CoverageToolVendor.KOVER, DE
 public class JacocoTool(version: String): CoverageToolVariant(CoverageToolVendor.JACOCO, version)
 
 /**
- * JaCoCo Coverage Tool with default version [DEFAULT_JACOCO_TOOL_VERSION].
+ * JaCoCo Coverage Tool with default version [JACOCO_TOOL_DEFAULT_VERSION].
  */
-public object DefaultJacocoTool: CoverageToolVariant(CoverageToolVendor.JACOCO, DEFAULT_JACOCO_TOOL_VERSION)
+public object JacocoToolDefault: CoverageToolVariant(CoverageToolVendor.JACOCO, JACOCO_TOOL_DEFAULT_VERSION)
 
 
 
@@ -78,8 +78,8 @@ public sealed class CoverageEngineVariant
 public class IntellijEngine(@Suppress("UNUSED_PARAMETER") version: String)
 
 @Deprecated(
-    message = "Class was renamed to [DefaultKoverTool]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
-    replaceWith = ReplaceWith("DefaultKoverTool"),
+    message = "Class was renamed to [KoverToolDefault]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+    replaceWith = ReplaceWith("KoverToolDefault"),
     level = DeprecationLevel.ERROR
 )
 public object DefaultIntellijEngine
@@ -92,8 +92,8 @@ public object DefaultIntellijEngine
 public class JacocoEngine(@Suppress("UNUSED_PARAMETER") version: String)
 
 @Deprecated(
-    message = "Class was renamed to [DefaultJacocoTool]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
-    replaceWith = ReplaceWith("DefaultJacocoTool"),
+    message = "Class was renamed to [JacocoToolDefault]. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+    replaceWith = ReplaceWith("JacocoToolDefault"),
     level = DeprecationLevel.ERROR
 )
 public object DefaultJacocoEngine

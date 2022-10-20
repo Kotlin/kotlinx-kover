@@ -23,9 +23,9 @@ internal class ExamplesTests {
 
             // check version of tool, it should be default
             if (toolVariant.vendor == CoverageToolVendor.KOVER) {
-                assertEquals(toolVariant.version, KoverVersions.DEFAULT_KOVER_TOOL_VERSION)
+                assertEquals(toolVariant.version, KoverVersions.KOVER_TOOL_DEFAULT_VERSION)
             } else {
-                assertEquals(toolVariant.version, KoverVersions.DEFAULT_JACOCO_TOOL_VERSION)
+                assertEquals(toolVariant.version, KoverVersions.JACOCO_TOOL_DEFAULT_VERSION)
             }
         }
     }
