@@ -2,8 +2,8 @@
 name: Question
 about: Find out how to use the plugin
 title: ''
-labels: Question, S: untriaged
-assignees: shanshin
+labels: 'Question, S: untriaged'
+assignees: 'shanshin'
 
 ---
 

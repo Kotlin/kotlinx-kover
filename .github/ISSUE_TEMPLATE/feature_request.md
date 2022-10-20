@@ -2,8 +2,8 @@
 name: Feature request
 about: Suggest an idea for Kover
 title: ''
-labels: Feature, S: untriaged
-assignees: shanshin
+labels: 'Feature, S: untriaged'
+assignees: 'shanshin'
 
 ---
 
