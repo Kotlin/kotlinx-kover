@@ -1,7 +1,7 @@
 # Kover migration guide from 0.6.x to 0.7.0
 
 ## Main differences
-- coverage engines was renamed to coverage tools
+- coverage engines were renamed to coverage tools
 - IntelliJ Coverage Engine was renamed to Kover Coverage Tool
 
 
