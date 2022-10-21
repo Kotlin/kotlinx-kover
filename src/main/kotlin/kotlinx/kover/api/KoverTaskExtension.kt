@@ -52,15 +52,4 @@ public open class KoverTaskExtension @Inject constructor(objects: ObjectFactory)
      */
     @get:Input
     public val excludes: ListProperty<String> = objects.listProperty()
-
-
-    // DEPRECATIONS
-    // TODO delete in 0.7 version
-    @get:Internal
-    @Deprecated(
-        message = "Property was renamed in Kover API version 2",
-        replaceWith = ReplaceWith("reportFile"),
-        level = DeprecationLevel.ERROR
-    )
-    public val binaryReportFile:  Property<File> = objects.property()
 }

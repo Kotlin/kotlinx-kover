@@ -5,9 +5,10 @@
 package kotlinx.kover.appliers
 
 import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.AgentFilters
-import kotlinx.kover.engines.commons.EngineManager
-import kotlinx.kover.tasks.EngineDetails
+import kotlinx.kover.tasks.ToolDetails
+import kotlinx.kover.tools.commons.*
+import kotlinx.kover.tools.commons.AgentFilters
+import kotlinx.kover.tools.commons.ToolManager
 import org.gradle.api.Action
 import org.gradle.api.Named
 import org.gradle.api.Project
@@ -26,7 +27,7 @@ import java.io.File
 
 internal fun Test.applyToTestTask(
     projectExtension: KoverProjectConfig,
-    engineProvider: Provider<EngineDetails>
+    toolProvider: Provider<ToolDetails>
 ) {
     val extension = createTaskExtension(projectExtension)
 
@@ -41,7 +42,7 @@ internal fun Test.applyToTestTask(
         CoverageArgumentProvider(
             this,
             filtersProvider,
-            engineProvider,
+            toolProvider,
             disabledProvider,
             extension.reportFile
         )
@@ -52,8 +53,8 @@ internal fun Test.applyToTestTask(
     }
     val targetErrorProvider = project.layout.buildDirectory.file("kover/errors/$name.log").map { it.asFile }
 
-    doFirst(BinaryReportCleanupAction(disabledProvider, extension.reportFile, engineProvider.map { e -> e.variant }))
-    doLast(MoveIntellijErrorLogAction(sourceErrorProvider, targetErrorProvider))
+    doFirst(BinaryReportCleanupAction(disabledProvider, extension.reportFile, toolProvider.map { e -> e.variant }))
+    doLast(MoveKoverToolErrorLogAction(sourceErrorProvider, targetErrorProvider))
 }
 
 private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): KoverTaskExtension {
@@ -61,8 +62,8 @@ private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): Kove
 
     taskExtension.isDisabled.convention(false)
 
-    val reportFile = project.layout.buildDirectory.zip(projectExtension.engine) { buildDir, engine ->
-        val suffix = engine.vendor.reportFileExtension
+    val reportFile = project.layout.buildDirectory.zip(projectExtension.tool) { buildDir, tool ->
+        val suffix = tool.vendor.reportFileExtension
         buildDir.file("kover/$name.$suffix")
     }
 
@@ -75,7 +76,7 @@ private fun Task.createTaskExtension(projectExtension: KoverProjectConfig): Kove
 private class CoverageArgumentProvider(
     private val task: Task,
     @get:Nested val filtersProvider: Provider<AgentFilters>,
-    @get:Nested val engineProvider: Provider<EngineDetails>,
+    @get:Nested val toolProvider: Provider<ToolDetails>,
     @get:Input val disabledProvider: Provider<Boolean>,
     @get:OutputFile val reportFileProvider: Provider<RegularFile>
 ) : CommandLineArgumentProvider, Named {
@@ -99,23 +100,23 @@ private class CoverageArgumentProvider(
             Because android classes are not part of the project, in any case they do not get into the report,
             and they can be excluded from instrumentation.
 
-            FIXME Remove this code if the IntelliJ Agent stops changing project classes during instrumentation, see https://github.com/Kotlin/kotlinx-kover/issues/196
+            FIXME Remove this code if the Kover Agent stops changing project classes during instrumentation, see https://github.com/Kotlin/kotlinx-kover/issues/196
         */
         filters = filters.appendExcludedTo("android.*", "com.android.*")
 
-        return EngineManager.buildAgentArgs(engineProvider.get(), task, reportFile, filters)
+        return ToolManager.buildAgentArgs(toolProvider.get(), task, reportFile, filters)
     }
 }
 
 
 /*
-  To support parallel tests, both Coverage Engines work in append to data file mode.
+  To support parallel tests, both Coverage Tool work in append to data file mode.
   For this reason, before starting the tests, it is necessary to clear the file from the results of previous runs.
 */
 private class BinaryReportCleanupAction(
     private val disabledProvider: Provider<Boolean>,
     private val reportFileProvider: Provider<RegularFile>,
-    private val engineVariantProvider: Provider<CoverageEngineVariant>,
+    private val toolVariantProvider: Provider<CoverageToolVariant>,
 ) : Action<Task> {
     override fun execute(task: Task) {
         if (disabledProvider.get()) {
@@ -124,15 +125,15 @@ private class BinaryReportCleanupAction(
         val file = reportFileProvider.get().asFile
         // always delete previous data file
         file.delete()
-        if (engineVariantProvider.get().vendor == CoverageEngineVendor.INTELLIJ) {
-            // IntelliJ engine expected empty file for parallel test execution.
+        if (toolVariantProvider.get().vendor == CoverageToolVendor.KOVER) {
+            // Kover tool expected empty file for parallel test execution.
             // Since it is impossible to know in advance whether the tests will be run in parallel, we always create an empty file.
             file.createNewFile()
         }
     }
 }
 
-private class MoveIntellijErrorLogAction(
+private class MoveKoverToolErrorLogAction(
     private val sourceFile: Provider<File>,
     private val targetFile: Provider<File>
 ) : Action<Task> {

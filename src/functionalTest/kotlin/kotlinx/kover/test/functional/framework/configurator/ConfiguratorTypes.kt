@@ -45,7 +45,7 @@ internal interface ProjectConfigurator {
 internal interface KoverConfigurator {
     var isDisabled: Boolean?
 
-    var engine: CoverageEngineVariant?
+    var tool: CoverageToolVariant?
 
     fun filters(config: KoverFiltersConfigurator.() -> Unit)
 

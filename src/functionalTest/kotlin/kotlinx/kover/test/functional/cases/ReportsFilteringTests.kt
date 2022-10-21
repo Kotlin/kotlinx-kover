@@ -1,13 +1,12 @@
 package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.test.functional.framework.checker.*
-import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.starter.*
 
 internal class ReportsFilteringTests {
 
-    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testExclude() {
         addKoverProject {
             sourcesFrom("simple")
@@ -28,7 +27,7 @@ internal class ReportsFilteringTests {
         }
     }
 
-    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testExcludeInclude() {
         addKoverProject {
             sourcesFrom("simple")

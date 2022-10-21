@@ -59,7 +59,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
         }
 
         val extensionByProject = container.projectsExtensionsProvider(extension, container.allprojects)
-        val engineProvider = container.engineProvider(extensionByProject)
+        val toolProvider = container.toolProvider(extensionByProject)
         val testsProvider = container.instrumentedTasksProvider(extensionByProject)
 
         val xmlTask = container.createMergedTask<KoverXmlTask>(
@@ -67,7 +67,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
             extension.xmlReport.classFilter,
             extension.xmlReport.annotationFilter,
             extensionByProject,
-            engineProvider,
+            toolProvider,
             testsProvider,
             { e -> e.xmlReport.filters.sourceSets.get() }
         ) {
@@ -80,7 +80,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
             extension.htmlReport.classFilter,
             extension.htmlReport.annotationFilter,
             extensionByProject,
-            engineProvider,
+            toolProvider,
             testsProvider,
             { e -> e.htmlReport.taskFilters.sourceSets.get() }
         ) {
@@ -93,7 +93,7 @@ private class ProcessMergeExtensionAction(private val extension: KoverMergedConf
             extension.filters.classes,
             extension.filters.annotations,
             extensionByProject,
-            engineProvider,
+            toolProvider,
             testsProvider,
             { e -> e.filters.sourceSets.get() }
         ) {
@@ -140,14 +140,14 @@ private inline fun <reified T : KoverReportTask> Project.createMergedTask(
     classFilter: Provider<KoverClassFilter>,
     annotationFilter: Provider<KoverAnnotationFilter>,
     extensionByProject: Provider<Map<Project, KoverProjectConfig>>,
-    engineProvider: Provider<EngineDetails>,
+    toolProvider: Provider<ToolDetails>,
     testsProvider: Provider<List<Test>>,
     crossinline filterExtractor: (KoverProjectConfig) -> KoverSourceSetFilter,
     crossinline block: (T) -> Unit
 ): T {
     val task = tasks.create<T>(taskName) {
         files.convention(mergedFilesProvider(extensionByProject, filterExtractor))
-        engine.convention(engineProvider)
+        tool.convention(toolProvider)
         dependsOn(testsProvider)
 
         this@create.classFilter.convention(classFilter)
@@ -225,29 +225,29 @@ private fun filterProjects(filters: KoverProjectsFilter, allProjects: Iterable<P
 }
 
 
-private fun Project.engineProvider(extensionByProject: Provider<Map<Project, KoverProjectConfig>>): Provider<EngineDetails> {
+private fun Project.toolProvider(extensionByProject: Provider<Map<Project, KoverProjectConfig>>): Provider<ToolDetails> {
     val archiveOperations: ArchiveOperations = this.serviceOf()
     // configuration already created in all projects at this moment because merge tasks creates in afterEvaluate step
     val config = configurations.getByName(CONFIGURATION_NAME)
     // the plugin is always applied to the containing project
-    val containerEngine = extensions.getByType<KoverProjectConfig>().engine
+    val containerTool = extensions.getByType<KoverProjectConfig>().tool
 
     val containerPath = path
     return provider {
-        val map: MutableMap<CoverageEngineVariant, MutableList<String>> = mutableMapOf()
+        val map: MutableMap<CoverageToolVariant, MutableList<String>> = mutableMapOf()
         extensionByProject.get().forEach { (p, v) ->
-            map.computeIfAbsent(v.engine.get()) { mutableListOf() } += p.path
+            map.computeIfAbsent(v.tool.get()) { mutableListOf() } += p.path
         }
 
-        // check same engine variants are used
+        // check same tool variants are used
         if (map.size > 1) {
-            throw GradleException("Can't create Kover merge tasks: different coverage engines are used in projects.\n\tProjects by engines: $map")
+            throw GradleException("Can't create Kover merge tasks: different coverage tools are used in projects.\n\tProjects by tools: $map")
         }
         val variant = map.keys.first()
-        if (variant != containerEngine.get()) {
-            throw GradleException("Can't create Kover merge tasks: child projects engines '$variant' are different from the engine '${containerEngine.get()}' from the containing project '$containerPath'")
+        if (variant != containerTool.get()) {
+            throw GradleException("Can't create Kover merge tasks: child projects tools '$variant' are different from the tool '${containerTool.get()}' from the containing project '$containerPath'")
         }
-        engineByVariant(variant, config, archiveOperations)
+        toolByVariant(variant, config, archiveOperations)
     }
 }
 

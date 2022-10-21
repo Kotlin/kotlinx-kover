@@ -107,7 +107,7 @@ private class ProjectConfiguratorImpl(private val name: String? = null) : Projec
 
 private class KoverConfiguratorImpl : KoverConfigurator, TestKoverConfig {
     override var isDisabled: Boolean? = null
-    override var engine: CoverageEngineVariant? = null
+    override var tool: CoverageToolVariant? = null
     override val filters: KoverFiltersConfiguratorImpl = KoverFiltersConfiguratorImpl()
     override val instrumentation: KoverProjectInstrumentation = KoverProjectInstrumentation()
     override val xml: KoverXmlConfiguratorImpl = KoverXmlConfiguratorImpl()

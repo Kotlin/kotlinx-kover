@@ -5,11 +5,11 @@
 package kotlinx.kover.test.functional.framework.starter
 
 import kotlinx.kover.api.*
-import kotlinx.kover.test.functional.framework.checker.CheckerContext
 import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.runner.*
 import kotlinx.kover.test.functional.framework.writer.*
+import kotlinx.kover.tools.commons.*
 import org.junit.jupiter.api.extension.*
 import org.junit.jupiter.params.*
 import org.junit.jupiter.params.provider.*
@@ -26,7 +26,7 @@ internal annotation class SlicedGeneratedTest(
     val all: Boolean = false,
     val allLanguages: Boolean = false,
     val allTypes: Boolean = false,
-    val allEngines: Boolean = false
+    val allTools: Boolean = false
 )
 
 internal interface SlicedBuildConfigurator : BuildConfigurator {
@@ -36,7 +36,7 @@ internal interface SlicedBuildConfigurator : BuildConfigurator {
 private const val TMP_PREFIX = "kover-sliced-build-"
 
 private val ALL_LANGUAGES = listOf(ScriptLanguage.KOTLIN, ScriptLanguage.GROOVY)
-private val ALL_ENGINES = listOf(CoverageEngineVendor.INTELLIJ, CoverageEngineVendor.JACOCO)
+private val ALL_TOOLS = listOf(CoverageToolVendor.KOVER, CoverageToolVendor.JACOCO)
 private val ALL_TYPES = listOf(KotlinPluginType.JVM, KotlinPluginType.MULTIPLATFORM)
 
 
@@ -80,19 +80,19 @@ private class SlicedTestArgumentsProvider : ArgumentsProvider {
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
         val languages = mutableSetOf<ScriptLanguage>()
         val types = mutableSetOf<KotlinPluginType>()
-        val engines = mutableSetOf<CoverageEngineVendor?>()
+        val tools = mutableSetOf<CoverageToolVendor?>()
 
         val annotation = context.element.get().annotations.filterIsInstance<SlicedGeneratedTest>().firstOrNull()
             ?: throw IllegalStateException("Expected annotation '${SlicedGeneratedTest::class.qualifiedName}' not applied")
 
-        if (!annotation.all && !annotation.allLanguages && !annotation.allTypes && !annotation.allEngines) {
+        if (!annotation.all && !annotation.allLanguages && !annotation.allTypes && !annotation.allTools) {
             throw IllegalStateException("No slice is specified in '${SlicedGeneratedTest::class.qualifiedName}'")
         }
 
         if (annotation.all) {
             languages += ALL_LANGUAGES
             types += ALL_TYPES
-            engines += ALL_ENGINES
+            tools += ALL_TOOLS
         }
         if (annotation.allLanguages) {
             languages += ALL_LANGUAGES
@@ -100,20 +100,20 @@ private class SlicedTestArgumentsProvider : ArgumentsProvider {
         if (annotation.allTypes) {
             types += ALL_TYPES
         }
-        if (annotation.allEngines) {
-            engines += ALL_ENGINES
+        if (annotation.allTools) {
+            tools += ALL_TOOLS
         }
 
         // filling default values
         if (languages.isEmpty()) languages += ScriptLanguage.KOTLIN
         if (types.isEmpty()) types += KotlinPluginType.JVM
-        if (engines.isEmpty()) engines += null
+        if (tools.isEmpty()) tools += null
 
         val slices = mutableListOf<BuildSlice>()
         languages.forEach { language ->
             types.forEach { type ->
-                engines.forEach { engine ->
-                    slices += BuildSlice(language, type, engine)
+                tools.forEach { tool ->
+                    slices += BuildSlice(language, type, tool)
                 }
             }
         }

@@ -9,7 +9,7 @@ import kotlin.test.*
 internal class MultiProjectTests {
     private val subprojectPath = ":common"
 
-    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testMergedReports() {
         addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
@@ -33,7 +33,7 @@ internal class MultiProjectTests {
         }
     }
 
-    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testIsolatedProjectsReports() {
         addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
@@ -63,7 +63,7 @@ internal class MultiProjectTests {
         }
     }
 
-    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testDisabledKover() {
         addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
@@ -96,7 +96,7 @@ internal class MultiProjectTests {
         }
     }
 
-    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testExcludeProject() {
         addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")
@@ -136,7 +136,7 @@ internal class MultiProjectTests {
         }
     }
 
-    @SlicedGeneratedTest(allTypes = true, allEngines = true)
+    @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testExcludeProjectByPath() {
         addKoverProject(subprojectPath) {
             sourcesFrom("multiproject-common")

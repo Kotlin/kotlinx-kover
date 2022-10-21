@@ -2,9 +2,9 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.engines.jacoco
+package kotlinx.kover.tools.jacoco
 
-import kotlinx.kover.engines.commons.*
+import kotlinx.kover.tools.commons.*
 import org.gradle.api.Task
 import java.io.*
 

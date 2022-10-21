@@ -5,12 +5,11 @@
 package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.api.*
-import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.starter.*
 
 internal class VerificationTests {
-    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testVerified() {
         addKoverProject {
             sourcesFrom("simple")
@@ -36,7 +35,7 @@ internal class VerificationTests {
         run("koverVerify", "--stacktrace")
     }
 
-    @SlicedGeneratedTest(allLanguages = true, allEngines = true)
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testVerificationError() {
         addKoverProject {
             sourcesFrom("verification")
@@ -96,7 +95,7 @@ internal class VerificationTests {
 
         runWithError("koverHtmlReport", "koverVerify") {
             verification {
-                assertIntelliJResult("""Rule 'counts rule' violated:
+                assertKoverResult("""Rule 'counts rule' violated:
   lines covered percentage is 46.590900, but expected minimum is 58
   lines covered count is 41, but expected maximum is 3
 Rule 'fully uncovered instructions by classes' violated:

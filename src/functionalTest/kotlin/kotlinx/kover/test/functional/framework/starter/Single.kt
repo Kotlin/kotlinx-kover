@@ -9,6 +9,7 @@ import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.runner.*
 import kotlinx.kover.test.functional.framework.writer.*
+import kotlinx.kover.tools.commons.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.*
 import java.lang.reflect.*
@@ -24,9 +25,9 @@ import java.nio.file.*
 internal annotation class GeneratedTest(
     val language: ScriptLanguage = ScriptLanguage.KOTLIN,
     val type: KotlinPluginType = KotlinPluginType.JVM,
-    val engine: CoverageEngineVendor = CoverageEngineVendor.INTELLIJ,
-    // since nullable types are not allowed in annotations, we store the attribute of an unspecified engine separately
-    val defaultEngine: Boolean = false
+    val tool: CoverageToolVendor = CoverageToolVendor.KOVER,
+    // since nullable types are not allowed in annotations, we store the attribute of an unspecified tool separately
+    val defaultTool: Boolean = false
 )
 
 private const val CONFIGURATOR_PARAM = "configurator"
@@ -65,8 +66,8 @@ private class SingleTestInterceptor : InvocationInterceptor {
         val annotation = (extensionContext.element.orElse(null)?.getAnnotation(GeneratedTest::class.java)
             ?: throw IllegalStateException("Test not marked by '${GeneratedTest::class.qualifiedName}' annotation"))
 
-        val engine = if (annotation.defaultEngine) null else annotation.engine
-        val slice = BuildSlice(annotation.language, annotation.type, engine)
+        val tool = if (annotation.defaultTool) null else annotation.tool
+        val slice = BuildSlice(annotation.language, annotation.type, tool)
 
         val dir = Files.createTempDirectory(TMP_PREFIX).toFile()
         val config = configurator.prepare()

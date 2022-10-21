@@ -2,13 +2,13 @@
  * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.engines.jacoco
+package kotlinx.kover.tools.jacoco
 
 import groovy.lang.*
 import kotlinx.kover.api.*
-import kotlinx.kover.engines.commons.*
-import kotlinx.kover.engines.commons.ONE_HUNDRED
-import kotlinx.kover.engines.commons.ReportVerificationRule
+import kotlinx.kover.tools.commons.*
+import kotlinx.kover.tools.commons.ONE_HUNDRED
+import kotlinx.kover.tools.commons.ReportVerificationRule
 import kotlinx.kover.tasks.*
 import org.gradle.api.*
 import org.gradle.api.file.*

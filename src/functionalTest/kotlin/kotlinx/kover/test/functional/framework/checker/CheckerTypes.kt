@@ -12,7 +12,7 @@ import java.io.*
 internal interface CheckerContext {
     val definedKoverVersion: String?
 
-    val engine: CoverageEngineVariant
+    val toolVariant: CoverageToolVariant
 
     val language: ScriptLanguage
 
@@ -64,7 +64,7 @@ internal interface Counter {
 }
 
 internal interface VerifyReportChecker {
-    fun assertIntelliJResult(expected: String)
+    fun assertKoverResult(expected: String)
     fun assertJaCoCoResult(expected: String)
 }
 

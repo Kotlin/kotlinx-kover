@@ -9,7 +9,7 @@ import kotlinx.kover.api.KoverNames.CONFIGURATION_NAME
 import kotlinx.kover.api.KoverNames.HTML_REPORT_TASK_NAME
 import kotlinx.kover.api.KoverNames.VERIFY_TASK_NAME
 import kotlinx.kover.api.KoverNames.XML_REPORT_TASK_NAME
-import kotlinx.kover.engines.commons.*
+import kotlinx.kover.tools.commons.*
 import kotlinx.kover.lookup.*
 import kotlinx.kover.tasks.*
 import org.gradle.api.*
@@ -23,12 +23,12 @@ import java.io.*
 
 internal fun Project.applyToProject() {
     val extension = createProjectExtension()
-    val config = createEngineConfig(extension.engine)
+    val config = createConfig(extension.tool)
 
-    val engineProvider = engineProvider(config, extension.engine)
+    val toolProvider = toolProvider(config, extension.tool)
 
     tasks.withType<Test>().configureEach {
-        applyToTestTask(extension, engineProvider)
+        applyToTestTask(extension, toolProvider)
     }
 
     val testsProvider = instrumentedTasksProvider(extension)
@@ -37,7 +37,7 @@ internal fun Project.applyToProject() {
         XML_REPORT_TASK_NAME,
         extension.xmlReport.filters,
         extension,
-        engineProvider,
+        toolProvider,
         testsProvider,
     ) {
         it.reportFile.set(extension.xmlReport.reportFile)
@@ -48,7 +48,7 @@ internal fun Project.applyToProject() {
         HTML_REPORT_TASK_NAME,
         extension.htmlReport.taskFilters,
         extension,
-        engineProvider,
+        toolProvider,
         testsProvider,
     ) {
         it.reportDir.set(extension.htmlReport.reportDir)
@@ -59,7 +59,7 @@ internal fun Project.applyToProject() {
         VERIFY_TASK_NAME,
         extension.filters,
         extension,
-        engineProvider,
+        toolProvider,
         testsProvider,
     ) {
         it.rules.set(extension.verify.rules)
@@ -109,13 +109,13 @@ private inline fun <reified T : KoverReportTask> Project.createTask(
     taskName: String,
     filters: KoverProjectFilters,
     extension: KoverProjectConfig,
-    engineProvider: Provider<EngineDetails>,
+    toolProvider: Provider<ToolDetails>,
     testsProvider: Provider<List<Test>>,
     crossinline block: (T) -> Unit
 ): T {
     val task = tasks.create<T>(taskName) {
         files.put(path, projectFilesProvider(extension, filters.sourceSets))
-        engine.set(engineProvider)
+        tool.set(toolProvider)
         dependsOn(testsProvider)
         classFilter.set(filters.classes)
         annotationFilter.set(filters.annotations)
@@ -137,7 +137,7 @@ private fun Project.createProjectExtension(): KoverProjectConfig {
     // default values
 
     extension.isDisabled.convention(false)
-    extension.engine.convention(DefaultIntellijEngine)
+    extension.tool.convention(KoverToolDefault)
     extension.filters.classes.convention(KoverClassFilter())
     extension.filters.annotations.convention(KoverAnnotationFilter())
     extension.filters.sourceSets.convention(KoverSourceSetFilter())
@@ -156,36 +156,36 @@ private fun Project.createProjectExtension(): KoverProjectConfig {
     return extension
 }
 
-private fun Project.createEngineConfig(engineVariantProvider: Provider<CoverageEngineVariant>): Configuration {
+private fun Project.createConfig(toolVariantProvider: Provider<CoverageToolVariant>): Configuration {
     val config = project.configurations.create(CONFIGURATION_NAME)
     config.isVisible = false
     config.isTransitive = true
-    config.description = "Kotlin Kover Plugin configuration for Coverage Engine"
+    config.description = "Kotlin Kover Plugin configuration"
 
     config.defaultDependencies {
-        val variant = engineVariantProvider.get()
-        EngineManager.dependencies(variant).forEach {
+        val variant = toolVariantProvider.get()
+        ToolManager.dependencies(variant).forEach {
             add(dependencies.create(it))
         }
     }
     return config
 }
 
-private fun Project.engineProvider(
+private fun Project.toolProvider(
     config: Configuration,
-    engineVariantProvider: Provider<CoverageEngineVariant>
-): Provider<EngineDetails> {
+    toolVariantProvider: Provider<CoverageToolVariant>
+): Provider<ToolDetails> {
     val archiveOperations: ArchiveOperations = project.serviceOf()
-    return project.provider { engineByVariant(engineVariantProvider.get(), config, archiveOperations) }
+    return project.provider { toolByVariant(toolVariantProvider.get(), config, archiveOperations) }
 }
 
-internal fun engineByVariant(
-    variant: CoverageEngineVariant,
+internal fun toolByVariant(
+    variant: CoverageToolVariant,
     config: Configuration,
     archiveOperations: ArchiveOperations
-): EngineDetails {
-    val jarFile = EngineManager.findJarFile(variant, config, archiveOperations)
-    return EngineDetails(variant, jarFile, config)
+): ToolDetails {
+    val jarFile = ToolManager.findJarFile(variant, config, archiveOperations)
+    return ToolDetails(variant, jarFile, config)
 }
 
 internal fun Project.projectFilesProvider(
