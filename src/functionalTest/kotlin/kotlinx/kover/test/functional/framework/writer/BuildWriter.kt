@@ -9,7 +9,7 @@ import kotlinx.kover.test.functional.framework.configurator.*
 import java.io.*
 
 internal fun File.writeBuild(build: TestBuildConfig, slice: BuildSlice) {
-    this.sub("settings.${slice.scriptExtension}").writeSettings(build)
+    this.sub("settings.${slice.scriptExtension}").writeSettings(build, slice)
     build.projects.forEach { (path, conf) -> this.subproject(path).writeProject(conf, slice) }
 }
 
@@ -43,29 +43,4 @@ private fun File.writeSources(config: TestProjectConfig, slice: BuildSlice) {
 }
 
 
-internal fun File.writeSettings(build: TestBuildConfig) {
-    this.printWriter().use {
-        it.println("""rootProject.name = "kover-functional-test"""")
-        it.println()
-        build.projects.keys.forEach { path ->
-            if (path != ":") {
-                it.println("""include("$path")""")
-            }
-        }
-
-        if (build.useLocalCache) {
-            it.println(LOCAL_CACHE)
-        }
-    }
-}
-
 private const val SAMPLES_SOURCES_PATH = "src/functionalTest/templates/sources"
-
-
-private const val LOCAL_CACHE = """
-buildCache {
-    local {
-        directory = "${"$"}settingsDir/build-cache"
-    }
-}
-"""

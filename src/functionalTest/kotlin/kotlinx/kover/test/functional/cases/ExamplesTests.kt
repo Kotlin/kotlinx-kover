@@ -6,19 +6,19 @@ package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.checker.*
-import kotlinx.kover.test.functional.framework.common.recentKoverVersion
+import kotlinx.kover.test.functional.framework.common.releaseVersion
 import kotlinx.kover.test.functional.framework.starter.*
 import kotlinx.kover.tools.commons.*
 import kotlin.test.*
 
 
 internal class ExamplesTests {
-    @ExamplesTest(excludes = ["android_groovy", "android_kts"])
+    @ExamplesTest
     fun CheckerContext.buildAndCheckVersions() {
         allProjects {
             // check version of Kover plugin if applied
             if (definedKoverVersion != null) {
-                assertEquals(definedKoverVersion, recentKoverVersion)
+                assertEquals(releaseVersion, definedKoverVersion)
             }
 
             // check version of tool, it should be default

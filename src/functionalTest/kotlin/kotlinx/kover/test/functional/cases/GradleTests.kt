@@ -20,7 +20,7 @@ class GradleTests {
         sub("build.gradle.kts").writeText("""""")
         sub("settings.gradle.kts").writeText("""rootProject.name = "empty-project"""")
 
-        val result = runGradleBuild("tasks")
+        val result = runGradleBuild(listOf("tasks"))
         val buildLog = result.output
 
         assertTrue(buildLog.contains("BUILD SUCCESSFUL"))

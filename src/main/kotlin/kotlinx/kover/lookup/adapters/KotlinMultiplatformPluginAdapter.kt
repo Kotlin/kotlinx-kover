@@ -25,10 +25,12 @@ internal class KotlinMultiplatformPluginAdapter : LookupAdapter() {
 
         val extension = try {
             project.extensions.findByType<KotlinMultiplatformExtension>() ?: return Dirs()
-        } catch (e: ClassNotFoundException) {
-            return findByReflection(project)
-        } catch (e: NoClassDefFoundError) {
-            return findByReflection(project)
+        } catch (e: Throwable) {
+            if (e is TypeNotPresentException || e is ClassNotFoundException || e is NoClassDefFoundError) {
+                return findByReflection(project)
+            } else {
+                throw e
+            }
         }
 
         val targets =
@@ -51,9 +53,9 @@ internal class KotlinMultiplatformPluginAdapter : LookupAdapter() {
      * Therefore, the only way to work with such an object is to use reflection.
      */
     @Suppress("UNCHECKED_CAST")
-    fun findByReflection(project: Project): Dirs {
+    private fun findByReflection(project: Project): Dirs {
         val extension =
-            project.extensions.findByName("kotlin-multiplatform")?.let { BeanDynamicObject(it) } ?: return Dirs()
+            project.extensions.findByName("kotlin")?.let { BeanDynamicObject(it) } ?: return Dirs()
 
         val targets = (extension.getProperty("targets") as NamedDomainObjectCollection<GroovyObject>).filter {
             val platformTypeName = (it.getProperty("platformType") as Named).name

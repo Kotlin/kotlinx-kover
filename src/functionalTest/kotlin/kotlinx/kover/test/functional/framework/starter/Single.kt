@@ -78,8 +78,5 @@ private class SingleTestInterceptor : InvocationInterceptor {
         // clear directory if where are no errors
         logInfo("Build successfully for slice ($slice), deleting the directory ${dir.uri}")
         dir.deleteRecursively()
-
-        logInfo("Test successfully, deleting directory ${dir.uri}")
-        dir.deleteRecursively()
     }
 }

@@ -18,6 +18,10 @@ repositories {
 }
 
 val kotlinVersion = property("kotlinVersion")
+val localRepositoryUri = uri("build/.m2")
+
+// override version in deploy
+properties["release"]?.let { version = it }
 
 sourceSets {
     create("functionalTest") {
@@ -32,7 +36,6 @@ kotlin.target.compilations.run {
 }
 
 dependencies {
-    implementation(gradleApi())
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
 
@@ -41,14 +44,8 @@ dependencies {
 
     testImplementation(kotlin("test"))
 
-    "functionalTestImplementation"(gradleTestKit())
     "functionalTestImplementation"("org.junit.jupiter:junit-jupiter:5.9.0")
     "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-params:5.9.0")
-
-    // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
-    "functionalTestCompileOnly"("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
 }
 
 java {
@@ -65,23 +62,27 @@ val functionalTest by tasks.registering(Test::class) {
     // use JUnit 5
     useJUnitPlatform()
 
-    // While gradle testkit supports injection of the plugin classpath it doesn't allow using dependency notation
-    // to determine the actual runtime classpath for the plugin. It uses isolation, so plugins applied by the build
-    // script are not visible in the plugin classloader. This means optional dependencies (dependent on applied plugins -
-    // for example kotlin multiplatform) are not visible even if they are in regular gradle use. This hack will allow
-    // extending the classpath. It is based upon: https://docs.gradle.org/6.0/userguide/test_kit.html#sub:test-kit-classpath-injection
-    // Create a configuration to register the dependencies against
+    dependsOn(tasks.named("publishAllPublicationsToLocalRepository"))
     doFirst {
-        val file = File(temporaryDir, "plugin-classpath.txt")
-        file.writeText(sourceSets["functionalTest"].compileClasspath.joinToString("\n"))
-        systemProperties["plugin-classpath"] = file.absolutePath
-
         // used in build scripts of functional tests
         systemProperties["kotlinVersion"] = kotlinVersion
-        systemProperties["koverVersion"] = project.property("version")
-        systemProperties["recentKoverVersion"] = project.property("recentVersion")
-        systemProperties["infoLogsEnabled"] = project.logger.isInfoEnabled
+        systemProperties["koverVersion"] = version
+        systemProperties["localRepositoryPath"] = localRepositoryUri.path
+        setSystemPropertyFromProject("releaseVersion")
+        setSystemPropertyFromProject("gradleVersion")
+        setSystemPropertyFromProject("androidSdk")
+        setBooleanSystemPropertyFromProject("disableAndroidTests")
+        setBooleanSystemPropertyFromProject("debug", "isDebugEnabled")
+        setBooleanSystemPropertyFromProject("testLogs", "testLogsEnabled")
     }
+}
+
+fun Test.setSystemPropertyFromProject(name: String) {
+    if (project.hasProperty(name)) systemProperties[name] = project.property(name)
+}
+
+fun Test.setBooleanSystemPropertyFromProject(projectPropertyName: String, systemPropertyName: String = projectPropertyName) {
+    if (project.hasProperty(projectPropertyName)) systemProperties[systemPropertyName] = true.toString()
 }
 
 tasks.check { dependsOn(functionalTest) }
@@ -99,11 +100,16 @@ tasks.withType<KotlinCompile>().configureEach {
     }
 }
 
-// override version in deploy
-properties["DeployVersion"]?.let { version = it }
-
-
 publishing {
+    repositories {
+        /**
+         * Maven repository in build directory to store artifacts for using in functional tests.
+         */
+        maven(localRepositoryUri) {
+            name = "local"
+        }
+    }
+
     publications {
         // `pluginMaven` - standard name for the publication task of the `java-gradle-plugin`
         create<MavenPublication>("pluginMaven") {
