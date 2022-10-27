@@ -314,7 +314,7 @@ You can configure Kover, its tasks and instrumentation in any project for which 
 <summary>Kotlin</summary>
 
 ```kotlin
-kover { 
+kover {
     isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
     tool.set(KoverToolDefault) // to change the tool, use kotlinx.kover.api.KoverTool("xxx") or kotlinx.kover.api.JacocoTool("xxx")
     filters { // common filters for all default Kover tasks
