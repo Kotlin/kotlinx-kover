@@ -636,6 +636,7 @@ You can choose which Coverage Tool and which version to use when configuring Kov
 ```kotlin
 kotlinx.kover.api.KoverToolDefault
 ```
+
 </details>
 
 <details>
@@ -644,20 +645,24 @@ kotlinx.kover.api.KoverToolDefault
 ```groovy
 kotlinx.kover.api.KoverToolDefault.INSTANCE
 ```
+
 </details>
 
 #### Kover Coverage Tool with custom version
+
 ```
 kotlinx.kover.api.KoverTool("1.0.683")
 ```
 
 #### JaCoCo Coverage Tool with default version
+
 <details open>
 <summary>Kotlin</summary>
 
 ```kotlin
 kotlinx.kover.api.JacocoToolDefault
 ```
+
 </details>
 
 <details>
@@ -666,6 +671,7 @@ kotlinx.kover.api.JacocoToolDefault
 ```groovy
 kotlinx.kover.api.JacocoToolDefault.INSTANCE
 ```
+
 </details>
 
 #### JaCoCo Coverage Tool with custom version
@@ -676,10 +682,12 @@ kotlinx.kover.api.JacocoTool("0.8.8")
 ### Example of configuring Android application
 
 Example of configuring test task for build type `debug` in Android:
+
 <details open>
 <summary>Kotlin</summary>
 
 `build.gradle.kts` (Project)
+
 ```kotlin
 buildscript {
     // ...
@@ -705,6 +713,7 @@ koverMerged {
 ```
 
 `build.gradle.kts` (Module)
+
 ```kotlin
 plugins {
     // ...
@@ -727,12 +736,14 @@ kover {
 ```
 
 An example is available [here](examples/android_kts)
+
 </details>
 
 <details>
 <summary>Groovy</summary>
 
 `build.gradle` (Project)
+
 ```groovy
 plugin {
     // ...
@@ -751,6 +762,7 @@ koverMerged {
 ```
 
 `build.gradle` (Module)
+
 ```groovy
 plugins {
     // ...
@@ -792,6 +804,7 @@ repositories {
     mavenCentral()
 }
 ```
+
 </details>
 
 <details>
@@ -802,6 +815,7 @@ repositories {
   mavenCentral()
 }
 ```
+
 </details>
 
 ## Building locally and Contributing
