@@ -11,7 +11,7 @@ Submit issues [here](https://github.com/Kotlin/kotlinx-kover/issues).
 * Search for existing issues to avoid reporting duplicates.
 * When submitting a bug report:
   * Test it against the most recently released version. It might have been already fixed.
-  * By default, we assume that your problem can be reproduced in a Kotlin/JVM project with the Kover Coverage Tool.
+  * By default, we assume that your problem is reproduced in a Kotlin/JVM project with the Kover Coverage Tool.
     Please, mention if the problem is specific to Kotlin Multiplatform/Android or JaCoCo Tool. 
   * Include the code that reproduces the problem. Provide the complete reproducer code, yet minimize it as much as possible.
   * However, don't put off reporting any weird or rarely appearing issues just because you cannot consistently 

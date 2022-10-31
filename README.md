@@ -1,4 +1,4 @@
-# kotlinx-kover
+# Kover Gradle Plugin
 
 [![Kotlin Alpha](https://kotl.in/badges/alpha.svg)](https://kotlinlang.org/docs/components-stability.html)
 [![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
@@ -790,7 +790,7 @@ An example is available [here](examples/android_groovy)
 
 ## Implicit plugin dependencies
 
-While the plugin is being applied, the artifacts of the JaCoCo or Kover toolkit are dynamically loaded. They are 
+The artifacts of the JaCoCo or Kover toolkit are loaded during the running of the build. They are 
 downloaded from the `mavenCentral` repository.
 
 For Kover to work correctly, you need to make sure that `mavenCentral` (or any of its mirrors) is present in 
