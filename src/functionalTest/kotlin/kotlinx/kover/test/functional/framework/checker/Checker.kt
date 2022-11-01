@@ -142,7 +142,9 @@ private class CheckerContextImpl(
                 throw AssertionError("Build error expected")
             }
         } else {
-            if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable")) {
+            if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
+                output.contains("Android Gradle plugin requires Java 11 to run.")
+            ) {
                 if (isAndroidTestDisabled) {
                     throw TestAbortedException("Android tests are disabled")
                 } else {
