@@ -682,6 +682,7 @@ koverMerged {
 
 ```groovy
 koverMerged {
+  
     // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
     enable()
 
