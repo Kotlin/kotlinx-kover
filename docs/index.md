@@ -990,4 +990,4 @@ repositories {
 
 ## Building locally and Contributing
 
-See [Contributing Guidelines](CONTRIBUTING.html).
+See [Contributing Guidelines](https://github.com/Kotlin/kotlinx-kover/tree/main/CONTRIBUTING.md).
