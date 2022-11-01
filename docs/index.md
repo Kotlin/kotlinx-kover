@@ -990,4 +990,4 @@ repositories {
 
 ## Building locally and Contributing
 
-See [Contributing Guidelines](CONTRIBUTING.md).
+See [Contributing Guidelines](CONTRIBUTING.html).
