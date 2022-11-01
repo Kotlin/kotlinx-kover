@@ -1,34 +1,33 @@
 ## Table of contents
+
 - [Features](#features)
 - [Quickstart](#quickstart)
-  - [Apply plugin to a project](#apply-plugin)
-    - [Applying plugins with the plugins DSL](#applying-plugins-with-the-plugins-dsl)
-    - [Legacy Plugin Application: applying plugins with the buildscript block](#legacy-plugin-application-applying-plugins-with-the-buildscript-block)
+  - [Single-project tasks](#single-project-tasks)
   - [Cross-project coverage](#cross-project-coverage)
 - [Configuration](#configuration)
   - [Configuring project](#configuring-project)
   - [Configuring merged reports](#configuring-merged-reports)
-  - [Configuring JVM test task](#configuring-jvm-test-task)
+  - [Configuring JVM test task](#configuring-jvm-test-tasks)
   - [Specifying Coverage Engine](#specifying-coverage-engine)
-- [Kover single-project tasks](#kover-single-project-tasks)
-- [Kover merged tasks](#kover-merged-tasks)
-- [Example of configuring Android application](#example-of-configuring-android-application) 
+- [Example of configuring Android application](#example-of-configuring-android-application)
 - [Implicit plugin dependencies](#implicit-plugin-dependencies)
-- [Building and contributing](#building-and-contributing)
+- [Building locally and contributing](#building-locally-and-contributing)
 
 ## Features
 
-* Collecting code coverage for `JVM` test tasks
-* `XML` and `HTML` report generation
-* Support of `Kotlin/JVM`, `Kotlin Multiplatform` and mixed `Kotlin-Java` sources with zero additional configuration
-* `Kotlin Android` support without the need to divide into build types and flavours
-* Customizable filters for instrumented classes
+* Collection of code coverage through `JVM` test tasks.
+* `HTML` and `XML` reports.
+* Support for `Kotlin/JVM`, `Kotlin Multiplatform` and mixed `Kotlin-Java` sources with zero additional configuration.
+* Support for `Kotlin Android` without the need to divide it into build types and flavours.
+* Verification rules with bounds to keep track of coverage.
+* Customizable filters for instrumented classes.
 
 ## Quickstart
-### Apply plugin
-#### Applying plugins with the plugins DSL
-In top-level build file:
 
+The recommended way of applying Kover is with the
+[plugins DSL](https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block).
+
+Add the following to your top-level build file:
 
 *Kotlin*
 
@@ -46,8 +45,10 @@ plugins {
 }
 ```
 
-#### Legacy Plugin Application: applying plugins with the buildscript block
-In top-level build file:
+#### Legacy Plugin Application
+
+[Legacy method](https://docs.gradle.org/current/userguide/plugins.html#sec:old_plugin_application) of applying plugins
+can be used if you cannot use the plugins DSL for some reason.
 
 *Kotlin*
 
@@ -63,6 +64,7 @@ buildscript {
 }
 
 apply(plugin = "kover")
+
 ```
 
 *Groovy*
@@ -80,72 +82,110 @@ buildscript {
 apply plugin: 'kover'    
 ```
 
+### Single-project tasks
+
+Tasks that are created for projects where Kover plugin is applied:
+
+- `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in the project.
+- `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in the project.
+- `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.
+- `koverVerify` - Verifies code coverage metrics of the project based on configured rules. Always is executed before `check` task.
+
 ### Cross-project coverage
 
-[Kover tasks that are created by default](#kover-single-project-tasks) designed to collect project coverage only by tests located in the same project.
+Kover's [single project tasks](#single-project-tasks) are designed to collect project coverage by executing
+tests located within the same project.
 
-In order to find the coverage of the project code, the tests for which are in another project, or the coverage of all the code in a multi-project build,
-it is necessary to calculate the cross-module coverage.
-[Merged tasks](#kover-merged-tasks) are used to calculate such a coverage.
+If you want to collect coverage of code the tests for which are in another project, or coverage of all code in a
+[multi-project build](https://docs.gradle.org/current/userguide/multi_project_builds.html#sec:creating_multi_project_builds),
+you need to enable merged reports and then use [merged report tasks](#merged-report-tasks):
 
-Merged reports are reports that combine statistics of code coverage by test tasks from several projects.
+```
+koverMerged {
+    enable()
+}
+```
 
-At the same time, for each project, its configuration of instrumentation and special filters (non-class filters) is applied.
+#### Merged report tasks
 
-For every Gradle project participating in the merged report, both Kover plugin should be applied
-and Coverage Engine types and versions should be identical.
+Merged report tasks are created for projects in which Kover plugin is applied and for which merged reports are enabled.
 
-See how to enable merge reports in [this section](#configuring-merged-reports).
+These tasks merge statistics of code coverage collected from running test tasks of several projects. By default,
+they include containing project along with all its subprojects.
+
+- `koverMergedHtmlReport` - Generates code coverage HTML report for all enabled test tasks in all projects.
+- `koverMergedXmlReport` - Generates code coverage XML report for all enabled test tasks in all projects.
+- `koverMergedReport` - Executes both `koverMergedXmlReport` and `koverMergedHtmlReport` tasks.
+- `koverMergedVerify` - Verifies code coverage metrics of all projects based on specified rules.
+  Always executes before `check` task.
+
+You can learn how to additionally configure merged reports in [configuring merged reports](#configuring-merged-reports)
+section.
 
 ## Configuration
 
-Once applied, the Kover plugin can be used out of the box without additional configuration. 
+Once you've applied Kover, you can run it without additional configuration.
 
-However, in some cases, custom settings are needed - this can be done by configuring special extensions and tasks.
+For cases when configuration is needed, Kover provides special extensions and tasks.
 
+### Configuring JVM test tasks
 
-### Configuring JVM test task
-In rare cases, you may need to disable instrumentation for certain classes if it causes execution errors like `No instrumentation registered! Must run under a registering instrumentation.`.
-It may also be convenient to ignore the test task when calculating coverage.
-You may configure the Kover extension for it.
+In some cases you may want to disable instrumentation of certain classes - either voluntarily or if it causes execution
+errors like `No instrumentation registered! Must run under a registering instrumentation.`
 
-For example, to configure a standard test task for Kotlin/JVM named `test`, you need to add the following code to the build script of the project where this task is declared:
+To achieve that, you need to configure a _Kover extension_ for it.
+
+For example, to configure a standard test task for Kotlin/JVM named `test`, you need to add the following code to
+the build script of the project where this task is declared:
 
 *Kotlin*
 
 ```kotlin
 tasks.test {
     extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-        isDisabled.set(false) // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
-        binaryReportFile.set(file("$buildDir/custom/result.bin")) // set file name of binary report
-        includes = listOf("com.example.*") // see "Instrumentation inclusion rules" below
-        excludes = listOf("com.example.subpackage.*") // see "Instrumentation exclusion rules" below
+        // set to true to disable instrumentation of this task, 
+        // Kover reports will not depend on the results of its execution 
+        isDisabled.set(false)
+      
+        // set file name of binary report
+        binaryReportFile.set(file("$buildDir/custom/result.bin"))
+
+        // for details, see "Instrumentation inclusion rules" below
+        includes += listOf("com.example.*")
+
+        // for details, see "Instrumentation exclusion rules" below
+        excludes += listOf("com.example.subpackage.*")
     }
 }
-
 ```
-
-
 
 *Groovy*
 
 ```groovy
 tasks.test {
     kover {
-        disabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
-        binaryReportFile.set(file("$buildDir/custom/result.bin")) // set file name of binary report
-        includes = ['com.example.*'] // see "Instrumentation inclusion rules" below
-        excludes = ['com.example.subpackage.*'] // see "Instrumentation exclusion rules" below
+        // set to true to disable instrumentation of this task, 
+        // Kover reports will not depend on the results of its execution   
+        disabled = false
+      
+        // set file name of binary report
+        binaryReportFile.set(file("$buildDir/custom/result.bin"))
+      
+        // for details, see "Instrumentation inclusion rules" below
+        includes.addAll("com.example.*")
+      
+        // for details, see "Instrumentation exclusion rules" below
+        excludes.addAll("com.example.subpackage.*")
     }
 }
-
 ```
 
 
+**For other platforms, like Android or Kotlin-Multiplatform, the names may differ and you may also have several
+test tasks instead of one, so you first need to determine the name of the required task.**
 
-**For other platforms (like Android or Kotlin-Multiplatform), the names may differ and you may also have several test tasks, so you first need to determine the name of the required task.**
+An example of configuring a test task for build type `debug` in Android:
 
-Example of configuring test task for build type `debug` in Android:
 *Kotlin*
 
 ```kotlin
@@ -156,10 +196,18 @@ android {
         unitTests.all {
             if (it.name == "testDebugUnitTest") {
                 it.extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-                    isDisabled.set(false) // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
-                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin")) // set file name of binary report
-                    includes = listOf("com.example.*") // see "Instrumentation inclusion rules" below
-                    excludes = listOf("com.example.subpackage.*") // see "Instrumentation exclusion rules" below
+                    // set to true to disable instrumentation of this task, 
+                    // Kover reports will not depend on the results of its execution 
+                    isDisabled.set(false)
+
+                    // set file name of binary report 
+                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
+
+                    // for details, see "Instrumentation inclusion rules" below
+                    includes += listOf("com.example.*") 
+                  
+                    // for details, see "Instrumentation exclusion rules" below
+                    excludes += listOf("com.example.subpackage.*")
                 }
             }
         }
@@ -177,10 +225,18 @@ android {
         unitTests.all {
             if (name == "testDebugUnitTest") {
                 kover {
-                    disabled = false // true to disable instrumentation tests of this task, Kover reports will not depend on the results of their execution 
-                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin")) // set file name of binary report
-                    includes = ['com.example.*'] // see "Instrumentation inclusion rules" below
-                    excludes = ['com.example.subpackage.*'] // see "Instrumentation exclusion rules" below
+                    // set to true to disable instrumentation of this task, 
+                    // Kover reports will not depend on the results of its execution 
+                    disabled = false
+
+                    // set file name of binary report 
+                    binaryReportFile.set(file("$buildDir/custom/debug-report.bin"))
+                    
+                    // for details, see "Instrumentation inclusion rules" below
+                    includes.addAll("com.example.*")
+
+                    // for details, see "Instrumentation exclusion rules" below
+                    excludes.addAll("com.example.subpackage.*") 
                 }
             }
         }
@@ -191,93 +247,154 @@ android {
 
 **Instrumentation inclusion rules**
 
-Only the specified classes will be instrumented, the remaining (non-included) classes will still be present in the report, but their coverage will be zero.
+Only the specified classes will be instrumented. Remaining (non-included) classes will still be present in the report,
+but their coverage will be zero.
 
 **Instrumentation exclusion rules**
 
-The specified classes will not be instrumented and their coverage will be zero.
+Specified classes will not be instrumented and their coverage will be zero.
 
-Instrumentation inclusion/exclusion rules are represented as a fully-qualified name of the class (several classes if wildcards are used).
-File or directory names are not allowed.
-It is possible to use `*` (zero or several of any chars) and `?` (one any char) wildcards. Wildcard `**`  is similar to the `*`.
+Inclusion/exclusion value rules:
 
-Examples `my.package.ClassName` or `my.*.*Name` are allowed, while `my/package/ClassName.kt` or  `src/my.**.ClassName` are not.
+* Can be a fully-qualified class name.
+* Can contain wildcards:
+  * `*` for zero or several of any char.
+  * `**` is the same as `*`.
+  * `?` for one of any char.
+* File and directory names are not allowed.
 
-Exclusion rules have priority over inclusion ones.
+Examples:
 
-Exclusion and inclusion rules from the [test task](#configuring-jvm-test-task) (if at least one of them is not empty) take precedence over rules from the [common class filter](#configuring-project).
+* (good) `my.package.ClassName`
+* (good) `my.*.*Name`
+* (bad) `my/package/ClassName.kt`
+* (bad) `src/my.**.ClassName`
+
+Exclusion rules have priority over inclusion.
+
+Exclusion and inclusion rules from [test tasks](#configuring-jvm-test-tasks) (if at least one of them is not empty)
+take precedence over [common class filter](#configuring-project) rules.
 
 ### Configuring project
-In the project in which the plugin is applied, you can configure instrumentation and default Kover tasks:
+
+You can configure Kover, its tasks and instrumentation in any project for which Kover is applied.
 
 *Kotlin*
 
 ```kotlin
 kover {
-    isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine.set(DefaultIntellijEngine) // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
-    filters { // common filters for all default Kover tasks
-        classes { // common class filter for all default Kover tasks in this project
-            includes += "com.example.*" // class inclusion rules
-            excludes += listOf("com.example.subpackage.*") // class exclusion rules
+    // true to disable instrumentation and all Kover tasks in this project
+    isDisabled.set(false)
+
+    // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
+    engine.set(DefaultIntellijEngine)
+
+    // common filters for all default Kover tasks
+    filters {
+        // common class filter for all default Kover tasks in this project
+        classes {
+            // class inclusion rules
+            includes += "com.example.*"
+            // class exclusion rules
+            excludes += listOf("com.example.subpackage.*")
         }
-        annotations { // common annotation filter for all default Kover tasks in this project
-            excludes += listOf("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
+
+        // common annotation filter for all default Kover tasks in this project
+        annotations {
+            // exclude declarations marked by specified annotations
+            excludes += listOf("com.example.Annotation", "*Generated")
         }
     }
 
     instrumentation {
-        excludeTasks += "dummy-tests" // set of test tasks names to exclude from instrumentation. The results of their execution will not be presented in the report
+        // set of test tasks names to exclude from instrumentation. The results of their execution will not be presented in the report
+        excludeTasks += "dummy-tests"
     }
 
     xmlReport {
-        onCheck.set(false) // set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
-        reportFile.set(layout.buildDirectory.file("my-project-report/result.xml")) // change report file name
-        overrideFilters { 
-            classes { // override common class filter
-                includes += "com.example2.*" // override class inclusion rules
-                excludes += listOf("com.example2.subpackage.*") // override class exclusion rules
+        // set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+      
+        // change report file name
+        reportFile.set(layout.buildDirectory.file("my-project-report/result.xml"))
+        overrideFilters {
+            // override common class filter
+            classes {
+                // override class inclusion rules
+                includes += "com.example2.*"
+                
+                // override class exclusion rules
+                excludes += listOf("com.example2.subpackage.*") 
             }
-            annotations { // override common annotation filter for XML report (filtering will take place only by the annotations specified here)
+
+            // override common annotation filter for XML report (filtering will take place only by the annotations specified here)
+            annotations {
                 excludes += listOf("com.example2.Annotation")
             }
         }
     }
 
     htmlReport {
-        onCheck.set(false) // set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
-        reportDir.set(layout.buildDirectory.dir("my-project-report/html-result")) // change report directory
-        overrideFilters { 
-            classes { // override common class filter
-                includes += "com.example2.*" // class inclusion rules
-                excludes += listOf("com.example2.subpackage.*") // override class exclusion rules
+        // set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+
+        // change report directory
+        reportDir.set(layout.buildDirectory.dir("my-project-report/html-result"))
+        overrideFilters {
+            // override common class filter  
+            classes {
+                // class inclusion rules
+                includes += "com.example2.*"
+                // override class exclusion rules
+                excludes += listOf("com.example2.subpackage.*")
             }
-            annotations { // override common annotation filter for HTML report (filtering will take place only by the annotations specified here)
+            // override common annotation filter for HTML report (filtering will take place only by the annotations specified here)
+            annotations {
                 excludes += listOf("com.example2.Annotation")
             }
         }
     }
 
     verify {
-        onCheck.set(true) // set to true to run koverVerify task during the execution of the check task (if it exists) of the current project 
-        rule { // add verification rule
-            isEnabled = true // set to false to disable rule checking
-            name = null // custom name for the rule
-            target = kotlinx.kover.api.VerificationTarget.ALL // specify by which entity the code for separate coverage evaluation will be grouped
-            
-            overrideClassFilter { // override common class filter
-                includes += "com.example.verify.*" // override class inclusion rules
-                excludes += listOf("com.example.verify.subpackage.*") // override class exclusion rules
+        // set to true to run koverVerify task during the execution of the check task (if it exists) of the current project
+        onCheck.set(true)
+
+        // add verification rule
+        rule {
+            // set to false to disable rule checking
+            isEnabled = true
+
+            // custom name for the rule
+            name = null
+
+            // specify by which entity the code for separate coverage evaluation will be grouped
+            target = kotlinx.kover.api.VerificationTarget.ALL
+
+            // override common class filter
+            overrideClassFilter {
+                // override class inclusion rules
+                includes += "com.example.verify.*"
+
+                // override class exclusion rules
+                excludes += listOf("com.example.verify.subpackage.*")
             }
-            overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-                excludes += "*verify.*Generated" // declarations marked only by these annotations will be excluded from this rule
+          
+            // override common annotation filter (filtering will take place only by the annotations specified here)
+            overrideAnnotationFilter {
+                // declarations marked only by these annotations will be excluded from this rule
+                excludes += "*verify.*Generated"
             }
 
-            bound { // add rule bound
+            // add rule bound
+            bound {
                 minValue = 10
                 maxValue = 20
-                counter = kotlinx.kover.api.CounterType.LINE // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
-                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+
+                // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
+                counter = kotlinx.kover.api.CounterType.LINE
+
+                // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
             }
         }
     }
@@ -288,155 +405,273 @@ kover {
 
 ```groovy
 kover {
-    isDisabled.set(false) // true to disable instrumentation and all Kover tasks in this project
-    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE // // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
-    filters { // common filters for all default Kover tasks
-        classes { // common class filter for all default Kover tasks in this project
-          includes.add("com.example.*") // class inclusion rules
-          excludes.addAll("com.example.subpackage.*") // class exclusion rules
+    // true to disable instrumentation and all Kover tasks in this project
+    isDisabled.set(false)
+
+    // to change engine, use kotlinx.kover.api.IntellijEngine("xxx") or kotlinx.kover.api.JacocoEngine("xxx")
+    engine = kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
+
+    // common filters for all default Kover tasks
+    filters {
+      
+        // common class filter for all default Kover tasks in this project
+        classes {
+          
+          // class inclusion rules
+          includes.add("com.example.*")
+
+          // class exclusion rules
+          excludes.addAll("com.example.subpackage.*")
         }
-        annotations { // common annotation filter for all default Kover tasks in this project
-            excludes.addAll("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
+        // common annotation filter for all default Kover tasks in this project
+        annotations {
+          
+            // exclude declarations marked by specified annotations
+            excludes.addAll("com.example.Annotation", "*Generated")
         }
     }
 
     instrumentation {
-        excludeTasks.add("dummy-tests") // set of test tasks names to exclude from instrumentation. The results of their execution will not be presented in the report
+        // set of test tasks names to exclude from instrumentation. The results of their execution will not be presented in the report
+        excludeTasks.add("dummy-tests")
     }
 
     xmlReport {
-        onCheck.set(false) // set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
-        reportFile.set(layout.buildDirectory.file("my-project-report/result.xml")) // change report file name
+        // set to true to run koverXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+
+        // change report file name
+        reportFile.set(layout.buildDirectory.file("my-project-report/result.xml"))
         overrideFilters {
-            classes { // override common class filter
-                includes.add("com.example2.*") // override class inclusion rules
-                excludes.addAll("com.example2.subpackage.*") // override class exclusion rules
+            // override common class filter
+            classes {
+
+                // override class inclusion rules
+                includes.add("com.example2.*")
+
+                // override class exclusion rules
+                excludes.addAll("com.example2.subpackage.*")
             }
-            annotations { // override common annotation filter for XML report (filtering will take place only by the annotations specified here)
+
+            // override common annotation filter for XML report (filtering will take place only by the annotations specified here)
+            annotations {
                 excludes.addAll("com.example2.Annotation") 
             }
         }
     }
 
     htmlReport {
-        onCheck.set(false) // set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
-        reportDir.set(layout.buildDirectory.dir("my-project-report/html-result")) // change report directory
+        // set to true to run koverHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+
+        // change report directory
+        reportDir.set(layout.buildDirectory.dir("my-project-report/html-result"))
         overrideFilters {
-            classes { // override common class filter
-              includes.add("com.example2.*") // class inclusion rules
-              excludes.addAll("com.example2.subpackage.*") // override class exclusion rules
+            // override common class filter
+            classes {
+
+              // class inclusion rules
+              includes.add("com.example2.*")
+
+              // override class exclusion rules
+              excludes.addAll("com.example2.subpackage.*")
             }
-            annotations { // override common annotation filter for HTML report (filtering will take place only by the annotations specified here)
+
+            // override common annotation filter for HTML report (filtering will take place only by the annotations specified here)
+            annotations {
                 excludes.addAll("com.example2.Annotation")
             }
         }
     }
 
     verify {
-      onCheck.set(true) // set to true to run koverVerify task during the execution of the check task (if it exists) of the current project
-      rule { // add verification rule
-          enabled = true // set to false to disable rule checking
-          name = null // custom name for the rule
-          target = 'ALL' // specify by which entity the code for separate coverage evaluation will be grouped
-  
-          overrideClassFilter { // override common class filter
-              includes.add("com.example.verify.*") // override class inclusion rules
-              excludes.addAll("com.example.verify.subpackage.*") // override class exclusion rules
+      // set to true to run koverVerify task during the execution of the check task (if it exists) of the current project
+      onCheck.set(true)
+
+      // add verification rule
+      rule {
+        
+          // set to false to disable rule checking
+          enabled = true
+
+          // custom name for the rule
+          name = null
+
+          // specify by which entity the code for separate coverage evaluation will be grouped
+          target = 'ALL'
+
+          // override common class filter
+          overrideClassFilter {
+
+              // override class inclusion rules
+              includes.add("com.example.verify.*")
+
+              // override class exclusion rules
+              excludes.addAll("com.example.verify.subpackage.*")
           }
-          overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-            excludes += "*verify.*Generated" // declarations marked only by these annotations will be excluded from this rule
+          // override common annotation filter (filtering will take place only by the annotations specified here)
+          overrideAnnotationFilter {
+
+            // declarations marked only by these annotations will be excluded from this rule
+            excludes += "*verify.*Generated"
           }
-  
-          bound { // add rule bound
+        
+          // add rule bound
+          bound { 
               minValue = 10
               maxValue = 20
-              counter = 'LINE' // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
-              valueType = 'COVERED_PERCENTAGE' // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+
+              // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
+              counter = 'LINE'
+
+              // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+              valueType = 'COVERED_PERCENTAGE' 
           }
       }
     }
 }
 ```
 
-Engine version is specified separately, see [specifying coverage engine](#specifying-coverage-engine) section.
+Additionally, you can specify Engine version. See [specifying coverage engine](#specifying-coverage-engine) section for
+details.
 
 ### Configuring merged reports
 
-In order to create a merged report, it has to be enabled explicitly in a containing project with
- `koverMerged.enable()` or 
-```
-koverMerged {
-    enable()
-}
-```
-By default, merged reports include containing project along with all its subprojects.
+Merged reports can be configured in a similar manner to average reports. Each participating project can have its own
+configuration of instrumentation and special, non-class, filters.
 
-Merged reports can also be configured in a similar manner. To do this, you need to configure the extension in the containing project (where `koverMerged.enable()` is called)
+All Gradle projects that participate in merged reports must have the same version of Kover and
+[Coverage engine](#specifying-coverage-engine).
 
 *Kotlin*
 
 ```kotlin
 koverMerged {
-    enable()  // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
+    // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
+    enable()
   
-    filters { // common filters for all default Kover merged tasks
-        classes { // common class filter for all default Kover merged tasks 
-          includes += "com.example.*" // class inclusion rules
-          excludes += listOf("com.example.subpackage.*") // class exclusion rules
+    // common filters for all default Kover merged tasks
+    filters {
+
+        // common class filter for all default Kover merged tasks 
+        classes {
+
+          // class inclusion rules
+          includes += "com.example.*"
+
+          // class exclusion rules
+          excludes += listOf("com.example.subpackage.*") 
         }
-        annotations { // common annotation filter for all default Kover merged tasks
-            excludes += listOf("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
+      
+        // common annotation filter for all default Kover merged tasks
+        annotations {
+          
+            // exclude declarations marked by specified annotations
+            excludes += listOf("com.example.Annotation", "*Generated") 
         }
-        projects { // common projects filter for all default Kover merged tasks
-            excludes += listOf("project1", ":child:project") // Specifies the projects excluded from the merged tasks
+
+        // common projects filter for all default Kover merged tasks
+        projects {
+
+            // Specifies the projects excluded from the merged tasks
+            excludes += listOf("project1", ":child:project")
         }
     }
 
 
     xmlReport {
-        onCheck.set(false) // set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
-        reportFile.set(layout.buildDirectory.file("my-merged-report/result.xml")) // change report file name
-        overrideClassFilter { // override common class filter
-            includes += "com.example2.*" // override class inclusion rules
-            excludes += listOf("com.example2.subpackage.*") // override class exclusion rules 
+        // set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+
+        // change report file name
+        reportFile.set(layout.buildDirectory.file("my-merged-report/result.xml"))
+
+        // override common class filter
+        overrideClassFilter {
+
+            // override class inclusion rules
+            includes += "com.example2.*"
+
+            // override class exclusion rules 
+            excludes += listOf("com.example2.subpackage.*") 
         }
-        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-            excludes += "*OverrideGenerated" // declarations marked only by specified annotations will be excluded from merged XML report
+
+        // override common annotation filter (filtering will take place only by the annotations specified here)
+        overrideAnnotationFilter {
+
+            // declarations marked only by specified annotations will be excluded from merged XML report
+            excludes += "*OverrideGenerated" 
         }
     }
 
     htmlReport {
-        onCheck.set(false) // set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
-        reportDir.set(layout.buildDirectory.dir("my-merged-report/html-result")) // change report directory
-        overrideClassFilter { // override common class filter
-            includes += "com.example2.*" // override class inclusion rules
-            excludes += listOf("com.example2.subpackage.*") // override class exclusion rules 
+        // set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+
+        // change report directory
+        reportDir.set(layout.buildDirectory.dir("my-merged-report/html-result"))
+
+        // override common class filter
+        overrideClassFilter {
+
+            // override class inclusion rules
+            includes += "com.example2.*"
+
+            // override class exclusion rules 
+            excludes += listOf("com.example2.subpackage.*") 
         }
-        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-            excludes += "*OverrideGenerated" // declarations marked only by specified annotations will be excluded from merged HTML report
+      
+        // override common annotation filter (filtering will take place only by the annotations specified here)
+        overrideAnnotationFilter {
+
+            // declarations marked only by specified annotations will be excluded from merged HTML report
+            excludes += "*OverrideGenerated" 
         }
     }
 
     verify {
-        onCheck.set(true) // set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project 
-        rule { // add verification rule
-            isEnabled = true // set to false to disable rule checking
-            name = null // custom name for the rule
-            target = kotlinx.kover.api.VerificationTarget.ALL // specify by which entity the code for separate coverage evaluation will be grouped
-      
-            overrideClassFilter { // override common class filter
-                includes += "com.example.verify.*" // override class inclusion rules
-                excludes += listOf("com.example.verify.subpackage.*") // override class exclusion rules
+        // set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project 
+        onCheck.set(true)
+
+        // add verification rule
+        rule {
+          
+            // set to false to disable rule checking
+            isEnabled = true
+
+            // custom name for the rule
+            name = null
+
+            // specify by which entity the code for separate coverage evaluation will be grouped
+            target = kotlinx.kover.api.VerificationTarget.ALL
+          
+            // override common class filter
+            overrideClassFilter {
+
+                // override class inclusion rules
+                includes += "com.example.verify.*"
+
+                // override class exclusion rules
+                excludes += listOf("com.example.verify.subpackage.*") 
             }
-            overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-                excludes += "*verify.*Generated" // declarations marked only by these annotations will be excluded from this rule
+
+            // override common annotation filter (filtering will take place only by the annotations specified here)
+            overrideAnnotationFilter {
+
+                // declarations marked only by these annotations will be excluded from this rule
+                excludes += "*verify.*Generated" 
             }
-      
-            bound { // add rule bound
+
+            // add rule bound
+            bound { 
                 minValue = 10
                 maxValue = 20
-                counter = kotlinx.kover.api.CounterType.LINE // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
-                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+              
+                // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
+                counter = kotlinx.kover.api.CounterType.LINE
+
+                // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE 
             }
         }
     }
@@ -447,69 +682,131 @@ koverMerged {
 
 ```groovy
 koverMerged {
-    enable()  // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
-  
-    filters { // common filters for all default Kover merged tasks
-        classes { // common class filter for all default Kover merged tasks 
-            includes.add("com.example.*") // class inclusion rules
-            excludes.addAll("com.example.subpackage.*") // class exclusion rules
+    // create Kover merged report tasks from this project and subprojects with enabled Kover plugin
+    enable()
+
+    // common filters for all default Kover merged tasks
+    filters {
+
+        // common class filter for all default Kover merged tasks 
+        classes {
+
+            // class inclusion rules
+            includes.add("com.example.*")
+
+            // class exclusion rules
+            excludes.addAll("com.example.subpackage.*") 
+        }
+      
+        // common annotation filter for all default Kover merged tasks
+        annotations { 
+          
+            // exclude declarations marked by specified annotations
+            excludes.addAll("com.example.Annotation", "*Generated") 
         }
 
-        annotations { // common annotation filter for all default Kover merged tasks
-            excludes.addAll("com.example.Annotation", "*Generated") // exclude declarations marked by specified annotations
-        }
-    
-        projects { // common projects filter for all default Kover merged tasks
-            excludes.addAll("project1", ":child:project") // Specifies the projects excluded in the merged tasks
+        // common projects filter for all default Kover merged tasks
+        projects {
+
+            // Specifies the projects excluded in the merged tasks
+            excludes.addAll("project1", ":child:project") 
         }
     }
   
   
     xmlReport {
-        onCheck.set(false) // set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
-        reportFile.set(layout.buildDirectory.file("my-merged-report/result.xml")) // change report file name
-        overrideClassFilter { // override common class filter
-            includes.add("com.example2.*") // override class inclusion rules
-            excludes.addAll("com.example2.subpackage.*") // override class exclusion rules 
+        // set to true to run koverMergedXmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+
+        // change report file name
+        reportFile.set(layout.buildDirectory.file("my-merged-report/result.xml"))
+
+        // override common class filter
+        overrideClassFilter {
+
+            // override class inclusion rules
+            includes.add("com.example2.*")
+
+            // override class exclusion rules 
+            excludes.addAll("com.example2.subpackage.*") 
         }
 
-        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-            excludes.addAll("*OverrideGenerated") // declarations marked only by specified annotations will be excluded from merged XML report
+        // override common annotation filter (filtering will take place only by the annotations specified here)
+        overrideAnnotationFilter { 
+          
+            // declarations marked only by specified annotations will be excluded from merged XML report
+            excludes.addAll("*OverrideGenerated") 
         }
     }
   
     htmlReport {
-        onCheck.set(false) // set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
-        reportDir.set(layout.buildDirectory.dir("my-merged-report/html-result")) // change report directory
-        overrideClassFilter { // override common class filter
-            includes.add("com.example2.*") // override class inclusion rules
-            excludes.addAll("com.example2.subpackage.*") // override class exclusion rules 
+        // set to true to run koverMergedHtmlReport task during the execution of the check task (if it exists) of the current project
+        onCheck.set(false)
+
+        // change report directory
+        reportDir.set(layout.buildDirectory.dir("my-merged-report/html-result"))
+      
+        // override common class filter
+        overrideClassFilter {
+
+            // override class inclusion rules
+            includes.add("com.example2.*") 
+          
+            // override class exclusion rules 
+            excludes.addAll("com.example2.subpackage.*") 
         }
-        overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-            excludes.addAll("*OverrideGenerated") // declarations marked only by specified annotations will be excluded from merged HTML report
+
+        // override common annotation filter (filtering will take place only by the annotations specified here)
+        overrideAnnotationFilter {
+
+            // declarations marked only by specified annotations will be excluded from merged HTML report
+            excludes.addAll("*OverrideGenerated") 
         }
     }
   
     verify {
-        onCheck.set(true) // set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project
-        rule { // add verification rule
-            isEnabled = true // set to false to disable rule checking
-            name = null // custom name for the rule
-            target = 'ALL' // specify by which entity the code for separate coverage evaluation will be grouped
-      
-            overrideClassFilter { // override common class filter
-                includes.add("com.example.verify.*") // override class inclusion rules
-                excludes.addAll("com.example.verify.subpackage.*") // override class exclusion rules
+        // set to true to run koverMergedVerify task during the execution of the check task (if it exists) of the current project
+        onCheck.set(true)
+
+        // add verification rule
+        rule {
+
+            // set to false to disable rule checking
+            isEnabled = true
+
+            // custom name for the rule
+            name = null
+
+            // specify by which entity the code for separate coverage evaluation will be grouped
+            target = 'ALL'
+
+            // override common class filter
+            overrideClassFilter {
+
+                // override class inclusion rules
+                includes.add("com.example.verify.*")
+
+                // override class exclusion rules
+                excludes.addAll("com.example.verify.subpackage.*") 
             }
-            overrideAnnotationFilter { // override common annotation filter (filtering will take place only by the annotations specified here)
-                excludes.addAll("*verify.*Generated") // declarations marked only by these annotations will be excluded from this rule
+
+            // override common annotation filter (filtering will take place only by the annotations specified here)
+            overrideAnnotationFilter {
+
+                // declarations marked only by these annotations will be excluded from this rule
+                excludes.addAll("*verify.*Generated") 
             }
-      
-            bound { // add rule bound
+          
+            // add rule bound
+            bound { 
                 minValue = 10
                 maxValue = 20
-                counter = 'LINE' // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
-                valueType = 'COVERED_PERCENTAGE' // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+
+                // change coverage metric to evaluate (LINE, INSTRUCTION, BRANCH)
+                counter = 'LINE'
+
+                // change counter value (COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE)
+                valueType = 'COVERED_PERCENTAGE' 
             }
         }
     }
@@ -518,7 +815,11 @@ koverMerged {
 
 
 ### Specifying Coverage Engine
+
+You can choose which Coverage Engine and which version to use when configuring Kover.
+
 #### IntelliJ Coverage Engine with default version
+
 *Kotlin*
 
 ```kotlin
@@ -532,11 +833,13 @@ kotlinx.kover.api.DefaultIntellijEngine.INSTANCE
 ```
 
 #### IntelliJ Coverage Engine with custom version
+
 ```
 kotlinx.kover.api.IntellijEngine("1.0.683")
 ```
 
 #### JaCoCo Coverage Engine with default version
+
 *Kotlin*
 
 ```kotlin
@@ -554,26 +857,14 @@ kotlinx.kover.api.DefaultJacocoEngine.INSTANCE
 kotlinx.kover.api.JacocoEngine("0.8.8")
 ```
 
-## Kover single-project tasks
-Tasks that are created for a project where the Kover plugin is applied:
-- `koverHtmlReport` - Generates code coverage HTML report for all enabled test tasks in the project.
-- `koverXmlReport` - Generates code coverage XML report for all enabled test tasks in the project.
-- `koverReport` - Executes both `koverXmlReport` and `koverHtmlReport` tasks.
-- `koverVerify` - Verifies code coverage metrics of the project based on configured rules. Always is executed before `check` task.
-
-## Kover merged tasks
-Tasks that are created for project where the Kover plugin is applied and merged reports are enabled:
-- `koverMergedHtmlReport` - Generates code coverage HTML report for all enabled test tasks in all projects.
-- `koverMergedXmlReport` - Generates code coverage XML report for all enabled test tasks in all projects.
-- `koverMergedReport` - Executes both `koverMergedXmlReport` and `koverMergedHtmlReport` tasks.
-- `koverMergedVerify` - Verifies code coverage metrics of all projects based on specified rules. Always executes before `check` task.
-
 ### Example of configuring Android application
 
 Example of configuring test task for build type `debug` in Android:
+
 *Kotlin*
 
 `build.gradle.kts` (Project)
+
 ```kotlin
 buildscript {
     // ...
@@ -592,13 +883,15 @@ koverMerged {
 
     filters {
         classes {
-            excludes += "*.databinding.*" // exclude classes by mask
+            // exclude classes by mask
+            excludes += "*.databinding.*" 
         }
     }
 }
 ```
 
 `build.gradle.kts` (Module)
+
 ```kotlin
 plugins {
     // ...
@@ -615,7 +908,8 @@ dependencies {
 
 kover {
     instrumentation {
-        excludeTasks += "testReleaseUnitTest" // exclude testReleaseUnitTest from instrumentation
+        // exclude testReleaseUnitTest from instrumentation
+        excludeTasks += "testReleaseUnitTest" 
     }
 }
 ```
@@ -625,6 +919,7 @@ An example is available [here](https://github.com/Kotlin/kotlinx-kover/tree/rele
 *Groovy*
 
 `build.gradle` (Project)
+
 ```groovy
 plugin {
     // ...
@@ -636,13 +931,15 @@ koverMerged {
 
     filters {
         classes {
-            excludes.add "*.databinding.*" // exclude classes by mask
+            // exclude classes by mask
+            excludes.add "*.databinding.*" 
         }
     }
 }
 ```
 
 `build.gradle` (Module)
+
 ```groovy
 plugins {
     // ...
@@ -659,7 +956,8 @@ dependencies {
 
 kover {
     instrumentation {
-        excludeTasks.add "testReleaseUnitTest" // exclude testReleaseUnitTest from instrumentation
+        // exclude testReleaseUnitTest from instrumentation
+        excludeTasks.add "testReleaseUnitTest" 
     }
 }
 ```
@@ -667,13 +965,16 @@ kover {
 An example is available [here](https://github.com/Kotlin/kotlinx-kover/tree/release/examples/android_groovy)
 
 ## Implicit plugin dependencies
-While the plugin is being applied, the artifacts of the JaCoCo or IntelliJ toolkit are dynamically loaded. They are downloaded from the `mavenCentral` repository.
 
-For the plugin to work correctly, you need to make sure that the `mavenCentral` (or any of its mirrors) is added to the repository list of the project in which the plugin is applied, if it doesn't already exist (usually this is the root project):
+The artifacts of the JaCoCo or IntelliJ toolkit are loaded during the running of the build. They are
+downloaded from the `mavenCentral` repository.
+
+For Kover to work correctly, you need to make sure that `mavenCentral` (or any of its mirrors) is present in
+the repository list of the project in which the plugin is applied. Usually you can find it in the root project:
 
 *Kotlin*
 
-```
+```kotlin
 repositories {
     mavenCentral()
 }
@@ -681,12 +982,12 @@ repositories {
 
 *Groovy*
 
-```
+```groovy
 repositories {
   mavenCentral()
 }
 ```
 
-## Building and Contributing
+## Building locally and Contributing
 
-See [Contributing Guidelines](CONTRIBUTING.html).
+See [Contributing Guidelines](CONTRIBUTING.md).
