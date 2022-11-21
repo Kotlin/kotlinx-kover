@@ -1,7 +1,7 @@
 # Functional Tests
 Functional tests run Gradle in a separate system process, and then check the result of the work.
 
-By default, to run functional tests, Gradle is used, which builds a plugin.
+By default, to run functional tests, Gradle is used, which builds the plugin as its dependency.
 
 ## Test types
  * examples - used to demonstrate the use of the Kover plugin on ready-made projects. Located in [examples](/examples) directory. 
