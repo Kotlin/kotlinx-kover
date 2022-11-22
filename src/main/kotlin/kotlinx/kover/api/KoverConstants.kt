@@ -36,6 +36,8 @@ public object KoverPaths {
 }
 
 public object KoverVersions {
+    public const val MINIMUM_GRADLE_VERSION = "6.8"
+
     internal const val KOVER_TOOL_MINIMAL_VERSION = "1.0.683"
     internal const val KOVER_TOOL_DEFAULT_VERSION = "1.0.683"
     internal const val JACOCO_TOOL_DEFAULT_VERSION = "0.8.8"
