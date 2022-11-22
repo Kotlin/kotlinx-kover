@@ -1,5 +1,5 @@
 plugins {
-    id("org.jetbrains.kotlinx.kover") version "DEV"
+    id("org.jetbrains.kotlinx.kover") version "SNAPSHOT"
 }
 
 repositories {

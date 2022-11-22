@@ -1,6 +1,6 @@
 plugins {
     base
-    id("org.jetbrains.kotlinx.kover")
+    id("org.jetbrains.kotlinx.kover") version("SNAPSHOT")
 }
 
 repositories { mavenCentral() }

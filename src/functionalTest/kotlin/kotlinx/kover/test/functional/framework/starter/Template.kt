@@ -10,6 +10,7 @@ import kotlinx.kover.test.functional.framework.common.logInfo
 import kotlinx.kover.test.functional.framework.runner.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.*
+import org.opentest4j.*
 import java.io.*
 import java.lang.reflect.*
 import java.nio.file.*
@@ -46,6 +47,7 @@ private class TemplateTestBefore : BeforeTestExecutionCallback {
             throw IllegalStateException("Template build '$templateName' not found")
         }
         templateDir.copyRecursively(dir)
+        dir.patchSettingsFile("template '$templateName', project dir: ${dir.canonicalPath}")
 
         logInfo("Starting build with commands '${commands.joinToString(" ")}'")
         val runResult = dir.runGradleBuild(commands)
@@ -63,14 +65,18 @@ private class TemplateTestInterceptor : InvocationInterceptor {
         invocationContext: ReflectiveInvocationContext<Method>,
         extensionContext: ExtensionContext
     ) {
+        val annotation = extensionContext.element.orElse(null)?.getAnnotation(TemplateTest::class.java)
+            ?: throw IllegalStateException("Test not marked by '${TemplateTest::class.qualifiedName}' annotation")
+        val templateName = annotation.templateName
+
         val store = extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)
         val dir = store.get(DIR_PARAM, File::class.java)
+        val checker = store.get(CHECKER_PARAM, CheckerContext::class.java)
 
         logInfo("Before checking")
-        try {
+
+        checker.check("template '$templateName'\nProject dir: ${dir.uri}") {
             invocation.proceed()
-        } catch (e: Throwable) {
-            throw AssertionError("${e.message}\nProject dir: ${dir.uri}", e)
         }
         logInfo("Deleting the directory ${dir.uri}")
         dir.deleteRecursively()

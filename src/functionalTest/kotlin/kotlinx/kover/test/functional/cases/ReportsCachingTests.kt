@@ -15,9 +15,9 @@ internal class ReportsCachingTests {
         run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
-            checkOutcome("test", TaskOutcome.SUCCESS)
-            checkOutcome("koverXmlReport", TaskOutcome.SUCCESS)
-            checkOutcome("koverHtmlReport", TaskOutcome.SUCCESS)
+            checkOutcome("test", "SUCCESS")
+            checkOutcome("koverXmlReport", "SUCCESS")
+            checkOutcome("koverHtmlReport", "SUCCESS")
         }
         run("clean", "--build-cache") {
             checkDefaultBinaryReport(false)
@@ -26,9 +26,9 @@ internal class ReportsCachingTests {
         run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
-            checkOutcome("test", TaskOutcome.FROM_CACHE)
-            checkOutcome("koverXmlReport", TaskOutcome.FROM_CACHE)
-            checkOutcome("koverHtmlReport", TaskOutcome.FROM_CACHE)
+            checkOutcome("test", "FROM-CACHE")
+            checkOutcome("koverXmlReport", "FROM-CACHE")
+            checkOutcome("koverHtmlReport", "FROM-CACHE")
         }
     }
 
@@ -42,9 +42,9 @@ internal class ReportsCachingTests {
         run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
-            checkOutcome("test", TaskOutcome.SUCCESS)
-            checkOutcome("koverXmlReport", TaskOutcome.SUCCESS)
-            checkOutcome("koverHtmlReport", TaskOutcome.SUCCESS)
+            checkOutcome("test", "SUCCESS")
+            checkOutcome("koverXmlReport", "SUCCESS")
+            checkOutcome("koverHtmlReport", "SUCCESS")
         }
         run("clean", "--build-cache") {
             checkDefaultBinaryReport(false)
@@ -53,9 +53,9 @@ internal class ReportsCachingTests {
         run("koverReport", "--build-cache") {
             checkDefaultBinaryReport()
             checkDefaultReports()
-            checkOutcome("test", TaskOutcome.FROM_CACHE)
-            checkOutcome("koverXmlReport", TaskOutcome.FROM_CACHE)
-            checkOutcome("koverHtmlReport", TaskOutcome.FROM_CACHE)
+            checkOutcome("test", "FROM-CACHE")
+            checkOutcome("koverXmlReport", "FROM-CACHE")
+            checkOutcome("koverHtmlReport", "FROM-CACHE")
         }
     }
 

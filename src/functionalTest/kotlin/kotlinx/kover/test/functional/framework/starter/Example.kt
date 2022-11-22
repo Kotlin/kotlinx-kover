@@ -42,7 +42,9 @@ private class ExampleTestArgumentsProvider : ArgumentsProvider {
 
         val files = File(EXAMPLES_DIR).listFiles { it ->
             val name = it.name
-            it.isDirectory && !excludes.contains(name) && (includes.isEmpty() || includes.contains(name))
+            it.isDirectory
+                    && !excludes.contains(name)
+                    && (includes.isEmpty() || includes.contains(name))
         }?.toList() ?: emptyList()
 
         return files.stream().map { ExampleArgs(it, commands) }
@@ -56,6 +58,7 @@ private class ExampleArgs(private val exampleDir: File, private val commands: Li
         val dir = Files.createTempDirectory("$TMP_PREFIX$example-").toFile()
         logInfo("Copy example '$example' into target directory ${dir.uri}")
         exampleDir.copyRecursively(dir)
+        dir.patchSettingsFile("example '$example', project dir: ${dir.canonicalPath}")
 
         logInfo("Starting build example '$example' with commands '${commands.joinToString(" ")}'")
         val runResult = dir.runGradleBuild(commands)
@@ -89,12 +92,13 @@ private class ExampleInterceptor : InvocationInterceptor {
         }
         val checkerContext = invocationContext.arguments[0] as NamedCheckerContext
 
-
+        val dir = checkerContext.targetDir
         logInfo("Starting checking example '${checkerContext.name}'")
-        invocation.proceed()
+        checkerContext.check("example '${checkerContext.name}'\nProject dir: ${dir.uri}") {
+            invocation.proceed()
+        }
 
         // clear directory if where are no errors
-        val dir = checkerContext.targetDir
         logInfo("Example '${checkerContext.name}' successfully checked, deleting the directory ${dir.uri}")
         dir.deleteRecursively()
     }

@@ -3,8 +3,6 @@ package kotlinx.kover.test.functional.cases
 import kotlinx.kover.test.functional.framework.checker.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.starter.*
-import org.gradle.testkit.runner.*
-import kotlin.test.*
 
 internal class MultiProjectTests {
     private val subprojectPath = ":common"
@@ -83,15 +81,15 @@ internal class MultiProjectTests {
         run("koverReport", "koverVerify") {
             checkDefaultBinaryReport(false)
 
-            checkOutcome("koverHtmlReport", TaskOutcome.SKIPPED)
-            checkOutcome("koverXmlReport", TaskOutcome.SKIPPED)
-            checkOutcome("koverVerify", TaskOutcome.SKIPPED)
+            checkOutcome("koverHtmlReport", "SKIPPED")
+            checkOutcome("koverXmlReport", "SKIPPED")
+            checkOutcome("koverVerify", "SKIPPED")
 
             subproject(subprojectPath) {
                 checkDefaultBinaryReport(false)
-                checkOutcome("koverHtmlReport", TaskOutcome.SKIPPED)
-                checkOutcome("koverXmlReport", TaskOutcome.SKIPPED)
-                checkOutcome("koverVerify", TaskOutcome.SKIPPED)
+                checkOutcome("koverHtmlReport", "SKIPPED")
+                checkOutcome("koverXmlReport", "SKIPPED")
+                checkOutcome("koverVerify", "SKIPPED")
             }
         }
     }
@@ -182,11 +180,7 @@ internal class MultiProjectTests {
      */
     @TemplateTest("nested-project", [":koverMergedReport"])
     fun CheckerContext.testNestedProjectInsideEmptyProject() {
-        outcome(":subprojects:alpha-project:test") {
-            assertEquals(TaskOutcome.SUCCESS, this)
-        }
-        outcome(":koverMergedReport") {
-            assertEquals(TaskOutcome.SUCCESS, this)
-        }
+        checkOutcome(":subprojects:alpha-project:test", "SUCCESS")
+        checkOutcome(":koverMergedReport", "SUCCESS")
     }
 }

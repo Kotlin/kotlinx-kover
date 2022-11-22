@@ -6,7 +6,6 @@ package kotlinx.kover.test.functional.framework.checker
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.common.*
-import org.gradle.testkit.runner.*
 import java.io.*
 
 internal interface CheckerContext {
@@ -19,6 +18,11 @@ internal interface CheckerContext {
     val output: String
 
     val buildScript: String
+
+    /**
+     * Perform built-in checks.
+     */
+    fun prepare(buildErrorExpected: Boolean)
 
     fun allProjects(checker: CheckerContext.() -> Unit)
 
@@ -37,11 +41,9 @@ internal interface CheckerContext {
 
     fun verification(checker: VerifyReportChecker.() -> Unit)
 
-    fun outcome(taskNameOrPath: String, checker: TaskOutcome.() -> Unit)
-
     val defaultBinaryReport: String
     fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean)
-    fun checkOutcome(taskName: String, outcome: TaskOutcome)
+    fun checkOutcome(taskNameOrPath: String, expectedOutcome: String)
     fun checkDefaultReports(mustExist: Boolean = true)
     fun checkDefaultMergedReports(mustExist: Boolean = true)
     fun checkDefaultBinaryReport(mustExist: Boolean = true)

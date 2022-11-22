@@ -54,7 +54,7 @@ internal abstract class LookupAdapter {
             lookup(project, sourceSetFilters)
         } catch (e: Throwable) {
             when (e) {
-                is NoSuchMethodError, is NoSuchFieldError, is ClassNotFoundException, is NoClassDefFoundError -> {
+                is TypeNotPresentException, is NoSuchMethodError, is NoSuchFieldError, is ClassNotFoundException, is NoClassDefFoundError -> {
                     project.logger.info("Problem occurred in Kover source set adapter", e)
                     Dirs()
                 }

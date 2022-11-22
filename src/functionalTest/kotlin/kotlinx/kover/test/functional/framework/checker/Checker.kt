@@ -6,8 +6,9 @@ package kotlinx.kover.test.functional.framework.checker
 
 import kotlinx.kover.api.*
 import kotlinx.kover.test.functional.framework.common.*
+import kotlinx.kover.test.functional.framework.runner.*
 import kotlinx.kover.tools.commons.*
-import org.gradle.testkit.runner.*
+import org.opentest4j.*
 import org.w3c.dom.*
 import java.io.*
 import javax.xml.parsers.*
@@ -17,17 +18,32 @@ import kotlin.test.*
 internal fun File.checkResult(
     result: BuildResult,
     description: String,
-    errorExpected: Boolean,
+    buildErrorExpected: Boolean,
     checker: CheckerContext.() -> Unit
 ) {
     try {
-        createCheckerContext(result).also(checker)
+        val checkerContext = createCheckerContext(result)
+        checkerContext.prepare(buildErrorExpected)
+        checkerContext.checker()
+    } catch (e: TestAbortedException) {
+        throw e
     } catch (e: Throwable) {
-        if (!errorExpected) throw e
+        throw AssertionError("${e.message}\n For $description\n\n${result.output}", e)
     }
+}
 
-    if (errorExpected) {
-        throw AssertionError("Error expected for $description")
+internal inline fun CheckerContext.check(
+    description: String,
+    buildErrorExpected: Boolean = false,
+    checker: CheckerContext.() -> Unit
+){
+    try {
+        prepare(buildErrorExpected)
+        this.checker()
+    } catch (e: TestAbortedException) {
+        throw e
+    } catch (e: Throwable) {
+        throw AssertionError("${e.message}\n For $description\n\n$output", e)
     }
 }
 
@@ -50,6 +66,9 @@ internal abstract class CheckerContextWrapper(private val origin: CheckerContext
         get() = origin.pluginType
     override val defaultBinaryReport: String
         get() = origin.defaultBinaryReport
+
+    override fun prepare(buildErrorExpected: Boolean) = origin.prepare(buildErrorExpected)
+
     override fun allProjects(checker: CheckerContext.() -> Unit) {
         origin.allProjects(checker)
     }
@@ -74,16 +93,12 @@ internal abstract class CheckerContextWrapper(private val origin: CheckerContext
         origin.verification(checker)
     }
 
-    override fun outcome(taskNameOrPath: String, checker: TaskOutcome.() -> Unit) {
-        origin.outcome(taskNameOrPath, checker)
-    }
-
     override fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
         origin.checkReports(xmlPath, htmlPath, mustExist)
     }
 
-    override fun checkOutcome(taskName: String, outcome: TaskOutcome) {
-        origin.checkOutcome(taskName, outcome)
+    override fun checkOutcome(taskNameOrPath: String, expectedOutcome: String) {
+        origin.checkOutcome(taskNameOrPath, expectedOutcome)
     }
 
     override fun checkDefaultReports(mustExist: Boolean) {
@@ -121,8 +136,26 @@ private class CheckerContextImpl(
             return binaryReportsDirectory + "/" + defaultTestTaskName(pluginType!!) + "." + toolVariant.vendor.reportFileExtension
         }
 
+    override fun prepare(buildErrorExpected: Boolean) {
+        if (result.isSuccessful) {
+            if (buildErrorExpected) {
+                throw AssertionError("Build error expected")
+            }
+        } else {
+            if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
+                output.contains("Android Gradle plugin requires Java 11 to run.")
+            ) {
+                if (isAndroidTestDisabled) {
+                    throw TestAbortedException("Android tests are disabled")
+                } else {
+                    throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -PandroidSdk. To ignore Android tests pass parameter -PdisableAndroidTests")
+                }
+            }
+            if (!buildErrorExpected) {
+                throw AssertionError("Build error")
+            }
+        }
 
-    init {
         checkKoverToolErrors()
     }
 
@@ -165,16 +198,6 @@ private class CheckerContextImpl(
         VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
     }
 
-    override fun outcome(taskNameOrPath: String, checker: TaskOutcome.() -> Unit) {
-        val taskPath = if (taskNameOrPath.startsWith(":")) {
-            taskNameOrPath
-        } else {
-            if (path == ":") ":$taskNameOrPath" else "$path:$taskNameOrPath"
-        }
-        result.task(taskPath)?.outcome?.checker()
-            ?: throw IllegalArgumentException("Task '$taskNameOrPath' with path '$taskPath' not found in build result")
-    }
-
     override fun checkDefaultBinaryReport(mustExist: Boolean) {
         if (mustExist) {
             file(defaultBinaryReport) {
@@ -202,10 +225,16 @@ private class CheckerContextImpl(
         )
     }
 
-    override fun checkOutcome(taskName: String, outcome: TaskOutcome) {
-        outcome(taskName) {
-            assertEquals(outcome, this)
+    override fun checkOutcome(taskNameOrPath: String, expectedOutcome: String) {
+        val taskPath = if (taskNameOrPath.startsWith(":")) {
+            taskNameOrPath
+        } else {
+            if (path == ":") ":$taskNameOrPath" else "$path:$taskNameOrPath"
         }
+        val outcome = result.taskOutcome(taskPath)
+            ?: throw IllegalArgumentException("Task '$taskNameOrPath' with path '$taskPath' not found in build result")
+
+        assertEquals(expectedOutcome, outcome, "Unexpected outcome for task '$taskPath'")
     }
 
     override fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
@@ -347,12 +376,10 @@ internal fun String.definedTool(): CoverageToolVariant? {
 
 internal fun String.definedKoverVersion(): String? {
     val pluginVersion = pluginRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
-    val dependencyVersion = dependencyRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
 
-    if (pluginVersion != null && dependencyVersion != null) {
-        throw Exception("Using the old and new ways of applying plugins")
-    }
-    return pluginVersion ?: dependencyVersion
+    pluginVersion?.let { return it }
+
+    return dependencyRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)
 }
 
 private class XmlReportCheckerImpl(val context: CheckerContextImpl, file: File) : XmlReportChecker {
