@@ -6,6 +6,22 @@ package kotlinx.kover.util
 
 internal class SemVer(val major: Int, val minor: Int, val patch: Int): Comparable<SemVer> {
     companion object {
+        /**
+         * Supported formats:
+         *  - "1" -> 1.0.0
+         *  - "1.2" -> 1.2.0
+         *  - "1.2.3" -> 1.2.3
+         */
+        fun ofVariableOrNull(version: String): SemVer? {
+            val parts = version.substringBefore('-').split(".")
+
+            val major = parts[0].toIntOrNull()?: return null
+            val minor = parts.getOrNull(1)?.toIntOrNull()?: 0
+            val patch = parts.getOrNull(2)?.toIntOrNull()?: 0
+
+            return SemVer(major, minor, patch)
+        }
+
         fun ofThreePartOrNull(version: String): SemVer? {
 
             val parts = version.substringBefore('-').split(".")
