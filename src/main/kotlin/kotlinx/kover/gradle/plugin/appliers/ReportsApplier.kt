@@ -123,8 +123,8 @@ internal class ReportsApplier(
 
     private fun KoverReportFiltersImpl.convert(): ReportFilters {
         return ReportFilters(
-            includes.classes.masked, includes.annotations.masked,
-            excludes.classes.masked, excludes.annotations.masked
+            includes.classes, includes.annotations,
+            excludes.classes, excludes.annotations
         )
     }
 }

@@ -33,7 +33,7 @@ internal class KoverGradleApplier(private val project: Project, private val loca
             project.objects,
             locator.kotlinPlugin
         ).apply {
-            toolVariant = KoverToolDefault
+            toolVariant = KoverToolDefaultVariant
         }
 
         defaultReportExtension = createReportExtension(SetupId.Default)

@@ -9,8 +9,6 @@ import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.tools.*
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
-import kotlinx.kover.gradle.plugin.util.*
-import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
 import org.gradle.api.file.*
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*

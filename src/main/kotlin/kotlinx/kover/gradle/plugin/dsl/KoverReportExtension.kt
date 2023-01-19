@@ -24,24 +24,16 @@ public interface KoverReportFilters {
     public fun includes(config: Action<KoverReportFilter>)
 }
 
-public interface KoverReportFilter {
-    public fun classes(config: Action<KoverReportClassFilter>)
+public interface KoverReportFilter: KoverClassDefinitions {
+    public override fun className(vararg className: String)
 
-    public fun annotated(config: Action<KoverReportAnnotatedFilter>)
-}
+    public override fun className(classNames: Iterable<String>)
 
-public interface KoverReportClassFilter: KoverClassDefinitions {
-    public override fun className(vararg name: String)
+    public override fun packageName(vararg className: String)
 
-    public override fun className(names: Iterable<String>)
+    public override fun packageName(classNames: Iterable<String>)
 
-    public override fun packageName(vararg name: String)
-
-    public override fun packageName(names: Iterable<String>)
-}
-
-public interface KoverReportAnnotatedFilter {
-    public fun annotationName(vararg name: String)
+    public fun annotatedBy(vararg annotationName: String)
 }
 
 public interface KoverHtmlReportConfig {

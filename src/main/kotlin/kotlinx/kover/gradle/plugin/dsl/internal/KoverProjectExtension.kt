@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.dsl.internal
 
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
 import org.gradle.api.model.*
 import org.gradle.kotlin.dsl.*
@@ -19,22 +20,22 @@ internal open class KoverProjectExtensionImpl @Inject constructor(
 
     override var isDisabled: Boolean = false
 
-    internal var toolVariant: CoverageToolVariant = KoverToolDefault
+    internal var toolVariant: CoverageToolVariant = KoverToolDefaultVariant
 
     override fun useKoverToolDefault() {
-        toolVariant = KoverToolDefault
+        toolVariant = KoverToolDefaultVariant
     }
 
     override fun useJacocoToolDefault() {
-        toolVariant = JacocoToolDefault
+        toolVariant = JacocoToolDefaultVariant
     }
 
     override fun useKoverTool(version: String) {
-        toolVariant = KoverTool(version)
+        toolVariant = KoverToolVariant(version)
     }
 
     override fun useJacocoTool(version: String) {
-        toolVariant = JacocoTool(version)
+        toolVariant = JacocoToolVariant(version)
     }
 
     override fun excludeTests(config: Action<KoverTestsExclusions>) {
@@ -131,22 +132,22 @@ internal open class KoverSourcesExclusionsImpl @Inject constructor(
 }
 
 internal open class KoverInstrumentationExclusionsImpl: KoverInstrumentationExclusions {
-    override fun className(vararg name: String) {
-        classes += name
+    override fun className(vararg className: String) {
+        classes += className
     }
 
-    override fun className(names: Iterable<String>) {
-        classes += names
+    override fun className(classNames: Iterable<String>) {
+        classes += classNames
     }
 
-    override fun packageName(vararg name: String) {
-        name.forEach {
+    override fun packageName(vararg className: String) {
+        className.forEach {
             classes += "$it.*"
         }
     }
 
-    override fun packageName(names: Iterable<String>) {
-        names.forEach {
+    override fun packageName(classNames: Iterable<String>) {
+        classNames.forEach {
             classes += "$it.*"
         }
     }

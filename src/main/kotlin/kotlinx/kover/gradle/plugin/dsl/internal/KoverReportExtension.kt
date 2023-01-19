@@ -6,7 +6,6 @@ package kotlinx.kover.gradle.plugin.dsl.internal
 
 import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.*
-import org.gradle.api.file.Directory
 import org.gradle.api.model.*
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -199,53 +198,36 @@ internal open class KoverReportFiltersImpl @Inject constructor(
         config(includes)
     }
 
-    internal val excludes: KoverReportFilterImpl = objects.newInstance(objects)
-    internal val includes: KoverReportFilterImpl = objects.newInstance(objects)
+    internal val excludes: KoverReportFilterImpl = objects.newInstance()
+    internal val includes: KoverReportFilterImpl = objects.newInstance()
 }
 
-internal open class KoverReportFilterImpl @Inject constructor(
-    objects: ObjectFactory,
-) : KoverReportFilter {
-    override fun classes(config: Action<KoverReportClassFilter>) {
-        config(classes)
+internal open class KoverReportFilterImpl : KoverReportFilter {
+    internal val classes: MutableSet<String> = mutableSetOf()
+
+    internal val annotations: MutableSet<String> = mutableSetOf()
+
+    override fun className(vararg className: String) {
+        classes += className
     }
 
-    override fun annotated(config: Action<KoverReportAnnotatedFilter>) {
-        config(annotations)
+    override fun className(classNames: Iterable<String>) {
+        classes += classNames
     }
 
-    internal val classes: KoverReportClassFilterImpl = objects.newInstance()
-    internal val annotations: KoverReportAnnotatedFilterImpl = objects.newInstance()
-}
-
-internal open class KoverReportClassFilterImpl : KoverReportClassFilter {
-    override fun className(vararg name: String) {
-        masked += name
-    }
-
-    override fun className(names: Iterable<String>) {
-        masked += names
-    }
-
-    override fun packageName(vararg name: String) {
-        name.forEach {
-            masked += "$it.*"
+    override fun packageName(vararg className: String) {
+        className.forEach {
+            classes += "$it.*"
         }
     }
 
-    override fun packageName(names: Iterable<String>) {
-        names.forEach {
-            masked += "$it.*"
+    override fun packageName(classNames: Iterable<String>) {
+        classNames.forEach {
+            classes += "$it.*"
         }
     }
 
-    internal val masked: MutableSet<String> = mutableSetOf()
-}
-
-internal open class KoverReportAnnotatedFilterImpl : KoverReportAnnotatedFilter {
-    override fun annotationName(vararg name: String) {
-        masked += name
+    override fun annotatedBy(vararg annotationName: String) {
+        annotations += annotationName
     }
-
-    internal val masked: MutableSet<String> = mutableSetOf()
 }

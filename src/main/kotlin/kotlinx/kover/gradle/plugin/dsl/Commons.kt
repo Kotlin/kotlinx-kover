@@ -11,11 +11,11 @@ const val PROJECT_SETUP_EXTENSION = "kover"
 
 
 public interface KoverClassDefinitions {
-    public fun className(vararg name: String)
-    public fun className(names: Iterable<String>)
+    public fun className(vararg className: String)
+    public fun className(classNames: Iterable<String>)
 
-    public fun packageName(vararg name: String)
-    public fun packageName(names: Iterable<String>)
+    public fun packageName(vararg className: String)
+    public fun packageName(classNames: Iterable<String>)
 }
 
 public interface KoverTaskDefinitions {

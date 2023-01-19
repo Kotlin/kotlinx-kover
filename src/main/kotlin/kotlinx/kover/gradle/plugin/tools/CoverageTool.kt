@@ -11,7 +11,49 @@ import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.tools.jacoco.JacocoTool
 import kotlinx.kover.gradle.plugin.tools.kover.KoverTool
 import org.gradle.api.file.*
+import org.gradle.api.tasks.*
 import java.io.*
+
+
+internal sealed class CoverageToolVariant(
+    @get:Input
+    val vendor: CoverageToolVendor,
+    @get:Input
+    val version: String
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as CoverageToolVariant
+
+        if (vendor != other.vendor) return false
+        if (version != other.version) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = vendor.hashCode()
+        result = 31 * result + version.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "$vendor Coverage Tool $version"
+    }
+}
+
+internal class KoverToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.KOVER, version)
+internal object KoverToolDefaultVariant: CoverageToolVariant(CoverageToolVendor.KOVER,
+    KoverVersions.KOVER_TOOL_DEFAULT_VERSION
+)
+
+internal class JacocoToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.JACOCO, version)
+
+internal object JacocoToolDefaultVariant: CoverageToolVariant(CoverageToolVendor.JACOCO,
+    KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
+)
 
 internal interface CoverageTool {
     val variant: CoverageToolVariant

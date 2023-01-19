@@ -7,7 +7,7 @@ package kotlinx.kover.gradle.plugin.tools.jacoco
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.ReportFilters
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
-import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.tools.*
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import kotlinx.kover.gradle.plugin.tools.RuleViolations
 import org.gradle.api.file.*

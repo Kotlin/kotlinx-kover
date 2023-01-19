@@ -6,7 +6,6 @@ package kotlinx.kover.gradle.plugin.tools.kover
 
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
-import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
 import org.gradle.api.file.*
