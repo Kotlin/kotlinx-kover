@@ -5,6 +5,8 @@
 package kotlinx.kover.gradle.plugin.dsl
 
 import org.gradle.api.*
+import org.gradle.api.file.Directory
+import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import java.io.*
 
@@ -41,7 +43,7 @@ public interface KoverHtmlReportConfig {
     public var title: String
 
     public fun setReportDir(dir: File)
-    public fun setReportDir(dir: Provider<File>)
+    public fun setReportDir(dir: Provider<Directory>)
 
     public fun filters(config: Action<KoverReportFilters>)
 }
@@ -50,7 +52,7 @@ public interface KoverXmlReportConfig {
     public var onCheck: Boolean
 
     public fun setReportFile(xmlFile: File)
-    public fun setReportFile(xmlFile: Provider<File>)
+    public fun setReportFile(xmlFile: Provider<RegularFile>)
 
     public fun filters(config: Action<KoverReportFilters>)
 }

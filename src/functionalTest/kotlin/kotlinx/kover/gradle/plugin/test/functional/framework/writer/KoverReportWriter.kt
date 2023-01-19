@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.test.functional.framework.writer
 
 import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.*
+import org.gradle.api.file.*
 import org.gradle.api.provider.*
 import java.io.*
 
@@ -77,7 +78,7 @@ internal class KoverHtmlReportConfigWriter(private val writer: FormattedWriter) 
         writer.assign("reportDir", dir.forScript())
     }
 
-    override fun setReportDir(dir: Provider<File>) {
+    override fun setReportDir(dir: Provider<Directory>) {
         error("Not supported!")
     }
 
@@ -98,7 +99,7 @@ internal class KoverXmlReportConfigWriter(private val writer: FormattedWriter) :
         writer.assign("reportFile", xmlFile.forScript())
     }
 
-    override fun setReportFile(xmlFile: Provider<File>) {
+    override fun setReportFile(xmlFile: Provider<RegularFile>) {
         error("Not supported!")
     }
 

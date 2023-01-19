@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.dsl.internal
 
 import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.*
+import org.gradle.api.file.*
 import org.gradle.api.model.*
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
@@ -55,8 +56,8 @@ internal open class KoverHtmlReportConfigImpl @Inject constructor(
         reportDir.set(dir)
     }
 
-    override fun setReportDir(dir: Provider<File>) {
-        reportDir.set(dir)
+    override fun setReportDir(dir: Provider<Directory>) {
+        reportDir.set(dir.map { it.asFile })
     }
 
     override fun filters(config: Action<KoverReportFilters>) {
@@ -79,8 +80,8 @@ internal open class KoverXmlReportConfigImpl @Inject constructor(
         reportFile.set(xmlFile)
     }
 
-    override fun setReportFile(xmlFile: Provider<File>) {
-        reportFile.set(xmlFile)
+    override fun setReportFile(xmlFile: Provider<RegularFile>) {
+        reportFile.set(xmlFile.map { it.asFile })
     }
 
     override fun filters(config: Action<KoverReportFilters>) {

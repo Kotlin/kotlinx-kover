@@ -12,122 +12,74 @@ dependencies {
 }
 
 kover {
-    isDisabled.set(false)
-    tool.set(kotlinx.kover.api.KoverToolDefault)
+    isDisabled = false
+
+    useKoverToolDefault()
+
+    excludeInstrumentation {
+        className("com.example.subpackage.*")
+    }
+}
+
+koverReport {
     filters {
-        classes {
-            includes += "com.example.*"
-            excludes += listOf("com.example.subpackage.*")
+        excludes {
+            className("com.example.subpackage.*")
+        }
+        includes {
+            className("com.example.*")
         }
     }
 
-    instrumentation {
-        excludeTasks += "dummy-tests"
-    }
+    xml {
+        onCheck = false
+        setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
 
-    xmlReport {
-        onCheck.set(false)
-        reportFile.set(layout.buildDirectory.file("my-project-report/result.xml"))
-        overrideFilters {
-            classes {
-                includes += "com.example2.*"
-                excludes += listOf("com.example2.subpackage.*")
+        filters {
+            excludes {
+                className("com.example2.subpackage.*")
+            }
+            includes {
+                className("com.example2.*")
             }
         }
     }
 
-    htmlReport {
-        onCheck.set(false)
-        reportDir.set(layout.buildDirectory.dir("my-project-report/html-result"))
-        overrideFilters {
-            classes {
-                includes += "com.example2.*"
-                excludes += listOf("com.example2.subpackage.*")
+    html {
+        onCheck = false
+        setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+
+        filters {
+            excludes {
+                className("com.example2.subpackage.*")
+            }
+            includes {
+                className("com.example2.*")
             }
         }
     }
 
     verify {
-        onCheck.set(true)
+        onCheck = true
         rule {
             isEnabled = true
             name = null
-            target = kotlinx.kover.api.VerificationTarget.ALL
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
 
-            overrideClassFilter {
-                includes += "com.example.verify.*"
-                excludes += listOf("com.example.verify.subpackage.*")
+            filters {
+                excludes {
+                    className("com.example.verify.subpackage.*")
+                }
+                includes {
+                    className("com.example.verify.*")
+                }
             }
 
             bound {
                 minValue = 1
                 maxValue = 99
-                counter = kotlinx.kover.api.CounterType.LINE
-                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
-            }
-        }
-    }
-}
-
-tasks.test {
-    extensions.configure(kotlinx.kover.api.KoverTaskExtension::class) {
-        isDisabled.set(false)
-        reportFile.set(file("$buildDir/custom/result.bin"))
-        includes.addAll("com.example.*")
-        excludes.addAll("com.example.subpackage.*")
-    }
-}
-
-koverMerged {
-    enable()
-
-    filters {
-        classes {
-            includes += "com.example.*"
-            excludes += listOf("com.example.subpackage.*")
-        }
-
-        projects {
-            excludes += listOf()
-        }
-    }
-
-
-    xmlReport {
-        onCheck.set(false)
-        reportFile.set(layout.buildDirectory.file("my-merged-report/result.xml"))
-        overrideClassFilter {
-            includes += "com.example2.*"
-            excludes += listOf("com.example2.subpackage.*")
-        }
-    }
-
-    htmlReport {
-        onCheck.set(false)
-        reportDir.set(layout.buildDirectory.dir("my-merged-report/html-result"))
-        overrideClassFilter {
-            includes += "com.example2.*"
-            excludes += listOf("com.example2.subpackage.*")
-        }
-    }
-
-    verify {
-        onCheck.set(true)
-        rule { // add verification rule
-            isEnabled = true
-            name = null
-            target = kotlinx.kover.api.VerificationTarget.ALL
-
-            overrideClassFilter {
-                includes += "com.example.verify.*"
-                excludes += listOf("com.example.verify.subpackage.*")
-            }
-
-            bound {
-                minValue = 1
-                maxValue = 99
-                counter = kotlinx.kover.api.CounterType.LINE
-                valueType = kotlinx.kover.api.VerificationValueType.COVERED_PERCENTAGE
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
         }
     }
