@@ -9,9 +9,9 @@ Classes from plugins applied in subproject not accessible for Kover in root proj
 Therefore, Kover is forced to use reflection to work with extensions of the kotlin multiplatform plugin.
  */
 internal class AdaptersTests {
-    @TemplateTest("different-plugins", ["koverMergedXmlReport"])
+    @TemplateTest("different-plugins", ["koverXmlReport"])
     fun CheckerContext.testMerged() {
-        xml(defaultMergedXmlReport()) {
+        xml(defaultXmlReport()) {
             classCounter("org.jetbrains.CommonClass").assertFullyCovered()
             classCounter("org.jetbrains.JvmClass").assertFullyCovered()
         }

@@ -1,10 +1,11 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.checker
 
-import kotlinx.kover.api.*
+import kotlinx.kover.gradle.plugin.commons.*
+import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.test.functional.framework.common.*
 import java.io.*
 
@@ -26,10 +27,7 @@ internal interface CheckerContext {
 
     fun allProjects(checker: CheckerContext.() -> Unit)
 
-    /**
-     * `null` if no Kotlin plugin has not been applied
-     */
-    val pluginType: KotlinPluginType?
+    val kotlinPlugin: AppliedKotlinPlugin
 
     fun subproject(path: String, checker: CheckerContext.() -> Unit)
 
@@ -41,12 +39,11 @@ internal interface CheckerContext {
 
     fun verification(checker: VerifyReportChecker.() -> Unit)
 
-    val defaultBinaryReport: String
+    val defaultRawReport: String
     fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean)
     fun checkOutcome(taskNameOrPath: String, expectedOutcome: String)
     fun checkDefaultReports(mustExist: Boolean = true)
-    fun checkDefaultMergedReports(mustExist: Boolean = true)
-    fun checkDefaultBinaryReport(mustExist: Boolean = true)
+    fun checkDefaultRawReport(mustExist: Boolean = true)
 }
 
 

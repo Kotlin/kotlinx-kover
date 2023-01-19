@@ -1,147 +1,109 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.writer
 
-import kotlinx.kover.api.*
-import kotlinx.kover.test.functional.framework.common.*
-import kotlinx.kover.test.functional.framework.configurator.*
-import kotlinx.kover.test.functional.framework.configurator.TestVerifyConfig
-import kotlinx.kover.tools.commons.*
+import kotlinx.kover.gradle.plugin.dsl.*
+import org.gradle.api.*
 
-internal fun FormattedScriptAppender.writeKover(kover: TestKoverConfig?) {
-    if (kover == null) {
-        // if where is no such block in test script but test generated for specific overridden tool - add `kover` block to the script file
-        block("kover", overriddenTool != null) {
-            writeTool(null)
+internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectExtension {
+
+    override var isDisabled: Boolean = false
+        set(value) {
+            writer.assign("isDisabled", value.toString())
+            field = value
         }
-        return
+
+    override fun useKoverToolDefault() {
+        writer.call("useKoverToolDefault")
     }
 
-    block("kover") {
-        writeDisabled(kover.isDisabled)
-        writeTool(kover.tool)
-        writeInstrumentation(kover.instrumentation)
-        writeFilters(kover.filters)
-        writeXmlReport(kover.xml)
-        writeVerify(kover.verify)
+    override fun useJacocoToolDefault() {
+        writer.call("useJacocoToolDefault")
+    }
+
+    override fun useKoverTool(version: String) {
+        writer.call("useKoverTool")
+    }
+
+    override fun useJacocoTool(version: String) {
+        writer.call("useJacocoTool")
+    }
+
+    override fun excludeTests(config: Action<KoverTestsExclusions>) {
+        writer.call("excludeTests", config) { KoverTestsExclusionsWriter(it) }
+    }
+
+    override fun excludeSources(config: Action<KoverSourcesExclusions>) {
+        writer.call("excludeSources", config) { KoverSourcesExclusionsWriter(it) }
+    }
+
+    override fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>) {
+        writer.call("excludeInstrumentation", config) { KoverInstrumentationExclusionsWriter(it) }
+    }
+
+}
+
+private class KoverTestsExclusionsWriter(private val writer: FormattedWriter) : KoverTestsExclusions {
+    override fun taskName(vararg name: String) {
+        taskName(name.asIterable())
+    }
+
+    override fun taskName(names: Iterable<String>) {
+        writer.callStr("taskName", names)
+    }
+
+    override fun kmpTargetName(vararg name: String) {
+        writer.callStr("kmpTargetName", name.asIterable())
     }
 }
 
-
-private fun FormattedScriptAppender.writeTool(toolFromConfig: CoverageToolVariant?) {
-    if (toolFromConfig == null && overriddenTool == null) return
-
-    val value = if (overriddenTool != null) {
-        val clazz =
-            if (overriddenTool == CoverageToolVendor.KOVER) KoverToolDefault::class else JacocoToolDefault::class
-        clazz.obj(language)
-    } else {
-        val clazz =
-            if (toolFromConfig!!.vendor == CoverageToolVendor.KOVER) KoverTool::class else JacocoTool::class
-        val new = if (language == ScriptLanguage.KOTLIN) {
-            clazz.qualifiedName
-        } else {
-            clazz.qualifiedName
+private class KoverSourcesExclusionsWriter(private val writer: FormattedWriter) : KoverSourcesExclusions {
+    override var excludeJavaCode: Boolean = false
+        set(value) {
+            writer.assign("excludeJavaCode", value.toString())
+            field = value
         }
-        "$new(\"${toolFromConfig.version}\")"
+
+    override fun jvmSourceSetName(vararg name: String) {
+        jvmSourceSetName(name.asIterable())
     }
 
-    line("tool".setProperty(value, language))
-}
-
-private fun FormattedScriptAppender.writeDisabled(isDisabled: Boolean?) {
-    if (isDisabled == null) return
-
-    if (language == ScriptLanguage.KOTLIN) {
-        line("isDisabled.set($isDisabled)")
-    } else {
-        line("disabled = $isDisabled")
-    }
-}
-
-private fun FormattedScriptAppender.writeFilters(state: TestKoverFiltersConfig) {
-    val classes = state.classes
-    val annotations = state.annotations
-    val sourceSets = state.sourceSets
-
-    block("filters", (sourceSets != null || classes != null || annotations != null)) {
-        block("classes", classes != null && (classes.excludes.isNotEmpty() || classes.includes.isNotEmpty())) {
-            writeClassFilterContent(classes!!)
-        }
-        block("annotations", annotations != null && annotations.excludes.isNotEmpty()) {
-            line("excludes".addAllList(annotations!!.excludes, language))
-        }
-        block("sourceSets", sourceSets != null) {
-            if (sourceSets!!.excludes.isNotEmpty()) {
-                line("excludes".addAllList(sourceSets.excludes, language))
-            }
-            line("excludeTests = " + sourceSets.excludeTests)
-        }
-    }
-}
-
-private fun FormattedScriptAppender.writeXmlReport(state: TestXmlConfig) {
-    val overrideFilters = state.overrideFilters
-
-    block("xmlReport", state.onCheck != null || state.reportFile != null || overrideFilters != null) {
-        block("overrideFilters", overrideFilters != null) {
-            val classFilter = overrideFilters?.classes
-            val annotations = overrideFilters?.annotations
-            block("classes", classFilter != null) {
-                writeClassFilterContent(classFilter!!)
-            }
-            block("annotations", annotations != null && annotations.excludes.isNotEmpty()) {
-                line("excludes".addAllList(annotations!!.excludes, language))
-            }
-        }
-    }
-}
-
-private fun FormattedScriptAppender.writeInstrumentation(state: KoverProjectInstrumentation) {
-    block("instrumentation", state.excludeTasks.isNotEmpty()) {
-        line("excludeTasks".addAllList(state.excludeTasks, language))
-    }
-}
-
-
-internal fun FormattedScriptAppender.writeClassFilterContent(classFilter: KoverClassFilter) {
-    if (classFilter.excludes.isNotEmpty()) {
-        line("excludes".addAllList(classFilter.excludes, language))
-    }
-    if (classFilter.includes.isNotEmpty()) {
-        line("includes".addAllList(classFilter.includes, language))
-    }
-}
-
-internal fun FormattedScriptAppender.writeVerify(conf: TestVerifyConfig) {
-    val onCheck = conf.onCheck
-    val rules = conf.rules
-
-    block("verify", onCheck != null || rules.isNotEmpty()) {
-        lineIf(onCheck != null, "onCheck".setProperty(onCheck.toString(), language))
-
-        blockForEach(rules, "rule") { rule ->
-            lineIf(rule.isEnabled != null, "isEnabled = ${rule.isEnabled}")
-            lineIf(rule.name != null, "name = ${rule.name?.asTextLiteral()}")
-            lineIf(rule.target != null, "target = ${rule.target?.enum(language)}")
-            block("overrideClassFilter", rule.overrideClassFilter != null) {
-                writeClassFilterContent(rule.overrideClassFilter!!)
-            }
-            block("overrideAnnotationFilter", rule.overrideAnnotationFilter != null) {
-                line("excludes".addAllList(rule.overrideAnnotationFilter!!.excludes, language))
-            }
-            blockForEach(rule.bounds, "bound") { bound ->
-                lineIf(bound.minValue != null, "minValue = ${bound.minValue}")
-                lineIf(bound.maxValue != null, "maxValue = ${bound.maxValue}")
-                lineIf(bound.counter != null, "counter = ${bound.counter?.enum(language)}")
-                lineIf(bound.valueType != null, "valueType = ${bound.valueType?.enum(language)}")
-            }
-        }
+    override fun jvmSourceSetName(names: Iterable<String>) {
+        writer.callStr("jvmSourceSetName", names)
     }
 
+    override fun kmpTargetName(vararg name: String) {
+        writer.callStr("kmpTargetName", name.asIterable())
+    }
+
+    override fun kmpCompilation(targetName: String, compilationName: String) {
+        writer.callStr("kmpCompilation", listOf(targetName, compilationName))
+    }
+
+    override fun kmpCompilation(compilationName: String) {
+        writer.callStr("kmpCompilation", listOf(compilationName))
+    }
 
 }
 
+private class KoverInstrumentationExclusionsWriter(private val writer: FormattedWriter) :
+    KoverInstrumentationExclusions {
+    override fun className(vararg name: String) {
+        className(name.asIterable())
+    }
 
+    override fun className(names: Iterable<String>) {
+        writer.callStr("className", names)
+    }
+
+    override fun packageName(vararg name: String) {
+        packageName(name.asIterable())
+    }
+
+    override fun packageName(names: Iterable<String>) {
+        writer.callStr("packageName", names)
+    }
+
+}

@@ -1,20 +1,20 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.api.*
+import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.starter.*
 
 internal class VerificationTests {
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testVerified() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
 
-            kover {
+            koverReport {
                 verify {
                     rule {
                         name = "test rule"
@@ -23,7 +23,7 @@ internal class VerificationTests {
                             maxValue = 60
                         }
                         bound {
-                            valueType = VerificationValueType.COVERED_COUNT
+                            aggregation = AggregationType.COVERED_COUNT
                             minValue = 2
                             maxValue = 10
                         }
@@ -37,10 +37,10 @@ internal class VerificationTests {
 
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testVerificationError() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("verification")
 
-            kover {
+            koverReport {
                 verify {
                     rule {
                         name = "counts rule"
@@ -49,43 +49,43 @@ internal class VerificationTests {
                             maxValue = 60
                         }
                         bound {
-                            valueType = VerificationValueType.COVERED_COUNT
+                            aggregation = AggregationType.COVERED_COUNT
                             minValue = 2
                             maxValue = 3
                         }
                     }
                     rule {
                         name = "fully uncovered instructions by classes"
-                        target = VerificationTarget.CLASS
+                        entity = GroupingEntityType.CLASS
                         bound {
-                            counter = CounterType.INSTRUCTION
-                            valueType = VerificationValueType.MISSED_PERCENTAGE
+                            metric = MetricType.INSTRUCTION
+                            aggregation = AggregationType.MISSED_PERCENTAGE
                             minValue = 100
                         }
                     }
                     rule {
                         name = "fully covered instructions by packages"
-                        target = VerificationTarget.PACKAGE
+                        entity = GroupingEntityType.PACKAGE
                         bound {
-                            counter = CounterType.INSTRUCTION
-                            valueType = VerificationValueType.COVERED_PERCENTAGE
+                            metric = MetricType.INSTRUCTION
+                            aggregation = AggregationType.COVERED_PERCENTAGE
                             minValue = 100
                         }
                     }
                     rule {
                         name = "branches by classes"
-                        target = VerificationTarget.CLASS
+                        entity = GroupingEntityType.CLASS
                         bound {
-                            counter = CounterType.BRANCH
-                            valueType = VerificationValueType.COVERED_COUNT
+                            metric = MetricType.BRANCH
+                            aggregation = AggregationType.COVERED_COUNT
                             minValue = 1000
                         }
                     }
                     rule {
                         name = "missed packages"
-                        target = VerificationTarget.PACKAGE
+                        entity = GroupingEntityType.PACKAGE
                         bound {
-                            valueType = VerificationValueType.MISSED_COUNT
+                            aggregation = AggregationType.MISSED_COUNT
                             maxValue = 1
                         }
                     }
@@ -122,26 +122,27 @@ Rule 'missed packages' violated:
   lines missed count for package 'org.jetbrains.kover.test.functional.verification.subpackage' is 24, but expected maximum is 1
 """)
 
-                assertJaCoCoResult("""Rule violated for bundle :: lines covered count is 41, but expected maximum is 3
-Rule violated for bundle :: lines covered ratio is 0.46, but expected minimum is 0.58
-Rule violated for class org.jetbrains.kover.test.functional.verification.FullyCovered: branches covered count is 0, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.FullyCovered: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst: branches covered count is 2, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond: branches covered count is 1, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.Uncovered: branches covered count is 0, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered: branches covered count is 0, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst: branches covered count is 0, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond: branches covered count is 1, but expected minimum is 1000
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond: instructions missed ratio is 0, but expected minimum is 1
-Rule violated for class org.jetbrains.kover.test.functional.verification.subpackage.SubUncovered: branches covered count is 0, but expected minimum is 1000
-Rule violated for package org.jetbrains.kover.test.functional.verification.subpackage: instructions covered ratio is 0, but expected minimum is 1
-Rule violated for package org.jetbrains.kover.test.functional.verification.subpackage: lines missed count is 24, but expected maximum is 1
-Rule violated for package org.jetbrains.kover.test.functional.verification: instructions covered ratio is 0, but expected minimum is 1
-Rule violated for package org.jetbrains.kover.test.functional.verification: lines missed count is 23, but expected maximum is 1""")
+                assertJaCoCoResult("""Rule violated: lines covered percentage is 46.00, but expected minimum is 58.00
+Rule violated: lines covered count is 41, but expected maximum is 3
+Rule violated: instructions covered percentage for package 'org.jetbrains.kover.test.functional.verification' is 0, but expected minimum is 100
+Rule violated: lines missed count for package 'org.jetbrains.kover.test.functional.verification' is 23, but expected maximum is 1
+Rule violated: instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond' is 0, but expected minimum is 100
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond' is 1, but expected minimum is 1000
+Rule violated: instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.FullyCovered' is 0, but expected minimum is 100
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.FullyCovered' is 0, but expected minimum is 1000
+Rule violated: instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst' is 0, but expected minimum is 100
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst' is 2, but expected minimum is 1000
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.Uncovered' is 0, but expected minimum is 1000
+Rule violated: instructions covered percentage for package 'org.jetbrains.kover.test.functional.verification.subpackage' is 0, but expected minimum is 100
+Rule violated: lines missed count for package 'org.jetbrains.kover.test.functional.verification.subpackage' is 24, but expected maximum is 1
+Rule violated: instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst' is 0, but expected minimum is 100
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst' is 0, but expected minimum is 1000
+Rule violated: instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond' is 0, but expected minimum is 100
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond' is 1, but expected minimum is 1000
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubUncovered' is 0, but expected minimum is 1000
+Rule violated: instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered' is 0, but expected minimum is 100
+Rule violated: branches covered count for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered' is 0, but expected minimum is 1000
+""")
             }
         }
     }

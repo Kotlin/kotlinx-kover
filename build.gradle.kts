@@ -130,8 +130,8 @@ gradlePlugin {
     plugins {
         create("Kover") {
             id = "org.jetbrains.kotlinx.kover"
-            implementationClass = "kotlinx.kover.KoverPlugin"
-            displayName = "Kotlin Code Coverage Plugin"
+            implementationClass = "kotlinx.kover.gradle.plugin.KoverGradlePlugin"
+            displayName = "Gradle Plugin for Kotlin Code Coverage Tools"
             description = "Evaluate code coverage for projects written in Kotlin"
         }
     }

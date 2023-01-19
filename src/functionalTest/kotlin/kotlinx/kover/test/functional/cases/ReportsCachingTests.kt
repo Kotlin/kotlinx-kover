@@ -2,29 +2,28 @@ package kotlinx.kover.test.functional.cases
 
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.starter.*
-import org.gradle.testkit.runner.*
 
 internal class ReportsCachingTests {
     @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testCaching() {
         useLocalCache()
 
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
         }
-        run("koverReport", "--build-cache") {
-            checkDefaultBinaryReport()
+        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
+            checkDefaultRawReport()
             checkDefaultReports()
             checkOutcome("test", "SUCCESS")
             checkOutcome("koverXmlReport", "SUCCESS")
             checkOutcome("koverHtmlReport", "SUCCESS")
         }
         run("clean", "--build-cache") {
-            checkDefaultBinaryReport(false)
+            checkDefaultRawReport(false)
             checkDefaultReports(false)
         }
-        run("koverReport", "--build-cache") {
-            checkDefaultBinaryReport()
+        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
+            checkDefaultRawReport()
             checkDefaultReports()
             checkOutcome("test", "FROM-CACHE")
             checkOutcome("koverXmlReport", "FROM-CACHE")
@@ -36,22 +35,22 @@ internal class ReportsCachingTests {
     fun BuildConfigurator.testProjectReportCaching() {
         useLocalCache()
 
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
         }
-        run("koverReport", "--build-cache") {
-            checkDefaultBinaryReport()
+        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
+            checkDefaultRawReport()
             checkDefaultReports()
             checkOutcome("test", "SUCCESS")
             checkOutcome("koverXmlReport", "SUCCESS")
             checkOutcome("koverHtmlReport", "SUCCESS")
         }
         run("clean", "--build-cache") {
-            checkDefaultBinaryReport(false)
+            checkDefaultRawReport(false)
             checkDefaultReports(false)
         }
-        run("koverReport", "--build-cache") {
-            checkDefaultBinaryReport()
+        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
+            checkDefaultRawReport()
             checkDefaultReports()
             checkOutcome("test", "FROM-CACHE")
             checkOutcome("koverXmlReport", "FROM-CACHE")

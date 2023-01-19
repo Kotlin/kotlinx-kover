@@ -1,13 +1,13 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.checker
 
-import kotlinx.kover.api.*
+import kotlinx.kover.gradle.plugin.commons.*
+import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.runner.*
-import kotlinx.kover.tools.commons.*
 import org.opentest4j.*
 import org.w3c.dom.*
 import java.io.*
@@ -62,10 +62,10 @@ internal abstract class CheckerContextWrapper(private val origin: CheckerContext
         get() = origin.output
     override val buildScript: String
         get() = origin.buildScript
-    override val pluginType: KotlinPluginType?
-        get() = origin.pluginType
-    override val defaultBinaryReport: String
-        get() = origin.defaultBinaryReport
+    override val kotlinPlugin: AppliedKotlinPlugin
+        get() = origin.kotlinPlugin
+    override val defaultRawReport: String
+        get() = origin.defaultRawReport
 
     override fun prepare(buildErrorExpected: Boolean) = origin.prepare(buildErrorExpected)
 
@@ -105,12 +105,8 @@ internal abstract class CheckerContextWrapper(private val origin: CheckerContext
         origin.checkDefaultReports(mustExist)
     }
 
-    override fun checkDefaultMergedReports(mustExist: Boolean) {
-        origin.checkDefaultMergedReports(mustExist)
-    }
-
-    override fun checkDefaultBinaryReport(mustExist: Boolean) {
-        origin.checkDefaultBinaryReport(mustExist)
+    override fun checkDefaultRawReport(mustExist: Boolean) {
+        origin.checkDefaultRawReport(mustExist)
     }
 
 }
@@ -120,20 +116,20 @@ private class CheckerContextImpl(
     val result: BuildResult,
     val path: String
 ) : CheckerContext {
-    val projectDir: File = rootDir.sub(path.removeSuffix(":").replace(':', '/'));
-    val buildDir: File = projectDir.sub("build")
+    val projectDir: File = rootDir.resolve(path.removePrefix(":").replace(':', '/'));
+    val buildDir: File = projectDir.resolve("build")
     val buildFile: File = projectDir.buildFile()
 
     override val buildScript: String = buildFile.readText()
     override val language = if (buildFile.name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
-    override val pluginType = buildScript.kotlinPluginType(language)
+    override val kotlinPlugin = buildScript.kotlinPluginType(language)
     override val output: String = result.output
     override val definedKoverVersion: String? = buildScript.definedKoverVersion()
     override val toolVariant: CoverageToolVariant = buildScript.definedTool() ?: KoverToolDefault
 
-    override val defaultBinaryReport: String
+    override val defaultRawReport: String
         get() {
-            return binaryReportsDirectory + "/" + defaultTestTaskName(pluginType!!) + "." + toolVariant.vendor.reportFileExtension
+            return rawReportsDirectory + "/" + defaultTestTaskName(kotlinPlugin.type!!) + "." + toolVariant.vendor.rawReportExtension
         }
 
     override fun prepare(buildErrorExpected: Boolean) {
@@ -183,39 +179,32 @@ private class CheckerContextImpl(
     }
 
     override fun file(name: String, checker: File.() -> Unit) {
-        buildDir.sub(name).checker()
+        buildDir.resolve(name).checker()
     }
 
     override fun xml(filename: String, checker: XmlReportChecker.() -> Unit) {
-        val xmlFile = buildDir.sub(filename)
+        val xmlFile = buildDir.resolve(filename)
         if (!xmlFile.exists()) throw IllegalStateException("XML file '$filename' not found")
         XmlReportCheckerImpl(this, xmlFile).checker()
     }
 
     override fun verification(checker: VerifyReportChecker.() -> Unit) {
-        val verificationResultFile = buildDir.sub(verificationErrorFile)
+        val verificationResultFile = buildDir.resolve(verificationErrorFile)
         if (!verificationResultFile.exists()) throw IllegalStateException("Verification result file '$verificationResultFile' not found")
         VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
     }
 
-    override fun checkDefaultBinaryReport(mustExist: Boolean) {
+    override fun checkDefaultRawReport(mustExist: Boolean) {
         if (mustExist) {
-            file(defaultBinaryReport) {
-                assertTrue { exists() }
-                assertTrue { length() > 0 }
+            file(defaultRawReport) {
+                assertTrue(exists(), "Default raw report is not exists: $defaultRawReport")
+                assertTrue(length() > 0, "Default raw report is empty: $defaultRawReport")
             }
         } else {
-            file(defaultBinaryReport) {
-                assertFalse { exists() }
+            file(defaultRawReport) {
+                assertFalse(exists(), "Default raw report mustn't be exists: $defaultRawReport" )
             }
         }
-    }
-
-    override fun checkDefaultMergedReports(mustExist: Boolean) {
-        checkReports(
-            defaultMergedXmlReport(),
-            defaultMergedHtmlReport(), mustExist
-        )
     }
 
     override fun checkDefaultReports(mustExist: Boolean) {
@@ -240,19 +229,19 @@ private class CheckerContextImpl(
     override fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
         if (mustExist) {
             file(xmlPath) {
-                assertTrue("XML file must exist '$xmlPath'") { exists() }
-                assertTrue { length() > 0 }
+                assertTrue(exists(), "XML file must exist '$xmlPath'")
+                assertTrue(length() > 0, "XML file mustn't be empty '$xmlPath'")
             }
             file(htmlPath) {
-                assertTrue { exists() }
-                assertTrue { isDirectory }
+                assertTrue(exists(), "HTML report must exists '$htmlPath'")
+                assertTrue(isDirectory, "HTML report must be directory '$htmlPath'" )
             }
         } else {
             file(xmlPath) {
-                assertFalse { exists() }
+                assertFalse(exists(), "XML file mustn't exist '$xmlPath'")
             }
             file(htmlPath) {
-                assertFalse { exists() }
+                assertFalse(exists(), "HTML report mustn't exists '$htmlPath'")
             }
         }
     }
@@ -305,20 +294,20 @@ private val jacocoToolRegex = """JacocoTool\s*\(\s*["']([^"^']+)["']\s*\)""".toR
 private val includeRegex = """include\s*\(\s*["']([^"']+)["']\s*\)""".toRegex()
 
 private fun File.buildFile(): File {
-    var file = this.sub("build.gradle")
+    var file = this.resolve("build.gradle")
     if (file.exists() && file.isFile) return file
 
-    file = this.sub("build.gradle.kts")
+    file = this.resolve("build.gradle.kts")
     if (file.exists() && file.isFile) return file
 
     throw IllegalStateException("Build file not found")
 }
 
 private fun File.settings(): String {
-    var file = this.sub("build.gradle")
+    var file = this.resolve("build.gradle")
     if (file.exists() && file.isFile) return file.readText()
 
-    file = this.sub("build.gradle.kts")
+    file = this.resolve("build.gradle.kts")
     if (file.exists() && file.isFile) return file.readText()
 
     throw Exception("Gradle settings file not found")
@@ -341,18 +330,18 @@ private fun String.detectSubprojects(rootPath: String): Map<String, String> {
     return result
 }
 
-private fun String.kotlinPluginType(language: ScriptLanguage): KotlinPluginType? {
+private fun String.kotlinPluginType(language: ScriptLanguage): AppliedKotlinPlugin {
     return if (language == ScriptLanguage.KOTLIN) {
         when {
-            contains("""kotlin("jvm")""") -> KotlinPluginType.JVM
-            contains("""kotlin("multiplatform")""") -> KotlinPluginType.MULTIPLATFORM
-            else -> null
+            contains("""kotlin("jvm")""") -> AppliedKotlinPlugin(KotlinPluginType.JVM)
+            contains("""kotlin("multiplatform")""") -> AppliedKotlinPlugin(KotlinPluginType.MULTI_PLATFORM)
+            else -> AppliedKotlinPlugin(null)
         }
     } else {
         when {
-            contains("""org.jetbrains.kotlin.jvm""") -> KotlinPluginType.JVM
-            contains("""org.jetbrains.kotlin.multiplatform""") -> KotlinPluginType.MULTIPLATFORM
-            else -> null
+            contains("""org.jetbrains.kotlin.jvm""") -> AppliedKotlinPlugin(KotlinPluginType.JVM)
+            contains("""org.jetbrains.kotlin.multiplatform""") -> AppliedKotlinPlugin(KotlinPluginType.MULTI_PLATFORM)
+            else -> AppliedKotlinPlugin(null)
         }
     }
 }
@@ -405,7 +394,7 @@ private class XmlReportCheckerImpl(val context: CheckerContextImpl, file: File) 
                 )
             }
 
-        return CounterImpl(context, className, type, values)
+        return CounterImpl(className, type, values)
     }
 
     override fun methodCounter(className: String, methodName: String, type: String): Counter {
@@ -426,7 +415,7 @@ private class XmlReportCheckerImpl(val context: CheckerContextImpl, file: File) 
                 )
             }
 
-        return CounterImpl(context, "$className#$methodName", type, values)
+        return CounterImpl("$className#$methodName", type, values)
     }
 }
 
@@ -458,7 +447,6 @@ private fun Element.filter(tag: String, attributeName: String, attributeValue: S
 private data class CounterValues(val missed: Int, val covered: Int)
 
 private class CounterImpl(
-    val context: CheckerContextImpl,
     val symbol: String,
     val type: String,
     val values: CounterValues?

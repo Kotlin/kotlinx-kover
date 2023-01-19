@@ -6,43 +6,19 @@ import kotlinx.kover.test.functional.framework.starter.*
 internal class TasksOrderingTests {
     @GeneratedTest
     fun BuildConfigurator.testProjectTasks() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
-            kover {
+            koverReport {
                 verify {
                     rule {
-                        bound {
-                            minValue = 100
-                        }
+                        minBound(100)
                     }
                 }
             }
         }
-        runWithError("koverVerify", "koverReport") {
+        runWithError("koverVerify", "koverXmlReport", "koverHtmlReport") {
             // reports should be generated even if verification failed with an error
             checkDefaultReports()
         }
     }
-
-    @GeneratedTest
-    fun BuildConfigurator.testMergedTasks() {
-        addKoverProject {
-            sourcesFrom("simple")
-            koverMerged {
-                enable()
-                verify {
-                    rule {
-                        bound {
-                            minValue = 100
-                        }
-                    }
-                }
-            }
-        }
-        runWithError("koverMergedVerify", "koverMergedReport") {
-            // reports should be generated even if verification failed with an error
-            checkDefaultMergedReports()
-        }
-    }
-
 }

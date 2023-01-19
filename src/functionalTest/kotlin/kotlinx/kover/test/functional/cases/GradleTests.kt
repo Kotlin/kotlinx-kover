@@ -1,10 +1,9 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.cases
 
-import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.runner.*
 import kotlinx.kover.test.functional.framework.starter.SimpleTest
 import java.io.*
@@ -17,8 +16,8 @@ class GradleTests {
      */
     @SimpleTest
     fun File.test() {
-        sub("build.gradle.kts").writeText("""""")
-        sub("settings.gradle.kts").writeText("""rootProject.name = "empty-project"""")
+        resolve("build.gradle.kts").writeText("""""")
+        resolve("settings.gradle.kts").writeText("""rootProject.name = "empty-project"""")
 
         val result = runGradleBuild(listOf("tasks"))
         val buildLog = result.output

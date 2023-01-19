@@ -1,93 +1,103 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.writer
 
+import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import java.io.*
 
-internal fun File.writeBuildScript(projectConfig: TestProjectConfig, slice: BuildSlice) {
-    this.writeScript(slice.language, slice.type, slice.toolVendor) {
-        writePlugins(projectConfig.plugins)
+internal fun File.writeBuildScript(projectConfig: TestProjectConfigurator, slice: BuildSlice) {
+    this.writeScript {
+        writePlugins(projectConfig.plugins, slice)
         writeRepositories(projectConfig.repositories)
-        writeDependencies(projectConfig.projectDependencies)
-        writeKover(projectConfig.kover)
-        writeKoverMerged(projectConfig.merged)
-        writeTestTasks(projectConfig.testTasks)
+        writeDependencies(projectConfig.projectDependencies, slice)
+        writeBlocks(projectConfig.rawBlocks)
+        writeOverriddenTool(slice)
     }
 }
 
-private fun FormattedScriptAppender.writePlugins(plugins: TestPluginsConfig) {
-    block("plugins", plugins.useKotlin || plugins.useKover) {
-        lineIf(plugins.useKotlin) {
+private fun FormattedWriter.writePlugins(plugins: PluginsConfiguratorImpl, slice: BuildSlice) {
+    if (!plugins.useKotlin && !plugins.useKover) return
+
+    val (language, type) = slice
+
+    call("plugins") {
+        if (plugins.useKotlin) {
             val name = when {
                 language == ScriptLanguage.GROOVY && type == KotlinPluginType.JVM -> """id "org.jetbrains.kotlin.jvm""""
-                language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTIPLATFORM -> """id "org.jetbrains.kotlin.multiplatform""""
+                language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTI_PLATFORM -> """id "org.jetbrains.kotlin.multiplatform""""
                 language == ScriptLanguage.KOTLIN && type == KotlinPluginType.JVM -> """kotlin("jvm")"""
-                language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTIPLATFORM -> """kotlin("multiplatform")"""
+                language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTI_PLATFORM -> """kotlin("multiplatform")"""
                 else -> throw Exception("Unsupported test combination: language $language and project type $type")
             }
             val version = plugins.kotlinVersion?.let { """version "$it"""" } ?: ""
-            "$name $version"
+            line("$name $version")
         }
 
-        lineIf(plugins.useKover) {
+        if (plugins.useKover) {
             val name = if (language == ScriptLanguage.KOTLIN) {
                 """id("org.jetbrains.kotlinx.kover")"""
             } else {
                 """id "org.jetbrains.kotlinx.kover""""
             }
             val version = plugins.koverVersion?.let { """version "$it"""" } ?: ""
-            "$name $version"
+            line("$name $version")
         }
     }
 }
 
-private fun FormattedScriptAppender.writeRepositories(repositories: List<String>) {
-    blockForEach(repositories, "repositories", repositories.isNotEmpty()) { repository ->
-        line(repository)
+private fun FormattedWriter.writeRepositories(repositories: List<String>) {
+    if (repositories.isEmpty()) return
+
+    call("repositories") {
+        repositories.forEach { line(it) }
     }
 }
 
-private fun FormattedScriptAppender.writeDependencies(projectDependencies: List<String>) {
-    val subprojectsPart = projectDependencies.joinToString(separator = "\n") {
-        if (language == ScriptLanguage.KOTLIN) "implementation(project(\"$it\"))" else "implementation project('$it')"
+private fun FormattedWriter.writeDependencies(koverDependencies: List<String>, slice: BuildSlice) {
+    val (language, type) = slice
+
+    val subprojectsPart = koverDependencies.joinToString(separator = "\n") {
+        "implementation(project(\"$it\"))"
     }
 
     val template = when {
         language == ScriptLanguage.GROOVY && type == KotlinPluginType.JVM -> GROOVY_JVM_DEPS
-        language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTIPLATFORM -> GROOVY_KMP_DEPS
+        language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTI_PLATFORM -> GROOVY_KMP_DEPS
         language == ScriptLanguage.KOTLIN && type == KotlinPluginType.JVM -> KOTLIN_JVM_DEPS
-        language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTIPLATFORM -> KOTLIN_KMP_DEPS
+        language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTI_PLATFORM -> KOTLIN_KMP_DEPS
         else -> throw Exception("Unsupported test combination: language $language and project type $type")
     }
     template.replace(DEPS_PLACEHOLDER, subprojectsPart).lines().forEach {
         line(it)
     }
+
+    if (koverDependencies.isNotEmpty()) {
+        call("dependencies") {
+            koverDependencies.forEach {
+                line("kover(project(\"$it\"))")
+            }
+        }
+    }
 }
 
-private fun FormattedScriptAppender.writeTestTasks(state: TestTaskConfig) {
-    val testTaskName = when {
-        type == KotlinPluginType.JVM -> "test"
-        type == KotlinPluginType.MULTIPLATFORM && language == ScriptLanguage.KOTLIN -> "named(\"jvmTest\").configure"
-        type == KotlinPluginType.MULTIPLATFORM -> "jvmTest"
-        else -> throw Exception("Project with type $type and language $language not supported for test task configuring")
+private fun FormattedWriter.writeBlocks(rawBlocks: List<String>) {
+    rawBlocks.forEach {
+        text(it)
     }
+}
 
-    block("tasks.$testTaskName", state.excludes != null || state.includes != null) {
-        val extension =
-            if (language == ScriptLanguage.KOTLIN) "extensions.configure(kotlinx.kover.api.KoverTaskExtension::class)" else "kover"
-        block(extension) {
-            lineIf(state.excludes != null) {
-                val excludesString = state.excludes!!.joinToString(separator = ",") { "\"$it\"" }
-                "excludes.addAll($excludesString)"
-            }
-            lineIf(state.includes != null) {
-                val includesString = state.includes!!.joinToString(separator = ",") { "\"$it\"" }
-                "includes.addAll($includesString)"
-            }
+private fun FormattedWriter.writeOverriddenTool(slice: BuildSlice) {
+    val vendor = slice.toolVendor ?: return
+
+    call("kover") {
+        val koverWriter = KoverWriter(this)
+        when (vendor) {
+            CoverageToolVendor.KOVER -> koverWriter.useKoverToolDefault()
+            CoverageToolVendor.JACOCO -> koverWriter.useJacocoToolDefault()
         }
     }
 }

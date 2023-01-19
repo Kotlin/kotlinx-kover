@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.runner
@@ -31,10 +31,10 @@ ${this.buildScript()}
 }
 
 private fun File.buildScript(): String {
-    var file = File(this, "build.gradle")
+    var file = this.resolve("build.gradle")
     if (file.exists() && file.isFile) return file.readText()
 
-    file = File(this, "build.gradle.kts")
+    file = this.resolve("build.gradle.kts")
     if (file.exists() && file.isFile) return file.readText()
 
     return ""

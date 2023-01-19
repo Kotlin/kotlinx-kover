@@ -6,18 +6,14 @@ import kotlinx.kover.test.functional.framework.starter.*
 internal class ConfigurationCacheTests {
     @GeneratedTest
     fun BuildConfigurator.testConfigCache() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
-            koverMerged {
-                enable()
-            }
         }
 
         run(
             "build",
-            "koverMergedReport",
-            "koverMergedVerify",
-            "koverReport",
+            "koverXmlReport",
+            "koverHtmlReport",
             "koverVerify",
             "--configuration-cache"
         )

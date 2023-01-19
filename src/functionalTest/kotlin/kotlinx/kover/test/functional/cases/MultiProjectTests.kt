@@ -9,21 +9,17 @@ internal class MultiProjectTests {
 
     @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testMergedReports() {
-        addKoverProject(subprojectPath) {
+        addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
         }
 
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("multiproject-user")
-            dependencyOnProject(subprojectPath)
-
-            koverMerged {
-                enable()
-            }
+            dependencyKover(subprojectPath)
         }
 
-        run(":koverMergedXmlReport") {
-            xml(defaultMergedXmlReport()) {
+        run(":koverXmlReport", ":koverHtmlReport") {
+            xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.CommonClass").assertFullyCovered()
                 classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()
                 classCounter("org.jetbrains.UserClass").assertFullyCovered()
@@ -33,22 +29,16 @@ internal class MultiProjectTests {
 
     @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testIsolatedProjectsReports() {
-        addKoverProject(subprojectPath) {
+        addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
         }
 
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("multiproject-user")
-            dependencyOnProject(subprojectPath)
+            dependencyKover(subprojectPath)
         }
 
         run("koverXmlReport") {
-            xml(defaultXmlReport()) {
-                classCounter("org.jetbrains.CommonClass").assertAbsent()
-                classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
-                classCounter("org.jetbrains.UserClass").assertFullyCovered()
-            }
-
             subproject(subprojectPath) {
                 xml(defaultXmlReport()) {
                     classCounter("org.jetbrains.UserClass").assertAbsent()
@@ -63,30 +53,30 @@ internal class MultiProjectTests {
 
     @SlicedGeneratedTest(allTypes = true, allTools = true)
     fun BuildConfigurator.testDisabledKover() {
-        addKoverProject(subprojectPath) {
+        addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
                 isDisabled = true
             }
         }
 
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("multiproject-user")
-            dependencyOnProject(subprojectPath)
+            dependencyKover(subprojectPath)
             kover {
                 isDisabled = true
             }
         }
 
-        run("koverReport", "koverVerify") {
-            checkDefaultBinaryReport(false)
+        run("koverXmlReport", "koverHtmlReport", "koverVerify") {
+            checkDefaultRawReport(false)
 
             checkOutcome("koverHtmlReport", "SKIPPED")
             checkOutcome("koverXmlReport", "SKIPPED")
             checkOutcome("koverVerify", "SKIPPED")
 
             subproject(subprojectPath) {
-                checkDefaultBinaryReport(false)
+                checkDefaultRawReport(false)
                 checkOutcome("koverHtmlReport", "SKIPPED")
                 checkOutcome("koverXmlReport", "SKIPPED")
                 checkOutcome("koverVerify", "SKIPPED")
@@ -95,81 +85,38 @@ internal class MultiProjectTests {
     }
 
     @SlicedGeneratedTest(allTypes = true, allTools = true)
-    fun BuildConfigurator.testExcludeProject() {
-        addKoverProject(subprojectPath) {
+    fun SlicedBuildConfigurator.testDisabledTestTasks() {
+        addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
-        }
-
-        addKoverProject {
-            sourcesFrom("multiproject-user")
-            dependencyOnProject(subprojectPath)
-
-            koverMerged {
-                enable()
-                filters {
-                    projects {
-                        excludes += subprojectPath.removePrefix(":")
-                    }
+            kover {
+                excludeTests{
+                    taskName(defaultTestTaskName(slice.type))
                 }
             }
         }
 
-        run("koverMergedReport") {
-            checkDefaultBinaryReport()
-            checkDefaultReports(false)
-            checkDefaultMergedReports()
-            xml(defaultMergedXmlReport()) {
-                classCounter("org.jetbrains.UserClass").assertFullyCovered()
-
-                // classes from disabled project should not be included in the merged report
-                classCounter("org.jetbrains.CommonClass").assertAbsent()
-                classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
-            }
-
-            subproject(subprojectPath) {
-                checkDefaultBinaryReport(false)
-                checkDefaultMergedReports(false)
-                checkDefaultReports(false)
-            }
-        }
-    }
-
-    @SlicedGeneratedTest(allTypes = true, allTools = true)
-    fun BuildConfigurator.testExcludeProjectByPath() {
-        addKoverProject(subprojectPath) {
-            sourcesFrom("multiproject-common")
-        }
-
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("multiproject-user")
-            dependencyOnProject(subprojectPath)
-
-            koverMerged {
-                enable()
-                filters {
-                    projects {
-                        excludes += subprojectPath
-                    }
+            dependencyKover(subprojectPath)
+            kover {
+                excludeTests{
+                    taskName(defaultTestTaskName(slice.type))
                 }
             }
         }
 
-        run("koverMergedReport") {
-            checkDefaultBinaryReport()
-            checkDefaultReports(false)
-            checkDefaultMergedReports()
-            xml(defaultMergedXmlReport()) {
-                classCounter("org.jetbrains.UserClass").assertFullyCovered()
+        run("koverXmlReport", "koverHtmlReport", "koverVerify") {
+            checkDefaultRawReport(false)
 
-                // classes from disabled project should not be included in the merged report
-                classCounter("org.jetbrains.CommonClass").assertAbsent()
-                classCounter("org.jetbrains.CommonInternalClass").assertAbsent()
-            }
+            checkOutcome("koverHtmlReport", "SKIPPED")
+            checkOutcome("koverXmlReport", "SKIPPED")
+            checkOutcome("koverVerify", "SKIPPED")
 
             subproject(subprojectPath) {
-                checkDefaultBinaryReport(false)
-                checkDefaultMergedReports(false)
-                checkDefaultReports(false)
+                checkDefaultRawReport(false)
+                checkOutcome("koverHtmlReport", "SKIPPED")
+                checkOutcome("koverXmlReport", "SKIPPED")
+                checkOutcome("koverVerify", "SKIPPED")
             }
         }
     }
@@ -178,9 +125,9 @@ internal class MultiProjectTests {
     Test on error-fix "Kover plugin not applied in projects" when there are empty nested subproject.
     Issue https://github.com/Kotlin/kotlinx-kover/issues/222
      */
-    @TemplateTest("nested-project", [":koverMergedReport"])
+    @TemplateTest("nested-project", [":koverXmlReport"])
     fun CheckerContext.testNestedProjectInsideEmptyProject() {
         checkOutcome(":subprojects:alpha-project:test", "SUCCESS")
-        checkOutcome(":koverMergedReport", "SUCCESS")
+        checkOutcome(":koverXmlReport", "SUCCESS")
     }
 }

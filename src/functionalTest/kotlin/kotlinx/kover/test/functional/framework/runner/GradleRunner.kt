@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.runner
@@ -56,7 +56,7 @@ internal class BuildResult(exitCode: Int, private val logFile: File) {
 }
 
 private fun getWrapper(version: String): File {
-    val wrapperDir = wrappersRoot.sub(version)
+    val wrapperDir = wrappersRoot.resolve(version)
     if (!wrapperDir.exists()) throw Exception("Wrapper for Gradle version '$version' is not supported by functional tests")
     return wrapperDir
 }
@@ -67,7 +67,7 @@ internal fun File.buildGradleByShell(
     gradleCommands: List<String>,
     env: Map<String, String>
 ): BuildResult {
-    val logFile = this.sub("build-$runIndex.log")
+    val logFile = this.resolve("build-$runIndex.log")
 
     val commands = buildSystemCommand(this, gradleCommands)
 

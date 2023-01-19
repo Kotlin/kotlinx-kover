@@ -8,13 +8,15 @@ internal class ReportsFilteringTests {
 
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testExclude() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
 
-            kover {
+            koverReport {
                 filters {
-                    classes {
-                        excludes += "org.jetbrains.*Exa?ple*"
+                    excludes {
+                        classes {
+                            className("org.jetbrains.*Exa?ple*")
+                        }
                     }
                 }
             }
@@ -29,16 +31,24 @@ internal class ReportsFilteringTests {
 
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testExcludeInclude() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
 
-            kover {
+            koverReport {
                 filters {
-                    classes {
-                        excludes += "org.jetbrains.*Exa?ple*"
-                        includes += "org.jetbrains.*Cla?s"
+                    excludes {
+                        classes {
+                            className("org.jetbrains.*Exa?ple*")
+                        }
+                    }
+
+                    includes {
+                        classes {
+                            className("org.jetbrains.*Cla?s")
+                        }
                     }
                 }
+
             }
         }
         run("koverXmlReport") {

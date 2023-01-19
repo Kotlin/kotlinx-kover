@@ -9,90 +9,19 @@ internal class InstrumentationFilteringTests {
 
     @SlicedGeneratedTest(all = true)
     fun BuildConfigurator.testExclude() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
-            testTasks {
-                excludes("org.jetbrains.*Exa?ple*")
-            }
-        }
 
-        run("build", "koverXmlReport") {
-            xml(defaultXmlReport()) {
-                classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
-                classCounter("org.jetbrains.SecondClass").assertCovered()
-            }
-        }
-    }
-
-    @SlicedGeneratedTest(all = true)
-    fun BuildConfigurator.testExcludeInclude() {
-        addKoverProject {
-            sourcesFrom("simple")
-            testTasks {
-                includes("org.jetbrains.*Cla?s")
-                excludes("org.jetbrains.*Exa?ple*")
-            }
-        }
-        run("build", "koverXmlReport") {
-            xml(defaultXmlReport()) {
-                classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
-                classCounter("org.jetbrains.Unused").assertFullyMissed()
-                classCounter("org.jetbrains.SecondClass").assertCovered()
-            }
-        }
-    }
-
-    @SlicedGeneratedTest(all = true)
-    fun BuildConfigurator.testExcludeByKoverExtension() {
-        addKoverProject {
-            sourcesFrom("simple")
             kover {
-                filters {
-                    classes {
-                        excludes += "org.jetbrains.*Exa?ple*"
-                    }
-                }
-                xmlReport {
-                    overrideFilters {
-                        classes {
-                            // override class filter (discard all rules) to in order for all classes to be included in the report
-                        }
-                    }
+                excludeInstrumentation {
+                    className("org.jetbrains.*Exa?ple*")
                 }
             }
         }
-        run("build", "koverXmlReport") {
-            xml(defaultXmlReport()) {
-                classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
-                classCounter("org.jetbrains.SecondClass").assertCovered()
-            }
-        }
-    }
 
-    @SlicedGeneratedTest(all = true)
-    fun BuildConfigurator.testExcludeIncludeByKoverExtension() {
-        addKoverProject {
-            sourcesFrom("simple")
-            kover {
-                filters {
-                    classes {
-                        includes += "org.jetbrains.*Cla?s"
-                        excludes += "org.jetbrains.*Exa?ple*"
-                    }
-                }
-                xmlReport {
-                    overrideFilters {
-                        classes {
-                            // override class filter (discard all rules) to in order for all classes to be included in the report
-                        }
-                    }
-                }
-            }
-        }
         run("build", "koverXmlReport") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
-                classCounter("org.jetbrains.Unused").assertFullyMissed()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
             }
         }
@@ -100,17 +29,17 @@ internal class InstrumentationFilteringTests {
 
     @SlicedGeneratedTest(all = true)
     fun SlicedBuildConfigurator.testDisableInstrumentationOfTask() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
             kover {
-                instrumentation {
-                    excludeTasks += defaultTestTaskName(slice.type)
+                excludeTests {
+                    taskName(defaultTestTaskName(slice.type))
                 }
             }
         }
         run("koverXmlReport") {
-            // if task `test` is excluded from instrumentation then the binary report is not created for it
-            checkDefaultBinaryReport(false)
+            // if task `test` is excluded from instrumentation then the raw report is not created for it
+            checkDefaultRawReport(false)
         }
     }
 

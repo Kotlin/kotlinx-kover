@@ -1,15 +1,15 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.starter
 
 import kotlinx.kover.api.*
+import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.test.functional.framework.common.*
 import kotlinx.kover.test.functional.framework.configurator.*
 import kotlinx.kover.test.functional.framework.runner.*
 import kotlinx.kover.test.functional.framework.writer.*
-import kotlinx.kover.tools.commons.*
 import org.junit.jupiter.api.extension.*
 import org.junit.jupiter.params.*
 import org.junit.jupiter.params.provider.*
@@ -37,7 +37,7 @@ private const val TMP_PREFIX = "kover-sliced-build-"
 
 private val ALL_LANGUAGES = listOf(ScriptLanguage.KOTLIN, ScriptLanguage.GROOVY)
 private val ALL_TOOLS = listOf(CoverageToolVendor.KOVER, CoverageToolVendor.JACOCO)
-private val ALL_TYPES = listOf(KotlinPluginType.JVM, KotlinPluginType.MULTIPLATFORM)
+private val ALL_TYPES = listOf(KotlinPluginType.JVM, KotlinPluginType.MULTI_PLATFORM)
 
 
 private class SlicedTestInterceptor : InvocationInterceptor {

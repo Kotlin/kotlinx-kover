@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
 package kotlinx.kover.test.functional.framework.writer
@@ -9,24 +9,29 @@ import kotlinx.kover.test.functional.framework.configurator.*
 import java.io.*
 
 internal fun File.writeBuild(build: TestBuildConfig, slice: BuildSlice) {
-    this.sub("settings.${slice.scriptExtension}").writeSettings(build, slice)
+    this.resolve("settings.${slice.scriptExtension}").writeSettings(build, slice)
     build.projects.forEach { (path, conf) -> this.subproject(path).writeProject(conf, slice) }
 }
 
 private fun File.subproject(projectPath: String): File {
-    val filepath = projectPath.replace(':', '/')
-    return this.sub(filepath).also { it.mkdirs() }
+    val path = projectPath.removePrefix(":")
+    return if (path.isEmpty()) {
+        return this
+    } else {
+        val filepath = path.replace(':', File.separatorChar)
+        this.resolve(filepath).also { it.mkdirs() }
+    }
 }
 
-private fun File.writeProject(config: TestProjectConfig, slice: BuildSlice) {
+private fun File.writeProject(config: TestProjectConfigurator, slice: BuildSlice) {
     this.writeSources(config, slice)
-    this.sub("build.${slice.scriptExtension}").writeBuildScript(config, slice)
+    this.resolve("build.${slice.scriptExtension}").writeBuildScript(config, slice)
 }
 
-private fun File.writeSources(config: TestProjectConfig, slice: BuildSlice) {
+private fun File.writeSources(config: TestProjectConfigurator, slice: BuildSlice) {
     fun File.copyInto(targetFile: File) {
         listFiles()?.forEach { src ->
-            val subTarget = File(targetFile, src.name)
+            val subTarget = targetFile.resolve(src.name)
             if (src.isDirectory) {
                 subTarget.mkdirs()
                 src.copyInto(subTarget)

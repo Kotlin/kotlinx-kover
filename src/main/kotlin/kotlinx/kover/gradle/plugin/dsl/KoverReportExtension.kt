@@ -1,0 +1,178 @@
+/*
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
+package kotlinx.kover.gradle.plugin.dsl
+
+import org.gradle.api.*
+import org.gradle.api.provider.Provider
+import java.io.*
+
+public interface KoverReportExtension {
+    public fun filters(config: Action<KoverReportFilters>)
+
+    public fun html(config: Action<KoverHtmlReportConfig>)
+
+    public fun xml(config: Action<KoverXmlReportConfig>)
+
+    public fun verify(config: Action<KoverVerifyReportConfig>)
+}
+
+public interface KoverReportFilters {
+    public fun excludes(config: Action<KoverReportFilter>)
+
+    public fun includes(config: Action<KoverReportFilter>)
+}
+
+public interface KoverReportFilter {
+    public fun classes(config: Action<KoverReportClassFilter>)
+
+    public fun annotated(config: Action<KoverReportAnnotatedFilter>)
+}
+
+public interface KoverReportClassFilter: KoverClassDefinitions {
+    public override fun className(vararg name: String)
+
+    public override fun className(names: Iterable<String>)
+
+    public override fun packageName(vararg name: String)
+
+    public override fun packageName(names: Iterable<String>)
+}
+
+public interface KoverReportAnnotatedFilter {
+    public fun annotationName(vararg name: String)
+}
+
+public interface KoverHtmlReportConfig {
+    public var onCheck: Boolean
+    public var title: String
+
+    public fun setReportDir(dir: File)
+    public fun setReportDir(dir: Provider<File>)
+
+    public fun filters(config: Action<KoverReportFilters>)
+}
+
+public interface KoverXmlReportConfig {
+    public var onCheck: Boolean
+
+    public fun setReportFile(xmlFile: File)
+    public fun setReportFile(xmlFile: Provider<File>)
+
+    public fun filters(config: Action<KoverReportFilters>)
+}
+
+public interface KoverVerifyReportConfig {
+    public var onCheck: Boolean
+
+    public fun rule(config: Action<KoverVerifyRule>)
+    public fun rule(name: String, config: Action<KoverVerifyRule>)
+}
+
+public interface KoverVerifyRule {
+    /**
+     * Specifies that the rule will be checked during verification.
+     */
+    public var isEnabled: Boolean
+
+    /**
+     * Specifies custom name of the rule.
+     */
+    public var name: String?
+
+    /**
+     * Specifies by which entity the code for separate coverage evaluation will be grouped.
+     */
+    public var entity: GroupingEntityType
+
+    public fun filters(config: Action<KoverReportFilters>)
+
+    public fun bound(config: Action<KoverVerifyBound>)
+
+    // TODO for groovy short-hand
+    public fun minBound(minValue: Int)
+
+    public fun maxBound(maxValue: Int)
+
+    // TODO only for Kotlin Script
+
+    public fun minBound(minValue: Int, metric: MetricType = MetricType.LINE, aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE)
+
+    public fun maxBound(maxValue: Int, metric: MetricType = MetricType.LINE, aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE)
+
+    public fun bound(minValue: Int, maxValue: Int, metric: MetricType = MetricType.LINE, aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE)
+}
+
+public interface KoverVerifyBound {
+    /**
+     * Specifies minimal value to compare with counter value.
+     */
+    public var minValue: Int?
+
+    /**
+     * Specifies maximal value to compare with counter value.
+     */
+    public var maxValue: Int?
+
+    /**
+     * Specifies which metric will be evaluation code coverage.
+     */
+    public var metric: MetricType
+
+    /**
+     * Specifies type of lines counter value to compare with minimal and maximal values if them defined.
+     * Default is [AggregationType.COVERED_PERCENTAGE]
+     */
+    public var aggregation: AggregationType
+}
+
+/**
+ * Type of the metric to evaluate code coverage.
+ */
+public enum class MetricType {
+    /**
+     * Evaluates coverage for lines.
+     */
+    LINE,
+
+    /**
+     * Evaluates coverage for JVM bytecode instructions.
+     */
+    INSTRUCTION,
+
+    /**
+     * Evaluates coverage for code branches excluded dead-branches.
+     */
+    BRANCH
+}
+
+/**
+ * Type of counter value to compare with minimal and maximal values if them defined.
+ */
+public enum class AggregationType(val isPercentage: Boolean) {
+    COVERED_COUNT(false),
+    MISSED_COUNT(false),
+    COVERED_PERCENTAGE(true),
+    MISSED_PERCENTAGE(true)
+}
+
+/**
+ *  Entity type for grouping code to coverage evaluation.
+ */
+public enum class GroupingEntityType {
+    /**
+     * Counts the coverage values for all code.
+     */
+    APPLICATION,
+
+    /**
+     * Counts the coverage values for each class separately.
+     */
+    CLASS,
+
+    /**
+     * Counts the coverage values for each package that has classes separately.
+     */
+    PACKAGE
+}

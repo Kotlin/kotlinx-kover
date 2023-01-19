@@ -7,12 +7,12 @@ internal class DefaultConfigTests {
 
     @SlicedGeneratedTest(allLanguages = true, allTypes = true)
     fun BuildConfigurator.testImplicitConfigs() {
-        addKoverProject {
+        addProjectWithKover {
             sourcesFrom("simple")
         }
 
-        run("koverReport") {
-            checkDefaultBinaryReport()
+        run("koverXmlReport", "koverHtmlReport") {
+            checkDefaultRawReport()
             checkDefaultReports()
         }
     }
