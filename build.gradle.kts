@@ -19,6 +19,7 @@ repositories {
 
 val kotlinVersion = property("kotlinVersion")
 val localRepositoryUri = uri("build/.m2")
+val junitParallelism = findProperty("kover.test.junit.parallelism")?.toString()
 
 // override version in deploy
 properties["release"]?.let { version = it }
@@ -64,16 +65,25 @@ val functionalTest by tasks.registering(Test::class) {
 
     dependsOn(tasks.named("publishAllPublicationsToLocalRepository"))
     doFirst {
-        // used in build scripts of functional tests
+        // basic build properties
         systemProperties["kotlinVersion"] = kotlinVersion
         systemProperties["koverVersion"] = version
         systemProperties["localRepositoryPath"] = localRepositoryUri.path
-        setSystemPropertyFromProject("releaseVersion")
-        setSystemPropertyFromProject("gradleVersion")
-        setSystemPropertyFromProject("androidSdk")
-        setBooleanSystemPropertyFromProject("disableAndroidTests")
+
+        // parallel execution
+        systemProperties["junit.jupiter.execution.parallel.enabled"] = if (junitParallelism == "no") "false" else "true"
+        systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
+        systemProperties["junit.jupiter.execution.parallel.mode.classes.default"] = "concurrent"
+        systemProperties["junit.jupiter.execution.parallel.config.strategy"] = "fixed"
+        systemProperties["junit.jupiter.execution.parallel.config.fixed.parallelism"] = junitParallelism?.toIntOrNull()?.toString() ?: "2"
+
+        // customizing functional tests
+        setSystemPropertyFromProject("kover.release.version")
+        setSystemPropertyFromProject("kover.test.gradle.version")
+        setSystemPropertyFromProject("kover.test.android.sdk")
+        setBooleanSystemPropertyFromProject("kover.test.android.disable")
+        setBooleanSystemPropertyFromProject("kover.test.junit.logs.info", "testLogsEnabled")
         setBooleanSystemPropertyFromProject("debug", "isDebugEnabled")
-        setBooleanSystemPropertyFromProject("testLogs", "testLogsEnabled")
     }
 }
 

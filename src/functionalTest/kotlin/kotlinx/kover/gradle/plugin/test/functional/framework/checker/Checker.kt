@@ -144,7 +144,7 @@ private class CheckerContextImpl(
                 if (isAndroidTestDisabled) {
                     throw TestAbortedException("Android tests are disabled")
                 } else {
-                    throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -PandroidSdk. To ignore Android tests pass parameter -PdisableAndroidTests")
+                    throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -Pkover.test.android.sdk. To ignore Android tests pass parameter -Pkover.test.android.disable")
                 }
             }
             if (!buildErrorExpected) {

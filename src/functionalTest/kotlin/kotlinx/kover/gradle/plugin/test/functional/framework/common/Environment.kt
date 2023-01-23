@@ -18,8 +18,8 @@ internal val koverVersion = System.getProperty("koverVersion")
 /**
  * Version of most recent Kover release.
  */
-internal val releaseVersion = System.getProperty("releaseVersion")
-    ?: throw Exception("System property 'releaseVersion' not defined for functional tests")
+internal val releaseVersion = System.getProperty("kover.release.version")
+    ?: throw Exception("System property 'kover.release.version' not defined for functional tests")
 
 /**
  * Kotlin version for sliced generated tests.
@@ -30,7 +30,7 @@ internal val kotlinVersion = System.getProperty("kotlinVersion")
 /**
  * Custom version of Gradle runner for functional tests.
  */
-internal val gradleWrapperVersion: String? = System.getProperty("gradleVersion")
+internal val gradleWrapperVersion: String? = System.getProperty("kover.test.gradle.version")
 
 /**
  * Flag to run functional tests within debug agent.
@@ -40,12 +40,12 @@ internal val isDebugEnabled: Boolean = System.getProperty("isDebugEnabled") != n
 /**
  * Flag to ignore all Android functional tests.
  */
-internal val isAndroidTestDisabled: Boolean = System.getProperty("disableAndroidTests") != null
+internal val isAndroidTestDisabled: Boolean = System.getProperty("kover.test.android.disable") != null
 
 /**
  * Result path to the Android SDK. `null` if not defined.
  */
-internal val androidSdkDir: String? = System.getProperty("androidSdk")?: System.getenv(ANDROID_HOME_ENV)
+internal val androidSdkDir: String? = System.getProperty("kover.test.android.sdk")?: System.getenv(ANDROID_HOME_ENV)
 
 /**
  * Path to the local maven repository with the current Kover build.
