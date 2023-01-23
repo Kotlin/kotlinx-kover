@@ -4,8 +4,8 @@ Functional tests run Gradle in a separate system process, and then check the res
 By default, to run functional tests, Gradle is used, which builds the plugin as its dependency.
 
 ## Test types
- * examples - used to demonstrate the use of the Kover plugin on ready-made projects. Located in [examples](/examples) directory. 
-For these projects, the `build` command must pass successfully. For such projects, it is mandatory that the latest release version of the plugin is used in the build script (the value of the `releaseVersion` property). 
+ * examples - used to demonstrate the use of the Kover plugin on ready-made projects. Located in specified subdirectory of [examples](/examples). 
+For such projects, it is mandatory that the latest release version of the plugin is used in the build script (the value of the `releaseVersion` property). 
 <br/>To create test on all examples, use `@kotlinx.kover.test.functional.framework.starter.ExamplesTest` annotation on function. This function must have receiver or single parameter with type `kotlinx.kover.test.functional.framework.checker.CheckerContext` to check result of Gradle run.
  * templates - test on some specific rare case. Located in special [directory](/src/functionalTest/templates). You can execute any Gradle command for template project.
 <br/>To create test on all examples, use `@kotlinx.kover.test.functional.framework.starter.TemplateTest` annotation on function. This function must have receiver or single parameter with type `kotlinx.kover.test.functional.framework.checker.CheckerContext` to check result of Gradle run. 
