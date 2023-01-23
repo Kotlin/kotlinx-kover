@@ -9,7 +9,7 @@ import java.io.File
 /**
  * Executes `block` of code only if boolean value is `true`.
  */
-internal inline fun <T: Any> Boolean.ifTrue(block: () -> T): T? {
+internal inline fun <T : Any> Boolean.ifTrue(block: () -> T): T? {
     return if (this) {
         block()
     } else {
@@ -20,7 +20,7 @@ internal inline fun <T: Any> Boolean.ifTrue(block: () -> T): T? {
 /**
  * Executes `block` of code only if boolean value is `false`.
  */
-internal inline fun <T: Any> Boolean.ifFalse(block: () -> T): T? {
+internal inline fun <T : Any> Boolean.ifFalse(block: () -> T): T? {
     return if (!this) {
         block()
     } else {
@@ -58,4 +58,10 @@ internal fun String.wildcardsToRegex(): String {
 internal val ONE_HUNDRED = 100.toBigDecimal()
 
 private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()
+
+internal inline fun File.subdirs(crossinline predicate: (File) -> Boolean): List<File> {
+    return listFiles { it ->
+        it.exists() && it.isDirectory && predicate(it)
+    }?.toList() ?: emptyList()
+}
 

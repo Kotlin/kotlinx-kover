@@ -13,20 +13,32 @@ import kotlin.test.*
 
 
 internal class ExamplesTests {
-    @ExamplesTest
-    fun CheckerContext.buildAndCheckVersions() {
+    @ExamplesTest("jvm", commands = ["build"])
+    fun CheckerContext.jvmExamples() {
         allProjects {
-            // check version of Kover plugin if applied
-            if (definedKoverVersion != null) {
-                assertEquals(releaseVersion, definedKoverVersion)
-            }
+            checkVersions()
+        }
+    }
 
-            // check version of tool, it should be default
-            if (toolVariant.vendor == CoverageToolVendor.KOVER) {
-                assertEquals(toolVariant.version, KoverVersions.KOVER_TOOL_DEFAULT_VERSION)
-            } else {
-                assertEquals(toolVariant.version, KoverVersions.JACOCO_TOOL_DEFAULT_VERSION)
-            }
+    @ExamplesTest("android", commands = [":app:koverXmlReportDebug"])
+    fun CheckerContext.androidExamples() {
+        allProjects {
+            checkVersions()
+        }
+    }
+
+
+    private fun CheckerContext.checkVersions() {
+        // check version of Kover plugin if applied
+        if (definedKoverVersion != null) {
+            assertEquals(releaseVersion, definedKoverVersion)
+        }
+
+        // check version of tool, it should be default
+        if (toolVariant.vendor == CoverageToolVendor.KOVER) {
+            assertEquals(toolVariant.version, KoverVersions.KOVER_TOOL_DEFAULT_VERSION)
+        } else {
+            assertEquals(toolVariant.version, KoverVersions.JACOCO_TOOL_DEFAULT_VERSION)
         }
     }
 }

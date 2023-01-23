@@ -8,6 +8,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.logInfo
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.*
+import kotlinx.kover.gradle.plugin.util.*
 import org.junit.jupiter.api.extension.*
 import org.junit.jupiter.params.*
 import org.junit.jupiter.params.provider.*
@@ -22,6 +23,7 @@ import java.util.stream.*
 @ParameterizedTest(name = "{0}")
 @ExtendWith(ExampleInterceptor::class)
 internal annotation class ExamplesTest(
+    val subdir: String,
     val includes: Array<String> = [],
     val excludes: Array<String> = [],
     val commands: Array<String> = ["build"]
@@ -34,37 +36,41 @@ private class ExampleTestArgumentsProvider : ArgumentsProvider {
 
     override fun provideArguments(context: ExtensionContext): Stream<out Arguments> {
         val annotation = (context.element.orElse(null)?.getAnnotation(ExamplesTest::class.java)
-            ?: throw IllegalStateException("Test not marked by '${ExamplesTest::class.qualifiedName}' annotation"))
+            ?: error("Test not marked by '${ExamplesTest::class.qualifiedName}' annotation"))
 
         val excludes = annotation.excludes.toList()
         val includes = annotation.includes.toList()
         val commands = annotation.commands.toList()
 
-        val files = File(EXAMPLES_DIR).listFiles { it ->
+
+        val examplesDir = File(EXAMPLES_DIR)
+            .subdirs { it.name == annotation.subdir }
+            .singleOrNull() ?: error("Could not find the '${annotation.subdir}' directory with examples")
+
+        val files = examplesDir.subdirs {
             val name = it.name
-            it.isDirectory
-                    && !excludes.contains(name)
+            !excludes.contains(name)
                     && (includes.isEmpty() || includes.contains(name))
-        }?.toList() ?: emptyList()
+        }
 
         return files.stream().map { ExampleArgs(it, commands) }
     }
-}
 
-private class ExampleArgs(private val exampleDir: File, private val commands: List<String>) : Arguments {
-    override fun get(): Array<Any> {
-        val example = exampleDir.name
+    private class ExampleArgs(private val exampleDir: File, private val commands: List<String>) : Arguments {
+        override fun get(): Array<Any> {
+            val example = exampleDir.parentFile.name + '_' + exampleDir.name
 
-        val dir = Files.createTempDirectory("$TMP_PREFIX$example-").toFile()
-        logInfo("Copy example '$example' into target directory ${dir.uri}")
-        exampleDir.copyRecursively(dir)
-        dir.patchSettingsFile("example '$example', project dir: ${dir.canonicalPath}")
+            val dir = Files.createTempDirectory("$TMP_PREFIX$example-").toFile()
+            logInfo("Copy example '$example' into target directory ${dir.uri}")
+            exampleDir.copyRecursively(dir)
+            dir.patchSettingsFile("example '$example', project dir: ${dir.canonicalPath}")
 
-        logInfo("Starting build example '$example' with commands '${commands.joinToString(" ")}'")
-        val runResult = dir.runGradleBuild(commands)
-        val checkerContext = dir.createCheckerContext(runResult)
+            logInfo("Starting build example '$example' with commands '${commands.joinToString(" ")}'")
+            val runResult = dir.runGradleBuild(commands)
+            val checkerContext = dir.createCheckerContext(runResult)
 
-        return arrayOf(NamedCheckerContext(checkerContext, example, dir))
+            return arrayOf(NamedCheckerContext(checkerContext, example, dir))
+        }
     }
 }
 
@@ -77,6 +83,7 @@ private class NamedCheckerContext(origin: CheckerContext, val name: String, val 
         return name
     }
 }
+
 
 private class ExampleInterceptor : InvocationInterceptor {
     override fun interceptTestTemplateMethod(

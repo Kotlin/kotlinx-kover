@@ -38,6 +38,7 @@ internal interface ProjectConfigurator {
 
 internal interface PluginsConfigurator {
     fun kotlin(version: String? = null)
+
     fun kover(version: String? = null)
 }
 

@@ -156,5 +156,4 @@ internal class TestRepositoriesConfigurator: RepositoriesConfigurator {
     override fun repository(name: String) {
         repositories += name
     }
-
 }

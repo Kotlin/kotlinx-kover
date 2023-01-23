@@ -2,6 +2,8 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("kapt")
+
+    id("org.jetbrains.kotlinx.kover")
 }
 
 android {
@@ -68,8 +70,17 @@ dependencies {
     testImplementation(Libs.MOCKK)
 }
 
-kover {
-    instrumentation {
-        excludeTasks.add("testReleaseUnitTest")
+koverReport {
+    filters {
+        excludes {
+            className(
+                "*Fragment",
+                "*Fragment\$*",
+                "*Activity",
+                "*Activity\$*",
+                "*.databinding.*", // ViewBinding
+                "org.jetbrains.kover_android_kts_example.BuildConfig"
+            )
+        }
     }
 }

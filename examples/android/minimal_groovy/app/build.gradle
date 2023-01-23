@@ -46,7 +46,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation "androidx.fragment:fragment-ktx:1.5.2"
     implementation 'androidx.appcompat:appcompat:1.5.0'
@@ -61,8 +60,17 @@ dependencies {
     testImplementation "io.mockk:mockk:1.12.7"
 }
 
-kover {
-    instrumentation {
-        excludeTasks.add "testReleaseUnitTest"
+koverReport {
+    filters {
+        excludes {
+            className(
+                    "*Fragment",
+                    "*Fragment\$*",
+                    "*Activity",
+                    "*Activity\$*",
+                    "*.databinding.*", // ViewBinding
+                    "org.jetbrains.kover_android_kts_example.BuildConfig"
+            )
+        }
     }
 }
