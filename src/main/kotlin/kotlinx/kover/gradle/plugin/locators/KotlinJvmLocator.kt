@@ -7,13 +7,15 @@ package kotlinx.kover.gradle.plugin.locators
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.KoverSetup
 import kotlinx.kover.gradle.plugin.dsl.internal.*
+import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.*
-import org.gradle.api.tasks.SourceSet
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.dsl.*
+import java.io.File
 
-
+// TODO comments why using reflective locator, not static (no copy-paste,  easier to refactor)
 internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
     companion object {
         fun isApplied(project: Project): Boolean {
@@ -24,8 +26,8 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
     override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.JVM)
 
     override fun locate(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
-        val kotlinExtension = project.extensions.findByType<KotlinJvmProjectExtension>()
-            ?: throw KoverCriticalException("Kover requires extension with type '${KotlinJvmProjectExtension::class.qualifiedName}' for project '${project.path}' since it is recognized as Kotlin/JVM project")
+        val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
+            ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/JVM project")
 
         val build = project.provider {
             extractBuild(koverExtension, kotlinExtension)
@@ -40,6 +42,56 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
 
         return listOf(KoverSetup(build, tests))
     }
+
+    private fun extractBuild(
+        koverExtension: KoverProjectExtensionImpl,
+        kotlinExtension: DynamicBean
+    ): KoverSetupBuild {
+        if (koverExtension.isDisabled) {
+            // TODO
+            return KoverSetupBuild()
+        }
+
+        val compilations = kotlinExtension["target"].propertyBeans("compilations").filter {
+            // always ignore test source set by default
+            val name = it.property<String>("name")
+            name != SourceSet.TEST_SOURCE_SET_NAME
+                    // ignore specified JVM source sets
+                    && name !in koverExtension.sources.jvmSourceSets
+        }
+
+
+        val sources = compilations.flatMap {
+            // expected only one Kotlin Source Set for Kotlin/JVM
+            it.propertyBeans("kotlinSourceSets")
+        }.flatMap {
+            it["kotlin"].propertyCollection<File>("srcDirs")
+        }.toSet()
+
+        val outputs = compilations.flatMap {
+            it["output"].property<ConfigurableFileCollection>("classesDirs").files
+        }.filterNot {
+            // exclude java classes from report. Expected java class files are placed in directories like
+            //   build/classes/java/main
+            koverExtension.sources.excludeJavaCode && it.parentFile.name == "java"
+        }.toSet()
+
+        val compileTasks = compilations.flatMap {
+            val tasks = mutableListOf<Task>()
+            tasks += it.property<Task>("compileKotlinTask")
+            if (!koverExtension.sources.excludeJavaCode) {
+                tasks += it.property<TaskProvider<Task>>("compileJavaTaskProvider").get()
+            }
+            tasks
+        }
+
+        return KoverSetupBuild(sources, outputs, compileTasks)
+    }
+}
+
+/*
+    ORIGINAL
+    ================
 
     private fun extractBuild(
         koverExtension: KoverProjectExtensionImpl,
@@ -84,5 +136,4 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
 
         return KoverSetupBuild(sources, outputs, compileTasks)
     }
-
-}
+ */
