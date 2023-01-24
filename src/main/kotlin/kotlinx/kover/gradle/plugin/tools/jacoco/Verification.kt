@@ -92,7 +92,8 @@ private fun GroovyObject.violations(): List<RuleViolations> {
     ).invoke(project, *arrayOfNulls(0))
     val allErrorsString = properties["jacocoErrors"] as String? ?: return emptyList()
 
-    return allErrorsString.lineSequence().map {
+    // sorting lines to get a stable order of errors
+    return allErrorsString.lines().sorted().map {
         val match = errorMessageRegex.find(it)
             ?: throw KoverCriticalException("Can't parse JaCoCo verification error string:\n$it")
 
