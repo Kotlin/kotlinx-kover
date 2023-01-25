@@ -22,7 +22,7 @@ val localRepositoryUri = uri("build/.m2")
 val junitParallelism = findProperty("kover.test.junit.parallelism")?.toString()
 
 // override version in deploy
-properties["release"]?.let { version = it }
+properties["DeployVersion"]?.let { version = it }
 
 sourceSets {
     create("functionalTest") {
