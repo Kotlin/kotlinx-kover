@@ -1,4 +1,4 @@
-rootProject.name = "kover-gradle-plugin"
+rootProject.name = "kover"
 
 pluginManagement {
     val kotlinVersion: String by settings
