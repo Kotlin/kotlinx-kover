@@ -13,10 +13,7 @@ import org.gradle.kotlin.dsl.*
 import javax.inject.*
 
 
-internal open class KoverProjectExtensionImpl @Inject constructor(
-    objects: ObjectFactory,
-    kotlinPlugin: AppliedKotlinPlugin
-) : KoverProjectExtension {
+internal open class KoverProjectExtensionImpl @Inject constructor(objects: ObjectFactory) : KoverProjectExtension {
 
     override var isDisabled: Boolean = false
 
@@ -50,28 +47,21 @@ internal open class KoverProjectExtensionImpl @Inject constructor(
         config(instrumentation)
     }
 
-    internal val tests: KoverTestsExclusionsImpl = objects.newInstance(kotlinPlugin)
-    internal val sources: KoverSourcesExclusionsImpl = objects.newInstance(kotlinPlugin)
+    internal val tests: KoverTestsExclusionsImpl = objects.newInstance()
+    internal val sources: KoverSourcesExclusionsImpl = objects.newInstance()
     internal val instrumentation: KoverInstrumentationExclusionsImpl = objects.newInstance()
 }
 
-internal open class KoverTestsExclusionsImpl @Inject constructor(
-    private val kotlinPlugin: AppliedKotlinPlugin
-) : KoverTestsExclusions {
+internal open class KoverTestsExclusionsImpl: KoverTestsExclusions {
     override fun taskName(vararg name: String) {
-        kotlinPlugin.type ?: KoverIllegalConfigException("TODO message")
         tasksNames.addAll(name)
     }
 
     override fun taskName(names: Iterable<String>) {
-        kotlinPlugin.type ?: KoverIllegalConfigException("TODO message")
         tasksNames.addAll(names)
     }
 
     override fun kmpTargetName(vararg name: String) {
-        if (kotlinPlugin.type != KotlinPluginType.MULTI_PLATFORM) {
-            throw KoverIllegalConfigException("TODO message")
-        }
         kmpTargetNames.addAll(name)
     }
 
@@ -80,47 +70,27 @@ internal open class KoverTestsExclusionsImpl @Inject constructor(
     internal val kmpTargetNames: MutableSet<String> = mutableSetOf()
 }
 
-internal open class KoverSourcesExclusionsImpl @Inject constructor(
-    private val kotlinPlugin: AppliedKotlinPlugin
-): KoverSourcesExclusions {
+internal open class KoverSourcesExclusionsImpl: KoverSourcesExclusions {
     override var excludeJavaCode: Boolean = false
 
     override fun jvmSourceSetName(vararg name: String) {
-        if (kotlinPlugin.type != KotlinPluginType.JVM) {
-            throw KoverIllegalConfigException("TODO message")
-        }
-
         jvmSourceSets += name
     }
 
     override fun jvmSourceSetName(names: Iterable<String>) {
-        if (kotlinPlugin.type != KotlinPluginType.JVM) {
-            throw KoverIllegalConfigException("TODO message")
-        }
-
+        // TODO add check of Kotlin plugin type in afterEvaluate!
         jvmSourceSets += names
     }
 
     override fun kmpTargetName(vararg name: String) {
-        if (kotlinPlugin.type != KotlinPluginType.MULTI_PLATFORM) {
-            throw KoverIllegalConfigException("TODO message")
-        }
-
+        TODO("Not implemented")
     }
 
     override fun kmpCompilation(targetName: String, compilationName: String) {
-        if (kotlinPlugin.type != KotlinPluginType.MULTI_PLATFORM) {
-            throw KoverIllegalConfigException("TODO message")
-        }
-
         kmpCompilationsByTarget.getOrPut(targetName) { mutableSetOf() } += compilationName
     }
 
     override fun kmpCompilation(compilationName: String) {
-        if (kotlinPlugin.type != KotlinPluginType.MULTI_PLATFORM) {
-            throw KoverIllegalConfigException("TODO message")
-        }
-
         kmpCompilationsForAllTargets += compilationName
     }
 

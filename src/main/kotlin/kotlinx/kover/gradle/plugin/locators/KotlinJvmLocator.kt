@@ -63,7 +63,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
 
         val sources = compilations.flatMap {
             // expected only one Kotlin Source Set for Kotlin/JVM
-            it.propertyBeans("kotlinSourceSets")
+            it.propertyBeans("allKotlinSourceSets")
         }.flatMap {
             it["kotlin"].propertyCollection<File>("srcDirs")
         }.toSet()

@@ -19,16 +19,13 @@ class KoverGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.gradle.checkVersion()
 
-        // TODO docs! Apply plugin only after one of the Kotlin plugin
-        val locator = SetupLocatorFactory.get(target)
-        val applier = KoverGradleApplier(target, locator)
+        val applier = KoverGradleApplier(target)
 
         applier.onApply()
 
         target.afterEvaluate {
             applier.onAfterEvaluate()
         }
-
     }
 
     private fun Gradle.checkVersion() {

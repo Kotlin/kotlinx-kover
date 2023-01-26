@@ -19,7 +19,7 @@ import org.gradle.kotlin.dsl.*
 import java.io.*
 
 
-internal class KoverGradleApplier(private val project: Project, private val locator: SetupLocator) {
+internal class KoverGradleApplier(private val project: Project) {
     private lateinit var projectExtension: KoverProjectExtensionImpl
     private lateinit var defaultReportExtension: KoverReportExtensionImpl
 
@@ -30,8 +30,7 @@ internal class KoverGradleApplier(private val project: Project, private val loca
 
         projectExtension = project.extensions.create<KoverProjectExtensionImpl>(
             PROJECT_SETUP_EXTENSION,
-            project.objects,
-            locator.kotlinPlugin
+            project.objects
         ).apply {
             toolVariant = KoverToolDefaultVariant
         }
@@ -78,6 +77,8 @@ internal class KoverGradleApplier(private val project: Project, private val loca
         }
 
         val instrumentationExcludedClasses = projectExtension.instrumentation.classes
+
+        val locator = SetupLocatorFactory.get(project)
 
         locator.locate(projectExtension).forEach {
             it.tests.configureEach {

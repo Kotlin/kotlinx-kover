@@ -71,8 +71,10 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
         }
 
         val sources = compilations.flatMap {
-            // TODO only one source set for KMP
-            it.propertyBeans("kotlinSourceSets").first()["kotlin"].propertyCollection<File>("srcDirs")
+            // expected only one Kotlin Source Set for Kotlin/JVM
+            it.propertyBeans("allKotlinSourceSets")
+        }.flatMap {
+            it["kotlin"].propertyCollection<File>("srcDirs")
         }.toSet()
 
         val outputs = compilations.flatMap {

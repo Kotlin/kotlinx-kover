@@ -29,11 +29,15 @@ internal class JvmTestTaskApplier(
         val rawReportProvider =
             testTask.project.layout.buildDirectory.file(rawReportPath(testTask.name, tool.variant.vendor))
         testTask.dependsOn(agentFindTask)
+
+        // Always excludes android classes TODO link
+        val excluded = excludedClasses + listOf("android.*", "com.android.*")
+
         testTask.jvmArgumentProviders += JvmTestTaskArgumentProvider(
             testTask.temporaryDir,
             tool,
             agentJar,
-            excludedClasses,
+            excluded,
             rawReportProvider
         )
     }
