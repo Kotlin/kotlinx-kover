@@ -4,7 +4,6 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
-import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
@@ -17,7 +16,7 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
 
     override var isDisabled: Boolean = false
 
-    internal var toolVariant: CoverageToolVariant = KoverToolDefaultVariant
+    internal var toolVariant: CoverageToolVariant? = null
 
     override fun useKoverToolDefault() {
         toolVariant = KoverToolDefaultVariant

@@ -63,12 +63,12 @@ internal class KoverReportFilterWriter(private val writer: FormattedWriter) : Ko
 }
 
 internal class KoverHtmlReportConfigWriter(private val writer: FormattedWriter) : KoverHtmlReportConfig {
-    override var onCheck: Boolean = false
+    override var onCheck: Boolean? = null
         set(value) {
             writer.assign("onCheck", value.toString())
             field = value
         }
-    override var title: String = ""
+    override var title: String? = null
         set(value) {
             writer.assign("title", "\"$value\"")
             field = value
@@ -89,7 +89,7 @@ internal class KoverHtmlReportConfigWriter(private val writer: FormattedWriter) 
 }
 
 internal class KoverXmlReportConfigWriter(private val writer: FormattedWriter) : KoverXmlReportConfig {
-    override var onCheck: Boolean = false
+    override var onCheck: Boolean? = null
         set(value) {
             writer.assign("onCheck", value.toString())
             field = value

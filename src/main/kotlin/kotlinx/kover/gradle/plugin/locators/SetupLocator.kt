@@ -12,7 +12,11 @@ import org.gradle.api.*
 internal interface SetupLocator {
     val kotlinPlugin: AppliedKotlinPlugin
 
-    fun locate(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>>
+    fun locateSingle(koverExtension: KoverProjectExtensionImpl): KoverSetup<*>
+
+    fun locateMultiple(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
+        return listOf(locateSingle(koverExtension))
+    }
 }
 
 

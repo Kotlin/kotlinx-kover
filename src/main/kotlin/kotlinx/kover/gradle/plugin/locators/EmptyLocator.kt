@@ -15,14 +15,12 @@ import org.gradle.kotlin.dsl.*
 internal class EmptyLocator(private val project: Project) : SetupLocator {
     override val kotlinPlugin: AppliedKotlinPlugin = AppliedKotlinPlugin(null)
 
-    override fun locate(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
-        val setup = KoverSetup(
+    override fun locateSingle(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
+        return KoverSetup(
             // provider with empty directories and compile tasks
-            project.provider { KoverSetupBuild() },
+            project.provider { SetupLazyInfo() },
             //empty collection of test tasks
             project.tasks.withType<Test>().matching { false }
         )
-
-        return listOf(setup)
     }
 }

@@ -48,9 +48,9 @@ internal open class KoverHtmlReportConfigImpl @Inject constructor(
 ) : KoverHtmlReportConfig {
     internal var filters: KoverReportFiltersImpl? = null
 
-    override var title: String = ""
+    override var title: String? = null
 
-    override var onCheck: Boolean = false
+    override var onCheck: Boolean? = null
 
     override fun setReportDir(dir: File) {
         reportDir.set(dir)
@@ -74,7 +74,7 @@ internal open class KoverXmlReportConfigImpl @Inject constructor(
 ) : KoverXmlReportConfig {
     internal var filters: KoverReportFiltersImpl? = null
 
-    override var onCheck: Boolean = false
+    override var onCheck: Boolean? = false
 
     override fun setReportFile(xmlFile: File) {
         reportFile.set(xmlFile)

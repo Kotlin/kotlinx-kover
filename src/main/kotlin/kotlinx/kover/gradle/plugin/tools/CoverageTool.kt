@@ -74,7 +74,9 @@ internal interface CoverageTool {
 
 internal object CoverageToolFactory {
     fun get(projectExtension: KoverProjectExtensionImpl): CoverageTool {
-        val variant = projectExtension.toolVariant
+        // Kover Tool Default by default
+        val variant = projectExtension.toolVariant ?: return KoverTool(KoverToolDefaultVariant)
+
         return when (variant.vendor) {
             CoverageToolVendor.KOVER -> KoverTool(variant)
             CoverageToolVendor.JACOCO -> JacocoTool(variant)

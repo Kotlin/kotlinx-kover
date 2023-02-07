@@ -24,7 +24,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
 
     override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.MULTI_PLATFORM)
 
-    override fun locate(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
+    override fun locateSingle(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
         val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/Multi-Platform project")
 
@@ -42,16 +42,16 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
                     && it.bean().property("targetName") !in koverExtension.tests.kmpTargetNames
         }
 
-        return listOf(KoverSetup(build, tests))
+        return KoverSetup(build, tests)
     }
 
     private fun extractBuildReflective(
         koverExtension: KoverProjectExtensionImpl,
         kmpExtension: DynamicBean
-    ): KoverSetupBuild {
+    ): SetupLazyInfo {
         if (koverExtension.isDisabled) {
             // TODO
-            return KoverSetupBuild()
+            return SetupLazyInfo()
         }
 
         val targets = kmpExtension.propertyBeans("targets").filter { it["platformType"].property<String>("name") == "jvm" }
@@ -71,7 +71,6 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
         }
 
         val sources = compilations.flatMap {
-            // expected only one Kotlin Source Set for Kotlin/JVM
             it.propertyBeans("allKotlinSourceSets")
         }.flatMap {
             it["kotlin"].propertyCollection<File>("srcDirs")
@@ -94,7 +93,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
             tasks
         }
 
-        return KoverSetupBuild(sources, outputs, compileTasks)
+        return SetupLazyInfo(sources, outputs, compileTasks)
     }
 
 }

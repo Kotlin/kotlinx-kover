@@ -5,8 +5,39 @@
 - IntelliJ Coverage Engine was renamed to Kover Coverage Tool
 
 
+## 
+#### rename dependency in buildSrc
+Dependencies like `classpath "org.jetbrains.kotlinx:kover:$koverVersion"` or `implementation("org.jetbrains.kotlinx:kover:$koverVersion")` should be replaced by `classpath "org.jetbrains.kotlinx:kover-gradle-plugin:$koverVersion"` etc
+
 
 ## Migration Issues
+### Could not find org.jetbrains.kotlinx:kover:0.7.0
+_Solution_
+
+rename dependencies in _buildSrc_ from `org.jetbrains.kotlinx:kover:` to `org.jetbrains.kotlinx:kover-gradle-plugin:`
+
+### Unresolved reference: KoverExtension
+_Solution_
+
+Replace `KoverExtension` (or `kotlinx.kover.api.KoverExtension`) by `kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension`
+
+
+
+remove imports `import kotlinx.kover.tasks.*`
+
+
+// TODO kotlinx.kover.tasks.*
+
+
+
+
+
+
+
+
+
+
+
 ### Engines renaming
 #### Property `engine` was renamed to `tool`
 _Error message:_

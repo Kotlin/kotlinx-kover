@@ -15,8 +15,6 @@ internal fun xmlReportTaskName(setupId: SetupId) = "koverXmlReport${setupId.capi
 
 internal fun verifyTaskName(setupId: SetupId) = "koverVerify${setupId.capitalized}"
 
-internal fun reportExtensionName(setupId: SetupId) = "kover${setupId.capitalized}Report"
-
 internal fun rawReportName(taskName: String, toolVendor: CoverageToolVendor): String {
     return "${taskName}.${toolVendor.rawReportExtension}"
 }

@@ -25,7 +25,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
 
     override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.JVM)
 
-    override fun locate(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
+    override fun locateSingle(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
         val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/JVM project")
 
@@ -40,16 +40,16 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
                     && it.name !in koverExtension.tests.tasksNames
         }
 
-        return listOf(KoverSetup(build, tests))
+        return KoverSetup(build, tests)
     }
 
     private fun extractBuild(
         koverExtension: KoverProjectExtensionImpl,
         kotlinExtension: DynamicBean
-    ): KoverSetupBuild {
+    ): SetupLazyInfo {
         if (koverExtension.isDisabled) {
             // TODO
-            return KoverSetupBuild()
+            return SetupLazyInfo()
         }
 
         val compilations = kotlinExtension["target"].propertyBeans("compilations").filter {
@@ -85,7 +85,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
             tasks
         }
 
-        return KoverSetupBuild(sources, outputs, compileTasks)
+        return SetupLazyInfo(sources, outputs, compileTasks)
     }
 }
 

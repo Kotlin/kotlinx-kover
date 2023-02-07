@@ -35,7 +35,7 @@ internal class AppliedKotlinPlugin(val type: KotlinPluginType?)
 
 internal class KoverSetup<T : Test>(
     // TODO docs why Provider is used
-    val build: Provider<KoverSetupBuild>,
+    val lazyInfo: Provider<SetupLazyInfo>,
 
     val tests: TaskCollection<T>,
 
@@ -52,7 +52,7 @@ internal data class SetupId(val name: String) {
     val isDefault get() = this == Default || name == Default.name
 }
 
-internal class KoverSetupBuild(
+internal class SetupLazyInfo(
     val sources: Set<File> = emptySet(),
     val outputs: Set<File> = emptySet(),
 

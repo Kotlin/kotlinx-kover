@@ -67,7 +67,15 @@ public interface KoverTestsExclusions: KoverTaskDefinitions {
 
 public interface KoverSourcesExclusions: KoverKmpCompilationDefinitions {
     public var excludeJavaCode: Boolean
+    /* TODO move to
+     jvm {
 
+     }
+
+     kmp {
+
+     }
+     */
     public fun jvmSourceSetName(vararg name: String)
 
     public fun jvmSourceSetName(names: Iterable<String>)

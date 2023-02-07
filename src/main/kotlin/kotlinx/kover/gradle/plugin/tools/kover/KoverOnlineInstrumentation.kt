@@ -71,20 +71,15 @@ internal fun buildJvmAgentArgs(
 
 private fun File.writeAgentArgs(rawReportFile: File, excludedClasses: Set<String>) {
     rawReportFile.parentFile.mkdirs()
-    val binaryPath = rawReportFile.canonicalPath
+    val rawReportPath = rawReportFile.canonicalPath
 
     printWriter().use { pw ->
-        pw.appendLine(binaryPath)
+        pw.appendLine(rawReportPath)
         pw.appendLine(trackingPerTest.toString())
         pw.appendLine(calculateForUnloadedClasses.toString())
         pw.appendLine(appendToDataFile.toString())
         pw.appendLine(liningOnlyMode.toString())
 
-        // TODO filters
-//        filters.includesClasses.forEach { i ->
-//            pw.appendLine(i.wildcardsToRegex())
-//        }
-//
         if (excludedClasses.isNotEmpty()) {
             pw.appendLine("-exclude")
             excludedClasses.forEach { e ->

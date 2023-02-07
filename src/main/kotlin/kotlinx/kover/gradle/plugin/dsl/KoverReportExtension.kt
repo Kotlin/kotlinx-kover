@@ -39,8 +39,8 @@ public interface KoverReportFilter: KoverClassDefinitions {
 }
 
 public interface KoverHtmlReportConfig {
-    public var onCheck: Boolean
-    public var title: String
+    public var onCheck: Boolean?
+    public var title: String?
 
     public fun setReportDir(dir: File)
     public fun setReportDir(dir: Provider<Directory>)
@@ -49,7 +49,7 @@ public interface KoverHtmlReportConfig {
 }
 
 public interface KoverXmlReportConfig {
-    public var onCheck: Boolean
+    public var onCheck: Boolean?
 
     public fun setReportFile(xmlFile: File)
     public fun setReportFile(xmlFile: Provider<RegularFile>)

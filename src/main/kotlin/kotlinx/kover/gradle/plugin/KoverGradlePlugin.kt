@@ -4,9 +4,8 @@
 
 package kotlinx.kover.gradle.plugin
 
-import kotlinx.kover.gradle.plugin.appliers.KoverGradleApplier
+import kotlinx.kover.gradle.plugin.appliers.ProjectApplier
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.MINIMUM_GRADLE_VERSION
-import kotlinx.kover.gradle.plugin.locators.SetupLocatorFactory
 import kotlinx.kover.gradle.plugin.util.SemVer
 import org.gradle.api.*
 import org.gradle.api.invocation.*
@@ -19,7 +18,7 @@ class KoverGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.gradle.checkVersion()
 
-        val applier = KoverGradleApplier(target)
+        val applier = ProjectApplier(target)
 
         applier.onApply()
 

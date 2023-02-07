@@ -12,15 +12,15 @@ import kotlinx.kover.gradle.plugin.tasks.internal.KoverAgentJarTask
 import kotlinx.kover.gradle.plugin.tasks.internal.KoverArtifactGenerationTask
 import kotlinx.kover.gradle.plugin.tools.*
 import kotlinx.kover.gradle.plugin.tools.CoverageToolFactory
-import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.*
 import java.io.*
 
 
-internal class KoverGradleApplier(private val project: Project) {
+internal class ProjectApplier(private val project: Project) {
     private lateinit var projectExtension: KoverProjectExtensionImpl
+    private lateinit var androidExtension: KoverAndroidExtensionImpl
     private lateinit var defaultReportExtension: KoverReportExtensionImpl
 
     fun onApply() {
@@ -28,14 +28,10 @@ internal class KoverGradleApplier(private val project: Project) {
             asBucket()
         }
 
-        projectExtension = project.extensions.create<KoverProjectExtensionImpl>(
-            PROJECT_SETUP_EXTENSION,
-            project.objects
-        ).apply {
-            toolVariant = KoverToolDefaultVariant
-        }
+        projectExtension = project.extensions.create(PROJECT_SETUP_EXTENSION_NAME, project.objects)
+        androidExtension = project.extensions.create(ANDROID_REPORTS_EXTENSION_NAME, project.objects)
 
-        defaultReportExtension = createReportExtension(SetupId.Default)
+        defaultReportExtension = project.extensions.create(COMMON_REPORTS_EXTENSION_NAME)
     }
 
     fun onAfterEvaluate() {
@@ -80,71 +76,75 @@ internal class KoverGradleApplier(private val project: Project) {
 
         val locator = SetupLocatorFactory.get(project)
 
-        locator.locate(projectExtension).forEach {
+        val setups = locator.locateMultiple(projectExtension)
+
+        checkAndroidReports(locator, setups)
+
+        setups.forEach {
             it.tests.configureEach {
                 JvmTestTaskApplier(this, findJarTask, agentJarPath, tool, instrumentationExcludedClasses).apply()
             }
-            val collectTask = project.addArtifactGenerationTask(it, tool)
-            project.addSetupConfiguration(it, locator.kotlinPlugin, collectTask)
 
-            val customReportExtension = it.id.isDefault.ifFalse { createReportExtension(it.id) }
-            ReportsApplier(project, tool, collectTask, reporterConfig, it.id)
-                .createReports(defaultReportExtension, customReportExtension)
+            val artifactGenTask = project.createSetupConfiguration(it, locator.kotlinPlugin, tool)
+
+            val androidReportExtension = if (locator.kotlinPlugin.type == KotlinPluginType.ANDROID) {
+                androidExtension.reports[it.id.name]
+            } else {
+                null
+            }
+
+            ReportsApplier(project, tool, artifactGenTask, reporterConfig, it.id)
+                .createReports(defaultReportExtension, androidReportExtension)
         }
     }
 
-    private fun Project.addArtifactGenerationTask(
+    private fun Project.createSetupConfiguration(
         setup: KoverSetup<*>,
+        kotlinPlugin: AppliedKotlinPlugin,
         tool: CoverageTool
     ): Provider<KoverArtifactGenerationTask> {
-        return tasks.register<KoverArtifactGenerationTask>(setupGenerationTask(setup.id)) {
+        val artifactGenTask = tasks.register<KoverArtifactGenerationTask>(setupGenerationTask(setup.id)) {
             val tests = setup.tests
             val reportFiles = project.layout.buildDirectory.dir(rawReportsRootPath())
                 .map { dir -> tests.map { dir.file(rawReportName(it.name, tool.variant.vendor)) } }
 
             dependsOn(tests)
-            dependsOn(setup.build.map { it.compileTasks })
+            dependsOn(setup.lazyInfo.map { it.compileTasks })
 
-            sources.from(setup.build.map { it.sources })
-            outputs.from(setup.build.map { it.outputs })
+            sources.from(setup.lazyInfo.map { it.sources })
+            outputs.from(setup.lazyInfo.map { it.outputs })
             reports.from(reportFiles)
             artifactFile.set(project.layout.buildDirectory.file(setupArtifactFile(setup.id)))
         }
-    }
 
-    private fun Project.addSetupConfiguration(
-        setup: KoverSetup<*>,
-        kotlinPlugin: AppliedKotlinPlugin,
-        collectTask: Provider<KoverArtifactGenerationTask>
-    ) {
-        configurations.create(setupConfigurationName(setup.id)) {
+        configurations.register(setupConfigurationName(setup.id)) {
             asProducer()
             attributes {
                 setupName(setup.id.name, project.objects)
                 kotlinType(kotlinPlugin, project.objects)
                 projectPath(project.path, project.objects)
             }
-            outgoing.artifact(collectTask.flatMap { it.artifactFile }) {
-                builtBy(collectTask)
+            outgoing.artifact(artifactGenTask.flatMap { it.artifactFile }) {
+                builtBy(artifactGenTask)
             }
         }
+
+        return artifactGenTask
     }
 
-    private fun createReportExtension(setupId: SetupId): KoverReportExtensionImpl {
-        val extension = project.extensions.create<KoverReportExtensionImpl>(reportExtensionName(setupId))
+    /**
+     * Checking Android report configuration errors in case build variant not found, or the Android plugin is not applied.
+     */
+    private fun checkAndroidReports(locator: SetupLocator, setups: List<KoverSetup<*>>) {
+        if (locator.kotlinPlugin.type != KotlinPluginType.ANDROID && androidExtension.reports.isNotEmpty()) {
+            throw KoverIllegalConfigException("It is unacceptable to configure Kover Android reports, they can only be configured if Android plugin is applied")
+        }
 
-        extension.commonFilters = null
-
-        val buildDir = project.layout.buildDirectory
-
-        extension.html.reportDir.convention(buildDir.dir(htmlReportPath(setupId)).map { it.asFile })
-        extension.html.onCheck = false
-
-        extension.xml.reportFile.convention(buildDir.file(xmlReportPath(setupId)).map { it.asFile })
-        extension.xml.onCheck = false
-
-        extension.verify.onCheck = setupId.isDefault
-
-        return extension
+        val buildVariantNames = setups.filter { !it.id.isDefault }.map { it.id.name }.toSet()
+        val configuredNames = androidExtension.reports.map { it.key }.toSet()
+        val unknownVariantNames = configuredNames.subtract(buildVariantNames)
+        if (unknownVariantNames.isNotEmpty()) {
+            throw KoverIllegalConfigException("Error in configuring Kover Android reports: build variants are not present in the project $unknownVariantNames")
+        }
     }
 }
