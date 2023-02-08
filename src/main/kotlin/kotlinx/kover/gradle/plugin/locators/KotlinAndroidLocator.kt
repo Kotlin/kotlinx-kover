@@ -32,7 +32,13 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
             ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/Android project")
 
 
-        return androidExtension.propertyBeans("applicationVariants").map { variant ->
+        val variants = if ("applicationVariants" in androidExtension) {
+            androidExtension.propertyBeans("applicationVariants")
+        } else {
+            androidExtension.propertyBeans("libraryVariants")
+        }
+
+        return variants.map { variant ->
             val variantName = variant.property<String>("name")
             val build = project.provider {
                 extractBuild(koverExtension, kotlinExtension, variantName)

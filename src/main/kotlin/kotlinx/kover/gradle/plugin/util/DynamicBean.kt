@@ -20,6 +20,8 @@ internal class DynamicBean(val origin: Any) {
         return gradleWrapper.getProperty(name) as T
     }
 
+    operator fun contains(name: String): Boolean = gradleWrapper.hasProperty(name)
+
     @Suppress("UNCHECKED_CAST")
     fun propertyBeans(name: String): Collection<DynamicBean> {
         return (gradleWrapper.getProperty(name) as Collection<Any>).map { it.bean() }

@@ -23,81 +23,82 @@ internal class ReportsApplier(
     private val project: Project,
     private val tool: CoverageTool,
     private val localArtifactGenTask: Provider<KoverArtifactGenerationTask>,
-    private val reportConfig: Configuration,
+    private val reportClasspath: Configuration,
     private val setupId: SetupId
 ) {
 
     fun createReports(
-        defaultExtension: KoverReportExtensionImpl,
-        customExtension: KoverReportExtensionImpl?
+        rootReport: KoverReportExtensionImpl,
+        overriddenReport: KoverReportExtensionImpl?
     ) {
         val extReportContext = createExternalReportContext()
 
         val runOnCheck = mutableListOf<TaskProvider<*>>()
-        val extension = customExtension ?: defaultExtension
+        val reportExtension = overriddenReport ?: rootReport
 
         val buildDir = project.layout.buildDirectory
         val htmlTask = project.tasks.createReportTask<KoverHtmlTask>(htmlReportTaskName(setupId), extReportContext) {
             //
-            val reportDirT = if (setupId.isDefault) {
-                defaultExtension.html.reportDir.isPresent.ifTrue { project.layout.dir(defaultExtension.html.reportDir) }
+            val reportDirV = if (setupId.isDefault) {
+                rootReport.html.reportDir.isPresent.ifTrue { project.layout.dir(rootReport.html.reportDir) }
             } else {
-                customExtension?.html?.reportDir?.isPresent?.ifTrue { project.layout.dir(customExtension.html.reportDir) }
+                overriddenReport?.html?.reportDir?.isPresent?.ifTrue { project.layout.dir(overriddenReport.html.reportDir) }
             } ?: buildDir.dir(htmlReportPath(setupId))
 
             //custom defined title takes precedence over default title. Project name by default
-            val titleT = customExtension?.html?.title ?: defaultExtension.html.title ?: project.name
+            val titleV = overriddenReport?.html?.title ?: rootReport.html.title ?: project.name
 
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val customFilters = customExtension?.html?.filters ?: customExtension?.commonFilters
-            val defaultFilters = defaultExtension.html.filters ?: defaultExtension.commonFilters
-            val resultFilters = (customFilters ?: defaultFilters)?.convert() ?: emptyFilters
+            val overriddenFilters = overriddenReport?.html?.filters ?: overriddenReport?.commonFilters
+            val rootFilters = rootReport.html.filters ?: rootReport.commonFilters
+            val resultFiltersV = (overriddenFilters ?: rootFilters)?.convert() ?: emptyFilters
 
-            reportDir.convention(reportDirT)
-            title.convention(titleT)
-            filters.set(resultFilters)
+            reportDir.convention(reportDirV)
+            title.convention(titleV)
+            filters.set(resultFiltersV)
         }
         // false by default
-        if (extension.html.onCheck == true) {
+        if (reportExtension.html.onCheck == true) {
             runOnCheck += htmlTask
         }
 
         val xmlTask = project.tasks.createReportTask<KoverXmlTask>(xmlReportTaskName(setupId), extReportContext) {
             //
-            val reportDirT = if (setupId.isDefault) {
-                defaultExtension.xml.reportFile.isPresent.ifTrue { project.layout.file(defaultExtension.xml.reportFile) }
+            val reportFileV = if (setupId.isDefault) {
+                rootReport.xml.reportFile.isPresent.ifTrue { project.layout.file(rootReport.xml.reportFile) }
             } else {
-                customExtension?.xml?.reportFile?.isPresent?.ifTrue { project.layout.file(customExtension.xml.reportFile) }
+                overriddenReport?.xml?.reportFile?.isPresent?.ifTrue { project.layout.file(overriddenReport.xml.reportFile) }
             } ?: buildDir.file(xmlReportPath(setupId))
 
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val customFilters = customExtension?.xml?.filters ?: customExtension?.commonFilters
-            val defaultFilters = defaultExtension.xml.filters ?: defaultExtension.commonFilters
-            val resultFilters = (customFilters ?: defaultFilters)?.convert() ?: emptyFilters
+            val overriddenFilters = overriddenReport?.xml?.filters ?: overriddenReport?.commonFilters
+            val rootFilters = rootReport.xml.filters ?: rootReport.commonFilters
+            val resultFiltersV = (overriddenFilters ?: rootFilters)?.convert() ?: emptyFilters
 
-            reportFile.convention(reportDirT)
-            filters.set(resultFilters)
+            reportFile.convention(reportFileV)
+            filters.set(resultFiltersV)
         }
         // false by default
-        if (extension.xml.onCheck == true) {
+        if (reportExtension.xml.onCheck == true) {
             runOnCheck += xmlTask
         }
 
         val verifyTask = project.tasks.createReportTask<KoverVerifyTask>(verifyTaskName(setupId), extReportContext) {
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val resultFilters = (customExtension?.commonFilters ?: defaultExtension.commonFilters)?.convert() ?: emptyFilters
+            val commonFiltersV =
+                (overriddenReport?.commonFilters ?: rootReport.commonFilters)?.convert() ?: emptyFilters
 
-            val rulesT = customExtension?.verify?.definedRules() ?: defaultExtension.verify.definedRules() ?: emptyList()
+            val rulesV = overriddenReport?.verify?.definedRules() ?: rootReport.verify.definedRules() ?: emptyList()
 
             // path can't be changed
             resultFile.convention(project.layout.buildDirectory.file(verificationErrorsPath(setupId)))
-            filters.set(resultFilters)
-            rules.addAll(rulesT.map { it.convert() })
+            filters.set(commonFiltersV)
+            rules.addAll(rulesV.map { it.convert() })
 
             shouldRunAfter(htmlTask)
             shouldRunAfter(xmlTask)
         }
-        if (extension.verify.onCheck) {
+        if (reportExtension.verify.onCheck) {
             runOnCheck += verifyTask
         }
 
@@ -133,7 +134,7 @@ internal class ReportsApplier(
 
             localArtifact.set(localArtifactGenTask.flatMap { it.artifactFile })
             this.externalArtifacts.from(reportContext)
-            reportClasspath.from(reportConfig)
+            reportClasspath.from(this@ReportsApplier.reportClasspath)
             config()
         }
         return task

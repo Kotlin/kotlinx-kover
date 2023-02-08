@@ -13,7 +13,9 @@ import kotlinx.kover.gradle.plugin.tasks.internal.KoverArtifactGenerationTask
 import kotlinx.kover.gradle.plugin.tools.*
 import kotlinx.kover.gradle.plugin.tools.CoverageToolFactory
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.*
 import java.io.*
 
@@ -21,7 +23,7 @@ import java.io.*
 internal class ProjectApplier(private val project: Project) {
     private lateinit var projectExtension: KoverProjectExtensionImpl
     private lateinit var androidExtension: KoverAndroidExtensionImpl
-    private lateinit var defaultReportExtension: KoverReportExtensionImpl
+    private lateinit var commonReportExtension: KoverReportExtensionImpl
 
     fun onApply() {
         project.configurations.create(DEPENDENCY_CONFIGURATION_NAME) {
@@ -31,38 +33,51 @@ internal class ProjectApplier(private val project: Project) {
         projectExtension = project.extensions.create(PROJECT_SETUP_EXTENSION_NAME, project.objects)
         androidExtension = project.extensions.create(ANDROID_REPORTS_EXTENSION_NAME, project.objects)
 
-        defaultReportExtension = project.extensions.create(COMMON_REPORTS_EXTENSION_NAME)
+        commonReportExtension = project.extensions.create(COMMON_REPORTS_EXTENSION_NAME)
     }
 
     fun onAfterEvaluate() {
         val tool = CoverageToolFactory.get(projectExtension)
 
-        val agentConfiguration = project.configurations.create(JVM_AGENT_CONFIGURATION_NAME) {
+        val agentClasspath = project.configurations.create(JVM_AGENT_CONFIGURATION_NAME) {
             asTransitiveDependencies()
         }
         project.dependencies.add(JVM_AGENT_CONFIGURATION_NAME, tool.jvmAgentDependency)
 
-        val reporterConfig = project.configurations.create(JVM_REPORTER_CONFIGURATION_NAME) {
+        val reporterClasspath = project.configurations.create(JVM_REPORTER_CONFIGURATION_NAME) {
             asTransitiveDependencies()
         }
         tool.jvmReporterDependencies.forEach {
             project.dependencies.add(JVM_REPORTER_CONFIGURATION_NAME, it)
         }
 
-        /*
-        Uses lazy jar search for the agent, because an eager search will cause a resolution at the configuration stage,
-        which may affect performance.
-        See https://github.com/Kotlin/kotlinx-kover/issues/235
-         */
-        val findJarTask = project.tasks.register<KoverAgentJarTask>(FIND_JAR_TASK, tool)
-        findJarTask.configure {
-            dependsOn(agentConfiguration)
+        val instrData = collectInstrData(tool, agentClasspath)
 
-            agentJarPath.set(project.layout.buildDirectory.file(agentLinkFilePath()))
-            agentClasspath.from(agentConfiguration)
+        val locator = SetupLocatorFactory.get(project)
+
+        val kotlinPluginType = locator.kotlinPlugin.type
+        if (kotlinPluginType == KotlinPluginType.ANDROID) {
+            androidProject(locator, instrData, reporterClasspath)
+        } else {
+            regularProject(locator, instrData, reporterClasspath)
+        }
+    }
+
+    private fun collectInstrData(tool: CoverageTool, agentClasspath: Configuration): InstrumentationData {
+        /*
+        * Uses lazy jar search for the agent, because an eager search will cause a resolution at the configuration stage,
+        * which may affect performance.
+        * See https://github.com/Kotlin/kotlinx-kover/issues/235
+        */
+        val findAgentJarTask = project.tasks.register<KoverAgentJarTask>(FIND_JAR_TASK, tool)
+        findAgentJarTask.configure {
+            dependsOn(agentClasspath)
+
+            this.agentJarPath.set(project.layout.buildDirectory.file(agentLinkFilePath()))
+            this.agentClasspath.from(agentClasspath)
         }
 
-        val agentJarPath = findJarTask.map<File?> {
+        val agentJar = findAgentJarTask.map<File?> {
             val linkFile = it.agentJarPath.get().asFile
             if (linkFile.exists()) {
                 File(linkFile.readText())
@@ -72,33 +87,62 @@ internal class ProjectApplier(private val project: Project) {
             }
         }
 
-        val instrumentationExcludedClasses = projectExtension.instrumentation.classes
+        return InstrumentationData(
+            findAgentJarTask,
+            agentJar,
+            tool,
+            projectExtension.instrumentation.classes
+        )
+    }
 
-        val locator = SetupLocatorFactory.get(project)
+    private fun regularProject(
+        locator: SetupLocator,
+        instrData: InstrumentationData,
+        reporterClasspath: Configuration
+    ) {
+        if (androidExtension.reports.isNotEmpty()) {
+            throw KoverIllegalConfigException("It is unacceptable to configure Kover Android reports, they can only be configured if Android plugin is applied")
+        }
 
+        val setup = locator.locateSingle(projectExtension)
+        setup.configureTests(instrData)
+        val artifactGenTask = project.createSetupArtifactGenerator(setup, locator.kotlinPlugin, instrData.tool)
+        ReportsApplier(project, instrData.tool, artifactGenTask, reporterClasspath, setup.id)
+            .createReports(commonReportExtension, null)
+    }
+
+    private fun androidProject(
+        locator: SetupLocator,
+        instrData: InstrumentationData,
+        reporterClasspath: Configuration
+    ) {
         val setups = locator.locateMultiple(projectExtension)
 
-        checkAndroidReports(locator, setups)
+        // Checking Android report configuration errors in case build variant not found, or the Android plugin is not applied.
+        val buildVariantNames = setups.filter { !it.id.isDefault }.map { it.id.name }.toSet()
+        val configuredNames = androidExtension.reports.map { it.key }.toSet()
+        val unknownVariantNames = configuredNames.subtract(buildVariantNames)
+        if (unknownVariantNames.isNotEmpty()) {
+            throw KoverIllegalConfigException("Error in configuring Kover Android reports: build variants are not present in the project $unknownVariantNames")
+        }
 
-        setups.forEach {
-            it.tests.configureEach {
-                JvmTestTaskApplier(this, findJarTask, agentJarPath, tool, instrumentationExcludedClasses).apply()
-            }
+        setups.forEach { setup ->
+            setup.configureTests(instrData)
+            val artifactGenTask = project.createSetupArtifactGenerator(setup, locator.kotlinPlugin, instrData.tool)
 
-            val artifactGenTask = project.createSetupConfiguration(it, locator.kotlinPlugin, tool)
-
-            val androidReportExtension = if (locator.kotlinPlugin.type == KotlinPluginType.ANDROID) {
-                androidExtension.reports[it.id.name]
-            } else {
-                null
-            }
-
-            ReportsApplier(project, tool, artifactGenTask, reporterConfig, it.id)
-                .createReports(defaultReportExtension, androidReportExtension)
+            val androidReportExtension = androidExtension.reports[setup.id.name]
+            ReportsApplier(project, instrData.tool, artifactGenTask, reporterClasspath, setup.id)
+                .createReports(commonReportExtension, androidReportExtension)
         }
     }
 
-    private fun Project.createSetupConfiguration(
+    private fun KoverSetup<*>.configureTests(data: InstrumentationData) {
+        tests.configureEach {
+            JvmTestTaskApplier(this, data).apply()
+        }
+    }
+
+    private fun Project.createSetupArtifactGenerator(
         setup: KoverSetup<*>,
         kotlinPlugin: AppliedKotlinPlugin,
         tool: CoverageTool
@@ -131,20 +175,11 @@ internal class ProjectApplier(private val project: Project) {
 
         return artifactGenTask
     }
-
-    /**
-     * Checking Android report configuration errors in case build variant not found, or the Android plugin is not applied.
-     */
-    private fun checkAndroidReports(locator: SetupLocator, setups: List<KoverSetup<*>>) {
-        if (locator.kotlinPlugin.type != KotlinPluginType.ANDROID && androidExtension.reports.isNotEmpty()) {
-            throw KoverIllegalConfigException("It is unacceptable to configure Kover Android reports, they can only be configured if Android plugin is applied")
-        }
-
-        val buildVariantNames = setups.filter { !it.id.isDefault }.map { it.id.name }.toSet()
-        val configuredNames = androidExtension.reports.map { it.key }.toSet()
-        val unknownVariantNames = configuredNames.subtract(buildVariantNames)
-        if (unknownVariantNames.isNotEmpty()) {
-            throw KoverIllegalConfigException("Error in configuring Kover Android reports: build variants are not present in the project $unknownVariantNames")
-        }
-    }
 }
+
+internal class InstrumentationData(
+    val findAgentJarTask: TaskProvider<KoverAgentJarTask>,
+    val agentJar: Provider<File>,
+    val tool: CoverageTool,
+    val excludedClasses: Set<String>
+)

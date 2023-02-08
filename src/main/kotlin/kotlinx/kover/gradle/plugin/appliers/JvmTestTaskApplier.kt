@@ -6,7 +6,6 @@ package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.rawReportPath
 import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.tasks.internal.KoverAgentJarTask
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
@@ -20,23 +19,20 @@ import java.io.File
 
 internal class JvmTestTaskApplier(
     private val testTask: Test,
-    private val agentFindTask: Provider<KoverAgentJarTask>,
-    private val agentJar: Provider<File>,
-    private val tool: CoverageTool,
-    private val excludedClasses: Set<String>
+    private val data: InstrumentationData
 ) {
     fun apply() {
         val rawReportProvider =
-            testTask.project.layout.buildDirectory.file(rawReportPath(testTask.name, tool.variant.vendor))
-        testTask.dependsOn(agentFindTask)
+            testTask.project.layout.buildDirectory.file(rawReportPath(testTask.name, data.tool.variant.vendor))
+        testTask.dependsOn(data.findAgentJarTask)
 
         // Always excludes android classes TODO link
-        val excluded = excludedClasses + listOf("android.*", "com.android.*")
+        val excluded = data.excludedClasses + listOf("android.*", "com.android.*")
 
         testTask.jvmArgumentProviders += JvmTestTaskArgumentProvider(
             testTask.temporaryDir,
-            tool,
-            agentJar,
+            data.tool,
+            data.agentJar,
             excluded,
             rawReportProvider
         )

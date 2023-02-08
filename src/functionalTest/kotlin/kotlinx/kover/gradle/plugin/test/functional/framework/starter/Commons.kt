@@ -11,23 +11,32 @@ import java.io.*
 /**
  * Override Kover version and add local repository to find artifact for current build.
  */
+@Suppress("UNUSED_PARAMETER")
 internal fun File.patchSettingsFile(description: String) {
     val settingsFile = (listFiles()?.firstOrNull { it.name == "settings.gradle" || it.name == "settings.gradle.kts" }
         ?: throw Exception("No Gradle settings file in project ${this.canonicalPath}"))
     val language = if (settingsFile.name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
 
-    val content = settingsFile.readText()
-    if (content.contains("pluginManagement")) {
-        throw Exception("Illegal usage of 'pluginManagement' in Gradle settings file for $description\nPlease remove its use for functional tests")
+    val originLines = settingsFile.readLines()
+
+    settingsFile.bufferedWriter().use { writer ->
+
+        originLines.forEach { line ->
+            writer.appendLine(line)
+            if (line.trimStart().startsWith("pluginManagement")) {
+                val additionalManagement = pluginManagement(language)
+                additionalManagement.forEach {
+                    writer.appendLine(it)
+                }
+            }
+        }
+
     }
-    val extendedContent = pluginManagement(language) + content
-    settingsFile.writeText(extendedContent)
 }
 
 
-private fun pluginManagement(language: ScriptLanguage): String {
+private fun pluginManagement(language: ScriptLanguage): List<String> {
     return """
-pluginManagement {
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "org.jetbrains.kotlinx.kover") {
@@ -36,11 +45,7 @@ pluginManagement {
         }
     }
     repositories {
-        gradlePluginPortal()
-        mavenCentral()
         maven { url=${localRepositoryPath.uriForScript(language)} }
-        google()
     }
-}
-"""
+""".lines()
 }
