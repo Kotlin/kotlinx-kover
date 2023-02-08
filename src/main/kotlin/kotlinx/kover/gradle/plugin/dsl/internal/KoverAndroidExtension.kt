@@ -11,11 +11,16 @@ import org.gradle.kotlin.dsl.*
 import javax.inject.*
 
 internal open class KoverAndroidExtensionImpl @Inject constructor(private val objects: ObjectFactory): KoverAndroidExtension {
+    internal val common: KoverCommonReportExtensionImpl = objects.newInstance()
     internal val reports: MutableMap<String, KoverReportExtensionImpl> = mutableMapOf()
+
+    override fun common(config: Action<KoverCommonReportExtension>) {
+        config(common)
+    }
 
     override fun report(buildVariantName: String, config: Action<KoverReportExtension>) {
         val report = reports.getOrPut(buildVariantName) { objects.newInstance(objects) }
-        config.execute(report)
+        config(report)
     }
 
 }

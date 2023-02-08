@@ -4,8 +4,11 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
+import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_MINIMAL_VERSION
 import kotlinx.kover.gradle.plugin.tools.*
+import kotlinx.kover.gradle.plugin.util.SemVer
 import org.gradle.api.*
 import org.gradle.api.model.*
 import org.gradle.kotlin.dsl.*
@@ -27,6 +30,16 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
     }
 
     override fun useKoverTool(version: String) {
+        val minimal = SemVer.ofThreePartOrNull(KOVER_TOOL_MINIMAL_VERSION)
+            ?: throw KoverCriticalException("Incorrect minimal version of kover tool '$KOVER_TOOL_MINIMAL_VERSION'")
+
+        val custom = SemVer.ofThreePartOrNull(version)
+            ?: throw KoverIllegalConfigException("Incorrect version of kover tool '$KOVER_TOOL_MINIMAL_VERSION', expected version in format '1.2.3'")
+
+        if (custom < minimal) {
+            throw KoverIllegalConfigException("Specified kover tool version '$version' lower then expected minimal '$KOVER_TOOL_MINIMAL_VERSION'")
+        }
+
         toolVariant = KoverToolVariant(version)
     }
 
@@ -51,7 +64,7 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
     internal val instrumentation: KoverInstrumentationExclusionsImpl = objects.newInstance()
 }
 
-internal open class KoverTestsExclusionsImpl: KoverTestsExclusions {
+internal open class KoverTestsExclusionsImpl : KoverTestsExclusions {
     override fun taskName(vararg name: String) {
         tasksNames.addAll(name)
     }
@@ -69,7 +82,7 @@ internal open class KoverTestsExclusionsImpl: KoverTestsExclusions {
     internal val kmpTargetNames: MutableSet<String> = mutableSetOf()
 }
 
-internal open class KoverSourcesExclusionsImpl: KoverSourcesExclusions {
+internal open class KoverSourcesExclusionsImpl : KoverSourcesExclusions {
     override var excludeJavaCode: Boolean = false
 
     override fun jvmSourceSetName(vararg name: String) {
@@ -100,7 +113,7 @@ internal open class KoverSourcesExclusionsImpl: KoverSourcesExclusions {
     internal val kmpCompilationsByTarget: MutableMap<String, MutableSet<String>> = mutableMapOf()
 }
 
-internal open class KoverInstrumentationExclusionsImpl: KoverInstrumentationExclusions {
+internal open class KoverInstrumentationExclusionsImpl : KoverInstrumentationExclusions {
     override fun className(vararg className: String) {
         classes += className
     }

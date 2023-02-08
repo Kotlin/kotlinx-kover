@@ -9,9 +9,9 @@ public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
 
 public const val PROJECT_SETUP_EXTENSION_NAME = "kover"
 
-public const val COMMON_REPORTS_EXTENSION_NAME = "koverReport"
+public const val SIMPLE_REPORTS_EXTENSION_NAME = "koverReport"
 
-public const val ANDROID_REPORTS_EXTENSION_NAME = "koverAndroid"
+public const val ANDROID_EXTENSION_NAME = "koverAndroid"
 
 public interface KoverClassDefinitions {
     public fun className(vararg className: String)

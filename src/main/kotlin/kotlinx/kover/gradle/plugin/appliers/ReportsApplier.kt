@@ -28,67 +28,67 @@ internal class ReportsApplier(
 ) {
 
     fun createReports(
-        rootReport: KoverReportExtensionImpl,
-        overriddenReport: KoverReportExtensionImpl?
+        reportConfig: KoverReportExtensionImpl?,
+        commonReportConfig: KoverCommonReportExtensionImpl? = null,
+        verifyOnCheck: Boolean = true
     ) {
         val extReportContext = createExternalReportContext()
 
         val runOnCheck = mutableListOf<TaskProvider<*>>()
-        val reportExtension = overriddenReport ?: rootReport
 
         val buildDir = project.layout.buildDirectory
         val htmlTask = project.tasks.createReportTask<KoverHtmlTask>(htmlReportTaskName(setupId), extReportContext) {
             //
-            val reportDirV = if (setupId.isDefault) {
-                rootReport.html.reportDir.isPresent.ifTrue { project.layout.dir(rootReport.html.reportDir) }
+            val reportDirV = if ( reportConfig != null && reportConfig.html.reportDir.isPresent) {
+                project.layout.dir(reportConfig.html.reportDir)
             } else {
-                overriddenReport?.html?.reportDir?.isPresent?.ifTrue { project.layout.dir(overriddenReport.html.reportDir) }
-            } ?: buildDir.dir(htmlReportPath(setupId))
+                buildDir.dir(htmlReportPath(setupId))
+            }
 
             //custom defined title takes precedence over default title. Project name by default
-            val titleV = overriddenReport?.html?.title ?: rootReport.html.title ?: project.name
+            val titleV = reportConfig?.html?.title ?: commonReportConfig?.html?.title ?: project.name
 
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val overriddenFilters = overriddenReport?.html?.filters ?: overriddenReport?.commonFilters
-            val rootFilters = rootReport.html.filters ?: rootReport.commonFilters
-            val resultFiltersV = (overriddenFilters ?: rootFilters)?.convert() ?: emptyFilters
+            val commonReportFilters = commonReportConfig?.html?.filters ?: commonReportConfig?.commonFilters
+            val reportFilters = reportConfig?.html?.filters ?: reportConfig?.commonFilters
+            val resultFiltersV = (reportFilters ?: commonReportFilters)?.convert() ?: emptyFilters
 
             reportDir.convention(reportDirV)
             title.convention(titleV)
             filters.set(resultFiltersV)
         }
         // false by default
-        if (reportExtension.html.onCheck == true) {
+        if (reportConfig?.html?.onCheck == true) {
             runOnCheck += htmlTask
         }
 
         val xmlTask = project.tasks.createReportTask<KoverXmlTask>(xmlReportTaskName(setupId), extReportContext) {
             //
-            val reportFileV = if (setupId.isDefault) {
-                rootReport.xml.reportFile.isPresent.ifTrue { project.layout.file(rootReport.xml.reportFile) }
+            val reportFileV = if(reportConfig != null && reportConfig.xml.reportFile.isPresent) {
+                project.layout.file(reportConfig.xml.reportFile)
             } else {
-                overriddenReport?.xml?.reportFile?.isPresent?.ifTrue { project.layout.file(overriddenReport.xml.reportFile) }
-            } ?: buildDir.file(xmlReportPath(setupId))
+                buildDir.file(xmlReportPath(setupId))
+            }
 
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val overriddenFilters = overriddenReport?.xml?.filters ?: overriddenReport?.commonFilters
-            val rootFilters = rootReport.xml.filters ?: rootReport.commonFilters
-            val resultFiltersV = (overriddenFilters ?: rootFilters)?.convert() ?: emptyFilters
+            val commonReportFilters = commonReportConfig?.xml?.filters ?: commonReportConfig?.commonFilters
+            val reportFilters = reportConfig?.xml?.filters ?: reportConfig?.commonFilters
+            val resultFiltersV = (reportFilters ?: commonReportFilters)?.convert() ?: emptyFilters
 
             reportFile.convention(reportFileV)
             filters.set(resultFiltersV)
         }
         // false by default
-        if (reportExtension.xml.onCheck == true) {
+        if (reportConfig?.xml?.onCheck == true) {
             runOnCheck += xmlTask
         }
 
         val verifyTask = project.tasks.createReportTask<KoverVerifyTask>(verifyTaskName(setupId), extReportContext) {
             // custom filters are in priority, html block priority over common filters. No filters by default
             val commonFiltersV =
-                (overriddenReport?.commonFilters ?: rootReport.commonFilters)?.convert() ?: emptyFilters
+                (reportConfig?.commonFilters ?: commonReportConfig?.commonFilters)?.convert() ?: emptyFilters
 
-            val rulesV = overriddenReport?.verify?.definedRules() ?: rootReport.verify.definedRules() ?: emptyList()
+            val rulesV = reportConfig?.verify?.definedRules() ?: commonReportConfig?.verify?.definedRules() ?: emptyList()
 
             // path can't be changed
             resultFile.convention(project.layout.buildDirectory.file(verificationErrorsPath(setupId)))
@@ -98,7 +98,7 @@ internal class ReportsApplier(
             shouldRunAfter(htmlTask)
             shouldRunAfter(xmlTask)
         }
-        if (reportExtension.verify.onCheck) {
+        if (reportConfig?.verify?.onCheck ?: verifyOnCheck) {
             runOnCheck += verifyTask
         }
 

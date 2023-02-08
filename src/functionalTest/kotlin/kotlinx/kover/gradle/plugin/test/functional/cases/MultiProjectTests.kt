@@ -123,8 +123,8 @@ internal class MultiProjectTests {
     }
 
     /*
-    Test on error-fix "Kover plugin not applied in projects" when there are empty nested subproject.
-    Issue https://github.com/Kotlin/kotlinx-kover/issues/222
+     *Test on error-fix "Kover plugin not applied in projects" when there are empty nested subproject.
+     *Issue https://github.com/Kotlin/kotlinx-kover/issues/222
      */
     @TemplateTest("nested-project", [":koverXmlReport"])
     fun CheckerContext.testNestedProjectInsideEmptyProject() {

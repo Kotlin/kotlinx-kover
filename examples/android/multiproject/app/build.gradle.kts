@@ -56,24 +56,23 @@ dependencies {
     kover(project(":lib"))
 }
 
-// filters for all report types of all build variants
-koverReport {
-    filters {
-        excludes {
-            className(
+
+koverAndroid {
+    // filters for all report types of all build variants
+    common {
+        filters {
+            excludes {
+                className(
                     "*Fragment",
                     "*Fragment\$*",
                     "*Activity",
                     "*Activity\$*",
                     "*.databinding.*",
                     "*.BuildConfig"
-            )
+                )
+            }
         }
     }
-}
-
-
-koverAndroid {
 
     report("release") {
         // filters for all report types only of 'release' build type

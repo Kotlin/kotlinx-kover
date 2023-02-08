@@ -20,6 +20,16 @@ public interface KoverReportExtension {
     public fun verify(config: Action<KoverVerifyReportConfig>)
 }
 
+public interface KoverCommonReportExtension {
+    public fun filters(config: Action<KoverReportFilters>)
+
+    public fun html(config: Action<KoverCommonHtmlReportConfig>)
+
+    public fun xml(config: Action<KoverCommonXmlReportConfig>)
+
+    public fun verify(config: Action<KoverCommonVerifyReportConfig>)
+}
+
 public interface KoverReportFilters {
     public fun excludes(config: Action<KoverReportFilter>)
 
@@ -38,28 +48,35 @@ public interface KoverReportFilter: KoverClassDefinitions {
     public fun annotatedBy(vararg annotationName: String)
 }
 
-public interface KoverHtmlReportConfig {
+public interface KoverHtmlReportConfig: KoverCommonHtmlReportConfig {
     public var onCheck: Boolean?
-    public var title: String?
 
     public fun setReportDir(dir: File)
     public fun setReportDir(dir: Provider<Directory>)
+}
+
+public interface KoverCommonHtmlReportConfig {
+    public var title: String?
 
     public fun filters(config: Action<KoverReportFilters>)
 }
 
-public interface KoverXmlReportConfig {
+public interface KoverXmlReportConfig: KoverCommonXmlReportConfig {
     public var onCheck: Boolean?
 
     public fun setReportFile(xmlFile: File)
     public fun setReportFile(xmlFile: Provider<RegularFile>)
+}
 
+public interface KoverCommonXmlReportConfig {
     public fun filters(config: Action<KoverReportFilters>)
 }
 
-public interface KoverVerifyReportConfig {
+public interface KoverVerifyReportConfig: KoverCommonVerifyReportConfig {
     public var onCheck: Boolean
+}
 
+public interface KoverCommonVerifyReportConfig {
     public fun rule(config: Action<KoverVerifyRule>)
     public fun rule(name: String, config: Action<KoverVerifyRule>)
 }

@@ -23,7 +23,7 @@ import java.io.*
 internal class ProjectApplier(private val project: Project) {
     private lateinit var projectExtension: KoverProjectExtensionImpl
     private lateinit var androidExtension: KoverAndroidExtensionImpl
-    private lateinit var commonReportExtension: KoverReportExtensionImpl
+    private lateinit var simpleReportExtension: KoverReportExtensionImpl
 
     fun onApply() {
         project.configurations.create(DEPENDENCY_CONFIGURATION_NAME) {
@@ -31,9 +31,9 @@ internal class ProjectApplier(private val project: Project) {
         }
 
         projectExtension = project.extensions.create(PROJECT_SETUP_EXTENSION_NAME, project.objects)
-        androidExtension = project.extensions.create(ANDROID_REPORTS_EXTENSION_NAME, project.objects)
+        androidExtension = project.extensions.create(ANDROID_EXTENSION_NAME, project.objects)
 
-        commonReportExtension = project.extensions.create(COMMON_REPORTS_EXTENSION_NAME)
+        simpleReportExtension = project.extensions.create(SIMPLE_REPORTS_EXTENSION_NAME)
     }
 
     fun onAfterEvaluate() {
@@ -108,7 +108,7 @@ internal class ProjectApplier(private val project: Project) {
         setup.configureTests(instrData)
         val artifactGenTask = project.createSetupArtifactGenerator(setup, locator.kotlinPlugin, instrData.tool)
         ReportsApplier(project, instrData.tool, artifactGenTask, reporterClasspath, setup.id)
-            .createReports(commonReportExtension, null)
+            .createReports(simpleReportExtension)
     }
 
     private fun androidProject(
@@ -126,13 +126,14 @@ internal class ProjectApplier(private val project: Project) {
             throw KoverIllegalConfigException("Error in configuring Kover Android reports: build variants are not present in the project $unknownVariantNames")
         }
 
+        val common = androidExtension.common
         setups.forEach { setup ->
             setup.configureTests(instrData)
             val artifactGenTask = project.createSetupArtifactGenerator(setup, locator.kotlinPlugin, instrData.tool)
 
             val androidReportExtension = androidExtension.reports[setup.id.name]
             ReportsApplier(project, instrData.tool, artifactGenTask, reporterClasspath, setup.id)
-                .createReports(commonReportExtension, androidReportExtension)
+                .createReports(androidReportExtension, common)
         }
     }
 
