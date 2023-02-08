@@ -20,15 +20,30 @@ internal fun File.patchSettingsFile(description: String) {
     val originLines = settingsFile.readLines()
 
     settingsFile.bufferedWriter().use { writer ->
-
+        var firstStatement = true
         originLines.forEach { line ->
-            writer.appendLine(line)
-            if (line.trimStart().startsWith("pluginManagement")) {
+
+
+            if (firstStatement && line.isNotBlank()) {
+                val isPluginManagement = line.trimStart().startsWith("pluginManagement")
+
+                writer.appendLine("pluginManagement {")
+
+
                 val additionalManagement = pluginManagement(language)
                 additionalManagement.forEach {
                     writer.appendLine(it)
                 }
+
+                if (!isPluginManagement) {
+                    writer.appendLine("}")
+                }
+
+                firstStatement = false
+            } else {
+                writer.appendLine(line)
             }
+
         }
 
     }
@@ -46,6 +61,8 @@ private fun pluginManagement(language: ScriptLanguage): List<String> {
     }
     repositories {
         maven { url=${localRepositoryPath.uriForScript(language)} }
+        gradlePluginPortal()
+        mavenCentral()
     }
 """.lines()
 }
