@@ -57,7 +57,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
             val name = it.property<String>("name")
             name != SourceSet.TEST_SOURCE_SET_NAME
                     // ignore specified JVM source sets
-                    && name !in koverExtension.sources.jvmSourceSets
+                    && name !in koverExtension.sources.jvm.sourceSets
         }
 
 

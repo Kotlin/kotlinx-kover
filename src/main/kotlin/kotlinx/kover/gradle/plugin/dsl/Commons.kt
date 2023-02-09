@@ -25,9 +25,3 @@ public interface KoverTaskDefinitions {
     public fun taskName(vararg name: String)
     public fun taskName(names: Iterable<String>)
 }
-
-public interface KoverKmpCompilationDefinitions {
-    public fun kmpTargetName(vararg name: String)
-    public fun kmpCompilation(targetName: String, compilationName: String)
-    public fun kmpCompilation(compilationName: String)
-}

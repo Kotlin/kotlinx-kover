@@ -82,35 +82,53 @@ internal open class KoverTestsExclusionsImpl : KoverTestsExclusions {
     internal val kmpTargetNames: MutableSet<String> = mutableSetOf()
 }
 
-internal open class KoverSourcesExclusionsImpl : KoverSourcesExclusions {
+internal open class KoverSourcesExclusionsImpl
+@Inject constructor(private val objects: ObjectFactory) : KoverSourcesExclusions {
+
     override var excludeJavaCode: Boolean = false
 
-    override fun jvmSourceSetName(vararg name: String) {
-        jvmSourceSets += name
+    override fun jvm(config: Action<KoverJvmSourceSet>) {
+        config(jvm)
     }
 
-    override fun jvmSourceSetName(names: Iterable<String>) {
+    override fun kmp(config: Action<KoverKmpSourceSet>) {
+        config(kmp)
+    }
+
+    internal val jvm: KoverJvmSourceSetImpl = objects.newInstance()
+    internal val kmp: KoverKmpSourceSetImpl = objects.newInstance()
+}
+
+internal open class KoverJvmSourceSetImpl : KoverJvmSourceSet {
+    internal val sourceSets: MutableSet<String> = mutableSetOf()
+    override fun sourceSetName(vararg name: String) {
+        sourceSets += name
+    }
+
+    override fun sourceSetName(names: Iterable<String>) {
         // TODO add check of Kotlin plugin type in afterEvaluate!
-        jvmSourceSets += names
+        sourceSets += names
     }
 
-    override fun kmpTargetName(vararg name: String) {
-        TODO("Not implemented")
+}
+
+internal open class KoverKmpSourceSetImpl : KoverKmpSourceSet {
+    internal val compilationsForAllTargets: MutableSet<String> = mutableSetOf()
+    internal val allCompilationsInTarget: MutableSet<String> = mutableSetOf()
+    internal val compilationsByTarget: MutableMap<String, MutableSet<String>> = mutableMapOf()
+
+    override fun targetName(vararg name: String) {
+        allCompilationsInTarget += name
     }
 
-    override fun kmpCompilation(targetName: String, compilationName: String) {
-        kmpCompilationsByTarget.getOrPut(targetName) { mutableSetOf() } += compilationName
+    override fun compilation(targetName: String, compilationName: String) {
+        compilationsByTarget.getOrPut(targetName) { mutableSetOf() } += compilationName
     }
 
-    override fun kmpCompilation(compilationName: String) {
-        kmpCompilationsForAllTargets += compilationName
+    override fun compilation(compilationName: String) {
+        compilationsForAllTargets += compilationName
     }
 
-    internal val jvmSourceSets: MutableSet<String> = mutableSetOf()
-
-    internal val kmpCompilationsForAllTargets: MutableSet<String> = mutableSetOf()
-
-    internal val kmpCompilationsByTarget: MutableMap<String, MutableSet<String>> = mutableMapOf()
 }
 
 internal open class KoverInstrumentationExclusionsImpl : KoverInstrumentationExclusions {

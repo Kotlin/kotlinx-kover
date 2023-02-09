@@ -56,7 +56,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
 
         val targets = kmpExtension.propertyBeans("targets").filter { it["platformType"].property<String>("name") == "jvm" }
 
-        val byTarget = koverExtension.sources.kmpCompilationsByTarget
+        val byTarget = koverExtension.sources.kmp.compilationsByTarget
 
         val compilations = targets.flatMap { it.propertyBeans("compilations") }.filter {
             val name = it.property<String>("name")
@@ -65,9 +65,11 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
             // always ignore test source set by default
             name != SourceSet.TEST_SOURCE_SET_NAME
                     // ignore compilation for all JVM targets
-                    && name !in koverExtension.sources.kmpCompilationsForAllTargets
+                    && name !in koverExtension.sources.kmp.compilationsForAllTargets
                     // ignore compilation for specified JVM target
                     && byTarget[targetName]?.contains(name) != true
+                    // ignore all compilations fro specified JVM target
+                    && targetName !in koverExtension.sources.kmp.allCompilationsInTarget
         }
 
         val sources = compilations.flatMap {

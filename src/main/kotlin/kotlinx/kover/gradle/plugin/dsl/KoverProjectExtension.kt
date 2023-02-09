@@ -65,27 +65,28 @@ public interface KoverTestsExclusions: KoverTaskDefinitions {
 }
 
 
-public interface KoverSourcesExclusions: KoverKmpCompilationDefinitions {
+public interface KoverSourcesExclusions {
     public var excludeJavaCode: Boolean
-    /* TODO move to
-     jvm {
 
-     }
+    public fun jvm(config: Action<KoverJvmSourceSet>)
 
-     kmp {
-
-     }
-     */
-    public fun jvmSourceSetName(vararg name: String)
-
-    public fun jvmSourceSetName(names: Iterable<String>)
-
-    public override fun kmpTargetName(vararg name: String)
-
-    public override fun kmpCompilation(targetName: String, compilationName: String)
-
-    public override fun kmpCompilation(compilationName: String)
+    public fun kmp(config: Action<KoverKmpSourceSet>)
 }
+
+public interface KoverJvmSourceSet {
+    public fun sourceSetName(vararg name: String)
+
+    public fun sourceSetName(names: Iterable<String>)
+}
+
+public interface KoverKmpSourceSet {
+    public fun targetName(vararg name: String)
+
+    public fun compilation(targetName: String, compilationName: String)
+
+    public fun compilation(compilationName: String)
+}
+
 
 public interface KoverInstrumentationExclusions: KoverClassDefinitions {
     public override fun className(vararg className: String)

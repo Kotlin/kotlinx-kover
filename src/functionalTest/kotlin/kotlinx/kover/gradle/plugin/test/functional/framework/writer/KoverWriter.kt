@@ -66,24 +66,38 @@ private class KoverSourcesExclusionsWriter(private val writer: FormattedWriter) 
             field = value
         }
 
-    override fun jvmSourceSetName(vararg name: String) {
-        jvmSourceSetName(name.asIterable())
+    override fun jvm(config: Action<KoverJvmSourceSet>) {
+        writer.call("jvm", config) { KoverJvmSourceSetWriter(it) }
     }
 
-    override fun jvmSourceSetName(names: Iterable<String>) {
-        writer.callStr("jvmSourceSetName", names)
+    override fun kmp(config: Action<KoverKmpSourceSet>) {
+        writer.call("kmp", config) { KoverKmpSourceSetWriter(it) }
     }
 
-    override fun kmpTargetName(vararg name: String) {
-        writer.callStr("kmpTargetName", name.asIterable())
+}
+
+private class KoverJvmSourceSetWriter(private val writer: FormattedWriter): KoverJvmSourceSet {
+    override fun sourceSetName(vararg name: String) {
+        sourceSetName(name.asIterable())
     }
 
-    override fun kmpCompilation(targetName: String, compilationName: String) {
-        writer.callStr("kmpCompilation", listOf(targetName, compilationName))
+    override fun sourceSetName(names: Iterable<String>) {
+        writer.callStr("sourceSetName", names)
     }
 
-    override fun kmpCompilation(compilationName: String) {
-        writer.callStr("kmpCompilation", listOf(compilationName))
+}
+
+private class KoverKmpSourceSetWriter(private val writer: FormattedWriter): KoverKmpSourceSet {
+    override fun targetName(vararg name: String) {
+        writer.callStr("targetName", name.asIterable())
+    }
+
+    override fun compilation(targetName: String, compilationName: String) {
+        writer.callStr("compilation", listOf(targetName, compilationName))
+    }
+
+    override fun compilation(compilationName: String) {
+        writer.callStr("compilation", listOf(compilationName))
     }
 
 }
