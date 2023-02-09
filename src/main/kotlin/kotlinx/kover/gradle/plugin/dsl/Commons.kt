@@ -7,9 +7,9 @@ package kotlinx.kover.gradle.plugin.dsl
 
 public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
 
-public const val PROJECT_SETUP_EXTENSION_NAME = "kover"
+public const val PROJECT_EXTENSION_NAME = "kover"
 
-public const val SIMPLE_REPORTS_EXTENSION_NAME = "koverReport"
+public const val REGULAR_REPORT_EXTENSION_NAME = "koverReport"
 
 public const val ANDROID_EXTENSION_NAME = "koverAndroid"
 

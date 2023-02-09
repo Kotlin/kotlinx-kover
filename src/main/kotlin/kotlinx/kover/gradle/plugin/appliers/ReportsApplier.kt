@@ -10,7 +10,6 @@ import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.tasks.*
 import kotlinx.kover.gradle.plugin.tasks.internal.KoverArtifactGenerationTask
 import kotlinx.kover.gradle.plugin.tools.*
-import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
 import org.gradle.api.provider.*
@@ -29,7 +28,7 @@ internal class ReportsApplier(
 
     fun createReports(
         reportConfig: KoverReportExtensionImpl?,
-        commonReportConfig: KoverCommonReportExtensionImpl? = null,
+        generalReportConfig: KoverGeneralReportExtensionImpl? = null,
         verifyOnCheck: Boolean = true
     ) {
         val extReportContext = createExternalReportContext()
@@ -46,12 +45,12 @@ internal class ReportsApplier(
             }
 
             //custom defined title takes precedence over default title. Project name by default
-            val titleV = reportConfig?.html?.title ?: commonReportConfig?.html?.title ?: project.name
+            val titleV = reportConfig?.html?.title ?: generalReportConfig?.html?.title ?: project.name
 
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val commonReportFilters = commonReportConfig?.html?.filters ?: commonReportConfig?.commonFilters
+            val generalFilters = generalReportConfig?.html?.filters ?: generalReportConfig?.commonFilters
             val reportFilters = reportConfig?.html?.filters ?: reportConfig?.commonFilters
-            val resultFiltersV = (reportFilters ?: commonReportFilters)?.convert() ?: emptyFilters
+            val resultFiltersV = (reportFilters ?: generalFilters)?.convert() ?: emptyFilters
 
             reportDir.convention(reportDirV)
             title.convention(titleV)
@@ -71,9 +70,9 @@ internal class ReportsApplier(
             }
 
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val commonReportFilters = commonReportConfig?.xml?.filters ?: commonReportConfig?.commonFilters
+            val generalFilters = generalReportConfig?.xml?.filters ?: generalReportConfig?.commonFilters
             val reportFilters = reportConfig?.xml?.filters ?: reportConfig?.commonFilters
-            val resultFiltersV = (reportFilters ?: commonReportFilters)?.convert() ?: emptyFilters
+            val resultFiltersV = (reportFilters ?: generalFilters)?.convert() ?: emptyFilters
 
             reportFile.convention(reportFileV)
             filters.set(resultFiltersV)
@@ -85,14 +84,14 @@ internal class ReportsApplier(
 
         val verifyTask = project.tasks.createReportTask<KoverVerifyTask>(verifyTaskName(setupId), extReportContext) {
             // custom filters are in priority, html block priority over common filters. No filters by default
-            val commonFiltersV =
-                (reportConfig?.commonFilters ?: commonReportConfig?.commonFilters)?.convert() ?: emptyFilters
+            val generalFiltersV =
+                (reportConfig?.commonFilters ?: generalReportConfig?.commonFilters)?.convert() ?: emptyFilters
 
-            val rulesV = reportConfig?.verify?.definedRules() ?: commonReportConfig?.verify?.definedRules() ?: emptyList()
+            val rulesV = reportConfig?.verify?.definedRules() ?: generalReportConfig?.verify?.definedRules() ?: emptyList()
 
             // path can't be changed
             resultFile.convention(project.layout.buildDirectory.file(verificationErrorsPath(setupId)))
-            filters.set(commonFiltersV)
+            filters.set(generalFiltersV)
             rules.addAll(rulesV.map { it.convert() })
 
             shouldRunAfter(htmlTask)

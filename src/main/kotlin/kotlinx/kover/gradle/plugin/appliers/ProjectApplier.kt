@@ -22,17 +22,17 @@ import org.gradle.kotlin.dsl.*
 internal class ProjectApplier(private val project: Project) {
     private lateinit var projectExtension: KoverProjectExtensionImpl
     private lateinit var androidExtension: KoverAndroidExtensionImpl
-    private lateinit var simpleReportExtension: KoverReportExtensionImpl
+    private lateinit var regularReportExtension: KoverReportExtensionImpl
 
     fun onApply() {
         project.configurations.create(DEPENDENCY_CONFIGURATION_NAME) {
             asBucket()
         }
 
-        projectExtension = project.extensions.create(PROJECT_SETUP_EXTENSION_NAME, project.objects)
+        projectExtension = project.extensions.create(PROJECT_EXTENSION_NAME, project.objects)
         androidExtension = project.extensions.create(ANDROID_EXTENSION_NAME, project.objects)
 
-        simpleReportExtension = project.extensions.create(SIMPLE_REPORTS_EXTENSION_NAME)
+        regularReportExtension = project.extensions.create(REGULAR_REPORT_EXTENSION_NAME)
     }
 
     fun onAfterEvaluate() {
@@ -102,7 +102,7 @@ internal class ProjectApplier(private val project: Project) {
         setup.configureTests(instrData)
         val artifactGenTask = project.createSetupArtifactGenerator(setup, locator.kotlinPlugin, instrData.tool)
         ReportsApplier(project, instrData.tool, artifactGenTask, reporterClasspath, setup.id)
-            .createReports(simpleReportExtension)
+            .createReports(regularReportExtension)
     }
 
     private fun androidProject(
@@ -120,9 +120,9 @@ internal class ProjectApplier(private val project: Project) {
             throw KoverIllegalConfigException("Error in configuring Kover Android reports: build variants are not present in the project $unknownVariantNames")
         }
 
-        // Check simple reports was configured in Android
-        if (simpleReportExtension.configured) {
-            throw KoverIllegalConfigException("Error in configuring Kover: it is not allowed to configure simple reports ('$SIMPLE_REPORTS_EXTENSION_NAME { }' extension) in Android application")
+        // Check regular report was configured in Android
+        if (regularReportExtension.configured) {
+            throw KoverIllegalConfigException("Error in configuring Kover: it is not allowed to configure regular report ('$REGULAR_REPORT_EXTENSION_NAME { }' extension) in Android application")
         }
 
         val common = androidExtension.common

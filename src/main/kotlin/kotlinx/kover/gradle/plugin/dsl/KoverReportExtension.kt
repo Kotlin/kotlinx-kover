@@ -20,14 +20,14 @@ public interface KoverReportExtension {
     public fun verify(config: Action<KoverVerifyReportConfig>)
 }
 
-public interface KoverCommonReportExtension {
+public interface KoverGeneralReportExtension {
     public fun filters(config: Action<KoverReportFilters>)
 
-    public fun html(config: Action<KoverCommonHtmlReportConfig>)
+    public fun html(config: Action<KoverGeneralHtmlReportConfig>)
 
-    public fun xml(config: Action<KoverCommonXmlReportConfig>)
+    public fun xml(config: Action<KoverGeneralXmlReportConfig>)
 
-    public fun verify(config: Action<KoverCommonVerifyReportConfig>)
+    public fun verify(config: Action<KoverGeneralVerifyReportConfig>)
 }
 
 public interface KoverReportFilters {
@@ -48,35 +48,35 @@ public interface KoverReportFilter: KoverClassDefinitions {
     public fun annotatedBy(vararg annotationName: String)
 }
 
-public interface KoverHtmlReportConfig: KoverCommonHtmlReportConfig {
+public interface KoverHtmlReportConfig: KoverGeneralHtmlReportConfig {
     public var onCheck: Boolean?
 
     public fun setReportDir(dir: File)
     public fun setReportDir(dir: Provider<Directory>)
 }
 
-public interface KoverCommonHtmlReportConfig {
+public interface KoverGeneralHtmlReportConfig {
     public var title: String?
 
     public fun filters(config: Action<KoverReportFilters>)
 }
 
-public interface KoverXmlReportConfig: KoverCommonXmlReportConfig {
+public interface KoverXmlReportConfig: KoverGeneralXmlReportConfig {
     public var onCheck: Boolean?
 
     public fun setReportFile(xmlFile: File)
     public fun setReportFile(xmlFile: Provider<RegularFile>)
 }
 
-public interface KoverCommonXmlReportConfig {
+public interface KoverGeneralXmlReportConfig {
     public fun filters(config: Action<KoverReportFilters>)
 }
 
-public interface KoverVerifyReportConfig: KoverCommonVerifyReportConfig {
+public interface KoverVerifyReportConfig: KoverGeneralVerifyReportConfig {
     public var onCheck: Boolean
 }
 
-public interface KoverCommonVerifyReportConfig {
+public interface KoverGeneralVerifyReportConfig {
     public fun rule(config: Action<KoverVerifyRule>)
     public fun rule(name: String, config: Action<KoverVerifyRule>)
 }
