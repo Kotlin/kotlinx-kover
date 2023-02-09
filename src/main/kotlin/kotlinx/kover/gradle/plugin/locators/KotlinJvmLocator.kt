@@ -30,7 +30,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
 
     override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.JVM)
 
-    override fun locateSingle(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
+    override fun locateRegular(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
         val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/JVM project")
 

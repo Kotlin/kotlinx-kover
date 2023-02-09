@@ -14,7 +14,9 @@ import org.gradle.api.file.*
 import org.gradle.api.tasks.*
 import java.io.*
 
-
+/**
+ * Variant of coverage tool, characterized by the vendor and its version.
+ */
 internal sealed class CoverageToolVariant(
     @get:Input
     val vendor: CoverageToolVendor,
@@ -55,23 +57,61 @@ internal object JacocoToolDefaultVariant: CoverageToolVariant(CoverageToolVendor
     KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
 )
 
+/**
+ * Common interface for different implementations of coverage tools.
+ *
+ * Provides all the functionality for instrumentation and reporting.
+ */
 internal interface CoverageTool {
     val variant: CoverageToolVariant
 
+    /**
+     * Dependency on JVM online instrumentation agent.
+     *
+     * It is necessary that Gradle automatically loads the dependency.
+     *
+     * Written as Gradle dependency notation (like 'group.name:artifact.name:version').
+     */
     val jvmAgentDependency: String
+
+    /**
+     * Dependencies on coverage report generator.
+     *
+     * It is necessary that Gradle automatically loads the dependency.
+     *
+     *  Written as Gradle dependency notation (like 'group.name:artifact.name:version').
+     */
     val jvmReporterDependencies: List<String>
 
+    /**
+     * Find jar-file with JVM online instrumentation agent in classpath, loaded from [jvmAgentDependency].
+     */
     fun findJvmAgentJar(classpath: FileCollection, archiveOperations: ArchiveOperations): File
 
+    /**
+     * Generate additional JVM argument for test task.
+     */
     fun jvmAgentArgs(jarFile: File, tempDir: File, rawReportFile: File, excludedClasses: Set<String>): List<String>
 
+    /**
+     * Generate XML report.
+     */
     fun xmlReport(xmlFile: File, filters: ReportFilters, context: ReportContext)
 
+    /**
+     * Generate HTML report.
+     */
     fun htmlReport(htmlDir: File, title: String, filters: ReportFilters, context: ReportContext)
 
+    /**
+     * Perform verification.
+     */
     fun verify(rules: List<VerificationRule>, commonFilters: ReportFilters, context: ReportContext): List<RuleViolations>
 }
 
+/**
+ * Factory to create instance of coverage tool according project settings from Kover project extension.
+ */
 internal object CoverageToolFactory {
     fun get(projectExtension: KoverProjectExtensionImpl): CoverageTool {
         // Kover Tool Default by default

@@ -29,7 +29,7 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
 
     override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.ANDROID)
 
-    override fun locateMultiple(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
+    override fun locateAll(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
         val androidExtension = project.extensions.findByName("android")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
 
@@ -97,7 +97,7 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
         return SetupLazyInfo(sources, outputs, compileTasks)
     }
 
-    override fun locateSingle(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
+    override fun locateRegular(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
         throw KoverCriticalException("Kover Android Locator does not support a single setup")
     }
 }

@@ -18,6 +18,8 @@ import javax.annotation.*
 import javax.inject.*
 
 /**
+ * The name of the author or the brand of the instrument.
+ *
  * @param[rawReportExtension] The coverage report file extension, without the first `.`
  */
 internal enum class CoverageToolVendor(val rawReportExtension: String) {
@@ -25,33 +27,59 @@ internal enum class CoverageToolVendor(val rawReportExtension: String) {
     JACOCO("exec"),
 }
 
+/**
+ * Type of Kotlin plugin.
+ */
 internal enum class KotlinPluginType {
     JVM,
     MULTI_PLATFORM,
     ANDROID
 }
 
+/**
+ * Type of Kotlin plugin, applied in a specific project.
+ *
+ * If no Kotlin plugin is used in this project, then [type] is `null`.
+ */
 internal class AppliedKotlinPlugin(val type: KotlinPluginType?)
 
+/**
+ * Kover Setup - is a named set of exhaustive information, used in instrumentation and generation of reports.
+ *
+ * Includes of:
+ *  - directories with source files and class-files
+ *  - compile tasks used to compile all classes of the project
+ *  - test tasks which need to run to measure the coverage
+ */
 internal class KoverSetup<T : Test>(
     // Provider is used because the list of directories and compilation tasks may change in the `afterEvaluate` block of another plugin later
     val lazyInfo: Provider<SetupLazyInfo>,
 
     val tests: TaskCollection<T>,
 
-    val id: SetupId = SetupId.Default
+    val id: SetupId = SetupId.Regular
 )
 
+/**
+ * Identifier of Kover setup.
+ */
 internal data class SetupId(val name: String) {
     companion object {
-        val Default = SetupId(DEFAULT_PROJECT_SETUP_NAME)
+        /**
+         * Used only if there is supposed to be only one setup in the project, e.g. in case of Kotlin/JVM or Kotlin/MP projects.
+         */
+        val Regular = SetupId(REGULAR_SETUP_NAME)
     }
 
+    /**
+     * It is used for convenient generation of the task name or other named objects in Gradle.
+     */
     val capitalized: String = name.capitalize()
-
-    val isDefault get() = this == Default || name == Default.name
 }
 
+/**
+ * Part of Kover setup information, received only during the execution of tasks (lazily).
+ */
 internal class SetupLazyInfo(
     val sources: Set<File> = emptySet(),
     val outputs: Set<File> = emptySet(),

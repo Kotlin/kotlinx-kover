@@ -16,7 +16,9 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.process.*
 import java.io.File
 
-
+/**
+ * Gradle Plugin applier of the specific JVM test task.
+ */
 internal class JvmTestTaskApplier(
     private val testTask: Test,
     private val data: InstrumentationData
@@ -39,7 +41,9 @@ internal class JvmTestTaskApplier(
     }
 }
 
-
+/**
+ * Provider of additional JVM string arguments for running a test task.
+ */
 private class JvmTestTaskArgumentProvider(
     private val tempDir: File,
     private val tool: CoverageTool,

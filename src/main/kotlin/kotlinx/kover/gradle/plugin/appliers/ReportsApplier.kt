@@ -17,7 +17,9 @@ import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
 import org.gradle.language.base.plugins.*
 
-
+/**
+ * Gradle Plugin applier for creating Kover reports.
+ */
 internal class ReportsApplier(
     private val project: Project,
     private val tool: CoverageTool,
@@ -38,7 +40,7 @@ internal class ReportsApplier(
         val buildDir = project.layout.buildDirectory
         val htmlTask = project.tasks.createReportTask<KoverHtmlTask>(htmlReportTaskName(setupId), extReportContext) {
             //
-            val reportDirV = if ( reportConfig != null && reportConfig.html.reportDir.isPresent) {
+            val reportDirV = if (reportConfig != null && reportConfig.html.reportDir.isPresent) {
                 project.layout.dir(reportConfig.html.reportDir)
             } else {
                 buildDir.dir(htmlReportPath(setupId))
@@ -63,7 +65,7 @@ internal class ReportsApplier(
 
         val xmlTask = project.tasks.createReportTask<KoverXmlTask>(xmlReportTaskName(setupId), extReportContext) {
             //
-            val reportFileV = if(reportConfig != null && reportConfig.xml.reportFile.isPresent) {
+            val reportFileV = if (reportConfig != null && reportConfig.xml.reportFile.isPresent) {
                 project.layout.file(reportConfig.xml.reportFile)
             } else {
                 buildDir.file(xmlReportPath(setupId))
@@ -87,7 +89,8 @@ internal class ReportsApplier(
             val generalFiltersV =
                 (reportConfig?.commonFilters ?: generalReportConfig?.commonFilters)?.convert() ?: emptyFilters
 
-            val rulesV = reportConfig?.verify?.definedRules() ?: generalReportConfig?.verify?.definedRules() ?: emptyList()
+            val rulesV =
+                reportConfig?.verify?.definedRules() ?: generalReportConfig?.verify?.definedRules() ?: emptyList()
 
             // path can't be changed
             resultFile.convention(project.layout.buildDirectory.file(verificationErrorsPath(setupId)))

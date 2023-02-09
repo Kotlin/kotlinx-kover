@@ -29,7 +29,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
 
     override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.MULTI_PLATFORM)
 
-    override fun locateSingle(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
+    override fun locateRegular(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
         val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/Multi-Platform project")
 

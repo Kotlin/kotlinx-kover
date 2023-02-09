@@ -50,6 +50,13 @@ internal fun AttributeContainer.kotlinType(kotlinPlugin: AppliedKotlinPlugin, ob
     attribute(KotlinPlugin.ATTRIBUTE, objects.named(kotlinPlugin.type?.name ?: "NONE"))
 }
 
+/**
+ * Mark this [Configuration] as a transitive.
+ *
+ * Dependencies must be added to this configuration, as a result of its resolution, artifacts from these dependencies are returned.
+ *
+ * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html
+ */
 internal fun Configuration.asTransitiveDependencies() {
     isVisible = false
     isTransitive = true
@@ -58,6 +65,9 @@ internal fun Configuration.asTransitiveDependencies() {
 
 /**
  * Mark this [Configuration] as a bucket for declaring dependencies.
+ *
+ * Bucket combines artifacts from the specified dependencies,
+ * and allows you to resolve in consumer configuration.
  *
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */

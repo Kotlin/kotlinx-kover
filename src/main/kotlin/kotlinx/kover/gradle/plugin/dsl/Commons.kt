@@ -4,14 +4,40 @@
 
 package kotlinx.kover.gradle.plugin.dsl
 
-
+/**
+ * TODO
+ */
 public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
 
+/**
+ * TODO
+ */
 public const val PROJECT_EXTENSION_NAME = "kover"
 
+/**
+ * TODO
+ */
 public const val REGULAR_REPORT_EXTENSION_NAME = "koverReport"
 
+/**
+ * TODO
+ */
 public const val ANDROID_EXTENSION_NAME = "koverAndroid"
+
+/**
+ * Name of the XML report generation task for Kotlin JVM and Kotlin multi-platform projects.
+ */
+public const val REGULAR_XML_REPORT_NAME = "koverXmlReport"
+
+/**
+ * Name of the HTML report generation task for Kotlin JVM and Kotlin multi-platform projects.
+ */
+public const val REGULAR_HTML_REPORT_NAME = "koverHtmlReport"
+
+/**
+ * Name of the verification task for Kotlin JVM and Kotlin multi-platform projects.
+ */
+public const val REGULAR_VERIFY_REPORT_NAME = "koverVerify"
 
 public interface KoverClassDefinitions {
     public fun className(vararg className: String)

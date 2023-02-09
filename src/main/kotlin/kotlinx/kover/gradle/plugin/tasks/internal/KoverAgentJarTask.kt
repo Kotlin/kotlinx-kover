@@ -13,6 +13,12 @@ import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.support.*
 import javax.inject.*
 
+/**
+ * Task to get online instrumentation agent jar file by specified coverage tool.
+ *
+ * The task is cached, so in general there should not be a performance issue on large projects.
+ */
+@CacheableTask
 internal open class KoverAgentJarTask @Inject constructor(private val tool: CoverageTool) : DefaultTask() {
     private val archiveOperations: ArchiveOperations = project.serviceOf()
 

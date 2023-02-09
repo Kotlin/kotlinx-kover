@@ -11,15 +11,19 @@ import org.gradle.api.*
 import org.gradle.api.invocation.*
 
 /**
- * Gradle Plugin for Kover - Kotlin Coverage Tools.
+ * Gradle Plugin for JVM Coverage Tools.
+ *
+ * The main one is Kover - with extended support for language constructs of the Kotlin language.
  */
 class KoverGradlePlugin : Plugin<Project> {
 
+    /**
+     * Apply plugin to a given project.
+     */
     override fun apply(target: Project) {
         target.gradle.checkVersion()
 
         val applier = ProjectApplier(target)
-
         applier.onApply()
 
         target.afterEvaluate {
@@ -27,10 +31,15 @@ class KoverGradlePlugin : Plugin<Project> {
         }
     }
 
+    /**
+     * Check supported Gradle versions.
+     */
     private fun Gradle.checkVersion() {
         val current = SemVer.ofVariableOrNull(gradleVersion)!!
         val min = SemVer.ofVariableOrNull(MINIMUM_GRADLE_VERSION)!!
-        if (current < min) throw GradleException("Gradle version '$gradleVersion' is not supported by Kover Plugin. " +
-                "Minimum supported version is '$MINIMUM_GRADLE_VERSION'")
+        if (current < min) throw GradleException(
+            "Gradle version '$gradleVersion' is not supported by Kover Plugin. " +
+                    "Minimum supported version is '$MINIMUM_GRADLE_VERSION'"
+        )
     }
 }

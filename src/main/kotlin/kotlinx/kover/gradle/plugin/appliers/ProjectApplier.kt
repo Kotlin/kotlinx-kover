@@ -18,23 +18,30 @@ import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.*
 
-
+/**
+ * Main Gradle Plugin applier of the project.
+ */
 internal class ProjectApplier(private val project: Project) {
     private lateinit var projectExtension: KoverProjectExtensionImpl
     private lateinit var androidExtension: KoverAndroidExtensionImpl
     private lateinit var regularReportExtension: KoverReportExtensionImpl
 
+    /**
+     * The code executed right at the moment of applying of the plugin.
+     */
     fun onApply() {
         project.configurations.create(DEPENDENCY_CONFIGURATION_NAME) {
             asBucket()
         }
 
         projectExtension = project.extensions.create(PROJECT_EXTENSION_NAME, project.objects)
-        androidExtension = project.extensions.create(ANDROID_EXTENSION_NAME, project.objects)
-
         regularReportExtension = project.extensions.create(REGULAR_REPORT_EXTENSION_NAME)
+        androidExtension = project.extensions.create(ANDROID_EXTENSION_NAME, project.objects)
     }
 
+    /**
+     * The code executed after processing of all user's configs from build.gradle[.kts] file.
+     */
     fun onAfterEvaluate() {
         val tool = CoverageToolFactory.get(projectExtension)
 
@@ -51,17 +58,18 @@ internal class ProjectApplier(private val project: Project) {
         }
 
         val instrData = collectInstrData(tool, agentClasspath)
-
         val locator = SetupLocatorFactory.get(project)
 
-        val kotlinPluginType = locator.kotlinPlugin.type
-        if (kotlinPluginType == KotlinPluginType.ANDROID) {
+        if (locator.kotlinPlugin.type == KotlinPluginType.ANDROID) {
             androidProject(locator, instrData, reporterClasspath)
         } else {
             regularProject(locator, instrData, reporterClasspath)
         }
     }
 
+    /**
+     * Collect all configured data, required for online instrumentation.
+     */
     private fun collectInstrData(tool: CoverageTool, agentClasspath: Configuration): InstrumentationData {
         /*
         * Uses lazy jar search for the agent, because an eager search will cause a resolution at the configuration stage,
@@ -70,6 +78,7 @@ internal class ProjectApplier(private val project: Project) {
         */
         val findAgentJarTask = project.tasks.register<KoverAgentJarTask>(FIND_JAR_TASK, tool)
         findAgentJarTask.configure {
+            // depends on agent classpath to resolve it in execute-time
             dependsOn(agentClasspath)
 
             this.agentJar.set(project.layout.buildDirectory.file(agentFilePath(tool.variant)))
@@ -83,6 +92,9 @@ internal class ProjectApplier(private val project: Project) {
         )
     }
 
+    /**
+     * Configure Kotlin JVM or Kotlin multi-platform project.
+     */
     private fun regularProject(
         locator: SetupLocator,
         instrData: InstrumentationData,
@@ -98,24 +110,27 @@ internal class ProjectApplier(private val project: Project) {
             throw KoverIllegalConfigException("It is acceptable to add Kover KMP source sets exclusion only if kotlin multiplatform plugin is applied")
         }
 
-        val setup = locator.locateSingle(projectExtension)
+        val setup = locator.locateRegular(projectExtension)
         setup.configureTests(instrData)
         val artifactGenTask = project.createSetupArtifactGenerator(setup, locator.kotlinPlugin, instrData.tool)
         ReportsApplier(project, instrData.tool, artifactGenTask, reporterClasspath, setup.id)
             .createReports(regularReportExtension)
     }
 
+    /**
+     * Configure Android project.
+     */
     private fun androidProject(
         locator: SetupLocator,
         instrData: InstrumentationData,
         reporterClasspath: Configuration
     ) {
-        val setups = locator.locateMultiple(projectExtension)
+        val setups = locator.locateAll(projectExtension)
 
         // Checking Android report configuration errors in case build variant not found, or the Android plugin is not applied.
-        val buildVariantNames = setups.filter { !it.id.isDefault }.map { it.id.name }.toSet()
-        val configuredNames = androidExtension.reports.map { it.key }.toSet()
-        val unknownVariantNames = configuredNames.subtract(buildVariantNames)
+        val buildVariantNames = setups.map { it.id.name }.toSet()
+        val customNames = androidExtension.reports.map { it.key }.toSet()
+        val unknownVariantNames = customNames.subtract(buildVariantNames)
         if (unknownVariantNames.isNotEmpty()) {
             throw KoverIllegalConfigException("Error in configuring Kover Android reports: build variants are not present in the project $unknownVariantNames")
         }
@@ -125,23 +140,29 @@ internal class ProjectApplier(private val project: Project) {
             throw KoverIllegalConfigException("Error in configuring Kover: it is not allowed to configure regular report ('$REGULAR_REPORT_EXTENSION_NAME { }' extension) in Android application")
         }
 
-        val common = androidExtension.common
+        val general = androidExtension.common
         setups.forEach { setup ->
             setup.configureTests(instrData)
             val artifactGenTask = project.createSetupArtifactGenerator(setup, locator.kotlinPlugin, instrData.tool)
 
             val androidReportExtension = androidExtension.reports[setup.id.name]
             ReportsApplier(project, instrData.tool, artifactGenTask, reporterClasspath, setup.id)
-                .createReports(androidReportExtension, common)
+                .createReports(androidReportExtension, general)
         }
     }
 
+    /**
+     * Add online instrumentation to all JVM test tasks of Kover setup.
+     */
     private fun KoverSetup<*>.configureTests(data: InstrumentationData) {
         tests.configureEach {
             JvmTestTaskApplier(this, data).apply()
         }
     }
 
+    /**
+     * Create a task to generate an artifact and a configuration in which this output artifact will be placed.
+     */
     private fun Project.createSetupArtifactGenerator(
         setup: KoverSetup<*>,
         kotlinPlugin: AppliedKotlinPlugin,
@@ -152,6 +173,7 @@ internal class ProjectApplier(private val project: Project) {
             val reportFiles = project.layout.buildDirectory.dir(rawReportsRootPath())
                 .map { dir -> tests.map { dir.file(rawReportName(it.name, tool.variant.vendor)) } }
 
+            // to generate an artifact, need to compile the entire project and perform all test tasks
             dependsOn(tests)
             dependsOn(setup.lazyInfo.map { it.compileTasks })
 
@@ -169,6 +191,7 @@ internal class ProjectApplier(private val project: Project) {
                 projectPath(project.path, project.objects)
             }
             outgoing.artifact(artifactGenTask.flatMap { it.artifactFile }) {
+                // Before resolving this configuration, it is necessary to execute the task of generating an artifact
                 builtBy(artifactGenTask)
             }
         }
@@ -177,6 +200,9 @@ internal class ProjectApplier(private val project: Project) {
     }
 }
 
+/**
+ * All configured data used in online instrumentation.
+ */
 internal class InstrumentationData(
     val findAgentJarTask: TaskProvider<KoverAgentJarTask>,
     val tool: CoverageTool,

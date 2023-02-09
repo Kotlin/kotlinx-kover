@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.commons
 
-internal const val DEFAULT_PROJECT_SETUP_NAME = ""
+internal const val REGULAR_SETUP_NAME = ""
 
 public object KoverMigrations {
     public const val MIGRATION_0_5_TO_0_6 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md"
