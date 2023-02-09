@@ -32,7 +32,7 @@ internal class JvmTestTaskApplier(
         testTask.jvmArgumentProviders += JvmTestTaskArgumentProvider(
             testTask.temporaryDir,
             data.tool,
-            data.agentJar,
+            data.findAgentJarTask.map { it.agentJar.get().asFile },
             excluded,
             rawReportProvider
         )

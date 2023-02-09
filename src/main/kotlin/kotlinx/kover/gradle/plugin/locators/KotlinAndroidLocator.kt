@@ -134,7 +134,6 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
         variantName: String
     ): SetupLazyInfo {
         if (koverExtension.isDisabled) {
-            // TODO
             return SetupLazyInfo()
         }
 

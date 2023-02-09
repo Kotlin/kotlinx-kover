@@ -4,16 +4,22 @@
 
 package kotlinx.kover.gradle.plugin.commons
 
+import kotlinx.kover.gradle.plugin.tools.*
 import java.io.File
 
 
-
-internal fun agentLinkFilePath() = "kover${separator}agent-jar.file"
+internal fun agentFilePath(toolVariant: CoverageToolVariant): String {
+    return if (toolVariant.vendor == CoverageToolVendor.KOVER) {
+        "kover${separator}intellij-coverage-agent-${toolVariant.version}.jar"
+    } else {
+        "kover${separator}jacoco-coverage-agent-${toolVariant.version}.jar"
+    }
+}
 
 internal fun rawReportsRootPath() = "kover${separator}raw-reports"
 
 internal fun rawReportPath(taskName: String, toolVendor: CoverageToolVendor): String {
-    return "${rawReportsRootPath()}/${rawReportName(taskName, toolVendor)}"
+    return "${rawReportsRootPath()}${separator}${rawReportName(taskName, toolVendor)}"
 }
 
 internal fun htmlReportPath(setupId: SetupId): String {
@@ -31,4 +37,3 @@ internal fun verificationErrorsPath(setupId: SetupId): String {
 internal fun setupArtifactFile(setupId: SetupId) = "kover${separator}setup${setupId.capitalized}.files"
 
 private val separator = File.separatorChar
-

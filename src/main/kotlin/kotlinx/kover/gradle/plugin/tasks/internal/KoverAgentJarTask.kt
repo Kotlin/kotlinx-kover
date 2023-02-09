@@ -21,16 +21,14 @@ internal open class KoverAgentJarTask @Inject constructor(private val tool: Cove
     val agentClasspath: ConfigurableFileCollection = project.objects.fileCollection()
 
     @get:OutputFile
-    val agentJarPath: RegularFileProperty = project.objects.fileProperty()
+    val agentJar: RegularFileProperty = project.objects.fileProperty()
 
     @get:Nested
     val toolVariant: CoverageToolVariant = tool.variant
 
     @TaskAction
     fun find() {
-        // TODO can jar file be cached?
-        agentJarPath.get().asFile.writeText(
-            tool.findJvmAgentJar(agentClasspath, archiveOperations).canonicalPath
-        )
+        val srcJar = tool.findJvmAgentJar(agentClasspath, archiveOperations)
+        srcJar.copyTo(agentJar.get().asFile, true)
     }
 }

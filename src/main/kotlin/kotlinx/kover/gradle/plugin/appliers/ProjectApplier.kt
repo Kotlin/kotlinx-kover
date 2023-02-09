@@ -17,7 +17,6 @@ import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.*
-import java.io.*
 
 
 internal class ProjectApplier(private val project: Project) {
@@ -73,23 +72,12 @@ internal class ProjectApplier(private val project: Project) {
         findAgentJarTask.configure {
             dependsOn(agentClasspath)
 
-            this.agentJarPath.set(project.layout.buildDirectory.file(agentLinkFilePath()))
+            this.agentJar.set(project.layout.buildDirectory.file(agentFilePath(tool.variant)))
             this.agentClasspath.from(agentClasspath)
-        }
-
-        val agentJar = findAgentJarTask.map<File?> {
-            val linkFile = it.agentJarPath.get().asFile
-            if (linkFile.exists()) {
-                File(linkFile.readText())
-            } else {
-                // TODO for configuration caches support, because provider may be invoked in time of invoke tree analyzing
-                File("dummy")
-            }
         }
 
         return InstrumentationData(
             findAgentJarTask,
-            agentJar,
             tool,
             projectExtension.instrumentation.classes
         )
@@ -180,7 +168,6 @@ internal class ProjectApplier(private val project: Project) {
 
 internal class InstrumentationData(
     val findAgentJarTask: TaskProvider<KoverAgentJarTask>,
-    val agentJar: Provider<File>,
     val tool: CoverageTool,
     val excludedClasses: Set<String>
 )
