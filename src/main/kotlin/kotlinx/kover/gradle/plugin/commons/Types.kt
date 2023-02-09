@@ -57,8 +57,10 @@ internal class SetupLazyInfo(
     val outputs: Set<File> = emptySet(),
 
     /**
-     * TODO: All tests disabled - in this case no one compile tasks will be triggered, so output dirs will be empty and reporter can't determine project classes
-     * TODO: Add tests
+     * In case when no one compile tasks will be triggered,
+     * output dirs will be empty and reporter can't determine project classes.
+     *
+     * So compile tasks must be triggered anyway.
      */
     val compileTasks: List<Task> = emptyList()
 )

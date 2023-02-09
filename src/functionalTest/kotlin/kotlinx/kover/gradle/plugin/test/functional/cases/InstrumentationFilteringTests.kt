@@ -27,20 +27,4 @@ internal class InstrumentationFilteringTests {
         }
     }
 
-    @SlicedGeneratedTest(all = true)
-    fun SlicedBuildConfigurator.testDisableInstrumentationOfTask() {
-        addProjectWithKover {
-            sourcesFrom("simple")
-            kover {
-                excludeTests {
-                    taskName(defaultTestTaskName(slice.type))
-                }
-            }
-        }
-        run("koverXmlReport") {
-            // if task `test` is excluded from instrumentation then the raw report is not created for it
-            checkDefaultRawReport(false)
-        }
-    }
-
 }

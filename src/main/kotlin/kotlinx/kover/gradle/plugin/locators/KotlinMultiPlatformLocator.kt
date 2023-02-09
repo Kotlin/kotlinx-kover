@@ -130,7 +130,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
         kmpExtension: KotlinMultiplatformExtension
     ): KoverSetupBuild {
         if (koverExtension.isDisabled) {
-            // TODO
+
             return KoverSetupBuild()
         }
 
@@ -148,7 +148,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
         }
 
         val sources = compilations.flatMap {
-            // TODO only one source set for KMP
+
             it.kotlinSourceSets.first().kotlin.srcDirs
         }.toSet()
 

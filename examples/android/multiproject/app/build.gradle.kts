@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "kotlinx.kover.test.android"
-    compileSdk = 32
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "kotlinx.kover.test.android"
-        minSdk = 28
-        targetSdk = 32
+        minSdk = 21
+        targetSdk = 30
         versionCode = 1
         versionName = "1.0"
 

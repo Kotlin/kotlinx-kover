@@ -98,7 +98,6 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
         kotlinExtension: KotlinJvmProjectExtension
     ): KoverSetupBuild {
         if (koverExtension.isDisabled) {
-            // TODO
             return KoverSetupBuild()
         }
 

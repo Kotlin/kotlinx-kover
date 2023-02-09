@@ -7,10 +7,10 @@ plugins {
 android {
     namespace = "kotlinx.kover.test.android"
 
-    compileSdk = 32
+    compileSdk = 31
 
     defaultConfig {
-        minSdk = 28
+        minSdk = 21
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
