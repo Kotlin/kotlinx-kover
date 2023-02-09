@@ -14,7 +14,12 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.*
 import java.io.*
 
+/*
+Since the Kover and Android plug-ins can be in different class loaders (declared in different projects), the plug-ins are stored in a single instance in the loader of the project where the plug-in was used for the first time.
+Because of this, Kover may not have direct access to the Android plugin classes, and variables and literals of this types cannot be declared .
 
+To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
+ */
 internal class KotlinAndroidLocator(private val project: Project) : SetupLocator {
     companion object {
         fun isApplied(project: Project): Boolean {
@@ -63,7 +68,7 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
         variantName: String
     ): SetupLazyInfo {
         if (koverExtension.isDisabled) {
-            // TODO
+            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
             return SetupLazyInfo()
         }
 

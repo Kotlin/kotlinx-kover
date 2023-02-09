@@ -26,7 +26,7 @@ internal class JvmTestTaskApplier(
             testTask.project.layout.buildDirectory.file(rawReportPath(testTask.name, data.tool.variant.vendor))
         testTask.dependsOn(data.findAgentJarTask)
 
-        // Always excludes android classes TODO link
+        // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
         val excluded = data.excludedClasses + listOf("android.*", "com.android.*")
 
         testTask.jvmArgumentProviders += JvmTestTaskArgumentProvider(

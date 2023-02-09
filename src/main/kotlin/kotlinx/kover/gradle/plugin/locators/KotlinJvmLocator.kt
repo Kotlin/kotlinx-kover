@@ -15,7 +15,12 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import java.io.File
 
-// TODO comments why using reflective locator, not static (no copy-paste,  easier to refactor)
+/*
+Since the Kover and Kotlin JVM plug-ins can be in different class loaders (declared in different projects), the plug-ins are stored in a single instance in the loader of the project where the plug-in was used for the first time.
+Because of this, Kover may not have direct access to the JVM plugin classes, and variables and literals of this types cannot be declared .
+
+To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
+ */
 internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
     companion object {
         fun isApplied(project: Project): Boolean {
@@ -48,7 +53,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
         kotlinExtension: DynamicBean
     ): SetupLazyInfo {
         if (koverExtension.isDisabled) {
-            // TODO
+            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
             return SetupLazyInfo()
         }
 

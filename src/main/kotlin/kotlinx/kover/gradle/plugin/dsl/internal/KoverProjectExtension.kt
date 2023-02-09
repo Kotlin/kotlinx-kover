@@ -106,26 +106,29 @@ internal open class KoverJvmSourceSetImpl : KoverJvmSourceSet {
     }
 
     override fun sourceSetName(names: Iterable<String>) {
-        // TODO add check of Kotlin plugin type in afterEvaluate!
         sourceSets += names
     }
 
 }
 
 internal open class KoverKmpSourceSetImpl : KoverKmpSourceSet {
+    internal var configured = false
     internal val compilationsForAllTargets: MutableSet<String> = mutableSetOf()
     internal val allCompilationsInTarget: MutableSet<String> = mutableSetOf()
     internal val compilationsByTarget: MutableMap<String, MutableSet<String>> = mutableMapOf()
 
     override fun targetName(vararg name: String) {
+        configured = true
         allCompilationsInTarget += name
     }
 
     override fun compilation(targetName: String, compilationName: String) {
+        configured = true
         compilationsByTarget.getOrPut(targetName) { mutableSetOf() } += compilationName
     }
 
     override fun compilation(compilationName: String) {
+        configured = true
         compilationsForAllTargets += compilationName
     }
 

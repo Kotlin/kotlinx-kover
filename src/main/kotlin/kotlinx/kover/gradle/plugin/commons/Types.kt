@@ -34,7 +34,7 @@ internal enum class KotlinPluginType {
 internal class AppliedKotlinPlugin(val type: KotlinPluginType?)
 
 internal class KoverSetup<T : Test>(
-    // TODO docs why Provider is used
+    // Provider is used because the list of directories and compilation tasks may change in the `afterEvaluate` block of another plugin later
     val lazyInfo: Provider<SetupLazyInfo>,
 
     val tests: TaskCollection<T>,

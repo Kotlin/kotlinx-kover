@@ -14,7 +14,12 @@ import org.gradle.api.tasks.testing.*
 import org.gradle.kotlin.dsl.*
 import java.io.*
 
-// TODO comments why using reflective locator, not static (no copy-paste,  easier to refactor)
+/*
+Since the Kover and Kotlin Multi-platform plug-ins can be in different class loaders (declared in different projects), the plug-ins are stored in a single instance in the loader of the project where the plug-in was used for the first time.
+Because of this, Kover may not have direct access to the KMP plugin classes, and variables and literals of this types cannot be declared .
+
+To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
+ */
 internal class KotlinMultiPlatformLocator(private val project: Project) : SetupLocator {
     companion object {
         fun isApplied(project: Project): Boolean {
@@ -50,7 +55,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
         kmpExtension: DynamicBean
     ): SetupLazyInfo {
         if (koverExtension.isDisabled) {
-            // TODO
+            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
             return SetupLazyInfo()
         }
 

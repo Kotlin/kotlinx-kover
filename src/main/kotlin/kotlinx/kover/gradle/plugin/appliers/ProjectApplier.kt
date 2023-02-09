@@ -88,8 +88,14 @@ internal class ProjectApplier(private val project: Project) {
         instrData: InstrumentationData,
         reporterClasspath: Configuration
     ) {
-        if (androidExtension.reports.isNotEmpty()) {
+        if (androidExtension.configured) {
             throw KoverIllegalConfigException("It is unacceptable to configure Kover Android reports, they can only be configured if Android plugin is applied")
+        }
+        if (locator.kotlinPlugin.type != KotlinPluginType.JVM && projectExtension.sources.jvm.sourceSets.isNotEmpty()) {
+            throw KoverIllegalConfigException("It is acceptable to add Kover JVM source sets exclusion only if kotlin JVM plugin is applied")
+        }
+        if (locator.kotlinPlugin.type != KotlinPluginType.MULTI_PLATFORM && projectExtension.sources.kmp.configured) {
+            throw KoverIllegalConfigException("It is acceptable to add Kover KMP source sets exclusion only if kotlin multiplatform plugin is applied")
         }
 
         val setup = locator.locateSingle(projectExtension)
@@ -112,6 +118,11 @@ internal class ProjectApplier(private val project: Project) {
         val unknownVariantNames = configuredNames.subtract(buildVariantNames)
         if (unknownVariantNames.isNotEmpty()) {
             throw KoverIllegalConfigException("Error in configuring Kover Android reports: build variants are not present in the project $unknownVariantNames")
+        }
+
+        // Check simple reports was configured in Android
+        if (simpleReportExtension.configured) {
+            throw KoverIllegalConfigException("Error in configuring Kover: it is not allowed to configure simple reports ('$SIMPLE_REPORTS_EXTENSION_NAME { }' extension) in Android application")
         }
 
         val common = androidExtension.common

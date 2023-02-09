@@ -101,12 +101,12 @@ public interface KoverVerifyRule {
 
     public fun bound(config: Action<KoverVerifyBound>)
 
-    // TODO for groovy short-hand
+    // Added since default parameter values are not supported in the Groovy.
     public fun minBound(minValue: Int)
 
     public fun maxBound(maxValue: Int)
 
-    // TODO only for Kotlin Script
+    // Default parameters values supported only in Kotlin.
 
     public fun minBound(minValue: Int, metric: MetricType = MetricType.LINE, aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE)
 

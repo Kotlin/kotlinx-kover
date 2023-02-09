@@ -13,12 +13,17 @@ import javax.inject.*
 internal open class KoverAndroidExtensionImpl @Inject constructor(private val objects: ObjectFactory): KoverAndroidExtension {
     internal val common: KoverCommonReportExtensionImpl = objects.newInstance()
     internal val reports: MutableMap<String, KoverReportExtensionImpl> = mutableMapOf()
+    internal var configured = false
 
     override fun common(config: Action<KoverCommonReportExtension>) {
+        configured = true
+
         config(common)
     }
 
     override fun report(buildVariantName: String, config: Action<KoverReportExtension>) {
+        configured = true
+
         val report = reports.getOrPut(buildVariantName) { objects.newInstance(objects) }
         config(report)
     }
