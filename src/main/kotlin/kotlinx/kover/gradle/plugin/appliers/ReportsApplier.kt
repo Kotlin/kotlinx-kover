@@ -39,6 +39,8 @@ internal class ReportsApplier(
 
         val buildDir = project.layout.buildDirectory
         val htmlTask = project.tasks.createReportTask<KoverHtmlTask>(htmlReportTaskName(setupId), extReportContext) {
+            onlyIf { printPath() }
+
             //
             val reportDirV = if (reportConfig != null && reportConfig.html.reportDir.isPresent) {
                 project.layout.dir(reportConfig.html.reportDir)
@@ -132,7 +134,7 @@ internal class ReportsApplier(
             dependsOn(reportContext)
 
             // task can't be executed if where is no raw report files (no any executed test task)
-            onlyIf { hasRawReports() }
+            onlyIf { hasRawReportsAndLog() }
 
             localArtifact.set(localArtifactGenTask.flatMap { it.artifactFile })
             this.externalArtifacts.from(reportContext)

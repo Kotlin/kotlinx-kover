@@ -25,4 +25,9 @@ internal open class KoverHtmlTask @Inject constructor(tool: CoverageTool) : Abst
         htmlDir.mkdirs()
         tool.htmlReport(htmlDir, title.get(), filters.get(), context())
     }
+
+    fun printPath(): Boolean {
+        logger.lifecycle("Kover: HTML report for '$projectPath' file://${reportDir.get().asFile.canonicalPath}/index.html")
+        return true
+    }
 }

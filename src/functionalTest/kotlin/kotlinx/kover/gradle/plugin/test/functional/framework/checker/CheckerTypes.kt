@@ -33,6 +33,8 @@ internal interface CheckerContext {
 
     fun output(checker: String.() -> Unit)
 
+    fun taskOutput(taskNameOrPath: String, checker: String.() -> Unit)
+
     fun file(name: String, checker: File.() -> Unit)
 
     fun xml(filename: String, checker: XmlReportChecker.() -> Unit)

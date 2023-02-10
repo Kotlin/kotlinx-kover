@@ -101,6 +101,10 @@ internal abstract class CheckerContextWrapper(private val origin: CheckerContext
         origin.checkOutcome(taskNameOrPath, expectedOutcome)
     }
 
+    override fun taskOutput(taskNameOrPath: String, checker: String.() -> Unit) {
+        origin.taskOutput(taskNameOrPath, checker)
+    }
+
     override fun checkDefaultReports(mustExist: Boolean) {
         origin.checkDefaultReports(mustExist)
     }
@@ -215,15 +219,17 @@ private class CheckerContextImpl(
     }
 
     override fun checkOutcome(taskNameOrPath: String, expectedOutcome: String) {
-        val taskPath = if (taskNameOrPath.startsWith(":")) {
-            taskNameOrPath
-        } else {
-            if (path == ":") ":$taskNameOrPath" else "$path:$taskNameOrPath"
-        }
-        val outcome = result.taskOutcome(taskPath)
-            ?: throw IllegalArgumentException("Task '$taskNameOrPath' with path '$taskPath' not found in build result")
+        val taskPath = taskNameOrPath.asPath()
+        val outcome = result.taskOutcome(taskPath) ?: noTaskFound(taskNameOrPath, taskPath)
 
         assertEquals(expectedOutcome, outcome, "Unexpected outcome for task '$taskPath'")
+    }
+
+    override fun taskOutput(taskNameOrPath: String, checker: String.() -> Unit) {
+        val taskPath = taskNameOrPath.asPath()
+        val taskLog = result.taskLog(taskPath) ?: noTaskFound(taskNameOrPath, taskPath)
+
+        checker(taskLog)
     }
 
     override fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
@@ -244,6 +250,18 @@ private class CheckerContextImpl(
                 assertFalse(exists(), "HTML report mustn't exists '$htmlPath'")
             }
         }
+    }
+
+    private fun String.asPath(): String {
+        return if (startsWith(":")) {
+            this
+        } else {
+            if (path == ":") ":$this" else "$path:$this"
+        }
+    }
+
+    private fun noTaskFound(origin: String, path: String): Nothing {
+        throw IllegalArgumentException("Task '$origin' with path '$path' not found in build result")
     }
 }
 

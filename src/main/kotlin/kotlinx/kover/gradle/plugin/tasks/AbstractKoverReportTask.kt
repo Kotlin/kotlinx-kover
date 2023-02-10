@@ -45,8 +45,12 @@ internal abstract class AbstractKoverReportTask(@Internal protected val tool: Co
 
     private val obj = project.objects
 
-    fun hasRawReports(): Boolean {
-        return collectAllFiles().reports.isNotEmpty()
+    fun hasRawReportsAndLog(): Boolean {
+        val hasReports = collectAllFiles().reports.isNotEmpty()
+        if (!hasReports) {
+            logger.lifecycle("Task '$name' will be skipped because no tests were executed")
+        }
+        return hasReports
     }
 
     protected fun context(): ReportContext {

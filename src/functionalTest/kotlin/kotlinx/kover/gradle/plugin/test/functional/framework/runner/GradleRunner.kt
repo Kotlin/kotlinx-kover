@@ -54,6 +54,32 @@ internal class BuildResult(exitCode: Int, private val logFile: File) {
 
         return null
     }
+
+    fun taskLog(path: String): String? {
+        val prefix = "> Task $path"
+
+        val result = mutableListOf<String>()
+        val lines = output.lines()
+
+        var index = 0
+        while (index < lines.size) {
+            val line = lines[index]
+            index++
+            if (line.startsWith(prefix)) {
+                break
+            }
+        }
+        while (index < lines.size) {
+            val line = lines[index]
+            index++
+            if (line.startsWith(prefix)) {
+                break
+            }
+            result += line
+        }
+
+        return if (result.isEmpty()) null else result.joinToString("\n")
+    }
 }
 
 private fun getWrapper(version: String): File {
