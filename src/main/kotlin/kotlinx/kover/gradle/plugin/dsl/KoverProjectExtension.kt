@@ -12,13 +12,14 @@ import org.gradle.api.*
 public interface KoverProjectExtension {
 
     /**
-     * Disable instrumentation of all tests of this project, also all kover tasks of the current projects are not
-     * executed, even if whey called directly.
+     * Disables instrumentation of all tests in the corresponding project, as well as execution
+     * of all kover tasks of the current projects, including the direct calls to t
      */
     public var isDisabled: Boolean
 
     /**
-     * Coverage Tool by Kover.
+     * Configures plugin to use Kover coverage tool.
+     * This option is enabled by default, unless [JaCoCo][useJacocoToolDefault] is enabled.
      */
     public fun useKoverToolDefault()
 

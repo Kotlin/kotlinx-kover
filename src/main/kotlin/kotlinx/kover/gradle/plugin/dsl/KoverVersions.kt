@@ -1,9 +1,26 @@
 package kotlinx.kover.gradle.plugin.dsl
 
+/**
+ * Stable reference point for varios versions that Kover leverages.
+ */
 public object KoverVersions {
+    /**
+     * Minimal supported Gradle version.
+     */
     public const val MINIMUM_GRADLE_VERSION = "6.8"
 
+    /**
+     * Minimal supported Kover coverage tool version.
+     */
     public const val KOVER_TOOL_MINIMAL_VERSION = "1.0.690"
+
+    /**
+     * Kover coverage tool version used by default.
+     */
     public const val KOVER_TOOL_DEFAULT_VERSION = "1.0.690"
+
+    /**
+     * JaCoCo coverage tool version used by default.
+     */
     public const val JACOCO_TOOL_DEFAULT_VERSION = "0.8.8"
 }

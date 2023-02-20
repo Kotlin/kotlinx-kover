@@ -7,13 +7,13 @@ package kotlinx.kover.gradle.plugin.util.json
 import java.io.*
 import java.math.BigDecimal
 
-fun File.readJsonObject(): Map<String, Any> {
+internal fun File.readJsonObject(): Map<String, Any> {
     return FileJsonReader(this).use {
         it.readObject()!!
     }
 }
 
-fun File.readJsonArray(): List<Any> {
+internal fun File.readJsonArray(): List<Any> {
     return FileJsonReader(this).use {
         it.readArray()!!
     }
