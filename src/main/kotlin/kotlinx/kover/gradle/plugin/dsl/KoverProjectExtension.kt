@@ -15,18 +15,18 @@ public interface KoverProjectExtension {
      * Disables instrumentation of all tests in the corresponding project, as well as execution
      * of all kover tasks of the current projects, including the direct calls to t
      */
-    public var isDisabled: Boolean
+    public var allTestsExcluded: Boolean
 
     /**
      * Configures plugin to use Kover coverage tool.
      * This option is enabled by default, unless [JaCoCo][useJacocoToolDefault] is enabled.
      */
-    public fun useKoverToolDefault()
+    public fun useKoverTool()
 
     /**
      * JaCoCo Coverage Tool with default version [JACOCO_TOOL_DEFAULT_VERSION].
      */
-    public fun useJacocoToolDefault()
+    public fun useJacocoTool()
 
     /**
      * Kover Coverage Tool with default version [KOVER_TOOL_DEFAULT_VERSION].
@@ -45,6 +45,11 @@ public interface KoverProjectExtension {
     public fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>)
 
 
+    /*
+     * Deprecations
+     * TODO remove in 0.8.0
+     */
+
     /**
      * Property is deprecated, please use `use...Tool...()` functions.
      */
@@ -52,17 +57,67 @@ public interface KoverProjectExtension {
         message = "Property was removed. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
-    public val engine: Nothing?
+    public var engine: Nothing?
         get() = null
+        set(@Suppress("UNUSED_PARAMETER") value) {}
+
+    @Deprecated(
+        message = "Property was renamed to 'allTestsExcluded'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("allTestsExcluded"),
+        level = DeprecationLevel.ERROR
+    )
+    public val isDisabled: Boolean
+        get() = false
+
+    @Deprecated(
+        message = "Common filters was moved to '$REGULAR_REPORT_EXTENSION_NAME { filters { } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public fun filters(block: () -> Unit) {
+    }
+
+    @Deprecated(
+        message = "Tasks filters was renamed to 'excludeTests'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("excludeTests"),
+        level = DeprecationLevel.ERROR
+    )
+    public fun instrumentation(block: KoverTestsExclusions.() -> Unit) {
+    }
+
+    @Deprecated(
+        message = "XML report setting was moved to '$REGULAR_REPORT_EXTENSION_NAME { xml { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public fun xmlReport(block: () -> Unit) {}
+
+    @Deprecated(
+        message = "HTML report setting was moved to '$REGULAR_REPORT_EXTENSION_NAME { html { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public fun htmlReport(block: () -> Unit) {}
+
+    @Deprecated(
+        message = "Verification report setting was moved to '$REGULAR_REPORT_EXTENSION_NAME { verify { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public fun verify(block: () -> Unit) {}
 }
 
 
-public interface KoverTestsExclusions: KoverTaskDefinitions {
-    public override fun taskName(vararg name: String)
+public interface KoverTestsExclusions : KoverTaskDefinitions {
+    public override fun tasks(vararg name: String)
 
-    public override fun taskName(names: Iterable<String>)
+    public override fun tasks(names: Iterable<String>)
 
-    public fun kmpTargetName(vararg name: String)
+    public fun mppTargetName(vararg name: String)
+
+    @Deprecated(
+        message = "Use function `tasks(...)` instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("tasks"),
+        level = DeprecationLevel.ERROR
+    )
+    public val excludeTasks: MutableList<String>
+        get() = mutableListOf()
 }
 
 
@@ -71,7 +126,7 @@ public interface KoverSourcesExclusions {
 
     public fun jvm(config: Action<KoverJvmSourceSet>)
 
-    public fun kmp(config: Action<KoverKmpSourceSet>)
+    public fun mpp(config: Action<KoverMppSourceSet>)
 }
 
 public interface KoverJvmSourceSet {
@@ -80,7 +135,7 @@ public interface KoverJvmSourceSet {
     public fun sourceSetName(names: Iterable<String>)
 }
 
-public interface KoverKmpSourceSet {
+public interface KoverMppSourceSet {
     public fun targetName(vararg name: String)
 
     public fun compilation(targetName: String, compilationName: String)
@@ -89,13 +144,13 @@ public interface KoverKmpSourceSet {
 }
 
 
-public interface KoverInstrumentationExclusions: KoverClassDefinitions {
-    public override fun className(vararg className: String)
+public interface KoverInstrumentationExclusions : KoverClassDefinitions {
+    public override fun classes(vararg names: String)
 
-    public override fun className(classNames: Iterable<String>)
+    public override fun classes(names: Iterable<String>)
 
-    public override fun packageName(vararg className: String)
+    public override fun packages(vararg names: String)
 
-    public override fun packageName(classNames: Iterable<String>)
+    public override fun packages(names: Iterable<String>)
 }
 

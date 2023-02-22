@@ -36,7 +36,7 @@ private const val TMP_PREFIX = "kover-sliced-build-"
 
 private val ALL_LANGUAGES = listOf(ScriptLanguage.KOTLIN, ScriptLanguage.GROOVY)
 private val ALL_TOOLS = listOf(CoverageToolVendor.KOVER, CoverageToolVendor.JACOCO)
-private val ALL_TYPES = listOf(KotlinPluginType.JVM, KotlinPluginType.MULTI_PLATFORM)
+private val ALL_TYPES = listOf(KotlinPluginType.JVM, KotlinPluginType.MULTIPLATFORM)
 
 
 private class SlicedTestInterceptor : InvocationInterceptor {

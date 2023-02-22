@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.util
 
-internal class SemVer(val major: Int, val minor: Int, val patch: Int): Comparable<SemVer> {
+internal class SemVer(private val major: Int, private val minor: Int, private val patch: Int) : Comparable<SemVer> {
     companion object {
         /**
          * Supported formats:

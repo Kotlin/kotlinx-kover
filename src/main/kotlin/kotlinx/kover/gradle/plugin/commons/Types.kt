@@ -32,7 +32,7 @@ internal enum class CoverageToolVendor(val rawReportExtension: String) {
  */
 internal enum class KotlinPluginType {
     JVM,
-    MULTI_PLATFORM,
+    MULTIPLATFORM,
     ANDROID
 }
 

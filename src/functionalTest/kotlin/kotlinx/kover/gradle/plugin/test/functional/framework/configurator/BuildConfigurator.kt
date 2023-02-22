@@ -35,6 +35,7 @@ private open class TestBuildConfigurator : BuildConfigurator {
     private var useCache: Boolean = false
 
     override fun addProject(path: String, name: String, generator: ProjectConfigurator.() -> Unit) {
+        if (projects.contains(path)) throw IllegalArgumentException("Project with path $path has already been added")
         projects[path] = TestProjectConfigurator().also(generator)
     }
 

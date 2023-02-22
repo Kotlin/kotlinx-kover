@@ -28,6 +28,11 @@ internal val kotlinVersion = System.getProperty("kotlinVersion")
     ?: throw Exception("System property 'kotlinVersion' not defined for functional tests")
 
 /**
+ * Overridden Kotlin version for all tests.
+ */
+internal val overriddenTestKotlinVersion = System.getProperty("kover.test.kotlin.version")
+
+/**
  * Custom version of Gradle runner for functional tests.
  */
 internal val gradleWrapperVersion: String? = System.getProperty("kover.test.gradle.version")

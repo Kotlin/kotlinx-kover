@@ -23,7 +23,6 @@ internal fun File.patchSettingsFile(description: String) {
         var firstStatement = true
         originLines.forEach { line ->
 
-
             if (firstStatement && line.isNotBlank()) {
                 val isPluginManagement = line.trimStart().startsWith("pluginManagement")
 
@@ -49,7 +48,6 @@ internal fun File.patchSettingsFile(description: String) {
     }
 }
 
-
 private fun pluginManagement(language: ScriptLanguage): List<String> {
     return """
     resolutionStrategy {
@@ -57,8 +55,12 @@ private fun pluginManagement(language: ScriptLanguage): List<String> {
             if (requested.id.id == "org.jetbrains.kotlinx.kover") {
                 useVersion("$koverVersion")
             }
+            ${if (overriddenTestKotlinVersion != null) "if (requested.id.id == \"org.jetbrains.kotlin.jvm\") useVersion(\"$overriddenTestKotlinVersion\")" else ""}
+            ${if (overriddenTestKotlinVersion != null) "if (requested.id.id == \"org.jetbrains.kotlin.multiplatform\") useVersion(\"$overriddenTestKotlinVersion\")" else ""}
+            ${if (overriddenTestKotlinVersion != null) "if (requested.id.id == \"org.jetbrains.kotlin.android\") useVersion(\"$overriddenTestKotlinVersion\")" else ""}
         }
     }
+    
     repositories {
         maven { url=${localRepositoryPath.uriForScript(language)} }
         gradlePluginPortal()

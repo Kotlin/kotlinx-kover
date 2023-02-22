@@ -1,3 +1,7 @@
+/*
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
@@ -57,7 +61,7 @@ internal class MultiProjectTests {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                isDisabled = true
+                allTestsExcluded = true
             }
         }
 
@@ -65,7 +69,7 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                isDisabled = true
+                allTestsExcluded = true
             }
         }
 
@@ -91,7 +95,7 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-common")
             kover {
                 excludeTests{
-                    taskName(defaultTestTaskName(slice.type))
+                    tasks(defaultTestTaskName(slice.type))
                 }
             }
         }
@@ -101,7 +105,7 @@ internal class MultiProjectTests {
             dependencyKover(subprojectPath)
             kover {
                 excludeTests{
-                    taskName(defaultTestTaskName(slice.type))
+                    tasks(defaultTestTaskName(slice.type))
                 }
             }
         }

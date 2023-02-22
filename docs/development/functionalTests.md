@@ -19,6 +19,7 @@ For such projects, it is mandatory that the latest release version of the plugin
 ## Configuring the testing
 ### Project parameters
 * `-Pkover.test.gradle.version=` override Gradle version to run functional tests
+* `-Pkover.test.kotlin.version=` override Kotlin version in all functional tests
 * `-Pkover.test.android.sdk=` specify directory with Android SDK. Takes precedence over the environment variable `ANDROID_HOME`.
 * `-Pkover.test.android.disable` disable the execution of functional tests with android projects. Useful if the Android SDK is not installed locally
 * `-Pdebug` runs each functional test in debug mode - to start, it will wait for the debug client to connect to port `5005`

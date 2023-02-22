@@ -21,7 +21,7 @@ internal interface SetupLocator {
     /**
      * Collect information for projects that assume the presence of only one regular setup.
      *
-     * Works for Kotlin JVM or Kotlin multi-platform plugins.
+     * Works for Kotlin JVM or Kotlin multiplatform plugins.
      */
     fun locateRegular(koverExtension: KoverProjectExtensionImpl): KoverSetup<*>
 

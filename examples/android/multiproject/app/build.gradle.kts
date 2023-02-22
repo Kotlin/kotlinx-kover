@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "kotlinx.kover.test.android"
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         applicationId = "kotlinx.kover.test.android"
@@ -58,7 +58,7 @@ koverAndroid {
     common {
         filters {
             excludes {
-                className(
+                classes(
                     "*Fragment",
                     "*Fragment\$*",
                     "*Activity",
@@ -74,7 +74,7 @@ koverAndroid {
         // filters for all report types only of 'release' build type
         filters {
             excludes {
-                className(
+                classes(
                         "*Fragment",
                         "*Fragment\$*",
                         "*Activity",

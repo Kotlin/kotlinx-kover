@@ -12,22 +12,22 @@ dependencies {
 }
 
 kover {
-    isDisabled = false
+    allTestsExcluded = false
 
-    useKoverToolDefault()
+    useKoverTool()
 
     excludeInstrumentation {
-        className("com.example.subpackage.*")
+        classes("com.example.subpackage.*")
     }
 }
 
 koverReport {
     filters {
         excludes {
-            className("com.example.subpackage.*")
+            classes("com.example.subpackage.*")
         }
         includes {
-            className("com.example.*")
+            classes("com.example.*")
         }
     }
 
@@ -37,10 +37,10 @@ koverReport {
 
         filters {
             excludes {
-                className("com.example2.subpackage.*")
+                classes("com.example2.subpackage.*")
             }
             includes {
-                className("com.example2.*")
+                classes("com.example2.*")
             }
         }
     }
@@ -51,10 +51,10 @@ koverReport {
 
         filters {
             excludes {
-                className("com.example2.subpackage.*")
+                classes("com.example2.subpackage.*")
             }
             includes {
-                className("com.example2.*")
+                classes("com.example2.*")
             }
         }
     }
@@ -68,10 +68,10 @@ koverReport {
 
             filters {
                 excludes {
-                    className("com.example.verify.subpackage.*")
+                    classes("com.example.verify.subpackage.*")
                 }
                 includes {
-                    className("com.example.verify.*")
+                    classes("com.example.verify.*")
                 }
             }
 

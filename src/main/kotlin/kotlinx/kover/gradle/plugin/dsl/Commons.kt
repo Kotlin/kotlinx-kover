@@ -25,29 +25,29 @@ public const val REGULAR_REPORT_EXTENSION_NAME = "koverReport"
 public const val ANDROID_EXTENSION_NAME = "koverAndroid"
 
 /**
- * Name of the XML report generation task for Kotlin JVM and Kotlin multi-platform projects.
+ * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.
  */
 public const val REGULAR_XML_REPORT_NAME = "koverXmlReport"
 
 /**
- * Name of the HTML report generation task for Kotlin JVM and Kotlin multi-platform projects.
+ * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
  */
 public const val REGULAR_HTML_REPORT_NAME = "koverHtmlReport"
 
 /**
- * Name of the verification task for Kotlin JVM and Kotlin multi-platform projects.
+ * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
  */
 public const val REGULAR_VERIFY_REPORT_NAME = "koverVerify"
 
 public interface KoverClassDefinitions {
-    public fun className(vararg className: String)
-    public fun className(classNames: Iterable<String>)
+    public fun classes(vararg names: String)
+    public fun classes(names: Iterable<String>)
 
-    public fun packageName(vararg className: String)
-    public fun packageName(classNames: Iterable<String>)
+    public fun packages(vararg names: String)
+    public fun packages(names: Iterable<String>)
 }
 
 public interface KoverTaskDefinitions {
-    public fun taskName(vararg name: String)
-    public fun taskName(names: Iterable<String>)
+    public fun tasks(vararg name: String)
+    public fun tasks(names: Iterable<String>)
 }

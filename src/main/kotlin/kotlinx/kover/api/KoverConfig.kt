@@ -2,9 +2,16 @@
  * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
+@file:Suppress("UNUSED_PARAMETER")
+
 package kotlinx.kover.api
 
 import kotlinx.kover.gradle.plugin.commons.KoverMigrations.MIGRATION_0_6_TO_0_7
+import org.gradle.api.*
+import org.gradle.api.model.*
+import org.gradle.api.provider.*
+import org.gradle.kotlin.dsl.*
+import javax.inject.*
 
 @Deprecated(
     message = "Class was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
@@ -37,10 +44,46 @@ public open class KoverProjectXmlConfig
 public open class KoverProjectHtmlConfig
 
 @Deprecated(
-    message = "Class was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
-    level = DeprecationLevel.ERROR
+    message = "Kover merged report config was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+    level = DeprecationLevel.WARNING
 )
-public open class KoverMergedConfig
+public open class KoverMergedConfig {
+
+    @Deprecated(
+        message = "Kover merged report config was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+        level = DeprecationLevel.ERROR
+    )
+    public fun enable() {
+    }
+
+    @Deprecated(
+        message = "Kover merged report config was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+        level = DeprecationLevel.ERROR
+    )
+    public fun filters(config: () -> Unit) {
+    }
+
+    @Deprecated(
+        message = "Kover merged report config was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+        level = DeprecationLevel.ERROR
+    )
+    public fun xmlReport(config: () -> Unit) {
+    }
+
+    @Deprecated(
+        message = "Kover merged report config was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+        level = DeprecationLevel.ERROR
+    )
+    public fun htmlReport(config: () -> Unit) {
+    }
+
+    @Deprecated(
+        message = "Kover merged report config was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+        level = DeprecationLevel.ERROR
+    )
+    public fun verify(config: () -> Unit) {
+    }
+}
 
 @Deprecated(
     message = "Class was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
@@ -97,19 +140,19 @@ public open class VerificationRule
 public open class VerificationBound
 
 @Deprecated(
-    message = "Class was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+    message = "Class was removed, use class 'kotlinx.kover.gradle.plugin.dsl.GroupingEntityType' instead. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
     level = DeprecationLevel.ERROR
 )
 public enum class VerificationTarget
 
 @Deprecated(
-    message = "Class was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+    message = "Class was removed, use class 'kotlinx.kover.gradle.plugin.dsl.MetricType' instead. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
     level = DeprecationLevel.ERROR
 )
 public enum class CounterType
 
 @Deprecated(
-    message = "Class was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
+    message = "Class was removed, use class 'kotlinx.kover.gradle.plugin.dsl.AggregationType' instead. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",
     level = DeprecationLevel.ERROR
 )
 public enum class VerificationValueType

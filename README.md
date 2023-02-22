@@ -4,21 +4,24 @@
 [![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
-**Kover** - Gradle plugin for Kotlin code coverage tools: [Kover](https://github.com/JetBrains/intellij-coverage)
+Gradle plugin for Kotlin code coverage tools: [Kover](https://github.com/JetBrains/intellij-coverage)
 and [JaCoCo](https://github.com/jacoco/jacoco).
 
 Minimum supported version of `Gradle` is `6.8`.
 
-For more information, please refer to the [documentation of the latest release](https://Kotlin.github.io/kotlinx-kover)
+
+
+For more information about recent stable release, please refer to the [documentation of the latest release](https://Kotlin.github.io/kotlinx-kover)
 
 ## Features
 
-* Collection of code coverage through `JVM` test tasks.
-* `HTML` and `XML` reports.
-* Support for `Kotlin/JVM`, `Kotlin Multiplatform` and mixed `Kotlin-Java` sources with zero additional configuration.
-* Support for `Kotlin Android` without the need to divide it into build types and flavours.
+* Collection of code coverage through `JVM` test tasks (JS and native targets are not supported yet).
+* generating `HTML` and `XML` reports.
+* Support for `Kotlin JVM`, `Kotlin Multiplatform` projects.
+* Support for `Kotlin Android` projects with build variants (instrumentation tests executing on the Android device are not supported yet).
+* Support mixed `Kotlin` and `Java` sources
 * Verification rules with bounds to keep track of coverage.
-* Customizable filters for instrumented classes.
+* Using Kover or JaCoCo Coverage tools for coverage measuring and report generation.
 
 ## Quickstart
 
@@ -32,7 +35,7 @@ Add the following to your top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.6.1"
+     id("org.jetbrains.kotlinx.kover") version "0.7.0-Beta"
 }
 ```
 </details>
@@ -42,7 +45,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.6.1'
+    id 'org.jetbrains.kotlinx.kover' version '0.7.0-Beta'
 }
 ```
 </details>
@@ -62,7 +65,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover:0.6.1")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Beta")
     }
 }
 
@@ -81,7 +84,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover:0.6.1'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Beta'
     }
 }
   
@@ -89,3 +92,98 @@ apply plugin: 'kover'
 ```
 
 </details>
+
+## About Beta version
+This is unstable test version of Kover Gradle Plugin with updated API.
+Using this version is preferable in pet projects.
+
+Detailed documentation has not yet been completed.
+Refer to [migration guide](docs/migration-to-0.7.0.md) in order to migrate from version `0.6.0` or `0.6.1`.
+
+## DSL
+The example of Kover configuration is given below
+```
+
+kover {
+    allTestsExcluded = false
+
+    useKoverTool()
+
+    excludeInstrumentation {
+        classes("com.example.subpackage.*")
+    }
+}
+
+koverReport {
+    filters {
+        excludes {
+            classes("com.example.subpackage.*")
+        }
+        includes {
+            classes("com.example.*")
+        }
+    }
+
+    xml {
+        onCheck = false
+        setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
+
+        filters {
+            excludes {
+                classes("com.example2.subpackage.*")
+            }
+            includes {
+                classes("com.example2.*")
+            }
+        }
+    }
+
+    html {
+        onCheck = false
+        setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+
+        filters {
+            excludes {
+                classes("com.example2.subpackage.*")
+            }
+            includes {
+                classes("com.example2.*")
+            }
+        }
+    }
+
+    verify {
+        onCheck = true
+        rule {
+            isEnabled = true
+            name = null
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+
+            filters {
+                excludes {
+                    classes("com.example.verify.subpackage.*")
+                }
+                includes {
+                    classes("com.example.verify.*")
+                }
+            }
+
+            bound {
+                minValue = 1
+                maxValue = 99
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+            }
+        }
+    }
+}
+```
+
+To create report, combining coverage info from different projects, needs to add dependency to project, in which the report task will be run
+```
+dependencies {
+  kover(project(":another:project"))
+}
+```
+
+More examples can be found in [example folder](examples)

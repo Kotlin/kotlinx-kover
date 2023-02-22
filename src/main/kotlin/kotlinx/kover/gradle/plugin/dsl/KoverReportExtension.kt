@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.dsl
 
+import kotlinx.kover.gradle.plugin.commons.*
 import org.gradle.api.*
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
@@ -34,16 +35,36 @@ public interface KoverReportFilters {
     public fun excludes(config: Action<KoverReportFilter>)
 
     public fun includes(config: Action<KoverReportFilter>)
+
+    @Deprecated(
+        message = "Class filters was moved into 'excludes { classes(\"fq.name\") }' or 'includes { classes(\"fq.name\") }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public fun classes(block: () -> Unit) { }
+
+    @Deprecated(
+        message = "Class inclusion filters was moved into 'includes { classes(\"fq.name\") }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public val includes: MutableList<String>
+        get() = mutableListOf()
+
+    @Deprecated(
+        message = "Class exclusion filters was moved into 'excludes { classes(\"fq.name\") }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public val excludes: MutableList<String>
+        get() = mutableListOf()
 }
 
-public interface KoverReportFilter : KoverClassDefinitions {
-    public override fun className(vararg className: String)
+public interface KoverReportFilter: KoverClassDefinitions {
+    public override fun classes(vararg names: String)
 
-    public override fun className(classNames: Iterable<String>)
+    public override fun classes(names: Iterable<String>)
 
-    public override fun packageName(vararg className: String)
+    public override fun packages(vararg names: String)
 
-    public override fun packageName(classNames: Iterable<String>)
+    public override fun packages(names: Iterable<String>)
 
     public fun annotatedBy(vararg annotationName: String)
 }
@@ -53,6 +74,21 @@ public interface KoverHtmlReportConfig : KoverGeneralHtmlReportConfig {
 
     public fun setReportDir(dir: File)
     public fun setReportDir(dir: Provider<Directory>)
+
+    @Deprecated(
+        message = "Property was removed. Use function 'setReportDir(file)'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("setReportDir"),
+        level = DeprecationLevel.ERROR
+    )
+    public val reportDir: Nothing?
+        get() = null
+
+    @Deprecated(
+        message = "Use function 'filters' instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("filters"),
+        level = DeprecationLevel.ERROR
+    )
+    public fun overrideFilters(block: () -> Unit) { }
 }
 
 public interface KoverGeneralHtmlReportConfig {
@@ -66,6 +102,21 @@ public interface KoverXmlReportConfig : KoverGeneralXmlReportConfig {
 
     public fun setReportFile(xmlFile: File)
     public fun setReportFile(xmlFile: Provider<RegularFile>)
+
+    @Deprecated(
+        message = "Property was removed. Use function 'setReportFile(file)'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("setReportFile"),
+        level = DeprecationLevel.ERROR
+    )
+    public val reportFile: Nothing?
+        get() = null
+
+    @Deprecated(
+        message = "Use function 'filters' instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("filters"),
+        level = DeprecationLevel.ERROR
+    )
+    public fun overrideFilters(block: () -> Unit) { }
 }
 
 public interface KoverGeneralXmlReportConfig {
@@ -166,6 +217,22 @@ public interface KoverVerifyRule {
         metric: MetricType = MetricType.LINE,
         aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
+
+    @Deprecated(
+        message = "Property was renamed to 'entity'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("entity"),
+        level = DeprecationLevel.ERROR
+    )
+    public var target: GroupingEntityType
+        get() = GroupingEntityType.APPLICATION
+        set(@Suppress("UNUSED_PARAMETER") value) {}
+
+    @Deprecated(
+        message = "Use function 'filters' instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("filters"),
+        level = DeprecationLevel.ERROR
+    )
+    public fun overrideClassFilter(block: () -> Unit) {}
 }
 
 /**
@@ -195,6 +262,26 @@ public interface KoverVerifyBound {
      * Default is [AggregationType.COVERED_PERCENTAGE]
      */
     public var aggregation: AggregationType
+
+    @Deprecated(
+        message = "Property was renamed to 'metric'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("metric"),
+        level = DeprecationLevel.ERROR
+    )
+    public var counter: MetricType
+        get() = MetricType.LINE
+        set(@Suppress("UNUSED_PARAMETER") value) {}
+
+    @Deprecated(
+        message = "Property was renamed to 'aggregation'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("aggregation"),
+        level = DeprecationLevel.ERROR
+    )
+    public var valueType: AggregationType
+        get() = AggregationType.COVERED_PERCENTAGE
+        set(@Suppress("UNUSED_PARAMETER") value) {}
+
+
 }
 
 /**
@@ -244,5 +331,12 @@ public enum class GroupingEntityType {
     /**
      * Counts the coverage values for each package that has classes separately.
      */
-    PACKAGE
+    PACKAGE;
+
+    @Deprecated(
+        message = "Entry was renamed to 'APPLICATION'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("APPLICATION"),
+        level = DeprecationLevel.ERROR
+    )
+    object ALL
 }

@@ -4,13 +4,13 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
-import com.android.build.gradle.tasks.factory.*
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import java.io.*
 
@@ -49,13 +49,15 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
                 extractBuild(koverExtension, kotlinExtension, variantName)
             }
 
-            val tests = project.tasks.withType<AndroidUnitTest>().matching {
-                // skip all tests from instrumentation if Kover Plugin is disabled for the project
-                !koverExtension.isDisabled
+            val tests = project.tasks.withType<Test>().matching {
+                // use only Android unit tests (local tests)
+                it.hasSuperclass("AndroidUnitTest")
+                        // skip all tests from instrumentation if Kover Plugin is disabled for the project
+                        && !koverExtension.allTestsExcluded
                         // skip this test if it disabled by name
                         && it.name !in koverExtension.tests.tasksNames
                         // only tests of current application build variant
-                        && it.variantName == variant["unitTestVariant"].property<String>("name")
+                        && it.bean().property<String>("variantName") == variant["unitTestVariant"].property<String>("name")
             }
 
             KoverSetup(build, tests, SetupId(variantName))
@@ -67,7 +69,7 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
         kotlinExtension: DynamicBean,
         variantName: String
     ): SetupLazyInfo {
-        if (koverExtension.isDisabled) {
+        if (koverExtension.allTestsExcluded) {
             // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
             return SetupLazyInfo()
         }
@@ -89,9 +91,8 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
 
         val compileTasks = mutableListOf<Task>()
         compileTasks += compilation.property<Task>("compileKotlinTask")
-        val javaTaskProvider = compilation.property<TaskProvider<Task>?>("compileJavaTaskProvider")
-        if (!koverExtension.sources.excludeJavaCode && javaTaskProvider != null) {
-            compileTasks += javaTaskProvider.get()
+        if (!koverExtension.sources.excludeJavaCode) {
+            compilation.propertyOrNull<TaskProvider<Task>?>("compileJavaTaskProvider")?.orNull?.let { task -> compileTasks += task }
         }
 
         return SetupLazyInfo(sources, outputs, compileTasks)
@@ -101,65 +102,3 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
         throw KoverCriticalException("Kover Android Locator does not support a single setup")
     }
 }
-
-/*
-    ORIGINAL
-    ================
-
-    override fun locateMultiple(koverExtension: KoverProjectExtensionImpl): List<KoverSetup<*>> {
-        val androidExtension = project.extensions.findByType<BaseAppModuleExtension>()
-            ?: throw KoverCriticalException("Kover requires extension with type '${BaseAppModuleExtension::class.qualifiedName}' for project '${project.path}' since it is recognized as Kotlin/Android project")
-
-        val kotlinExtension = project.extensions.findByType<KotlinAndroidProjectExtension>()
-            ?: throw KoverCriticalException("Kover requires extension with type '${KotlinAndroidProjectExtension::class.qualifiedName}' for project '${project.path}' since it is recognized as Kotlin/Android project")
-
-
-        return androidExtension.applicationVariants.map { variant ->
-            val build = project.provider {
-                extractBuild(koverExtension, kotlinExtension, variant.name)
-            }
-
-            val tests = project.tasks.withType<AndroidUnitTest>().matching {
-                // skip all tests from instrumentation if Kover Plugin is disabled for the project
-                !koverExtension.isDisabled
-                        // skip this test if it disabled by name
-                        && it.name !in koverExtension.tests.tasksNames
-                        // only tests of current application build variant
-                        && it.variantName == variant.unitTestVariant.name
-            }
-
-            KoverSetup(build, tests, SetupId(variant.name))
-        }
-    }
-
-
-    private fun extractBuild(
-        koverExtension: KoverProjectExtensionImpl,
-        kotlinExtension: KotlinAndroidProjectExtension,
-        variantName: String
-    ): SetupLazyInfo {
-        if (koverExtension.isDisabled) {
-            return SetupLazyInfo()
-        }
-
-        val compilation = kotlinExtension.target.compilations.findByName(variantName)!!
-
-        // examples of kotlinSourceSets: debug, main
-        val sources = compilation.kotlinSourceSets.flatMap { it.kotlin.srcDirs }.toSet()
-        val outputs = compilation.output.classesDirs.files.filterNot {
-            // exclude java classes from report. Expected java class files are placed in directories like
-            //   build/intermediates/javac/debug/classes
-            koverExtension.sources.excludeJavaCode && it.parentFile.parentFile.name == "javac"
-        }.toSet()
-
-        val compileTasks = mutableListOf<Task>()
-        compileTasks += compilation.compileKotlinTask
-        val javaTaskProvider = compilation.compileJavaTaskProvider
-        if (!koverExtension.sources.excludeJavaCode && javaTaskProvider != null) {
-            compileTasks += javaTaskProvider.get()
-        }
-
-        return SetupLazyInfo(sources, outputs, compileTasks)
-    }
- */
-

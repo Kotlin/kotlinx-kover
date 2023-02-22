@@ -4,11 +4,14 @@
 
 package kotlinx.kover.gradle.plugin
 
+import kotlinx.kover.api.*
 import kotlinx.kover.gradle.plugin.appliers.ProjectApplier
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.MINIMUM_GRADLE_VERSION
 import kotlinx.kover.gradle.plugin.util.SemVer
 import org.gradle.api.*
 import org.gradle.api.invocation.*
+import org.gradle.api.tasks.testing.Test
+import org.gradle.kotlin.dsl.*
 
 /**
  * Gradle Plugin for JVM Coverage Tools.
@@ -29,6 +32,8 @@ class KoverGradlePlugin : Plugin<Project> {
         target.afterEvaluate {
             applier.onAfterEvaluate()
         }
+
+        target.addDeprecations()
     }
 
     /**
@@ -41,5 +46,14 @@ class KoverGradlePlugin : Plugin<Project> {
             "Gradle version '$gradleVersion' is not supported by Kover Plugin. " +
                     "Minimum supported version is '$MINIMUM_GRADLE_VERSION'"
         )
+    }
+
+    @Suppress("DEPRECATION")
+    private fun Project.addDeprecations() {
+
+        extensions.create<KoverMergedConfig>("koverMerged")
+        tasks.withType<Test>().configureEach {
+            this.extensions.create<KoverTaskExtension>("kover")
+        }
     }
 }

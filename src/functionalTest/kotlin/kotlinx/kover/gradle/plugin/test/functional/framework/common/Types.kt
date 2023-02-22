@@ -25,7 +25,7 @@ internal val BuildSlice.mainPath: String
     get() {
         return when (type) {
             KotlinPluginType.JVM -> "src/main"
-            KotlinPluginType.MULTI_PLATFORM -> "src/jvmMain"
+            KotlinPluginType.MULTIPLATFORM -> "src/jvmMain"
             KotlinPluginType.ANDROID -> "src/jvmMain"
         }
     }
@@ -34,7 +34,7 @@ internal val BuildSlice.testPath: String
     get() {
         return when (type) {
             KotlinPluginType.JVM -> "src/test"
-            KotlinPluginType.MULTI_PLATFORM -> "src/jvmTest"
+            KotlinPluginType.MULTIPLATFORM -> "src/jvmTest"
             KotlinPluginType.ANDROID -> "src/jvmTest"
         }
     }
@@ -54,7 +54,7 @@ internal data class BuildSlice(
         }
         val typeText = when (type) {
             KotlinPluginType.JVM -> "K/JVM"
-            KotlinPluginType.MULTI_PLATFORM -> "KMP"
+            KotlinPluginType.MULTIPLATFORM -> "K/MPP"
             KotlinPluginType.ANDROID -> "Android"
         }
         val toolText = when(toolVendor) {

@@ -11,7 +11,7 @@ import java.io.*
 
 
 internal fun File.writeSettings(build: TestBuildConfig, slice: BuildSlice) {
-    writeScript() {
+    writeScript {
         call("pluginManagement") {
             call("repositories") {
                 line("maven { url=${localRepositoryPath.uriForScript(slice.language)} }")

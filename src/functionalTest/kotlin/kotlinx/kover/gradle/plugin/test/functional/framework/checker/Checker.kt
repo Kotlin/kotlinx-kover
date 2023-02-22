@@ -352,13 +352,13 @@ private fun String.kotlinPluginType(language: ScriptLanguage): AppliedKotlinPlug
     return if (language == ScriptLanguage.KOTLIN) {
         when {
             contains("""kotlin("jvm")""") -> AppliedKotlinPlugin(KotlinPluginType.JVM)
-            contains("""kotlin("multiplatform")""") -> AppliedKotlinPlugin(KotlinPluginType.MULTI_PLATFORM)
+            contains("""kotlin("multiplatform")""") -> AppliedKotlinPlugin(KotlinPluginType.MULTIPLATFORM)
             else -> AppliedKotlinPlugin(null)
         }
     } else {
         when {
             contains("""org.jetbrains.kotlin.jvm""") -> AppliedKotlinPlugin(KotlinPluginType.JVM)
-            contains("""org.jetbrains.kotlin.multiplatform""") -> AppliedKotlinPlugin(KotlinPluginType.MULTI_PLATFORM)
+            contains("""org.jetbrains.kotlin.multiplatform""") -> AppliedKotlinPlugin(KotlinPluginType.MULTIPLATFORM)
             else -> AppliedKotlinPlugin(null)
         }
     }
@@ -366,8 +366,8 @@ private fun String.kotlinPluginType(language: ScriptLanguage): AppliedKotlinPlug
 
 internal fun String.definedTool(): CoverageToolVariant? {
     when {
-        contains("KoverToolDefault") -> return KoverToolDefaultVariant
-        contains("JacocoToolDefault") -> return JacocoToolDefaultVariant
+        contains("useKoverTool()") -> return KoverToolDefaultVariant
+        contains("useJacocoTool()") -> return JacocoToolDefaultVariant
     }
 
     val koverToolVersion = koverToolRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)

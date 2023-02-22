@@ -40,20 +40,20 @@ internal class KoverReportFiltersWriter(private val writer: FormattedWriter) : K
 
 internal class KoverReportFilterWriter(private val writer: FormattedWriter) : KoverReportFilter {
 
-    override fun className(vararg className: String) {
-        this.className(className.asIterable())
+    override fun classes(vararg names: String) {
+        this.classes(names.asIterable())
     }
 
-    override fun className(classNames: Iterable<String>) {
-        writer.callStr("className", classNames)
+    override fun classes(names: Iterable<String>) {
+        writer.callStr("classes", names)
     }
 
-    override fun packageName(vararg className: String) {
-        packageName(className.asIterable())
+    override fun packages(vararg names: String) {
+        packages(names.asIterable())
     }
 
-    override fun packageName(classNames: Iterable<String>) {
-        writer.callStr("packageName", classNames)
+    override fun packages(names: Iterable<String>) {
+        writer.callStr("packages", names)
     }
 
     override fun annotatedBy(vararg annotationName: String) {

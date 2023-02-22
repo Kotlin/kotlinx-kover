@@ -18,10 +18,10 @@ dependencies {
 koverReport {
     filters {
         excludes {
-            className("kotlinx.kover.examples.merged.utils.*", "kotlinx.kover.examples.merged.subproject.utils.*")
+            classes("kotlinx.kover.examples.merged.utils.*", "kotlinx.kover.examples.merged.subproject.utils.*")
         }
         includes {
-            className("kotlinx.kover.examples.merged.*")
+            classes("kotlinx.kover.examples.merged.*")
         }
     }
 

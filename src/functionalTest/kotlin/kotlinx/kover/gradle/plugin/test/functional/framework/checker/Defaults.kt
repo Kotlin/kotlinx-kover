@@ -9,7 +9,7 @@ import kotlinx.kover.gradle.plugin.commons.*
 internal fun defaultTestTaskName(projectType: KotlinPluginType): String {
     return when (projectType) {
         KotlinPluginType.JVM -> "test"
-        KotlinPluginType.MULTI_PLATFORM -> "jvmTest"
+        KotlinPluginType.MULTIPLATFORM -> "jvmTest"
         KotlinPluginType.ANDROID -> "jvmTest"
     }
 }

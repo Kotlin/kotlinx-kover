@@ -4,9 +4,6 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultXmlReport
-import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.BuildConfigurator
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTest
 

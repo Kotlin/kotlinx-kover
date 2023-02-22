@@ -20,6 +20,13 @@ internal class DynamicBean(val origin: Any) {
         return gradleWrapper.getProperty(name) as T
     }
 
+    @Suppress("UNCHECKED_CAST")
+    fun <T> propertyOrNull(name: String): T? {
+        if (!gradleWrapper.hasProperty(name)) return null
+
+        return gradleWrapper.getProperty(name) as T
+    }
+
     operator fun contains(name: String): Boolean = gradleWrapper.hasProperty(name)
 
     @Suppress("UNCHECKED_CAST")

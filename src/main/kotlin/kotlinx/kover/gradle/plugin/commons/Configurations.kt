@@ -59,6 +59,7 @@ internal fun AttributeContainer.kotlinType(kotlinPlugin: AppliedKotlinPlugin, ob
  */
 internal fun Configuration.asTransitiveDependencies() {
     isVisible = false
+    isCanBeConsumed = false
     isTransitive = true
     isCanBeResolved = true
 }
@@ -98,7 +99,6 @@ internal fun Configuration.asProducer() {
  */
 internal fun Configuration.asConsumer() {
     isVisible = false
-
     isCanBeResolved = true
     // this config consumes modules from OTHER projects, and cannot be consumed by other projects
     isCanBeConsumed = false

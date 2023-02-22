@@ -17,15 +17,15 @@ import javax.inject.*
 
 internal open class KoverProjectExtensionImpl @Inject constructor(objects: ObjectFactory) : KoverProjectExtension {
 
-    override var isDisabled: Boolean = false
+    override var allTestsExcluded: Boolean = false
 
     internal var toolVariant: CoverageToolVariant? = null
 
-    override fun useKoverToolDefault() {
+    override fun useKoverTool() {
         toolVariant = KoverToolDefaultVariant
     }
 
-    override fun useJacocoToolDefault() {
+    override fun useJacocoTool() {
         toolVariant = JacocoToolDefaultVariant
     }
 
@@ -65,21 +65,21 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
 }
 
 internal open class KoverTestsExclusionsImpl : KoverTestsExclusions {
-    override fun taskName(vararg name: String) {
+    override fun tasks(vararg name: String) {
         tasksNames.addAll(name)
     }
 
-    override fun taskName(names: Iterable<String>) {
+    override fun tasks(names: Iterable<String>) {
         tasksNames.addAll(names)
     }
 
-    override fun kmpTargetName(vararg name: String) {
-        kmpTargetNames.addAll(name)
+    override fun mppTargetName(vararg name: String) {
+        mppTargetNames.addAll(name)
     }
 
     internal val tasksNames: MutableSet<String> = mutableSetOf()
 
-    internal val kmpTargetNames: MutableSet<String> = mutableSetOf()
+    internal val mppTargetNames: MutableSet<String> = mutableSetOf()
 }
 
 internal open class KoverSourcesExclusionsImpl
@@ -91,12 +91,12 @@ internal open class KoverSourcesExclusionsImpl
         config(jvm)
     }
 
-    override fun kmp(config: Action<KoverKmpSourceSet>) {
-        config(kmp)
+    override fun mpp(config: Action<KoverMppSourceSet>) {
+        config(mpp)
     }
 
     internal val jvm: KoverJvmSourceSetImpl = objects.newInstance()
-    internal val kmp: KoverKmpSourceSetImpl = objects.newInstance()
+    internal val mpp: KoverMppSourceSetImpl = objects.newInstance()
 }
 
 internal open class KoverJvmSourceSetImpl : KoverJvmSourceSet {
@@ -111,7 +111,7 @@ internal open class KoverJvmSourceSetImpl : KoverJvmSourceSet {
 
 }
 
-internal open class KoverKmpSourceSetImpl : KoverKmpSourceSet {
+internal open class KoverMppSourceSetImpl : KoverMppSourceSet {
     internal var configured = false
     internal val compilationsForAllTargets: MutableSet<String> = mutableSetOf()
     internal val allCompilationsInTarget: MutableSet<String> = mutableSetOf()
@@ -135,22 +135,22 @@ internal open class KoverKmpSourceSetImpl : KoverKmpSourceSet {
 }
 
 internal open class KoverInstrumentationExclusionsImpl : KoverInstrumentationExclusions {
-    override fun className(vararg className: String) {
-        classes += className
+    override fun classes(vararg names: String) {
+        classes += names
     }
 
-    override fun className(classNames: Iterable<String>) {
-        classes += classNames
+    override fun classes(names: Iterable<String>) {
+        classes += names
     }
 
-    override fun packageName(vararg className: String) {
-        className.forEach {
+    override fun packages(vararg names: String) {
+        names.forEach {
             classes += "$it.*"
         }
     }
 
-    override fun packageName(classNames: Iterable<String>) {
-        classNames.forEach {
+    override fun packages(names: Iterable<String>) {
+        names.forEach {
             classes += "$it.*"
         }
     }

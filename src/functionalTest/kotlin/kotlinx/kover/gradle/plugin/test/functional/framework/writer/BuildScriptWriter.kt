@@ -28,9 +28,9 @@ private fun FormattedWriter.writePlugins(plugins: PluginsConfiguratorImpl, slice
         if (plugins.useKotlin) {
             val name = when {
                 language == ScriptLanguage.GROOVY && type == KotlinPluginType.JVM -> """id "org.jetbrains.kotlin.jvm""""
-                language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTI_PLATFORM -> """id "org.jetbrains.kotlin.multiplatform""""
+                language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTIPLATFORM -> """id "org.jetbrains.kotlin.multiplatform""""
                 language == ScriptLanguage.KOTLIN && type == KotlinPluginType.JVM -> """kotlin("jvm")"""
-                language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTI_PLATFORM -> """kotlin("multiplatform")"""
+                language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTIPLATFORM -> """kotlin("multiplatform")"""
                 else -> throw Exception("Unsupported test combination: language $language and project type $type")
             }
             val version = plugins.kotlinVersion?.let { """version "$it"""" } ?: ""
@@ -66,9 +66,9 @@ private fun FormattedWriter.writeDependencies(koverDependencies: List<String>, s
 
     val template = when {
         language == ScriptLanguage.GROOVY && type == KotlinPluginType.JVM -> GROOVY_JVM_DEPS
-        language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTI_PLATFORM -> GROOVY_KMP_DEPS
+        language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTIPLATFORM -> GROOVY_MPP_DEPS
         language == ScriptLanguage.KOTLIN && type == KotlinPluginType.JVM -> KOTLIN_JVM_DEPS
-        language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTI_PLATFORM -> KOTLIN_KMP_DEPS
+        language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTIPLATFORM -> KOTLIN_MPP_DEPS
         else -> throw Exception("Unsupported test combination: language $language and project type $type")
     }
     template.replace(DEPS_PLACEHOLDER, subprojectsPart).lines().forEach {
@@ -96,8 +96,8 @@ private fun FormattedWriter.writeOverriddenTool(slice: BuildSlice) {
     call("kover") {
         val koverWriter = KoverWriter(this)
         when (vendor) {
-            CoverageToolVendor.KOVER -> koverWriter.useKoverToolDefault()
-            CoverageToolVendor.JACOCO -> koverWriter.useJacocoToolDefault()
+            CoverageToolVendor.KOVER -> koverWriter.useKoverTool()
+            CoverageToolVendor.JACOCO -> koverWriter.useJacocoTool()
         }
     }
 }
@@ -112,7 +112,7 @@ dependencies {
 }
 """
 
-private const val KOTLIN_KMP_DEPS = """
+private const val KOTLIN_MPP_DEPS = """
 kotlin {
     jvm() {
         withJava()
@@ -137,7 +137,7 @@ dependencies {
 }
 """
 
-private const val GROOVY_KMP_DEPS = """
+private const val GROOVY_MPP_DEPS = """
 kotlin {
     jvm() {
         withJava()

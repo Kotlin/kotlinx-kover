@@ -18,6 +18,12 @@ import javax.inject.*
 internal open class KoverReportExtensionImpl @Inject constructor(private val objects: ObjectFactory) :
     KoverReportExtension {
 
+    internal val html: KoverHtmlReportConfigImpl = objects.newInstance(objects)
+    internal val xml: KoverXmlReportConfigImpl = objects.newInstance(objects)
+    internal val verify: KoverVerifyReportConfigImpl = objects.newInstance(objects)
+    internal var commonFilters: KoverReportFiltersImpl? = null
+    internal var configured = false
+
     override fun filters(config: Action<KoverReportFilters>) {
         configured = true
 
@@ -44,16 +50,15 @@ internal open class KoverReportExtensionImpl @Inject constructor(private val obj
 
         config(verify)
     }
-
-    internal val html: KoverHtmlReportConfigImpl = objects.newInstance(objects)
-    internal val xml: KoverXmlReportConfigImpl = objects.newInstance(objects)
-    internal val verify: KoverVerifyReportConfigImpl = objects.newInstance(objects)
-    internal var commonFilters: KoverReportFiltersImpl? = null
-    internal var configured = false
 }
 
 internal open class KoverGeneralReportExtensionImpl @Inject constructor(private val objects: ObjectFactory) :
     KoverGeneralReportExtension {
+
+    internal val html: KoverGeneralHtmlReportConfigImpl = objects.newInstance(objects)
+    internal val xml: KoverGeneralXmlReportConfigImpl = objects.newInstance(objects)
+    internal val verify: KoverGeneralVerifyReportConfigImpl = objects.newInstance(objects)
+    internal var commonFilters: KoverReportFiltersImpl? = null
 
     override fun filters(config: Action<KoverReportFilters>) {
         if (commonFilters == null) {
@@ -73,11 +78,6 @@ internal open class KoverGeneralReportExtensionImpl @Inject constructor(private 
     override fun verify(config: Action<KoverGeneralVerifyReportConfig>) {
         config(verify)
     }
-
-    internal val html: KoverGeneralHtmlReportConfigImpl = objects.newInstance(objects)
-    internal val xml: KoverGeneralXmlReportConfigImpl = objects.newInstance(objects)
-    internal val verify: KoverGeneralVerifyReportConfigImpl = objects.newInstance(objects)
-    internal var commonFilters: KoverReportFiltersImpl? = null
 }
 
 internal open class KoverHtmlReportConfigImpl @Inject constructor(objects: ObjectFactory) :
@@ -86,14 +86,14 @@ internal open class KoverHtmlReportConfigImpl @Inject constructor(objects: Objec
     override var onCheck: Boolean? = null
 
     override fun setReportDir(dir: File) {
-        reportDir.set(dir)
+        reportDirProperty.set(dir)
     }
 
     override fun setReportDir(dir: Provider<Directory>) {
-        reportDir.set(dir.map { it.asFile })
+        reportDirProperty.set(dir.map { it.asFile })
     }
 
-    internal val reportDir: Property<File> = objects.property()
+    internal val reportDirProperty: Property<File> = objects.property()
 }
 
 internal open class KoverGeneralHtmlReportConfigImpl @Inject constructor(
@@ -104,9 +104,8 @@ internal open class KoverGeneralHtmlReportConfigImpl @Inject constructor(
     override var title: String? = null
 
     override fun filters(config: Action<KoverReportFilters>) {
-        val newFilters: KoverReportFiltersImpl = objects.newInstance(objects)
-        config(newFilters)
-        filters = newFilters
+        val filtersToConfigure = filters ?: (objects.newInstance<KoverReportFiltersImpl>(objects).also { filters = it })
+        config(filtersToConfigure)
     }
 
 }
@@ -117,14 +116,14 @@ internal open class KoverXmlReportConfigImpl @Inject constructor(
     override var onCheck: Boolean? = false
 
     override fun setReportFile(xmlFile: File) {
-        reportFile.set(xmlFile)
+        reportFileProperty.set(xmlFile)
     }
 
     override fun setReportFile(xmlFile: Provider<RegularFile>) {
-        reportFile.set(xmlFile.map { it.asFile })
+        reportFileProperty.set(xmlFile.map { it.asFile })
     }
 
-    internal val reportFile: Property<File> = objects.property()
+    internal val reportFileProperty: Property<File> = objects.property()
 }
 internal open class KoverGeneralXmlReportConfigImpl @Inject constructor(
     private val objects: ObjectFactory
@@ -132,9 +131,8 @@ internal open class KoverGeneralXmlReportConfigImpl @Inject constructor(
     internal var filters: KoverReportFiltersImpl? = null
 
     override fun filters(config: Action<KoverReportFilters>) {
-        val newFilters: KoverReportFiltersImpl = objects.newInstance(objects)
-        config(newFilters)
-        filters = newFilters
+        val filtersToConfigure = filters ?: (objects.newInstance<KoverReportFiltersImpl>(objects).also { filters = it })
+        config(filtersToConfigure)
     }
 }
 
@@ -178,9 +176,8 @@ internal open class KoverVerifyRuleImpl @Inject constructor(private val objects:
     override var entity: GroupingEntityType = GroupingEntityType.APPLICATION
 
     override fun filters(config: Action<KoverReportFilters>) {
-        val newFilters: KoverReportFiltersImpl = objects.newInstance(objects)
-        config(newFilters)
-        filters = newFilters
+        val filtersToConfigure = filters ?: (objects.newInstance<KoverReportFiltersImpl>(objects).also { filters = it })
+        config(filtersToConfigure)
     }
 
     override fun minBound(minValue: Int, metric: MetricType, aggregation: AggregationType) {
@@ -240,15 +237,15 @@ internal open class KoverReportFiltersImpl @Inject constructor(
     objects: ObjectFactory
 ) : KoverReportFilters {
     override fun excludes(config: Action<KoverReportFilter>) {
-        config(excludes)
+        config(excludesIntern)
     }
 
     override fun includes(config: Action<KoverReportFilter>) {
-        config(includes)
+        config(includesIntern)
     }
 
-    internal val excludes: KoverReportFilterImpl = objects.newInstance()
-    internal val includes: KoverReportFilterImpl = objects.newInstance()
+    internal val excludesIntern: KoverReportFilterImpl = objects.newInstance()
+    internal val includesIntern: KoverReportFilterImpl = objects.newInstance()
 }
 
 internal open class KoverReportFilterImpl : KoverReportFilter {
@@ -256,22 +253,22 @@ internal open class KoverReportFilterImpl : KoverReportFilter {
 
     internal val annotations: MutableSet<String> = mutableSetOf()
 
-    override fun className(vararg className: String) {
-        classes += className
+    override fun classes(vararg names: String) {
+        classes += names
     }
 
-    override fun className(classNames: Iterable<String>) {
-        classes += classNames
+    override fun classes(names: Iterable<String>) {
+        classes += names
     }
 
-    override fun packageName(vararg className: String) {
-        className.forEach {
+    override fun packages(vararg names: String) {
+        names.forEach {
             classes += "$it.*"
         }
     }
 
-    override fun packageName(classNames: Iterable<String>) {
-        classNames.forEach {
+    override fun packages(names: Iterable<String>) {
+        names.forEach {
             classes += "$it.*"
         }
     }

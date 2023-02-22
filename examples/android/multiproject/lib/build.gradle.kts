@@ -7,7 +7,7 @@ plugins {
 android {
     namespace = "kotlinx.kover.test.android"
 
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         minSdk = 21

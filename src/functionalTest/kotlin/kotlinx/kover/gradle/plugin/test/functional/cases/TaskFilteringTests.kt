@@ -4,10 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultTestTaskName
-import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.BuildConfigurator
-import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.SlicedBuildConfigurator
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.SlicedGeneratedTest
 
@@ -22,7 +19,7 @@ internal class TaskFilteringTests {
             sourcesFrom("simple")
             kover {
                 excludeTests {
-                    taskName(defaultTestTaskName(slice.type))
+                    tasks(defaultTestTaskName(slice.type))
                 }
             }
         }

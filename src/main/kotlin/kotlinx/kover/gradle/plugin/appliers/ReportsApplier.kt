@@ -42,8 +42,8 @@ internal class ReportsApplier(
             onlyIf { printPath() }
 
             //
-            val reportDirV = if (reportConfig != null && reportConfig.html.reportDir.isPresent) {
-                project.layout.dir(reportConfig.html.reportDir)
+            val reportDirV = if (reportConfig != null && reportConfig.html.reportDirProperty.isPresent) {
+                project.layout.dir(reportConfig.html.reportDirProperty)
             } else {
                 buildDir.dir(htmlReportPath(setupId))
             }
@@ -67,8 +67,8 @@ internal class ReportsApplier(
 
         val xmlTask = project.tasks.createReportTask<KoverXmlTask>(xmlReportTaskName(setupId), extReportContext) {
             //
-            val reportFileV = if (reportConfig != null && reportConfig.xml.reportFile.isPresent) {
-                project.layout.file(reportConfig.xml.reportFile)
+            val reportFileV = if (reportConfig != null && reportConfig.xml.reportFileProperty.isPresent) {
+                project.layout.file(reportConfig.xml.reportFileProperty)
             } else {
                 buildDir.file(xmlReportPath(setupId))
             }
@@ -154,8 +154,8 @@ internal class ReportsApplier(
 
     private fun KoverReportFiltersImpl.convert(): ReportFilters {
         return ReportFilters(
-            includes.classes, includes.annotations,
-            excludes.classes, excludes.annotations
+            includesIntern.classes, includesIntern.annotations,
+            excludesIntern.classes, excludesIntern.annotations
         )
     }
 }

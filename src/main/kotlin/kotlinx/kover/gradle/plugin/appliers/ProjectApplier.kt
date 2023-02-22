@@ -93,7 +93,7 @@ internal class ProjectApplier(private val project: Project) {
     }
 
     /**
-     * Configure Kotlin JVM or Kotlin multi-platform project.
+     * Configure Kotlin JVM or Kotlin multiplatform project.
      */
     private fun regularProject(
         locator: SetupLocator,
@@ -106,8 +106,8 @@ internal class ProjectApplier(private val project: Project) {
         if (locator.kotlinPlugin.type != KotlinPluginType.JVM && projectExtension.sources.jvm.sourceSets.isNotEmpty()) {
             throw KoverIllegalConfigException("It is acceptable to add Kover JVM source sets exclusion only if kotlin JVM plugin is applied")
         }
-        if (locator.kotlinPlugin.type != KotlinPluginType.MULTI_PLATFORM && projectExtension.sources.kmp.configured) {
-            throw KoverIllegalConfigException("It is acceptable to add Kover KMP source sets exclusion only if kotlin multiplatform plugin is applied")
+        if (locator.kotlinPlugin.type != KotlinPluginType.MULTIPLATFORM && projectExtension.sources.mpp.configured) {
+            throw KoverIllegalConfigException("It is acceptable to add Kover MPP source sets exclusion only if kotlin multiplatform plugin is applied")
         }
 
         val setup = locator.locateRegular(projectExtension)

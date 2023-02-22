@@ -41,7 +41,6 @@ dependencies {
     compileOnly(kotlin("stdlib"))
 
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    compileOnly("com.android.tools.build:gradle:4.2.2")
 
     testImplementation(kotlin("test"))
 
@@ -66,16 +65,20 @@ val functionalTest by tasks.registering(Test::class) {
     dependsOn(tasks.named("publishAllPublicationsToLocalRepository"))
     doFirst {
         // basic build properties
+        setSystemPropertyFromProject("kover.test.kotlin.version")
+
         systemProperties["kotlinVersion"] = kotlinVersion
         systemProperties["koverVersion"] = version
         systemProperties["localRepositoryPath"] = localRepositoryUri.path
 
         // parallel execution
-        systemProperties["junit.jupiter.execution.parallel.enabled"] = if (junitParallelism == "no") "false" else "true"
         systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
         systemProperties["junit.jupiter.execution.parallel.mode.classes.default"] = "concurrent"
         systemProperties["junit.jupiter.execution.parallel.config.strategy"] = "fixed"
         systemProperties["junit.jupiter.execution.parallel.config.fixed.parallelism"] = junitParallelism?.toIntOrNull()?.toString() ?: "2"
+        // this is necessary if tests are run for debugging, in this case it is more difficult to stop at the test you need when they are executed in parallel and you are not sure on which test the execution will pause
+        systemProperties["junit.jupiter.execution.parallel.enabled"] = if (junitParallelism == "no") "false" else "true"
+
 
         // customizing functional tests
         setSystemPropertyFromProject("kover.release.version")

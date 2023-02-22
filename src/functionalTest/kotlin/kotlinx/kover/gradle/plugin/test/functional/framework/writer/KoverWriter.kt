@@ -9,18 +9,18 @@ import org.gradle.api.*
 
 internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectExtension {
 
-    override var isDisabled: Boolean = false
+    override var allTestsExcluded: Boolean = false
         set(value) {
-            writer.assign("isDisabled", value.toString())
+            writer.assign("allTestsExcluded", value.toString())
             field = value
         }
 
-    override fun useKoverToolDefault() {
-        writer.call("useKoverToolDefault")
+    override fun useKoverTool() {
+        writer.call("useKoverTool")
     }
 
-    override fun useJacocoToolDefault() {
-        writer.call("useJacocoToolDefault")
+    override fun useJacocoTool() {
+        writer.call("useJacocoTool")
     }
 
     override fun useKoverTool(version: String) {
@@ -46,16 +46,16 @@ internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectEx
 }
 
 private class KoverTestsExclusionsWriter(private val writer: FormattedWriter) : KoverTestsExclusions {
-    override fun taskName(vararg name: String) {
-        taskName(name.asIterable())
+    override fun tasks(vararg name: String) {
+        tasks(name.asIterable())
     }
 
-    override fun taskName(names: Iterable<String>) {
-        writer.callStr("taskName", names)
+    override fun tasks(names: Iterable<String>) {
+        writer.callStr("tasks", names)
     }
 
-    override fun kmpTargetName(vararg name: String) {
-        writer.callStr("kmpTargetName", name.asIterable())
+    override fun mppTargetName(vararg name: String) {
+        writer.callStr("mppTargetName", name.asIterable())
     }
 }
 
@@ -70,8 +70,8 @@ private class KoverSourcesExclusionsWriter(private val writer: FormattedWriter) 
         writer.call("jvm", config) { KoverJvmSourceSetWriter(it) }
     }
 
-    override fun kmp(config: Action<KoverKmpSourceSet>) {
-        writer.call("kmp", config) { KoverKmpSourceSetWriter(it) }
+    override fun mpp(config: Action<KoverMppSourceSet>) {
+        writer.call("mpp", config) { KoverMppSourceSetWriter(it) }
     }
 
 }
@@ -87,7 +87,7 @@ private class KoverJvmSourceSetWriter(private val writer: FormattedWriter): Kove
 
 }
 
-private class KoverKmpSourceSetWriter(private val writer: FormattedWriter): KoverKmpSourceSet {
+private class KoverMppSourceSetWriter(private val writer: FormattedWriter): KoverMppSourceSet {
     override fun targetName(vararg name: String) {
         writer.callStr("targetName", name.asIterable())
     }
@@ -104,20 +104,20 @@ private class KoverKmpSourceSetWriter(private val writer: FormattedWriter): Kove
 
 private class KoverInstrumentationExclusionsWriter(private val writer: FormattedWriter) :
     KoverInstrumentationExclusions {
-    override fun className(vararg className: String) {
-        this.className(className.asIterable())
+    override fun classes(vararg names: String) {
+        this.classes(names.asIterable())
     }
 
-    override fun className(classNames: Iterable<String>) {
-        writer.callStr("className", classNames)
+    override fun classes(names: Iterable<String>) {
+        writer.callStr("classes", names)
     }
 
-    override fun packageName(vararg className: String) {
-        packageName(className.asIterable())
+    override fun packages(vararg names: String) {
+        packages(names.asIterable())
     }
 
-    override fun packageName(classNames: Iterable<String>) {
-        writer.callStr("packageName", classNames)
+    override fun packages(names: Iterable<String>) {
+        writer.callStr("packages", names)
     }
 
 }

@@ -40,7 +40,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
 
         val tests = project.tasks.withType<Test>().matching {
             // skip all tests from instrumentation if Kover Plugin is disabled for the project
-            !koverExtension.isDisabled
+            !koverExtension.allTestsExcluded
                     // skip this test if it disabled by name
                     && it.name !in koverExtension.tests.tasksNames
         }
@@ -52,7 +52,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
         koverExtension: KoverProjectExtensionImpl,
         kotlinExtension: DynamicBean
     ): SetupLazyInfo {
-        if (koverExtension.isDisabled) {
+        if (koverExtension.allTestsExcluded) {
             // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
             return SetupLazyInfo()
         }
@@ -85,7 +85,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
             val tasks = mutableListOf<Task>()
             tasks += it.property<Task>("compileKotlinTask")
             if (!koverExtension.sources.excludeJavaCode) {
-                tasks += it.property<TaskProvider<Task>>("compileJavaTaskProvider").get()
+                it.propertyOrNull<TaskProvider<Task>>("compileJavaTaskProvider")?.orNull?.let { task -> tasks += task }
             }
             tasks
         }
@@ -93,51 +93,3 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
         return SetupLazyInfo(sources, outputs, compileTasks)
     }
 }
-
-/*
-    ORIGINAL
-    ================
-
-    private fun extractBuild(
-        koverExtension: KoverProjectExtensionImpl,
-        kotlinExtension: KotlinJvmProjectExtension
-    ): KoverSetupBuild {
-        if (koverExtension.isDisabled) {
-            return KoverSetupBuild()
-        }
-
-        val compilations = kotlinExtension.target.compilations.filter {
-            // always ignore test source set by default
-            it.name != SourceSet.TEST_SOURCE_SET_NAME
-                    // ignore specified JVM source sets
-                    && it.name !in koverExtension.sources.jvmSourceSets
-        }
-
-
-        val sources = compilations.flatMap {
-            // expected only one Kotlin Source Set for Kotlin/JVM
-            it.kotlinSourceSets
-        }.flatMap {
-            it.kotlin.srcDirs
-        }.toSet()
-
-        val outputs = compilations.flatMap {
-            it.output.classesDirs.files
-        }.filterNot {
-            // exclude java classes from report. Expected java class files are placed in directories like
-            //   build/classes/java/main
-            koverExtension.sources.excludeJavaCode && it.parentFile.name == "java"
-        }.toSet()
-
-        val compileTasks = compilations.flatMap {
-            val tasks = mutableListOf<Task>()
-            tasks += it.compileKotlinTask
-            if (!koverExtension.sources.excludeJavaCode) {
-                tasks += it.compileJavaTaskProvider.get()
-            }
-            tasks
-        }
-
-        return KoverSetupBuild(sources, outputs, compileTasks)
-    }
- */
