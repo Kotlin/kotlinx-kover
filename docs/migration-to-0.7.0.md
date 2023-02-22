@@ -246,7 +246,37 @@ koverReport {
 ### Renaming Coverage Engines to Coverage Tools
 Previously called engines have been renamed tools.
 
-IntelliJ Engine was renamed to Kover Engine.
+IntelliJ Engine was renamed to Kover Tool.
+
+To use Kover Tool with default version need to call 
+```
+kover {
+    useKoverTool()
+}
+```
+
+To use Kover Tool with specified version need to call
+```
+kover {
+    useKoverTool("1.0.690")
+}
+```
+
+To use JaCoCo Tool with default version need to call 
+```
+kover {
+    useJacocoTool()
+}
+```
+
+To use JaCoCo Tool with specified version need to call 
+```
+kover {
+    useJacocoTool("0.8.8")
+}
+```
+
+
 
 ### report filters now not affects instrumentation
 In version `0.6.1`, report filters also excluded classes from instrumentation.
@@ -275,7 +305,6 @@ kover {
 }
 ```
 
-
 ### rename dependency in buildSrc
 Dependencies like `classpath "org.jetbrains.kotlinx:kover:$koverVersion"` or `implementation("org.jetbrains.kotlinx:kover:$koverVersion")` should be replaced by `classpath "org.jetbrains.kotlinx:kover-gradle-plugin:$koverVersion"`
 
@@ -284,14 +313,14 @@ Dependencies like `classpath "org.jetbrains.kotlinx:kover:$koverVersion"` or `im
 ### Using 'isDisabled: Boolean' is an error
 _Solution_
 
-Use property 'allTestsExcluded' instead.
+Use property 'disabledForProject' instead.
 
 ---
 
-### allTestsExcluded.set(    Unresolved reference
+### disabledForProject.set(    Unresolved reference
 _Solution_
 
-Use assignment `allTestsExcluded = `
+Use assignment `disabledForProject = `
 
 ---
 

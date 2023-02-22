@@ -105,7 +105,7 @@ The example of Kover configuration is given below
 ```
 
 kover {
-    allTestsExcluded = false
+    disabledForProject = false
 
     useKoverTool()
 

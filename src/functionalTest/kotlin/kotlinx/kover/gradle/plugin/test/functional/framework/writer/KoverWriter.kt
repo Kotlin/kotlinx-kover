@@ -9,9 +9,9 @@ import org.gradle.api.*
 
 internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectExtension {
 
-    override var allTestsExcluded: Boolean = false
+    override var disabledForProject: Boolean = false
         set(value) {
-            writer.assign("allTestsExcluded", value.toString())
+            writer.assign("disabledForProject", value.toString())
             field = value
         }
 

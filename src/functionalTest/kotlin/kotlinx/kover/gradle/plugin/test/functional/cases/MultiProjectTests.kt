@@ -61,7 +61,7 @@ internal class MultiProjectTests {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                allTestsExcluded = true
+                disabledForProject = true
             }
         }
 
@@ -69,7 +69,7 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                allTestsExcluded = true
+                disabledForProject = true
             }
         }
 

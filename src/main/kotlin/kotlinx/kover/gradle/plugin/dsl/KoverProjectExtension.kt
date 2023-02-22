@@ -15,11 +15,11 @@ public interface KoverProjectExtension {
      * Disables instrumentation of all tests in the corresponding project, as well as execution
      * of all kover tasks of the current projects, including the direct calls to t
      */
-    public var allTestsExcluded: Boolean
+    public var disabledForProject: Boolean
 
     /**
      * Configures plugin to use Kover coverage tool.
-     * This option is enabled by default, unless [JaCoCo][useJacocoToolDefault] is enabled.
+     * This option is enabled by default, unless [JaCoCo][useJacocoTool] is enabled.
      */
     public fun useKoverTool()
 
@@ -51,7 +51,7 @@ public interface KoverProjectExtension {
      */
 
     /**
-     * Property is deprecated, please use `use...Tool...()` functions.
+     * Property is deprecated, please use `use...Tool()` functions.
      */
     @Deprecated(
         message = "Property was removed. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
@@ -62,8 +62,8 @@ public interface KoverProjectExtension {
         set(@Suppress("UNUSED_PARAMETER") value) {}
 
     @Deprecated(
-        message = "Property was renamed to 'allTestsExcluded'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
-        replaceWith = ReplaceWith("allTestsExcluded"),
+        message = "Property was renamed to 'disabledForProject'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("disabledForProject"),
         level = DeprecationLevel.ERROR
     )
     public val isDisabled: Boolean

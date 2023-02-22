@@ -53,7 +53,7 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
                 // use only Android unit tests (local tests)
                 it.hasSuperclass("AndroidUnitTest")
                         // skip all tests from instrumentation if Kover Plugin is disabled for the project
-                        && !koverExtension.allTestsExcluded
+                        && !koverExtension.disabledForProject
                         // skip this test if it disabled by name
                         && it.name !in koverExtension.tests.tasksNames
                         // only tests of current application build variant
@@ -69,7 +69,7 @@ internal class KotlinAndroidLocator(private val project: Project) : SetupLocator
         kotlinExtension: DynamicBean,
         variantName: String
     ): SetupLazyInfo {
-        if (koverExtension.allTestsExcluded) {
+        if (koverExtension.disabledForProject) {
             // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
             return SetupLazyInfo()
         }

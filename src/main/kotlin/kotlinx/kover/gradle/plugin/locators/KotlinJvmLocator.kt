@@ -40,7 +40,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
 
         val tests = project.tasks.withType<Test>().matching {
             // skip all tests from instrumentation if Kover Plugin is disabled for the project
-            !koverExtension.allTestsExcluded
+            !koverExtension.disabledForProject
                     // skip this test if it disabled by name
                     && it.name !in koverExtension.tests.tasksNames
         }
@@ -52,7 +52,7 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
         koverExtension: KoverProjectExtensionImpl,
         kotlinExtension: DynamicBean
     ): SetupLazyInfo {
-        if (koverExtension.allTestsExcluded) {
+        if (koverExtension.disabledForProject) {
             // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
             return SetupLazyInfo()
         }

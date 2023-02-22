@@ -17,7 +17,7 @@ import javax.inject.*
 
 internal open class KoverProjectExtensionImpl @Inject constructor(objects: ObjectFactory) : KoverProjectExtension {
 
-    override var allTestsExcluded: Boolean = false
+    override var disabledForProject: Boolean = false
 
     internal var toolVariant: CoverageToolVariant? = null
 

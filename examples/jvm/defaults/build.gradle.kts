@@ -12,7 +12,7 @@ dependencies {
 }
 
 kover {
-    allTestsExcluded = false
+    disabledForProject = false
 
     useKoverTool()
 
