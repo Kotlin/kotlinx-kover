@@ -44,7 +44,7 @@ class KoverGradlePlugin : Plugin<Project> {
         val min = SemVer.ofVariableOrNull(MINIMUM_GRADLE_VERSION)!!
         if (current < min) throw GradleException(
             "Gradle version '$gradleVersion' is not supported by Kover Plugin. " +
-                    "Minimum supported version is '$MINIMUM_GRADLE_VERSION'"
+                    "Minimal supported version is '$MINIMUM_GRADLE_VERSION'"
         )
     }
 
