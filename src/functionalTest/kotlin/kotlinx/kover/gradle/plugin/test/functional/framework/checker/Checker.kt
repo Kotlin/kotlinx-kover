@@ -206,7 +206,7 @@ private class CheckerContextImpl(
             }
         } else {
             file(defaultRawReport) {
-                assertFalse(exists(), "Default raw report mustn't be exists: $defaultRawReport" )
+                assertFalse(exists(), "Default raw report must not exist: $defaultRawReport" )
             }
         }
     }
@@ -247,7 +247,7 @@ private class CheckerContextImpl(
                 assertFalse(exists(), "XML file mustn't exist '$xmlPath'")
             }
             file(htmlPath) {
-                assertFalse(exists(), "HTML report mustn't exists '$htmlPath'")
+                assertFalse(exists(), "HTML report mustn't exist '$htmlPath'")
             }
         }
     }
