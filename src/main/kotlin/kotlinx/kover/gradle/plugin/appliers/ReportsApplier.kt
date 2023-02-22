@@ -145,7 +145,7 @@ internal class ReportsApplier(
     }
 
     private fun KoverVerifyRuleImpl.convert(): VerificationRule {
-        return VerificationRule(isEnabled, filters?.convert(), name, entity, bounds.map { it.convert() })
+        return VerificationRule(isEnabled, filters?.convert(), internalName, entity, bounds.map { it.convert() })
     }
 
     private fun KoverVerifyBoundImpl.convert(): VerificationBound {

@@ -131,11 +131,7 @@ internal class KoverVerifyRuleWriter(private val writer: FormattedWriter): Kover
             writer.assign("isEnabled", value.toString())
             field = value
         }
-    override var name: String? = null
-        set(value) {
-            writer.assign("name", "\"$value\"")
-            field = value
-        }
+
     override var entity: GroupingEntityType = GroupingEntityType.APPLICATION
         set(value) {
             writer.assign("entity", value.forScript())
@@ -170,6 +166,8 @@ internal class KoverVerifyRuleWriter(private val writer: FormattedWriter): Kover
         writer.call("maxBound", maxValue.toString(), metric.forScript(), aggregation.forScript())
     }
 
+    @Deprecated(message = "Removed")
+    override var name: String? = null
 }
 
 internal class KoverVerifyBoundWriter(private val writer: FormattedWriter): KoverVerifyBound {

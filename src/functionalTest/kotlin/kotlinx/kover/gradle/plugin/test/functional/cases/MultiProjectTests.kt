@@ -48,9 +48,10 @@ internal class MultiProjectTests {
                 xml(defaultXmlReport()) {
                     classCounter("org.jetbrains.UserClass").assertAbsent()
 
+                    classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()
+
                     // common class covered partially because calls from the root project are not counted
-                    classCounter("org.jetbrains.CommonClass").assertCovered()
-                    classCounter("org.jetbrains.CommonInternalClass").assertCovered()
+                    classCounter("org.jetbrains.CommonClass").assertCoveredPartially()
                 }
             }
         }

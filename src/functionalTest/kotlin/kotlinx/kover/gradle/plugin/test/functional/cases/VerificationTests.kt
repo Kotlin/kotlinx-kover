@@ -16,8 +16,7 @@ internal class VerificationTests {
 
             koverReport {
                 verify {
-                    rule {
-                        name = "test rule"
+                    rule("test rule") {
                         bound {
                             minValue = 50
                             maxValue = 60
@@ -42,8 +41,7 @@ internal class VerificationTests {
 
             koverReport {
                 verify {
-                    rule {
-                        name = "counts rule"
+                    rule("counts rule") {
                         bound {
                             minValue = 58
                             maxValue = 60
@@ -54,8 +52,7 @@ internal class VerificationTests {
                             maxValue = 3
                         }
                     }
-                    rule {
-                        name = "fully uncovered instructions by classes"
+                    rule("fully uncovered instructions by classes") {
                         entity = GroupingEntityType.CLASS
                         bound {
                             metric = MetricType.INSTRUCTION
@@ -63,8 +60,7 @@ internal class VerificationTests {
                             minValue = 100
                         }
                     }
-                    rule {
-                        name = "fully covered instructions by packages"
+                    rule("fully covered instructions by packages") {
                         entity = GroupingEntityType.PACKAGE
                         bound {
                             metric = MetricType.INSTRUCTION
@@ -72,8 +68,7 @@ internal class VerificationTests {
                             minValue = 100
                         }
                     }
-                    rule {
-                        name = "branches by classes"
+                    rule("branches by classes") {
                         entity = GroupingEntityType.CLASS
                         bound {
                             metric = MetricType.BRANCH
@@ -81,8 +76,7 @@ internal class VerificationTests {
                             minValue = 1000
                         }
                     }
-                    rule {
-                        name = "missed packages"
+                    rule("missed packages") {
                         entity = GroupingEntityType.PACKAGE
                         bound {
                             aggregation = AggregationType.MISSED_COUNT

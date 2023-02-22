@@ -191,9 +191,6 @@ koverReport {
             // check this rule during verification 
             isEnabled = true
             
-            // specify custom name for rule, actual only for the Kover tool
-            name = null
-            
             // specify the code unit for which coverage will be aggregated 
             entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
 
@@ -430,6 +427,22 @@ koverReport {
 _Solution_
 
 Property usage `reportFile.set(file)` should be replaced by `setReportFile(file)` 
+
+---
+
+### Using 'name: String?' is an error
+_Solution_
+
+`name` property is deprecated, specify rule custom name in `rule` function
+```
+koverReport {
+    verify {
+        rule("My rule name") {
+            // ... rule definition
+        }
+    }
+}
+```
 
 ---
 

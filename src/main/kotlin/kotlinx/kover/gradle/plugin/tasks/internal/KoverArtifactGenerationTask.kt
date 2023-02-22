@@ -14,6 +14,11 @@ import org.gradle.kotlin.dsl.*
 import java.io.*
 import javax.inject.*
 
+/**
+ * A task that writes a Kover setup of a project (sources directories, directories with class-files, raw reports) into a single file.
+ *
+ * This file is an artifact that will be shared between projects through dependencies for creating merged reports.
+ */
 @CacheableTask
 internal open class KoverArtifactGenerationTask : DefaultTask() {
     @get:InputFiles

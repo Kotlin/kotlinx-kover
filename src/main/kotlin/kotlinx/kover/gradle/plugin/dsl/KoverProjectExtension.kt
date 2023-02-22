@@ -105,6 +105,7 @@ public interface KoverProjectExtension {
 
 
 public interface KoverTestsExclusions : KoverTaskDefinitions {
+
     public override fun tasks(vararg name: String)
 
     public override fun tasks(names: Iterable<String>)

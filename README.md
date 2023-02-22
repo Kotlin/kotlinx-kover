@@ -156,7 +156,6 @@ koverReport {
         onCheck = true
         rule {
             isEnabled = true
-            name = null
             entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
 
             filters {

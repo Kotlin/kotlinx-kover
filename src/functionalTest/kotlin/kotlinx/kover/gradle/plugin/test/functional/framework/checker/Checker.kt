@@ -484,6 +484,12 @@ private class CounterImpl(
         assertTrue(values.covered > 0, "Counter '$symbol' with type '$type' isn't covered")
     }
 
+    override fun assertCoveredPartially() {
+        assertNotNull(values, "Counter '$symbol' with type '$type' isn't covered because it absent")
+        assertTrue(values.covered > 0, "Counter '$symbol' with type '$type' isn't covered")
+        assertTrue(values.missed > 0, "Counter '$symbol' with type '$type' isn't partially covered, but fully covered")
+    }
+
     override fun assertTotal(expectedTotal: Int) {
         assertNotNull(values, "Counter '$symbol' with type '$type' is absent so total value can't be checked")
         val actual = values.covered + values.missed

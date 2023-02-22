@@ -156,7 +156,7 @@ internal open class KoverGeneralVerifyReportConfigImpl @Inject constructor(
 
     override fun rule(name: String, config: Action<KoverVerifyRule>) {
         val newRule = objects.newInstance<KoverVerifyRuleImpl>(objects)
-        newRule.name = name
+        newRule.internalName = name
         config(newRule)
         rules += newRule
     }
@@ -171,9 +171,12 @@ internal open class KoverVerifyRuleImpl @Inject constructor(private val objects:
 
     override var isEnabled: Boolean = true
 
+    @Deprecated(message = "Removed")
     override var name: String? = null
 
     override var entity: GroupingEntityType = GroupingEntityType.APPLICATION
+
+    internal var internalName: String? = null
 
     override fun filters(config: Action<KoverReportFilters>) {
         val filtersToConfigure = filters ?: (objects.newInstance<KoverReportFiltersImpl>(objects).also { filters = it })

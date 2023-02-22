@@ -57,6 +57,8 @@ internal interface Counter {
 
     fun assertCovered()
 
+    fun assertCoveredPartially()
+
     fun assertTotal(expectedTotal: Int)
 
     fun assertCovered(covered: Int, missed: Int)

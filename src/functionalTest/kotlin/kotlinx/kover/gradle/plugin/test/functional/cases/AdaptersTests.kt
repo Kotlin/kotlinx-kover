@@ -8,7 +8,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
 /**
  * Tests for https://github.com/Kotlin/kotlinx-kover/issues/100
- * Classes from plugins applied in subproject not accessible for Kover in root project.
+ * Classes from plugins applied in subproject are not accessible for Kover in root project.
  * Therefore, Kover is forced to use reflection to work with extensions of the kotlin multiplatform plugin.
  */
 internal class AdaptersTests {

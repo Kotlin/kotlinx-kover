@@ -147,11 +147,6 @@ public interface KoverVerifyRule {
     public var isEnabled: Boolean
 
     /**
-     * Specifies optional user-specified name of the rule.
-     */
-    public var name: String?
-
-    /**
      * Specifies by which entity the code for separate coverage evaluation will be grouped.
      */
     public var entity: GroupingEntityType
@@ -226,6 +221,12 @@ public interface KoverVerifyRule {
     public var target: GroupingEntityType
         get() = GroupingEntityType.APPLICATION
         set(@Suppress("UNUSED_PARAMETER") value) {}
+
+    @Deprecated(
+        message = "Property 'name' was removed, specify rule name in `rule(myName) { ... }` function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        level = DeprecationLevel.ERROR
+    )
+    public var name: String?
 
     @Deprecated(
         message = "Use function 'filters' instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
