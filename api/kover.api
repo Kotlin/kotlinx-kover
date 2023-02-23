@@ -1,0 +1,268 @@
+public final class kotlinx/kover/KoverPlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class kotlinx/kover/api/CounterType : java/lang/Enum {
+	public static final field BRANCH Lkotlinx/kover/api/CounterType;
+	public static final field INSTRUCTION Lkotlinx/kover/api/CounterType;
+	public static final field LINE Lkotlinx/kover/api/CounterType;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/api/CounterType;
+	public static fun values ()[Lkotlinx/kover/api/CounterType;
+}
+
+public abstract class kotlinx/kover/api/CoverageEngineVariant {
+}
+
+public abstract class kotlinx/kover/api/CoverageToolVariant {
+	public synthetic fun <init> (Lkotlinx/kover/tools/commons/CoverageToolVendor;Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kotlinx/kover/api/DefaultIntellijEngine {
+	public static final field INSTANCE Lkotlinx/kover/api/DefaultIntellijEngine;
+}
+
+public final class kotlinx/kover/api/DefaultJacocoEngine {
+	public static final field INSTANCE Lkotlinx/kover/api/DefaultJacocoEngine;
+}
+
+public final class kotlinx/kover/api/IntellijEngine {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class kotlinx/kover/api/JacocoEngine {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class kotlinx/kover/api/JacocoTool : kotlinx/kover/api/CoverageToolVariant {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class kotlinx/kover/api/JacocoToolDefault : kotlinx/kover/api/CoverageToolVariant {
+	public static final field INSTANCE Lkotlinx/kover/api/JacocoToolDefault;
+}
+
+public class kotlinx/kover/api/KoverAnnotationFilter {
+	public fun <init> ()V
+	public final fun getExcludes ()Ljava/util/List;
+}
+
+public class kotlinx/kover/api/KoverClassFilter {
+	public fun <init> ()V
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getIncludes ()Ljava/util/List;
+}
+
+public class kotlinx/kover/api/KoverMergedConfig {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun enable ()V
+	public final fun filters (Lorg/gradle/api/Action;)V
+	public final fun htmlReport (Lorg/gradle/api/Action;)V
+	public final fun verify (Lorg/gradle/api/Action;)V
+	public final fun xmlReport (Lorg/gradle/api/Action;)V
+}
+
+public class kotlinx/kover/api/KoverMergedFilters {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun annotations (Lorg/gradle/api/Action;)V
+	public final fun classes (Lorg/gradle/api/Action;)V
+	public final fun projects (Lorg/gradle/api/Action;)V
+}
+
+public class kotlinx/kover/api/KoverMergedHtmlConfig {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getOnCheck ()Lorg/gradle/api/provider/Property;
+	public final fun getReportDir ()Lorg/gradle/api/file/DirectoryProperty;
+	public final fun overrideAnnotationFilter (Lorg/gradle/api/Action;)V
+	public final fun overrideClassFilter (Lorg/gradle/api/Action;)V
+}
+
+public class kotlinx/kover/api/KoverMergedXmlConfig {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getOnCheck ()Lorg/gradle/api/provider/Property;
+	public final fun getReportFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public final fun overrideAnnotationFilter (Lorg/gradle/api/Action;)V
+	public final fun overrideClassFilter (Lorg/gradle/api/Action;)V
+}
+
+public final class kotlinx/kover/api/KoverMigrations {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverMigrations;
+	public static final field MIGRATION_0_5_TO_0_6 Ljava/lang/String;
+	public static final field MIGRATION_0_6_TO_0_7 Ljava/lang/String;
+}
+
+public final class kotlinx/kover/api/KoverNames {
+	public static final field CHECK_TASK_NAME Ljava/lang/String;
+	public static final field CONFIGURATION_NAME Ljava/lang/String;
+	public static final field HTML_REPORT_TASK_NAME Ljava/lang/String;
+	public static final field INSTANCE Lkotlinx/kover/api/KoverNames;
+	public static final field MERGED_EXTENSION_NAME Ljava/lang/String;
+	public static final field MERGED_HTML_REPORT_TASK_NAME Ljava/lang/String;
+	public static final field MERGED_REPORT_TASK_NAME Ljava/lang/String;
+	public static final field MERGED_VERIFY_TASK_NAME Ljava/lang/String;
+	public static final field MERGED_XML_REPORT_TASK_NAME Ljava/lang/String;
+	public static final field PROJECT_EXTENSION_NAME Ljava/lang/String;
+	public static final field REPORT_TASK_NAME Ljava/lang/String;
+	public static final field TASK_EXTENSION_NAME Ljava/lang/String;
+	public static final field VERIFICATION_GROUP Ljava/lang/String;
+	public static final field VERIFY_TASK_NAME Ljava/lang/String;
+	public static final field XML_REPORT_TASK_NAME Ljava/lang/String;
+}
+
+public final class kotlinx/kover/api/KoverPaths {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverPaths;
+	public static final field MERGED_HTML_REPORT_DEFAULT_PATH Ljava/lang/String;
+	public static final field MERGED_VERIFICATION_REPORT_DEFAULT_PATH Ljava/lang/String;
+	public static final field MERGED_XML_REPORT_DEFAULT_PATH Ljava/lang/String;
+	public static final field PROJECT_HTML_REPORT_DEFAULT_PATH Ljava/lang/String;
+	public static final field PROJECT_VERIFICATION_REPORT_DEFAULT_PATH Ljava/lang/String;
+	public static final field PROJECT_XML_REPORT_DEFAULT_PATH Ljava/lang/String;
+}
+
+public class kotlinx/kover/api/KoverProjectConfig {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun filters (Lorg/gradle/api/Action;)V
+	public final fun getEngine ()Lorg/gradle/api/provider/Property;
+	public final fun getTool ()Lorg/gradle/api/provider/Property;
+	public final fun htmlReport (Lorg/gradle/api/Action;)V
+	public final fun instrumentation (Lorg/gradle/api/Action;)V
+	public final fun isDisabled ()Lorg/gradle/api/provider/Property;
+	public final fun verify (Lorg/gradle/api/Action;)V
+	public final fun xmlReport (Lorg/gradle/api/Action;)V
+}
+
+public class kotlinx/kover/api/KoverProjectFilters {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun annotations (Lorg/gradle/api/Action;)V
+	public final fun classes (Lorg/gradle/api/Action;)V
+	public final fun sourceSets (Lorg/gradle/api/Action;)V
+}
+
+public class kotlinx/kover/api/KoverProjectHtmlConfig {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getOnCheck ()Lorg/gradle/api/provider/Property;
+	public final fun getReportDir ()Lorg/gradle/api/file/DirectoryProperty;
+	public final fun overrideFilters (Lorg/gradle/api/Action;)V
+}
+
+public class kotlinx/kover/api/KoverProjectInstrumentation {
+	public fun <init> ()V
+	public final fun getExcludeTasks ()Ljava/util/Set;
+}
+
+public class kotlinx/kover/api/KoverProjectXmlConfig {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getOnCheck ()Lorg/gradle/api/provider/Property;
+	public final fun getReportFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public final fun overrideFilters (Lorg/gradle/api/Action;)V
+}
+
+public class kotlinx/kover/api/KoverProjectsFilter {
+	public fun <init> ()V
+	public final fun getExcludes ()Ljava/util/List;
+}
+
+public class kotlinx/kover/api/KoverSourceSetFilter {
+	public fun <init> ()V
+	public final fun getExcludeTests ()Z
+	public final fun getExcludes ()Ljava/util/Set;
+	public final fun setExcludeTests (Z)V
+}
+
+public class kotlinx/kover/api/KoverTaskExtension {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getExcludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getIncludes ()Lorg/gradle/api/provider/ListProperty;
+	public final fun getIsDisabled ()Lorg/gradle/api/provider/Property;
+	public final fun getReportFile ()Lorg/gradle/api/file/RegularFileProperty;
+}
+
+public final class kotlinx/kover/api/KoverTool : kotlinx/kover/api/CoverageToolVariant {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class kotlinx/kover/api/KoverToolDefault : kotlinx/kover/api/CoverageToolVariant {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverToolDefault;
+}
+
+public class kotlinx/kover/api/KoverVerifyConfig {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun getOnCheck ()Lorg/gradle/api/provider/Property;
+	public final fun rule (Lorg/gradle/api/Action;)V
+}
+
+public final class kotlinx/kover/api/KoverVersions {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverVersions;
+	public static final field MINIMUM_GRADLE_VERSION Ljava/lang/String;
+}
+
+public class kotlinx/kover/api/VerificationBound {
+	public fun <init> ()V
+	public final fun getCounter ()Lkotlinx/kover/api/CounterType;
+	public final fun getMaxValue ()Ljava/lang/Integer;
+	public final fun getMinValue ()Ljava/lang/Integer;
+	public final fun getValueType ()Lkotlinx/kover/api/VerificationValueType;
+	public final fun setCounter (Lkotlinx/kover/api/CounterType;)V
+	public final fun setMaxValue (Ljava/lang/Integer;)V
+	public final fun setMinValue (Ljava/lang/Integer;)V
+	public final fun setValueType (Lkotlinx/kover/api/VerificationValueType;)V
+}
+
+public class kotlinx/kover/api/VerificationRule {
+	public fun <init> (Lorg/gradle/api/model/ObjectFactory;)V
+	public final fun bound (Lorg/gradle/api/Action;)V
+	public final fun getName ()Ljava/lang/String;
+	public final fun getTarget ()Lkotlinx/kover/api/VerificationTarget;
+	public final fun isEnabled ()Z
+	public final fun overrideAnnotationFilter (Lorg/gradle/api/Action;)V
+	public final fun overrideClassFilter (Lorg/gradle/api/Action;)V
+	public final fun setEnabled (Z)V
+	public final fun setName (Ljava/lang/String;)V
+	public final fun setTarget (Lkotlinx/kover/api/VerificationTarget;)V
+}
+
+public final class kotlinx/kover/api/VerificationTarget : java/lang/Enum {
+	public static final field ALL Lkotlinx/kover/api/VerificationTarget;
+	public static final field CLASS Lkotlinx/kover/api/VerificationTarget;
+	public static final field PACKAGE Lkotlinx/kover/api/VerificationTarget;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/api/VerificationTarget;
+	public static fun values ()[Lkotlinx/kover/api/VerificationTarget;
+}
+
+public final class kotlinx/kover/api/VerificationValueType : java/lang/Enum {
+	public static final field COVERED_COUNT Lkotlinx/kover/api/VerificationValueType;
+	public static final field COVERED_PERCENTAGE Lkotlinx/kover/api/VerificationValueType;
+	public static final field MISSED_COUNT Lkotlinx/kover/api/VerificationValueType;
+	public static final field MISSED_PERCENTAGE Lkotlinx/kover/api/VerificationValueType;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/api/VerificationValueType;
+	public static fun values ()[Lkotlinx/kover/api/VerificationValueType;
+}
+
+public class kotlinx/kover/lookup/ProjectDirectories {
+	public fun <init> (Lorg/gradle/api/file/FileCollection;Lorg/gradle/api/file/FileCollection;)V
+	public final fun getOutputs ()Lorg/gradle/api/file/FileCollection;
+	public final fun getSources ()Lorg/gradle/api/file/FileCollection;
+}
+
+public class kotlinx/kover/tasks/ProjectFiles {
+	public fun <init> (Lorg/gradle/api/file/FileCollection;Lorg/gradle/api/file/FileCollection;Lorg/gradle/api/file/FileCollection;)V
+	public final fun getBinaryReportFiles ()Lorg/gradle/api/file/FileCollection;
+	public final fun getOutputs ()Lorg/gradle/api/file/FileCollection;
+	public final fun getSources ()Lorg/gradle/api/file/FileCollection;
+}
+
+public final class kotlinx/kover/util/json/SimpleParserKt {
+	public static final fun readJsonArray (Ljava/io/File;)Ljava/util/List;
+	public static final fun readJsonObject (Ljava/io/File;)Ljava/util/Map;
+}
+
+public final class kotlinx/kover/util/json/SimpleWriterKt {
+	public static final fun writeArray (Ljava/io/PrintWriter;Ljava/lang/Iterable;I)V
+	public static final fun writeJsonObject (Ljava/io/File;Ljava/util/Map;)V
+	public static final fun writeObject (Ljava/io/PrintWriter;Ljava/util/Map;I)V
+}
+
