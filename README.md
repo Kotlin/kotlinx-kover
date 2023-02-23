@@ -35,7 +35,7 @@ Add the following to your top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.0-Beta"
+     id("org.jetbrains.kotlinx.kover") version "0.7.0-Alpha"
 }
 ```
 </details>
@@ -45,7 +45,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.7.0-Beta'
+    id 'org.jetbrains.kotlinx.kover' version '0.7.0-Alpha'
 }
 ```
 </details>
@@ -65,7 +65,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Beta")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Alpha")
     }
 }
 
@@ -84,11 +84,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Beta'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Alpha'
     }
 }
   
-apply plugin: 'kover'    
+apply plugin: 'kover'
 ```
 
 </details>
@@ -110,17 +110,21 @@ kover {
     useKoverTool()
 
     excludeInstrumentation {
-        classes("com.example.subpackage.*")
+        classes("com.example.Foo*", "*Bar?")
+        packages("com.example.subpackage")
     }
 }
 
 koverReport {
     filters {
         excludes {
-            classes("com.example.subpackage.*")
+            classes("com.example.Foo*", "*Bar?")
+            packages("com.example.subpackage")
+            annotatedBy("*Generated*", "com.example.ExcludeKover")
         }
         includes {
-            classes("com.example.*")
+            classes("com.example.Biz"")
+            packages("com.example")
         }
     }
 
@@ -130,24 +134,31 @@ koverReport {
 
         filters {
             excludes {
-                classes("com.example2.subpackage.*")
+                classes("com.example.xml.Foo*", "*Bar?")
+                packages("com.example.subpackage.xml")
+                annotatedBy("*Generated*", "com.example.xml.ExcludeKover")
             }
             includes {
-                classes("com.example2.*")
+                classes("com.example.xml.Biz"")
+                packages("com.example.xml")
             }
         }
     }
 
     html {
+        title = "My report title"
         onCheck = false
         setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
 
         filters {
             excludes {
-                classes("com.example2.subpackage.*")
+                classes("com.example.html.Foo*", "*Bar?")
+                packages("com.example.subpackage.html")
+                annotatedBy("*Generated*", "com.example.html.ExcludeKover")
             }
             includes {
-                classes("com.example2.*")
+                classes("com.example.html.Biz"")
+                packages("com.example.html")
             }
         }
     }
@@ -160,10 +171,13 @@ koverReport {
 
             filters {
                 excludes {
-                    classes("com.example.verify.subpackage.*")
+                    classes("com.example.verify.Foo*", "*Bar?")
+                    packages("com.example.subpackage.verify")
+                    annotatedBy("*Generated*", "com.example.verify.ExcludeKover")
                 }
                 includes {
-                    classes("com.example.verify.*")
+                    classes("com.example.verify.Biz"")
+                    packages("com.example.verify")
                 }
             }
 

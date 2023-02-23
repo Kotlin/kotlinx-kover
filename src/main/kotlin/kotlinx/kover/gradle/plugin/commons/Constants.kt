@@ -8,5 +8,5 @@ internal const val REGULAR_SETUP_NAME = ""
 
 public object KoverMigrations {
     public const val MIGRATION_0_5_TO_0_6 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.6.0/docs/migration-to-0.6.0.md"
-    public const val MIGRATION_0_6_TO_0_7 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.7.0-Beta/docs/migration-to-0.7.0.md"
+    public const val MIGRATION_0_6_TO_0_7 = "https://github.com/Kotlin/kotlinx-kover/blob/v0.7.0-Alpha/docs/migration-to-0.7.0.md"
 }

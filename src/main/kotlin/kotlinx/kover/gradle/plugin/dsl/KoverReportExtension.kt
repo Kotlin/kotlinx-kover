@@ -4,36 +4,261 @@
 
 package kotlinx.kover.gradle.plugin.dsl
 
+import kotlinx.kover.api.*
 import kotlinx.kover.gradle.plugin.commons.*
+import kotlinx.kover.gradle.plugin.commons.KoverMigrations
 import org.gradle.api.*
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
+import org.gradle.kotlin.dsl.*
 import java.io.*
 
+/**
+ * Configuration of Kover reports for some report context: regular reports for K/JVM and K/MPP, or Android reports for some build variant.
+ *
+ * Kotlin JVM or Kotlin MPP projects
+ * ```
+ *  koverReport {
+ *      filters {
+ *          // ...
+ *      }
+ *
+ *      html {
+ *          // ...
+ *      }
+ *
+ *      xml {
+ *          // ...
+ *      }
+ *
+ *      verify {
+ *          // ...
+ *      }
+ *  }
+ * ```
+ *
+ * Kotlin Android projects
+ * ```
+ * koverAndroid {
+ *      report("release") {
+ *          filters {
+ *              // ...
+ *          }
+ *
+ *          html {
+ *              // ...
+ *          }
+ *
+ *          xml {
+ *              // ...
+ *          }
+ *
+ *          verify {
+ *              // ...
+ *          }
+ *      }
+ * }
+ * ```
+ *
+ */
 public interface KoverReportExtension {
+    /**
+     * Specify common filters for the current report context, these filters will be inherited in HTML/XML/verification reports.
+     * They can be redefined in the settings of a specific report.
+     * ```
+     *  filters {
+     *      excludes {
+     *          // ...
+     *      }
+     *
+     *      includes {
+     *          // ...
+     *      }
+     *  }
+     * ```
+     */
     public fun filters(config: Action<KoverReportFilters>)
 
+    /**
+     * Configure HTML report for current report context.
+     * ```
+     *  html {
+     *      filters {
+     *          // ...
+     *      }
+     *
+     *      title = "My report title"
+     *      onCheck = false
+     *      setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+     *  }
+     * ```
+     */
     public fun html(config: Action<KoverHtmlReportConfig>)
 
+    /**
+     * Configure HTML report for current report context.
+     * ```
+     *  xml {
+     *      filters {
+     *          // ...
+     *      }
+     *
+     *      onCheck = false
+     *      setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
+     *  }
+     * ```
+     */
     public fun xml(config: Action<KoverXmlReportConfig>)
 
+    /**
+     * Configure coverage verification for current report context.
+     * ```
+     *  verify {
+     *      onCheck = true
+     *
+     *      rule {
+     *          // ...
+     *      }
+     *
+     *      rule("Custom Name") {
+     *          // ...
+     *      }
+     *  }
+     * ```
+     */
     public fun verify(config: Action<KoverVerifyReportConfig>)
 }
 
-public interface KoverGeneralReportExtension {
+/**
+ * Common configuration of reports for all Android build variant.
+ *
+ * koverAndroid {
+ *      common {
+ *          filters {
+ *              // ...
+ *          }
+ *
+ *          html {
+ *              // ...
+ *          }
+ *
+ *          xml {
+ *              // ...
+ *          }
+ *
+ *          verify {
+ *              // ...
+ *          }
+ *      }
+ * }
+ *
+ */
+public interface KoverGeneralAndroidReport {
+    /**
+     * Specify common filters for all Android build variants, these filters will be inherited in HTML/XML/verification reports in any variant.
+     * They can be redefined in the settings of a specific report of specific build variant.
+     * ```
+     *  filters {
+     *      excludes {
+     *          // ...
+     *      }
+     *
+     *      includes {
+     *          // ...
+     *      }
+     *  }
+     * ```
+     */
     public fun filters(config: Action<KoverReportFilters>)
 
+    /**
+     * Configure HTML report for all Android build variants.
+     * ```
+     *  html {
+     *      filters {
+     *          // ...
+     *      }
+     *
+     *      title = "My report title"
+     *  }
+     * ```
+     */
     public fun html(config: Action<KoverGeneralHtmlReportConfig>)
 
+    /**
+     * Configure HTML report for all Android build variants.
+     * ```
+     *  xml {
+     *      filters {
+     *          // ...
+     *      }
+     *  }
+     * ```
+     */
     public fun xml(config: Action<KoverGeneralXmlReportConfig>)
 
+    /**
+     * Configure coverage verification for all Android build variants..
+     * ```
+     *  verify {
+     *      rule {
+     *          // ...
+     *      }
+     *
+     *      rule("Custom Name") {
+     *          // ...
+     *      }
+     *  }
+     * ```
+     */
     public fun verify(config: Action<KoverGeneralVerifyReportConfig>)
 }
 
+/**
+ * Filters to excludes
+ */
 public interface KoverReportFilters {
+
+
+    /**
+     * Configures class filter in order to exclude declarations marked by specific annotations.
+     *
+     * Example:
+     *  ```
+     *  annotations {
+     *      excludes += "com.example.Generated"
+     *  }
+     *  ```
+     */
+
+    /**
+     * Configures class filter in order to exclude classes and functions.
+     *
+     * Example:
+     *  ```
+     *  excludes {
+     *      classes("com.example.FooBar?", "com.example.*Bar")
+     *      packages("com.example.subpackage")
+     *      annotatedBy("*Generated*")
+     *  }
+     *  ```
+     * Excludes have priority over includes.
+     */
     public fun excludes(config: Action<KoverReportFilter>)
 
+    /**
+     * Configures class filter in order to include classes.
+     *
+     * Example:
+     *  ```
+     *  includes {
+     *      classes("com.example.FooBar?", "com.example.*Bar")
+     *      packages("com.example.subpackage")
+     *  }
+     *  ```
+     * Excludes have priority over includes.
+     */
     public fun includes(config: Action<KoverReportFilter>)
 
     @Deprecated(
@@ -58,21 +283,105 @@ public interface KoverReportFilters {
 }
 
 public interface KoverReportFilter: KoverClassDefinitions {
+    /**
+     * Add specified classes to current filters.
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * Example:
+     * ```
+     *  classes("*.foo.Bar", "*.M?Class")
+     * ```
+     */
     public override fun classes(vararg names: String)
 
+    /**
+     * Add specified classes to current filters.
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * Example for Groovy:
+     * ```
+     *  def someClasses = ["*.foo.Bar", "*.M?Class"]
+     *  ...
+     *  classes(someClasses)
+     * ```
+     *
+     * Example for Kotlin:
+     * ```
+     *  val someClasses = listOf("*.foo.Bar", "*.M?Class")
+     *  ...
+     *  classes(someClasses)
+     * ```
+     */
     public override fun classes(names: Iterable<String>)
 
+    /**
+     * Add all classes in specified package and it subpackages to current filters.
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * Example:
+     * ```
+     *  packages("foo.b?r", "com.*.example")
+     * ```
+     */
     public override fun packages(vararg names: String)
 
+    /**
+     * Add all classes in specified package and it subpackages to current filters.
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * Example for Groovy:
+     * ```
+     *  def somePackages = ["foo.b?r", "com.*.example"]
+     *
+     *  packages(somePackages)
+     * ```
+     *
+     * Example for Kotlin:
+     * ```
+     *  val somePackages = listOf("foo.b?r", "com.*.example")
+     *  ...
+     *  packages(somePackages)
+     * ```
+     */
     public override fun packages(names: Iterable<String>)
 
+    /**
+     * Add to filters all classes and functions marked by specified annotations.
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * Example:
+     * ```
+     *  annotatedBy("*Generated*", "com.example.KoverExclude")
+     * ```
+     */
     public fun annotatedBy(vararg annotationName: String)
 }
 
 public interface KoverHtmlReportConfig : KoverGeneralHtmlReportConfig {
+    /**
+     * Generate an HTML report when running the `check` task.
+     * `null` by default and report isn't generated on `check` task.
+     */
     public var onCheck: Boolean?
 
+    /**
+     * Specify HTML report directory.
+     */
     public fun setReportDir(dir: File)
+
+    /**
+     * Specify HTML report directory.
+     */
     public fun setReportDir(dir: Provider<Directory>)
 
     @Deprecated(
@@ -92,15 +401,34 @@ public interface KoverHtmlReportConfig : KoverGeneralHtmlReportConfig {
 }
 
 public interface KoverGeneralHtmlReportConfig {
+    /**
+     * Specify header in HTML reports.
+     *
+     * Project path by default.
+     */
     public var title: String?
 
+    /**
+     * Override common filters only for HTML report.
+     */
     public fun filters(config: Action<KoverReportFilters>)
 }
 
 public interface KoverXmlReportConfig : KoverGeneralXmlReportConfig {
+    /**
+     * Generate an XML report when running the `check` task.
+     * `null` by default and report isn't generated on `check` task.
+     */
     public var onCheck: Boolean?
 
+    /**
+     * Specify file to generate XML report.
+     */
     public fun setReportFile(xmlFile: File)
+
+    /**
+     * Specify file to generate XML report.
+     */
     public fun setReportFile(xmlFile: Provider<RegularFile>)
 
     @Deprecated(
@@ -120,15 +448,31 @@ public interface KoverXmlReportConfig : KoverGeneralXmlReportConfig {
 }
 
 public interface KoverGeneralXmlReportConfig {
+    /**
+     * Override common filters only for XML report.
+     */
     public fun filters(config: Action<KoverReportFilters>)
 }
 
 public interface KoverVerifyReportConfig : KoverGeneralVerifyReportConfig {
+    /**
+     * Verify coverage when running the `check` task.
+     * `null` by default, for Kotlin JVM and Kotlin MPP triggered on `check` task, but not for Android.
+     */
     public var onCheck: Boolean
 }
 
 public interface KoverGeneralVerifyReportConfig {
+    /**
+     * Add new coverage verification rule to check after test task execution.
+     */
     public fun rule(config: Action<KoverVerifyRule>)
+
+    /**
+     * Add new named coverage verification rule to check after test task execution.
+     *
+     * The name will be displayed in case of a verification error if Kover Tool was used.
+     */
     public fun rule(name: String, config: Action<KoverVerifyRule>)
 }
 
@@ -290,7 +634,7 @@ public interface KoverVerifyBound {
  */
 public enum class MetricType {
     /**
-     * Numer of lines.
+     * Number of lines.
      */
     LINE,
 

@@ -1,7 +1,7 @@
-# Kover migration guide from 0.6.x to 0.7.0-Beta
+# Kover migration guide from 0.6.x to 0.7.0-Alpha
 
 ## Migration steps
-To migrate to version `0.7.0-Beta`, you must follow all steps below if they are applicable to your project.
+To migrate to version `0.7.0-Alpha`, you must follow all steps below if they are applicable to your project.
 
 ### Merge reports config was removed
 Now all Kotlin report tasks (`koverHtmlReport`, `koverXmlReport`, `koverVerify`) are in single copy, they can be both single-project or merged cross-projects reports.  
@@ -112,14 +112,12 @@ koverReport {
             classes("com.example.*")
             // includes all classes located in specified package and it subpackages
             packages("com.another.subpackage")
-            // includes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
-            annotatedBy("*Generated*")
         }
     }
 
     // configure XML report
     xml {
-        //  generate a XML report when running the `check` task
+        //  generate an XML report when running the `check` task
         onCheck = false
         
         // XML report file
@@ -143,14 +141,15 @@ koverReport {
                 classes("com.example.*")
                 // includes all classes located in specified package and it subpackages
                 packages("com.another.subpackage")
-                // includes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
-                annotatedBy("*Generated*")
             }
         }
     }
 
     // configure HTML report
     html {
+        // custom header in HTML reports, project path by default
+        title = "My report title"
+    
         //  generate a HTML report when running the `check` task
         onCheck = false
         
@@ -175,8 +174,6 @@ koverReport {
                 classes("com.example.*")
                 // includes all classes located in specified package and it subpackages
                 packages("com.another.subpackage")
-                // includes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
-                annotatedBy("*Generated*")
             }
         }
     }
@@ -209,8 +206,6 @@ koverReport {
                     classes("com.example.*")
                     // includes all classes located in specified package and it subpackages
                     packages("com.another.subpackage")
-                    // includes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
-                    annotatedBy("*Generated*")
                 }
             }
 
@@ -574,7 +569,7 @@ kover {
 
 ---
 
-### Could not find org.jetbrains.kotlinx:kover:0.7.0-Beta
+### Could not find org.jetbrains.kotlinx:kover:0.7.0-Alpha
 _Solution_
 
 rename dependencies in _buildSrc_ from `org.jetbrains.kotlinx:kover:` to `org.jetbrains.kotlinx:kover-gradle-plugin:`

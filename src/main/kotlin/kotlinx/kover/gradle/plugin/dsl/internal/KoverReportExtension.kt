@@ -52,8 +52,8 @@ internal open class KoverReportExtensionImpl @Inject constructor(private val obj
     }
 }
 
-internal open class KoverGeneralReportExtensionImpl @Inject constructor(private val objects: ObjectFactory) :
-    KoverGeneralReportExtension {
+internal open class KoverGeneralAndroidReportImpl @Inject constructor(private val objects: ObjectFactory) :
+    KoverGeneralAndroidReport {
 
     internal val html: KoverGeneralHtmlReportConfigImpl = objects.newInstance(objects)
     internal val xml: KoverGeneralXmlReportConfigImpl = objects.newInstance(objects)

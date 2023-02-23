@@ -30,7 +30,7 @@ internal class ReportsApplier(
 
     fun createReports(
         reportConfig: KoverReportExtensionImpl?,
-        generalReportConfig: KoverGeneralReportExtensionImpl? = null,
+        generalReportConfig: KoverGeneralAndroidReportImpl? = null,
         verifyOnCheck: Boolean = true
     ) {
         val extReportContext = createExternalReportContext()

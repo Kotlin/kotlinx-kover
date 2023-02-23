@@ -7,7 +7,7 @@ package kotlinx.kover.gradle.plugin.dsl
 import org.gradle.api.*
 
 public interface KoverAndroidExtension {
-    public fun common(config: Action<KoverGeneralReportExtension>)
+    public fun common(config: Action<KoverGeneralAndroidReport>)
 
     public fun report(buildVariantName: String, config: Action<KoverReportExtension>)
 }

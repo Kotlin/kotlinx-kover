@@ -4,7 +4,7 @@
 package kotlinx.kover.gradle.plugin.dsl
 
 /**
- * Stable reference point for varios versions that Kover leverages.
+ * Stable reference point for various versions that Kover leverages.
  */
 public object KoverVersions {
     /**
