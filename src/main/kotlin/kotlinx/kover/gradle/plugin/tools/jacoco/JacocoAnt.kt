@@ -15,6 +15,7 @@ import java.io.*
 
 internal fun ReportContext.callAntReport(
     filters: ReportFilters,
+    reportName: String,
     block: GroovyObject.() -> Unit
 ) {
     val builder = services.antBuilder
@@ -48,7 +49,7 @@ internal fun ReportContext.callAntReport(
         invokeWithBody("executiondata") {
             services.objects.fileCollection().from(files.reports).addToAntBuilder(this, "resources")
         }
-        invokeWithBody("structure", mapOf("name" to projectPath)) {
+        invokeWithBody("structure", mapOf("name" to reportName)) {
             invokeWithBody("sourcefiles") {
                 services.objects.fileCollection().from(files.sources).addToAntBuilder(this, "resources")
             }

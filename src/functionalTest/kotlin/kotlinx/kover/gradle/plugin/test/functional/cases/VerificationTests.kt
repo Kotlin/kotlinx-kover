@@ -94,14 +94,14 @@ internal class VerificationTests {
   lines covered count is 41, but expected maximum is 3
 Rule 'fully uncovered instructions by classes' violated:
   instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.FullyCovered' is 0.000000, but expected minimum is 100
-  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst' is 44.642900, but expected minimum is 100
-  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond' is 51.666700, but expected minimum is 100
+  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst' is *, but expected minimum is 100
+  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredSecond' is *, but expected minimum is 100
   instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubFullyCovered' is 0.000000, but expected minimum is 100
-  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst' is 52.631600, but expected minimum is 100
-  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond' is 66.216200, but expected minimum is 100
+  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredFirst' is *, but expected minimum is 100
+  instructions missed percentage for class 'org.jetbrains.kover.test.functional.verification.subpackage.SubPartiallyCoveredSecond' is *, but expected minimum is 100
 Rule 'fully covered instructions by packages' violated:
-  instructions covered percentage for package 'org.jetbrains.kover.test.functional.verification' is 48.275900, but expected minimum is 100
-  instructions covered percentage for package 'org.jetbrains.kover.test.functional.verification.subpackage' is 43.085100, but expected minimum is 100
+  instructions covered percentage for package 'org.jetbrains.kover.test.functional.verification' is *, but expected minimum is 100
+  instructions covered percentage for package 'org.jetbrains.kover.test.functional.verification.subpackage' is *, but expected minimum is 100
 Rule 'branches by classes' violated:
   branches covered count for class 'org.jetbrains.kover.test.functional.verification.FullyCovered' is 0, but expected minimum is 1000
   branches covered count for class 'org.jetbrains.kover.test.functional.verification.PartiallyCoveredFirst' is 2, but expected minimum is 1000

@@ -41,7 +41,7 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
     }
 
     override fun htmlReport(htmlDir: File, title: String, filters: ReportFilters, context: ReportContext) {
-        context.jacocoHtmlReport(htmlDir, filters)
+        context.jacocoHtmlReport(htmlDir, title, filters)
     }
 
     override fun verify(rules: List<VerificationRule>, commonFilters: ReportFilters, context: ReportContext): List<RuleViolations> {

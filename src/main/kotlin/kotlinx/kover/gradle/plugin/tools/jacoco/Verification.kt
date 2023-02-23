@@ -21,7 +21,7 @@ internal fun ReportContext.jacocoVerify(
     rules: List<VerificationRule>,
     filters: ReportFilters
 ): List<RuleViolations> {
-    callAntReport(filters) {
+    callAntReport(filters, projectPath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
             rules.forEach {
                 val entityType = when (it.entityType) {
