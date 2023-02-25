@@ -531,25 +531,81 @@ public interface KoverVerifyRule {
      */
     public fun bound(config: Action<KoverVerifyBound>)
 
-    // Added since default parameter values are not supported in the Groovy.
+    /**
+     * A shortcut for
+     * ```
+     * bound {
+     *     minValue = minValue
+     * }
+     * ```
+     *
+     * @see bound
+     */
     public fun minBound(minValue: Int)
 
+    /**
+     * A shortcut for
+     * ```
+     * bound {
+     *     maxValue = maxValue
+     * }
+     * ```
+     *
+     * @see bound
+     */
     public fun maxBound(maxValue: Int)
 
     // Default parameters values supported only in Kotlin.
 
+    /**
+     * A shortcut for
+     * ```
+     * bound {
+     *     minValue = minValue
+     *     metric = metric
+     *     aggregation = aggregation
+     * }
+     * ```
+     *
+     * @see bound
+     */
     public fun minBound(
         minValue: Int,
         metric: MetricType = MetricType.LINE,
         aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
+    /**
+     * A shortcut for
+     * ```
+     * bound {
+     *     maxValue = maxValue
+     *     metric = metric
+     *     aggregation = aggregation
+     * }
+     * ```
+     *
+     * @see bound
+     */
     public fun maxBound(
         maxValue: Int,
         metric: MetricType = MetricType.LINE,
         aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
+    /**
+     * A shortcut for
+     * ```
+     * bound {
+     *     maxValue = maxValue
+     *     minValue = minValue
+     *     metric = metric
+     *     aggregation = aggregation
+     * }
+     * ```
+     *
+     * @see bound
+     */
     public fun bound(
         minValue: Int,
         maxValue: Int,
