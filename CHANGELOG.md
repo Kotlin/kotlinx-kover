@@ -1,6 +1,7 @@
 0.7.0-Alpha / 2023-02-27
 ===================
-
+This is a preview version of new major release with the API rework in order to support configuration cache, project isolation model, Android Gradle plugin and source-set level granularity of configuration.
+This release is incompatible with the previous version, and we provide best-effort migration assistance as well as [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/main/docs/migration-to-0.7.0.md)
 ### Features
 * Implemented improved Kover DSL (#284)
 * Added Gradle project isolation support (#144)
