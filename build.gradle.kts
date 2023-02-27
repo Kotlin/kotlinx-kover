@@ -19,9 +19,10 @@ repositories {
 
 val kotlinVersion = property("kotlinVersion")
 val localRepositoryUri = uri("build/.m2")
+val junitParallelism = findProperty("kover.test.junit.parallelism")?.toString()
 
 // override version in deploy
-properties["release"]?.let { version = it }
+properties["DeployVersion"]?.let { version = it }
 
 sourceSets {
     create("functionalTest") {
@@ -40,7 +41,6 @@ dependencies {
     compileOnly(kotlin("stdlib"))
 
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-    compileOnly("com.android.tools.build:gradle:4.2.2")
 
     testImplementation(kotlin("test"))
 
@@ -64,16 +64,29 @@ val functionalTest by tasks.registering(Test::class) {
 
     dependsOn(tasks.named("publishAllPublicationsToLocalRepository"))
     doFirst {
-        // used in build scripts of functional tests
+        // basic build properties
+        setSystemPropertyFromProject("kover.test.kotlin.version")
+
         systemProperties["kotlinVersion"] = kotlinVersion
         systemProperties["koverVersion"] = version
         systemProperties["localRepositoryPath"] = localRepositoryUri.path
-        setSystemPropertyFromProject("releaseVersion")
-        setSystemPropertyFromProject("gradleVersion")
-        setSystemPropertyFromProject("androidSdk")
-        setBooleanSystemPropertyFromProject("disableAndroidTests")
+
+        // parallel execution
+        systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
+        systemProperties["junit.jupiter.execution.parallel.mode.classes.default"] = "concurrent"
+        systemProperties["junit.jupiter.execution.parallel.config.strategy"] = "fixed"
+        systemProperties["junit.jupiter.execution.parallel.config.fixed.parallelism"] = junitParallelism?.toIntOrNull()?.toString() ?: "2"
+        // this is necessary if tests are run for debugging, in this case it is more difficult to stop at the test you need when they are executed in parallel and you are not sure on which test the execution will pause
+        systemProperties["junit.jupiter.execution.parallel.enabled"] = if (junitParallelism == "no") "false" else "true"
+
+
+        // customizing functional tests
+        setSystemPropertyFromProject("kover.release.version")
+        setSystemPropertyFromProject("kover.test.gradle.version")
+        setSystemPropertyFromProject("kover.test.android.sdk")
+        setBooleanSystemPropertyFromProject("kover.test.android.disable")
+        setBooleanSystemPropertyFromProject("kover.test.junit.logs.info", "testLogsEnabled")
         setBooleanSystemPropertyFromProject("debug", "isDebugEnabled")
-        setBooleanSystemPropertyFromProject("testLogs", "testLogsEnabled")
     }
 }
 
@@ -130,8 +143,8 @@ gradlePlugin {
     plugins {
         create("Kover") {
             id = "org.jetbrains.kotlinx.kover"
-            implementationClass = "kotlinx.kover.KoverPlugin"
-            displayName = "Kotlin Code Coverage Plugin"
+            implementationClass = "kotlinx.kover.gradle.plugin.KoverGradlePlugin"
+            displayName = "Gradle Plugin for Kotlin Code Coverage Tools"
             description = "Evaluate code coverage for projects written in Kotlin"
         }
     }

@@ -8,7 +8,3 @@ repositories { mavenCentral() }
 dependencies {
     testImplementation(kotlin("test"))
 }
-
-kover {
-    isDisabled.set(false)
-}

@@ -1,3 +1,6 @@
+/*
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
 import org.jetbrains.kover.test.functional.verification.*
 import org.jetbrains.kover.test.functional.verification.subpackage.*
 import kotlin.test.Test

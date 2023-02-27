@@ -1,9 +1,11 @@
 plugins {
-    id("org.jetbrains.kotlinx.kover") version "SNAPSHOT"
+    id("org.jetbrains.kotlinx.kover")
 }
 
 repositories {
     mavenCentral()
 }
 
-koverMerged.enable()
+dependencies {
+    kover(project(":subproject-multiplatform"))
+}

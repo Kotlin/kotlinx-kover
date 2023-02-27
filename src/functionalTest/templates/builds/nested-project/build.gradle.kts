@@ -1,14 +1,10 @@
 plugins {
     base
-    id("org.jetbrains.kotlinx.kover") version("SNAPSHOT")
+    id("org.jetbrains.kotlinx.kover")
 }
 
 repositories { mavenCentral() }
 
-kover {
-    isDisabled.set(false)
-}
-
-koverMerged {
-    enable()
+dependencies {
+    kover(project(":subprojects:alpha-project"))
 }
