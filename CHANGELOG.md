@@ -1,3 +1,21 @@
+0.7.0-Alpha / 2023-02-27
+===================
+This is a preview version of new major release with the API rework in order to support configuration cache, project isolation model, Android Gradle plugin and source-set level granularity of configuration.
+This release is incompatible with the previous version, and we provide best-effort migration assistance as well as [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.7.0-Alpha/docs/migration-to-0.7.0.md)
+### Features
+* Implemented improved Kover DSL (#284)
+* Added Gradle project isolation support (#144)
+* Introduced API for Coverage Tools (#195)
+* Added support of Android build variants (#18)
+* Implemented support filtering of source sets for Kotlin JVM and Kotlin compilations for Kotlin multiplatform (#245)
+* Added customizable header in HTML report for Kover and JaCoCo report generator (#194)
+* Minimal and default Kover Tool versions upgraded to 1.0.709
+
+### Bugfixes
+* Fixed `Cannot run Project.afterEvaluate` (#221)
+* Fixed missing report path in logs for cached HTML task (#283)
+
+
 0.6.1 / 2022-10-03
 ===================
 
