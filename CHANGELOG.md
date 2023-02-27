@@ -1,3 +1,20 @@
+0.7.0-Alpha / 2023-02-27
+===================
+
+### Features
+* Implemented improved Kover DSL (#284)
+* Added Gradle project isolation support (#144)
+* Introduced API for Coverage Tools (#195)
+* Added support of Android build variants (#18)
+* Implemented support filtering of source sets for Kotlin JVM and Kotlin compilations for Kotlin multiplatform (#245)
+* Added customizable header in HTML report for Kover and JaCoCo report generator (#194)
+* Minimal and default Kover Tool versions upgraded to 1.0.709
+
+### Bugfixes
+* Fixed `Cannot run Project.afterEvaluate` (#221)
+* Fixed missing report path in logs for cached HTML task (#283)
+
+
 0.6.1 / 2022-10-03
 ===================
 

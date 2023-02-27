@@ -15,12 +15,12 @@ public object KoverVersions {
     /**
      * Minimal supported Kover coverage tool version.
      */
-    public const val KOVER_TOOL_MINIMAL_VERSION = "1.0.708"
+    public const val KOVER_TOOL_MINIMAL_VERSION = "1.0.709"
 
     /**
      * Kover coverage tool version used by default.
      */
-    public const val KOVER_TOOL_DEFAULT_VERSION = "1.0.708"
+    public const val KOVER_TOOL_DEFAULT_VERSION = "1.0.709"
 
     /**
      * JaCoCo coverage tool version used by default.
