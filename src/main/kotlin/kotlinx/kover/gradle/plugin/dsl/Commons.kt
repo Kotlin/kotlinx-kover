@@ -4,50 +4,39 @@
 
 package kotlinx.kover.gradle.plugin.dsl
 
-/**
- * TODO
- */
-public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
+object KoverNames {
+    /**
+     * Name of the configurations to add dependency on Kover setup in another project.
+     */
+    public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
 
-/**
- * TODO
- */
-public const val PROJECT_EXTENSION_NAME = "kover"
+    /**
+     * Name of the project extension to configure Kover setup.
+     */
+    public const val PROJECT_EXTENSION_NAME = "kover"
 
-/**
- * TODO
- */
-public const val REGULAR_REPORT_EXTENSION_NAME = "koverReport"
+    /**
+     * Name of the project extension to configure Kover reports for Kotlin JVM and Kotlin Multiplatform projects.
+     */
+    public const val REGULAR_REPORT_EXTENSION_NAME = "koverReport"
 
-/**
- * TODO
- */
-public const val ANDROID_EXTENSION_NAME = "koverAndroid"
+    /**
+     * Name of the project extension to configure Kover reports for Kotlin Android projects.
+     */
+    public const val ANDROID_EXTENSION_NAME = "koverAndroid"
 
-/**
- * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.
- */
-public const val REGULAR_XML_REPORT_NAME = "koverXmlReport"
+    /**
+     * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.
+     */
+    public const val REGULAR_XML_REPORT_NAME = "koverXmlReport"
 
-/**
- * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
- */
-public const val REGULAR_HTML_REPORT_NAME = "koverHtmlReport"
+    /**
+     * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
+     */
+    public const val REGULAR_HTML_REPORT_NAME = "koverHtmlReport"
 
-/**
- * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
- */
-public const val REGULAR_VERIFY_REPORT_NAME = "koverVerify"
-
-public interface KoverClassDefinitions {
-    public fun classes(vararg names: String)
-    public fun classes(names: Iterable<String>)
-
-    public fun packages(vararg names: String)
-    public fun packages(names: Iterable<String>)
-}
-
-public interface KoverTaskDefinitions {
-    public fun tasks(vararg name: String)
-    public fun tasks(names: Iterable<String>)
+    /**
+     * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
+     */
+    public const val REGULAR_VERIFY_REPORT_NAME = "koverVerify"
 }

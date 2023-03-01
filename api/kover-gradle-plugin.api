@@ -1,0 +1,340 @@
+public final class kotlinx/kover/api/CounterType : java/lang/Enum {
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/api/CounterType;
+	public static fun values ()[Lkotlinx/kover/api/CounterType;
+}
+
+public abstract class kotlinx/kover/api/CoverageEngineVariant {
+}
+
+public final class kotlinx/kover/api/DefaultIntellijEngine {
+	public static final field INSTANCE Lkotlinx/kover/api/DefaultIntellijEngine;
+}
+
+public final class kotlinx/kover/api/DefaultJacocoEngine {
+	public static final field INSTANCE Lkotlinx/kover/api/DefaultJacocoEngine;
+}
+
+public final class kotlinx/kover/api/IntellijEngine {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public final class kotlinx/kover/api/JacocoEngine {
+	public fun <init> (Ljava/lang/String;)V
+}
+
+public class kotlinx/kover/api/KoverAnnotationFilter {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverClassFilter {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverMergedConfig {
+	public fun <init> ()V
+	public final fun enable ()V
+	public final fun filters (Lkotlin/jvm/functions/Function0;)V
+	public final fun htmlReport (Lkotlin/jvm/functions/Function0;)V
+	public final fun verify (Lkotlin/jvm/functions/Function0;)V
+	public final fun xmlReport (Lkotlin/jvm/functions/Function0;)V
+}
+
+public class kotlinx/kover/api/KoverMergedFilters {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverMergedHtmlConfig {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverMergedXmlConfig {
+	public fun <init> ()V
+}
+
+public final class kotlinx/kover/api/KoverMigrations {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverMigrations;
+}
+
+public final class kotlinx/kover/api/KoverNames {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverNames;
+}
+
+public final class kotlinx/kover/api/KoverPaths {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverPaths;
+}
+
+public class kotlinx/kover/api/KoverProjectConfig {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverProjectFilters {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverProjectHtmlConfig {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverProjectInstrumentation {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverProjectXmlConfig {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverProjectsFilter {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/KoverTaskExtension {
+	public fun <init> ()V
+	public final fun getExcludes ()Ljava/util/List;
+	public final fun getIncludes ()Ljava/util/List;
+	public final fun getReportFile ()Ljava/lang/Void;
+	public final fun isDisabled ()Z
+}
+
+public class kotlinx/kover/api/KoverVerifyConfig {
+	public fun <init> ()V
+}
+
+public final class kotlinx/kover/api/KoverVersions {
+	public static final field INSTANCE Lkotlinx/kover/api/KoverVersions;
+}
+
+public class kotlinx/kover/api/VerificationBound {
+	public fun <init> ()V
+}
+
+public class kotlinx/kover/api/VerificationRule {
+	public fun <init> ()V
+}
+
+public final class kotlinx/kover/api/VerificationTarget : java/lang/Enum {
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/api/VerificationTarget;
+	public static fun values ()[Lkotlinx/kover/api/VerificationTarget;
+}
+
+public final class kotlinx/kover/api/VerificationValueType : java/lang/Enum {
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/api/VerificationValueType;
+	public static fun values ()[Lkotlinx/kover/api/VerificationValueType;
+}
+
+public final class kotlinx/kover/gradle/plugin/KoverGradlePlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/Project;)V
+}
+
+public final class kotlinx/kover/gradle/plugin/dsl/AggregationType : java/lang/Enum {
+	public static final field COVERED_COUNT Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+	public static final field COVERED_PERCENTAGE Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+	public static final field MISSED_COUNT Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+	public static final field MISSED_PERCENTAGE Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+	public final fun isPercentage ()Z
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+	public static fun values ()[Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+}
+
+public final class kotlinx/kover/gradle/plugin/dsl/GroupingEntityType : java/lang/Enum {
+	public static final field APPLICATION Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
+	public static final field CLASS Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
+	public static final field PACKAGE Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
+	public static fun values ()[Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
+}
+
+public final class kotlinx/kover/gradle/plugin/dsl/GroupingEntityType$ALL {
+	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType$ALL;
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverAndroidExtension {
+	public abstract fun common (Lorg/gradle/api/Action;)V
+	public abstract fun report (Ljava/lang/String;Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverGeneralAndroidReport {
+	public abstract fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun html (Lorg/gradle/api/Action;)V
+	public abstract fun verify (Lorg/gradle/api/Action;)V
+	public abstract fun xml (Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverGeneralHtmlReportConfig {
+	public abstract fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun getTitle ()Ljava/lang/String;
+	public abstract fun setTitle (Ljava/lang/String;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverGeneralVerifyReportConfig {
+	public abstract fun rule (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public abstract fun rule (Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverGeneralXmlReportConfig {
+	public abstract fun filters (Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverHtmlReportConfig : kotlinx/kover/gradle/plugin/dsl/KoverGeneralHtmlReportConfig {
+	public abstract fun getOnCheck ()Ljava/lang/Boolean;
+	public fun getReportDir ()Ljava/lang/Void;
+	public fun overrideFilters (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun setOnCheck (Ljava/lang/Boolean;)V
+	public abstract fun setReportDir (Ljava/io/File;)V
+	public abstract fun setReportDir (Lorg/gradle/api/provider/Provider;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverInstrumentationExclusions {
+	public abstract fun classes (Ljava/lang/Iterable;)V
+	public abstract fun classes ([Ljava/lang/String;)V
+	public abstract fun packages (Ljava/lang/Iterable;)V
+	public abstract fun packages ([Ljava/lang/String;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverJvmSourceSet {
+	public abstract fun sourceSetName (Ljava/lang/Iterable;)V
+	public abstract fun sourceSetName ([Ljava/lang/String;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverMppSourceSet {
+	public abstract fun compilation (Ljava/lang/String;)V
+	public abstract fun compilation (Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun targetName ([Ljava/lang/String;)V
+}
+
+public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
+	public static final field ANDROID_EXTENSION_NAME Ljava/lang/String;
+	public static final field DEPENDENCY_CONFIGURATION_NAME Ljava/lang/String;
+	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/KoverNames;
+	public static final field PROJECT_EXTENSION_NAME Ljava/lang/String;
+	public static final field REGULAR_HTML_REPORT_NAME Ljava/lang/String;
+	public static final field REGULAR_REPORT_EXTENSION_NAME Ljava/lang/String;
+	public static final field REGULAR_VERIFY_REPORT_NAME Ljava/lang/String;
+	public static final field REGULAR_XML_REPORT_NAME Ljava/lang/String;
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectExtension {
+	public abstract fun excludeInstrumentation (Lorg/gradle/api/Action;)V
+	public abstract fun excludeSources (Lorg/gradle/api/Action;)V
+	public abstract fun excludeTests (Lorg/gradle/api/Action;)V
+	public fun filters (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun getDisabledForProject ()Z
+	public fun getEngine ()Ljava/lang/Void;
+	public fun htmlReport (Lkotlin/jvm/functions/Function0;)V
+	public fun instrumentation (Lkotlin/jvm/functions/Function1;)V
+	public fun isDisabled ()Z
+	public abstract fun setDisabledForProject (Z)V
+	public fun setEngine (Ljava/lang/Void;)V
+	public abstract fun useJacocoTool ()V
+	public abstract fun useJacocoTool (Ljava/lang/String;)V
+	public abstract fun useKoverTool ()V
+	public abstract fun useKoverTool (Ljava/lang/String;)V
+	public fun verify (Lkotlin/jvm/functions/Function0;)V
+	public fun xmlReport (Lkotlin/jvm/functions/Function0;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportExtension {
+	public abstract fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun html (Lorg/gradle/api/Action;)V
+	public abstract fun verify (Lorg/gradle/api/Action;)V
+	public abstract fun xml (Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportFilter {
+	public abstract fun annotatedBy ([Ljava/lang/String;)V
+	public abstract fun classes (Ljava/lang/Iterable;)V
+	public abstract fun classes ([Ljava/lang/String;)V
+	public abstract fun packages (Ljava/lang/Iterable;)V
+	public abstract fun packages ([Ljava/lang/String;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportFilters {
+	public fun classes (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun excludes (Lorg/gradle/api/Action;)V
+	public fun getExcludes ()Ljava/util/List;
+	public fun getIncludes ()Ljava/util/List;
+	public abstract fun includes (Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverSourcesExclusions {
+	public abstract fun getExcludeJavaCode ()Z
+	public abstract fun jvm (Lorg/gradle/api/Action;)V
+	public abstract fun mpp (Lorg/gradle/api/Action;)V
+	public abstract fun setExcludeJavaCode (Z)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverTestsExclusions {
+	public fun getExcludeTasks ()Ljava/util/List;
+	public abstract fun mppTargetName ([Ljava/lang/String;)V
+	public abstract fun tasks (Ljava/lang/Iterable;)V
+	public abstract fun tasks ([Ljava/lang/String;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyBound {
+	public abstract fun getAggregation ()Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+	public fun getCounter ()Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+	public abstract fun getMaxValue ()Ljava/lang/Integer;
+	public abstract fun getMetric ()Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+	public abstract fun getMinValue ()Ljava/lang/Integer;
+	public fun getValueType ()Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
+	public abstract fun setAggregation (Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public fun setCounter (Lkotlinx/kover/gradle/plugin/dsl/MetricType;)V
+	public abstract fun setMaxValue (Ljava/lang/Integer;)V
+	public abstract fun setMetric (Lkotlinx/kover/gradle/plugin/dsl/MetricType;)V
+	public abstract fun setMinValue (Ljava/lang/Integer;)V
+	public fun setValueType (Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyReportConfig : kotlinx/kover/gradle/plugin/dsl/KoverGeneralVerifyReportConfig {
+	public abstract fun getOnCheck ()Z
+	public abstract fun setOnCheck (Z)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyRule {
+	public abstract fun bound (IILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public abstract fun bound (Lorg/gradle/api/Action;)V
+	public static synthetic fun bound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;IILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+	public abstract fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun getEntity ()Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
+	public abstract fun getName ()Ljava/lang/String;
+	public fun getTarget ()Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
+	public abstract fun isEnabled ()Z
+	public abstract fun maxBound (I)V
+	public abstract fun maxBound (ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public static synthetic fun maxBound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+	public abstract fun minBound (I)V
+	public abstract fun minBound (ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public static synthetic fun minBound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+	public fun overrideClassFilter (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun setEnabled (Z)V
+	public abstract fun setEntity (Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;)V
+	public abstract fun setName (Ljava/lang/String;)V
+	public fun setTarget (Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;)V
+}
+
+public final class kotlinx/kover/gradle/plugin/dsl/KoverVersions {
+	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/KoverVersions;
+	public static final field JACOCO_TOOL_DEFAULT_VERSION Ljava/lang/String;
+	public static final field KOVER_TOOL_DEFAULT_VERSION Ljava/lang/String;
+	public static final field KOVER_TOOL_MINIMAL_VERSION Ljava/lang/String;
+	public static final field MINIMUM_GRADLE_VERSION Ljava/lang/String;
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverXmlReportConfig : kotlinx/kover/gradle/plugin/dsl/KoverGeneralXmlReportConfig {
+	public abstract fun getOnCheck ()Ljava/lang/Boolean;
+	public fun getReportFile ()Ljava/lang/Void;
+	public fun overrideFilters (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun setOnCheck (Ljava/lang/Boolean;)V
+	public abstract fun setReportFile (Ljava/io/File;)V
+	public abstract fun setReportFile (Lorg/gradle/api/provider/Provider;)V
+}
+
+public final class kotlinx/kover/gradle/plugin/dsl/MetricType : java/lang/Enum {
+	public static final field BRANCH Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+	public static final field INSTRUCTION Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+	public static final field LINE Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+	public static fun values ()[Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+}
+

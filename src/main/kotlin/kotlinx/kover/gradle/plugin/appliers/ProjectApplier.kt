@@ -5,7 +5,10 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.ANDROID_EXTENSION_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEPENDENCY_CONFIGURATION_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.PROJECT_EXTENSION_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_REPORT_EXTENSION_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.locators.*
 import kotlinx.kover.gradle.plugin.tasks.internal.KoverAgentJarTask
