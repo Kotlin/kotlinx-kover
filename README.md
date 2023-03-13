@@ -102,7 +102,7 @@ Refer to [migration guide](docs/migration-to-0.7.0.md) in order to migrate from 
 
 ## DSL
 The example of Kover configuration is given below
-```
+```groovy
 
 kover {
     disabledForProject = false
@@ -193,7 +193,7 @@ koverReport {
 ```
 
 To create report, combining coverage info from different projects, needs to add dependency to project, in which the report task will be run
-```
+```groovy
 dependencies {
   kover(project(":another:project"))
 }
