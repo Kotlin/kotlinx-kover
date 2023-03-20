@@ -282,7 +282,7 @@ public interface KoverReportFilters {
         get() = mutableListOf()
 }
 
-public interface KoverReportFilter: KoverClassDefinitions {
+public interface KoverReportFilter {
     /**
      * Add specified classes to current filters.
      *
@@ -294,7 +294,7 @@ public interface KoverReportFilter: KoverClassDefinitions {
      *  classes("*.foo.Bar", "*.M?Class")
      * ```
      */
-    public override fun classes(vararg names: String)
+    public fun classes(vararg names: String)
 
     /**
      * Add specified classes to current filters.
@@ -316,7 +316,7 @@ public interface KoverReportFilter: KoverClassDefinitions {
      *  classes(someClasses)
      * ```
      */
-    public override fun classes(names: Iterable<String>)
+    public fun classes(names: Iterable<String>)
 
     /**
      * Add all classes in specified package and it subpackages to current filters.
@@ -329,7 +329,7 @@ public interface KoverReportFilter: KoverClassDefinitions {
      *  packages("foo.b?r", "com.*.example")
      * ```
      */
-    public override fun packages(vararg names: String)
+    public fun packages(vararg names: String)
 
     /**
      * Add all classes in specified package and it subpackages to current filters.
@@ -351,7 +351,7 @@ public interface KoverReportFilter: KoverClassDefinitions {
      *  packages(somePackages)
      * ```
      */
-    public override fun packages(names: Iterable<String>)
+    public fun packages(names: Iterable<String>)
 
     /**
      * Add to filters all classes and functions marked by specified annotations.

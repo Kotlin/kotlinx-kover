@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.plugin.dsl
 
 import kotlinx.kover.gradle.plugin.commons.KoverMigrations
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_REPORT_EXTENSION_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_DEFAULT_VERSION
 import org.gradle.api.*
@@ -132,7 +133,7 @@ public interface KoverProjectExtension {
 }
 
 
-public interface KoverTestsExclusions : KoverTaskDefinitions {
+public interface KoverTestsExclusions {
 
     /**
      * Disables instrumentation of specified tests.
@@ -141,7 +142,7 @@ public interface KoverTestsExclusions : KoverTaskDefinitions {
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
-    public override fun tasks(vararg name: String)
+    public fun tasks(vararg name: String)
 
     /**
      * Disables instrumentation of specified tests.
@@ -150,7 +151,7 @@ public interface KoverTestsExclusions : KoverTaskDefinitions {
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
-    public override fun tasks(names: Iterable<String>)
+    public fun tasks(names: Iterable<String>)
 
     /**
      * Disables instrumentation of test tasks owned by the specified MPP targets.
@@ -230,7 +231,7 @@ public interface KoverMppSourceSet {
 }
 
 
-public interface KoverInstrumentationExclusions : KoverClassDefinitions {
+public interface KoverInstrumentationExclusions {
     /**
      * Exclude specified classes from instrumentation.
      *
@@ -238,7 +239,7 @@ public interface KoverInstrumentationExclusions : KoverClassDefinitions {
      *
      * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
      */
-    public override fun classes(vararg names: String)
+    public fun classes(vararg names: String)
 
     /**
      * Exclude specified classes from instrumentation.
@@ -247,7 +248,7 @@ public interface KoverInstrumentationExclusions : KoverClassDefinitions {
      *
      * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
      */
-    public override fun classes(names: Iterable<String>)
+    public fun classes(names: Iterable<String>)
 
     /**
      * Exclude classes from specified packages and its subpackages from instrumentation.
@@ -256,7 +257,7 @@ public interface KoverInstrumentationExclusions : KoverClassDefinitions {
      *
      * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
      */
-    public override fun packages(vararg names: String)
+    public fun packages(vararg names: String)
 
     /**
      * Exclude classes from specified packages and its subpackages from instrumentation.
@@ -265,6 +266,6 @@ public interface KoverInstrumentationExclusions : KoverClassDefinitions {
      *
      * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
      */
-    public override fun packages(names: Iterable<String>)
+    public fun packages(names: Iterable<String>)
 }
 

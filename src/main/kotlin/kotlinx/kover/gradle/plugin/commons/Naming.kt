@@ -4,7 +4,9 @@
 
 package kotlinx.kover.gradle.plugin.commons
 
-import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_HTML_REPORT_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_VERIFY_REPORT_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_XML_REPORT_NAME
 
 /**
  * Name of task to find online instrumentation agent jar file.

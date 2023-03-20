@@ -22,13 +22,13 @@ import java.math.BigDecimal
  *  - `null` values not supported
  */
 
-fun File.writeJsonObject(obj: Map<String, Any>) {
+internal fun File.writeJsonObject(obj: Map<String, Any>) {
     printWriter().use { pw ->
         pw.writeObject(obj, 0)
     }
 }
 
-fun File.writeJsonArray(array: Iterable<Any>) {
+internal fun File.writeJsonArray(array: Iterable<Any>) {
     printWriter().use { pw ->
         pw.writeArray(array, 0)
     }
@@ -36,7 +36,7 @@ fun File.writeJsonArray(array: Iterable<Any>) {
 
 
 
-fun PrintWriter.writeObject(obj: Map<String, Any>, spaces: Int) {
+internal fun PrintWriter.writeObject(obj: Map<String, Any>, spaces: Int) {
     val indent = "  ".repeat(spaces + 1)
 
     append('{')
@@ -62,7 +62,7 @@ fun PrintWriter.writeObject(obj: Map<String, Any>, spaces: Int) {
     append('}')
 }
 
-fun PrintWriter.writeArray(obj: Iterable<Any>, spaces: Int) {
+internal fun PrintWriter.writeArray(obj: Iterable<Any>, spaces: Int) {
     val indent = "  ".repeat(spaces + 1)
 
     append('[')

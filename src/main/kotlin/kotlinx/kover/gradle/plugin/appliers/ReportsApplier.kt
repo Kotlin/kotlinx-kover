@@ -5,7 +5,7 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEPENDENCY_CONFIGURATION_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.tasks.*
 import kotlinx.kover.gradle.plugin.tasks.internal.KoverArtifactGenerationTask
