@@ -10,24 +10,14 @@ import kotlinx.kover.gradle.plugin.tools.*
 import java.io.*
 
 internal interface CheckerContext {
-    val definedKoverVersion: String?
-
-    val toolVariant: CoverageToolVariant
-
-    val language: ScriptLanguage
+    val project: ProjectAnalyze
 
     val output: String
-
-    val buildScript: String
 
     /**
      * Perform built-in checks.
      */
     fun prepare(buildErrorExpected: Boolean)
-
-    fun allProjects(checker: CheckerContext.() -> Unit)
-
-    val kotlinPlugin: AppliedKotlinPlugin
 
     fun subproject(path: String, checker: CheckerContext.() -> Unit)
 
@@ -48,6 +38,28 @@ internal interface CheckerContext {
     fun checkDefaultRawReport(mustExist: Boolean = true)
 }
 
+/**
+ * Static info about Gradle project.
+ */
+internal interface ProjectAnalyze {
+    val path: String
+
+    val rootDir: File
+
+    val buildDir: File
+
+    val definedKoverVersion: String?
+
+    val toolVariant: CoverageToolVariant
+
+    val language: ScriptLanguage
+
+    val buildScript: String
+
+    val kotlinPlugin: AppliedKotlinPlugin
+
+    fun allProjects(): List<ProjectAnalyze>
+}
 
 
 internal interface Counter {

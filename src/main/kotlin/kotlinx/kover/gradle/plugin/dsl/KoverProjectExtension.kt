@@ -70,6 +70,12 @@ public interface KoverProjectExtension {
      */
     public fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>)
 
+    /**
+     * Configure default Kover artifact.
+     *
+     * Affects the default reports of this project and any project that specifies this project as a dependency.
+     */
+    public fun default(config: Action<DefaultArtifactConfigs>)
 
     /*
      * Deprecations
@@ -132,6 +138,18 @@ public interface KoverProjectExtension {
     }
 }
 
+/**
+ * Configurations of default Kover artifact.
+ */
+public interface DefaultArtifactConfigs {
+
+    /**
+     * Add the contents of the specified named reports to the default reports.
+     *
+     * Affects the default reports of this project and any project that specifies this project as a dependency.
+     */
+    fun addWithDependencies(names: String)
+}
 
 public interface KoverTestsExclusions {
 

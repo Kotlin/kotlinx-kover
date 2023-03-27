@@ -137,6 +137,10 @@ public final class kotlinx/kover/gradle/plugin/dsl/AggregationType : java/lang/E
 	public static fun values ()[Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
 }
 
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/DefaultArtifactConfigs {
+	public abstract fun addWithDependencies (Ljava/lang/String;)V
+}
+
 public final class kotlinx/kover/gradle/plugin/dsl/GroupingEntityType : java/lang/Enum {
 	public static final field APPLICATION Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
 	public static final field CLASS Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
@@ -215,6 +219,7 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectExtension {
+	public abstract fun default (Lorg/gradle/api/Action;)V
 	public abstract fun excludeInstrumentation (Lorg/gradle/api/Action;)V
 	public abstract fun excludeSources (Lorg/gradle/api/Action;)V
 	public abstract fun excludeTests (Lorg/gradle/api/Action;)V

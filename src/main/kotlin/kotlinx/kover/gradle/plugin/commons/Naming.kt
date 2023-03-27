@@ -7,6 +7,12 @@ package kotlinx.kover.gradle.plugin.commons
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_HTML_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_VERIFY_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_XML_REPORT_NAME
+import org.gradle.configurationcache.extensions.capitalized
+
+/**
+ * Name of the default Kover artifact.
+ */
+internal const val DEFAULT_KOVER_NAMESPACE_NAME = ""
 
 /**
  * Name of task to find online instrumentation agent jar file.
@@ -14,27 +20,27 @@ import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_XML_REPORT_NAME
 internal const val FIND_JAR_TASK = "koverFindJar"
 
 /**
- * Name for task for generating Kover setup artifact.
+ * Name for task for generating Kover artifact.
  */
-internal fun setupGenerationTask(setupId: SetupId) = "koverGenerateSetupArtifact${setupId.capitalized}"
+internal fun artifactGenerationTaskName(namespace: String) = "koverGenerateArtifact${namespace.capitalized()}"
 
 /**
- * Name for HTML reporting task for specified Kover setup.
+ * Name for HTML reporting task for specified report namespace.
  */
-internal fun htmlReportTaskName(setupId: SetupId) = "$REGULAR_HTML_REPORT_NAME${setupId.capitalized}"
+internal fun htmlReportTaskName(namespace: String) = "$REGULAR_HTML_REPORT_NAME${namespace.capitalized()}"
 
 /**
- * Name for XML reporting task for specified Kover setup.
+ * Name for XML reporting task for specified report namespace.
  */
-internal fun xmlReportTaskName(setupId: SetupId) = "$REGULAR_XML_REPORT_NAME${setupId.capitalized}"
+internal fun xmlReportTaskName(namespace: String) = "$REGULAR_XML_REPORT_NAME${namespace.capitalized()}"
 
 /**
- * Name for verifying task for specified Kover setup.
+ * Name for verifying task for specified report namespace.
  */
-internal fun verifyTaskName(setupId: SetupId) = "$REGULAR_VERIFY_REPORT_NAME${setupId.capitalized}"
+internal fun verifyTaskName(namespace: String) = "$REGULAR_VERIFY_REPORT_NAME${namespace.capitalized()}"
 
 /**
- * Name of raw report for specified task name (without directory path).
+ * Name of raw report for specified test task name (without directory path).
  */
 internal fun rawReportName(taskName: String, toolVendor: CoverageToolVendor): String {
     return "${taskName}.${toolVendor.rawReportExtension}"
@@ -51,11 +57,11 @@ internal const val JVM_AGENT_CONFIGURATION_NAME = "koverJvmAgent"
 internal const val JVM_REPORTER_CONFIGURATION_NAME = "koverJvmReporter"
 
 /**
- * Name of the Gradle configuration for sharing Kover setup artifact.
+ * Name of the Gradle configuration for sharing Kover artifact.
  */
-internal fun setupConfigurationName(setupId: SetupId): String = "koverSetup${setupId.capitalized}"
+internal fun localArtifactConfigurationName(namespace: String): String = "koverArtifact${namespace.capitalized()}"
 
 /**
- * Name of the Gradle configuration for collecting Kover setup artifacts from another projects.
+ * Name of the Gradle configuration for collecting Kover artifacts from dependencies.
  */
-internal fun aggSetupConfigurationName(setupId: SetupId): String = "koverAggregatedSetup${setupId.capitalized}"
+internal fun externalArtifactConfigurationName(namespace: String): String = "koverExternalArtifacts${namespace.capitalized()}"

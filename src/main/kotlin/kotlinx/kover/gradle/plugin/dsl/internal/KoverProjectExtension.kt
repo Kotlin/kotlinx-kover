@@ -21,6 +21,8 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
 
     internal var toolVariant: CoverageToolVariant? = null
 
+    internal val addToDefault: MutableSet<String> = mutableSetOf()
+
     override fun useKoverTool() {
         toolVariant = KoverToolDefaultVariant
     }
@@ -57,6 +59,16 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
 
     override fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>) {
         config(instrumentation)
+    }
+
+    override fun default(config: Action<DefaultArtifactConfigs>) {
+        val obj = object : DefaultArtifactConfigs {
+            override fun addWithDependencies(names: String) {
+                addToDefault.add(names)
+            }
+        }
+
+        config(obj)
     }
 
     internal val tests: KoverTestsExclusionsImpl = objects.newInstance()

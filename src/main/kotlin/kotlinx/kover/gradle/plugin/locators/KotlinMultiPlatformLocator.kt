@@ -8,11 +8,9 @@ import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.*
-import org.gradle.api.file.*
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.kotlin.dsl.*
-import java.io.*
 
 /*
 Since the Kover and Kotlin Multiplatform plug-ins can be in different class loaders (declared in different projects), the plug-ins are stored in a single instance in the loader of the project where the plug-in was used for the first time.
@@ -20,23 +18,52 @@ Because of this, Kover may not have direct access to the K/MPP plugin classes, a
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal class KotlinMultiPlatformLocator(private val project: Project) : SetupLocator {
+internal class KotlinMultiPlatformLocator(private val project: Project) : CompilationKitLocator {
     companion object {
         fun isApplied(project: Project): Boolean {
             return project.plugins.hasPlugin("kotlin-multiplatform")
         }
     }
 
-    override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.MULTIPLATFORM)
-
-    override fun locateRegular(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
+    override fun locate(koverExtension: KoverProjectExtensionImpl): ProjectCompilation {
         val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/Multiplatform project")
 
-        val build = project.provider {
-            extractBuildReflective(koverExtension, kotlinExtension)
+        val targets = kotlinExtension.propertyBeans("targets").filter {
+            it["platformType"].property<String>("name") == "jvm"
         }
 
+        val androidTarget = kotlinExtension.propertyBeans("targets").firstOrNull {
+            it["platformType"].property<String>("name") == "androidJvm"
+        }
+
+        val androidCompilationKits = if (androidTarget != null) {
+            val androidExtension = project.extensions.findByName("android")?.bean()
+                ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
+
+            project.androidCompilationKits(androidExtension, koverExtension, androidTarget)
+        } else {
+            emptyList()
+        }
+
+        val jvmKits = targets.map {
+            extractJvmKit(koverExtension, it)
+        }
+
+        return ProjectCompilation(
+            AppliedKotlinPlugin(KotlinPluginType.MULTIPLATFORM),
+            jvmKits,
+            androidCompilationKits
+        )
+    }
+
+    private fun extractJvmKit(
+        koverExtension: KoverProjectExtensionImpl,
+        target: DynamicBean
+    ): JvmCompilationKit {
+        val targetName = target.property<String>("targetName")
+
+        // TODO check android tests are not triggered
         val tests = project.tasks.withType<Test>().matching {
             it.hasSuperclass("KotlinJvmTest")
                     // skip all tests from instrumentation if Kover Plugin is disabled for the project
@@ -44,26 +71,24 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
                     // skip this test if it disabled by name
                     && it.name !in koverExtension.tests.tasksNames
                     // skip this test if it disabled by its JVM target name
+                    && it.bean().property<String>("targetName") == targetName
                     && it.bean().property("targetName") !in koverExtension.tests.mppTargetNames
         }
 
-        return KoverSetup(build, tests)
-    }
-
-    private fun extractBuildReflective(
-        koverExtension: KoverProjectExtensionImpl,
-        mppExtension: DynamicBean
-    ): SetupLazyInfo {
-        if (koverExtension.disabledForProject) {
-            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
-            return SetupLazyInfo()
+        val compilations = project.provider {
+            extractJvmCompilations(koverExtension, target)
         }
 
-        val targets = mppExtension.propertyBeans("targets").filter { it["platformType"].property<String>("name") == "jvm" }
+        return JvmCompilationKit(targetName, tests, compilations)
+    }
 
-        val byTarget = koverExtension.sources.mpp.compilationsByTarget
+    private fun extractJvmCompilations(
+        koverExtension: KoverProjectExtensionImpl,
+        target: DynamicBean
+    ): Map<String, CompilationUnit> {
+        val excludedCompilationsByTarget = koverExtension.sources.mpp.compilationsByTarget
 
-        val compilations = targets.flatMap { it.propertyBeans("compilations") }.filter {
+        val compilations = target.propertyBeans("compilations").filter {
             val name = it.property<String>("name")
             val targetName = it["target"].property<String>("name")
 
@@ -72,35 +97,32 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : SetupL
                     // ignore compilation for all JVM targets
                     && name !in koverExtension.sources.mpp.compilationsForAllTargets
                     // ignore compilation for specified JVM target
-                    && byTarget[targetName]?.contains(name) != true
+                    && excludedCompilationsByTarget[targetName]?.contains(name) != true
                     // ignore all compilations fro specified JVM target
                     && targetName !in koverExtension.sources.mpp.allCompilationsInTarget
         }
 
-        val sources = compilations.flatMap {
-            it.propertyBeans("allKotlinSourceSets")
-        }.flatMap {
-            it["kotlin"].propertyCollection<File>("srcDirs")
-        }.toSet()
-
-        val outputs = compilations.flatMap {
-            it["output"].property<ConfigurableFileCollection>("classesDirs").files
-        }.filterNot {
-            // exclude java classes from report. Expected java class files are placed in directories like
-            //   build/classes/kotlin/foo/main
-            koverExtension.sources.excludeJavaCode && it.parentFile.parentFile.name == "java"
-        }.toSet()
-
-        val compileTasks = compilations.flatMap {
-            val tasks = mutableListOf<Task>()
-            tasks += it.property<Task>("compileKotlinTask")
-            if (!koverExtension.sources.excludeJavaCode) {
-                it.propertyOrNull<TaskProvider<Task>>("compileJavaTaskProvider")?.orNull?.let { task -> tasks += task }
-            }
-            tasks
+        return compilations.associate { compilation ->
+            val name = compilation.property<String>("name")
+            name to extractJvmCompilation(koverExtension, compilation)
         }
+    }
 
-        return SetupLazyInfo(sources, outputs, compileTasks)
+    private fun extractJvmCompilation(
+        koverExtension: KoverProjectExtensionImpl,
+        compilation: DynamicBean
+    ): CompilationUnit {
+        return if (koverExtension.disabledForProject) {
+            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
+            CompilationUnit()
+        } else {
+            compilation.asJvmCompilationUnit(koverExtension.sources.excludeJavaCode) {
+                // exclude java classes from report. Expected java class files are placed in directories like
+                //   build/classes/kotlin/foo/main
+                // TODO fix this
+                it.parentFile.parentFile.name == "java"
+            }
+        }
     }
 
 }

@@ -15,9 +15,9 @@ import java.io.*
 import javax.inject.*
 
 /**
- * A task that writes a Kover setup of a project (sources directories, directories with class-files, raw reports) into a single file.
+ * A task that writes a Kover artifact - named lists of sources directories, directories with class-files, raw reports.
  *
- * This file is an artifact that will be shared between projects through dependencies for creating merged reports.
+ * This artifact that will be shared between projects through dependencies for creating merged reports.
  */
 @CacheableTask
 internal open class KoverArtifactGenerationTask : DefaultTask() {
@@ -33,6 +33,9 @@ internal open class KoverArtifactGenerationTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val reports: ConfigurableFileCollection = project.objects.fileCollection()
 
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val additionalArtifacts: ConfigurableFileCollection = project.objects.fileCollection()
 
     @get:OutputFile
     val artifactFile: RegularFileProperty = project.objects.fileProperty()
@@ -40,10 +43,8 @@ internal open class KoverArtifactGenerationTask : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        val sources = sources.joinToString("\n") { it.canonicalPath }
-        val outputs = outputs.joinToString("\n") { it.canonicalPath }
-        val reports = reports.joinToString("\n") { it.canonicalPath }
-
-        artifactFile.get().asFile.writeText("$sources\n\n$outputs\n\n$reports")
+        val mainContent = ArtifactContent(sources.toSet(), outputs.toSet(), reports.toSet())
+        val additional = additionalArtifacts.files.map { it.parseArtifactFile() }
+        mainContent.joinWith(additional).write(artifactFile.get().asFile)
     }
 }

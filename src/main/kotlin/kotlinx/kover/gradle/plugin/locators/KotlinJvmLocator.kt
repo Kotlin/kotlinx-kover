@@ -5,15 +5,12 @@
 package kotlinx.kover.gradle.plugin.locators
 
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.commons.KoverSetup
 import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.*
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
-import java.io.File
 
 /*
 Since the Kover and Kotlin JVM plug-ins can be in different class loaders (declared in different projects), the plug-ins are stored in a single instance in the loader of the project where the plug-in was used for the first time.
@@ -21,22 +18,16 @@ Because of this, Kover may not have direct access to the JVM plugin classes, and
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
+internal class KotlinJvmLocator(private val project: Project) : CompilationKitLocator {
     companion object {
         fun isApplied(project: Project): Boolean {
             return project.plugins.hasPlugin("kotlin")
         }
     }
 
-    override val kotlinPlugin = AppliedKotlinPlugin(KotlinPluginType.JVM)
-
-    override fun locateRegular(koverExtension: KoverProjectExtensionImpl): KoverSetup<*> {
+    override fun locate(koverExtension: KoverProjectExtensionImpl): ProjectCompilation {
         val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/JVM project")
-
-        val build = project.provider {
-            extractBuild(koverExtension, kotlinExtension)
-        }
 
         val tests = project.tasks.withType<Test>().matching {
             // skip all tests from instrumentation if Kover Plugin is disabled for the project
@@ -45,16 +36,24 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
                     && it.name !in koverExtension.tests.tasksNames
         }
 
-        return KoverSetup(build, tests)
+        val compilations = project.provider {
+            extractJvmCompilations(koverExtension, kotlinExtension)
+        }
+
+        return ProjectCompilation(
+            AppliedKotlinPlugin(KotlinPluginType.JVM),
+            listOf(JvmCompilationKit("K/JVM", tests, compilations))
+        )
     }
 
-    private fun extractBuild(
+
+    private fun extractJvmCompilations(
         koverExtension: KoverProjectExtensionImpl,
         kotlinExtension: DynamicBean
-    ): SetupLazyInfo {
+    ): Map<String, CompilationUnit> {
         if (koverExtension.disabledForProject) {
-            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its setup artifacts.
-            return SetupLazyInfo()
+            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
+            return emptyMap()
         }
 
         val compilations = kotlinExtension["target"].propertyBeans("compilations").filter {
@@ -65,31 +64,25 @@ internal class KotlinJvmLocator(private val project: Project) : SetupLocator {
                     && name !in koverExtension.sources.jvm.sourceSets
         }
 
-
-        val sources = compilations.flatMap {
-            // expected only one Kotlin Source Set for Kotlin/JVM
-            it.propertyBeans("allKotlinSourceSets")
-        }.flatMap {
-            it["kotlin"].propertyCollection<File>("srcDirs")
-        }.toSet()
-
-        val outputs = compilations.flatMap {
-            it["output"].property<ConfigurableFileCollection>("classesDirs").files
-        }.filterNot {
-            // exclude java classes from report. Expected java class files are placed in directories like
-            //   build/classes/java/main
-            koverExtension.sources.excludeJavaCode && it.parentFile.name == "java"
-        }.toSet()
-
-        val compileTasks = compilations.flatMap {
-            val tasks = mutableListOf<Task>()
-            tasks += it.property<Task>("compileKotlinTask")
-            if (!koverExtension.sources.excludeJavaCode) {
-                it.propertyOrNull<TaskProvider<Task>>("compileJavaTaskProvider")?.orNull?.let { task -> tasks += task }
-            }
-            tasks
+        return compilations.associate { compilation ->
+            val name = compilation.property<String>("name")
+            name to extractJvmCompilation(koverExtension, compilation)
         }
+    }
 
-        return SetupLazyInfo(sources, outputs, compileTasks)
+    private fun extractJvmCompilation(
+        koverExtension: KoverProjectExtensionImpl,
+        compilation: DynamicBean
+    ): CompilationUnit {
+        return if (koverExtension.disabledForProject) {
+            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
+            CompilationUnit()
+        } else {
+            compilation.asJvmCompilationUnit(koverExtension.sources.excludeJavaCode) {
+                // exclude java classes from report. Expected java class files are placed in directories like
+                //   build/classes/java/main
+                it.parentFile.name == "java"
+            }
+        }
     }
 }

@@ -6,12 +6,12 @@ package kotlinx.kover.gradle.plugin.dsl
 
 object KoverNames {
     /**
-     * Name of the configurations to add dependency on Kover setup in another project.
+     * Name of the configurations to add dependency on Kover artifacts in another project.
      */
     public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
 
     /**
-     * Name of the project extension to configure Kover setup.
+     * Name of the project extension to configure Kover artifacts content.
      */
     public const val PROJECT_EXTENSION_NAME = "kover"
 

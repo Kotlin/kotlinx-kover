@@ -43,6 +43,9 @@ internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectEx
         writer.call("excludeInstrumentation", config) { KoverInstrumentationExclusionsWriter(it) }
     }
 
+    override fun default(config: Action<DefaultArtifactConfigs>) {
+        TODO("Not yet implemented")
+    }
 }
 
 private class KoverTestsExclusionsWriter(private val writer: FormattedWriter) : KoverTestsExclusions {
