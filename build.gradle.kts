@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm")
     id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.0"
 
-
+    id("org.jetbrains.dokka") version "1.8.10"
     `kotlin-dsl`
 
     `java-gradle-plugin`
@@ -112,6 +112,17 @@ tasks.withType<KotlinCompile>().configureEach {
         apiVersion = "1.4"
         // Kotlin compiler 1.7 issues a warning if `languageVersion` or `apiVersion` 1.4 is used - suppress it
         freeCompilerArgs = freeCompilerArgs + "-Xsuppress-version-warnings"
+    }
+}
+
+tasks.dokkaHtml {
+    moduleName.set("Kover Gradle Plugin")
+    outputDirectory.set(layout.projectDirectory.dir("docs/dokka").asFile)
+    dokkaSourceSets.configureEach {
+        // source set configuration section
+        perPackageOption {
+            skipDeprecated.set(true)
+        }
     }
 }
 
