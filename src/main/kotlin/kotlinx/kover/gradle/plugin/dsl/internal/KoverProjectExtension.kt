@@ -4,24 +4,28 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
-import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_MINIMAL_VERSION
-import kotlinx.kover.gradle.plugin.tools.*
-import kotlinx.kover.gradle.plugin.util.SemVer
-import org.gradle.api.*
-import org.gradle.api.model.*
-import org.gradle.kotlin.dsl.*
-import javax.inject.*
+import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
+import kotlinx.kover.gradle.plugin.tools.JacocoToolDefaultVariant
+import kotlinx.kover.gradle.plugin.tools.JacocoToolVariant
+import kotlinx.kover.gradle.plugin.tools.KoverToolDefaultVariant
+import org.gradle.api.Action
+import org.gradle.api.model.ObjectFactory
+import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.newInstance
+import javax.inject.Inject
 
 
 internal open class KoverProjectExtensionImpl @Inject constructor(objects: ObjectFactory) : KoverProjectExtension {
 
-    override var disabledForProject: Boolean = false
+    internal var disabled: Boolean = false
+
+    internal var excludeJava: Boolean = false
 
     internal var toolVariant: CoverageToolVariant? = null
-
-    internal val addToDefault: MutableSet<String> = mutableSetOf()
+    override fun disable() {
+        disabled = true
+    }
 
     override fun useKoverTool() {
         toolVariant = KoverToolDefaultVariant
@@ -31,48 +35,28 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
         toolVariant = JacocoToolDefaultVariant
     }
 
-    override fun useKoverTool(version: String) {
-        val minimal = SemVer.ofThreePartOrNull(KOVER_TOOL_MINIMAL_VERSION)
-            ?: throw KoverCriticalException("Incorrect minimal version of kover tool '$KOVER_TOOL_MINIMAL_VERSION'")
-
-        val custom = SemVer.ofThreePartOrNull(version)
-            ?: throw KoverIllegalConfigException("Incorrect version of kover tool '$KOVER_TOOL_MINIMAL_VERSION', expected version in format '1.2.3'")
-
-        if (custom < minimal) {
-            throw KoverIllegalConfigException("Specified kover tool version '$version' lower then expected minimal '$KOVER_TOOL_MINIMAL_VERSION'")
-        }
-
-        toolVariant = KoverToolVariant(version)
-    }
-
     override fun useJacocoTool(version: String) {
         toolVariant = JacocoToolVariant(version)
+    }
+
+    override fun excludeJavaCode() {
+        excludeJava = true
     }
 
     override fun excludeTests(config: Action<KoverTestsExclusions>) {
         config(tests)
     }
 
-    override fun excludeSources(config: Action<KoverSourcesExclusions>) {
-        config(sources)
+    override fun excludeCompilations(config: Action<KoverCompilationsExclusions>) {
+        config(compilations)
     }
 
     override fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>) {
         config(instrumentation)
     }
 
-    override fun default(config: Action<DefaultArtifactConfigs>) {
-        val obj = object : DefaultArtifactConfigs {
-            override fun addWithDependencies(names: String) {
-                addToDefault.add(names)
-            }
-        }
-
-        config(obj)
-    }
-
     internal val tests: KoverTestsExclusionsImpl = objects.newInstance()
-    internal val sources: KoverSourcesExclusionsImpl = objects.newInstance()
+    internal val compilations: KoverCompilationsExclusionsImpl = objects.newInstance()
     internal val instrumentation: KoverInstrumentationExclusionsImpl = objects.newInstance()
 }
 
@@ -94,10 +78,8 @@ internal open class KoverTestsExclusionsImpl : KoverTestsExclusions {
     internal val mppTargetNames: MutableSet<String> = mutableSetOf()
 }
 
-internal open class KoverSourcesExclusionsImpl
-@Inject constructor(private val objects: ObjectFactory) : KoverSourcesExclusions {
-
-    override var excludeJavaCode: Boolean = false
+internal open class KoverCompilationsExclusionsImpl
+@Inject constructor(private val objects: ObjectFactory) : KoverCompilationsExclusions {
 
     override fun jvm(config: Action<KoverJvmSourceSet>) {
         config(jvm)

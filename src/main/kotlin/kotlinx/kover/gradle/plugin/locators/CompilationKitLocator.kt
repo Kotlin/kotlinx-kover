@@ -9,11 +9,10 @@ import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import org.gradle.api.*
 
 /**
- * Locate information for the generation of Kover artifacts.
+ * Locate information about Kotlin project's compilations.
  * This information is necessary for carrying out instrumentation and generating Kover reports.
  *
- * The locator is engaged in reading the settings of the applied plugins and, based on their settings,
- * collects this information in a universal form - as Kover artifact.
+ * The locator is engaged in reading the settings of the applied plugins.
  */
 internal interface CompilationKitLocator {
     fun locate(koverExtension: KoverProjectExtensionImpl): ProjectCompilation

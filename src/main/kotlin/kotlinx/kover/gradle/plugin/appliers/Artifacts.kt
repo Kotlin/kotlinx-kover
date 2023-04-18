@@ -5,7 +5,7 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.AppliedKotlinPlugin
-import kotlinx.kover.gradle.plugin.commons.Artifact
+import kotlinx.kover.gradle.plugin.commons.Variant
 import kotlinx.kover.gradle.plugin.commons.ArtifactNameAttr
 import kotlinx.kover.gradle.plugin.commons.CompilationUnit
 import kotlinx.kover.gradle.plugin.commons.KotlinPluginAttr
@@ -32,12 +32,12 @@ import org.gradle.kotlin.dsl.register
  * Create a task to generate an artifact and Gradle Configuration by which the artifact will be published.
  */
 internal fun Project.createArtifactGenerationTask(
-    artifactName: String,
+    variantName: String,
     compilations: List<Provider<Collection<CompilationUnit>>>,
     tests: List<TaskCollection<Test>>,
     toolVariant: CoverageToolVariant,
     kotlinPlugin: AppliedKotlinPlugin
-): Artifact {
+): Variant {
     // local files and compile tasks
     val compileTasks = compilations.map { provider ->
         provider.map { unit -> unit.flatMap { it.compileTasks } }
@@ -52,9 +52,9 @@ internal fun Project.createArtifactGenerationTask(
         .map { dir -> tests.flatten().map { dir.file(rawReportName(it.name, toolVariant.vendor)) } }
 
 
-    val localArtifactFile = project.layout.buildDirectory.file(artifactFilePath(artifactName))
+    val localArtifactFile = project.layout.buildDirectory.file(artifactFilePath(variantName))
 
-    val artifactGenTask = tasks.register<KoverArtifactGenerationTask>(artifactGenerationTaskName(artifactName)) {
+    val artifactGenTask = tasks.register<KoverArtifactGenerationTask>(artifactGenerationTaskName(variantName)) {
         // to generate an artifact, need to compile the entire project and perform all test tasks
         dependsOn(tests)
         dependsOn(compileTasks)
@@ -65,12 +65,12 @@ internal fun Project.createArtifactGenerationTask(
         this.artifactFile.set(localArtifactFile)
     }
 
-    val local = configurations.register(localArtifactConfigurationName(artifactName)) {
+    val local = configurations.register(localArtifactConfigurationName(variantName)) {
         outgoing.artifact(localArtifactFile) {
             asProducer()
             attributes {
                 // common Kover artifact attributes
-                attribute(ArtifactNameAttr.ATTRIBUTE, project.objects.named(artifactName))
+                attribute(ArtifactNameAttr.ATTRIBUTE, project.objects.named(variantName))
                 attribute(ProjectPathAttr.ATTRIBUTE, project.objects.named(project.path))
                 attribute(KotlinPluginAttr.ATTRIBUTE, project.objects.named(kotlinPlugin.type?.name ?: "NONE"))
             }
@@ -80,11 +80,11 @@ internal fun Project.createArtifactGenerationTask(
         }
     }
 
-    val dependencies = project.configurations.register(externalArtifactConfigurationName(artifactName)) {
+    val dependencies = project.configurations.register(externalArtifactConfigurationName(variantName)) {
         asConsumer()
 
         extendsFrom(project.configurations.getByName(DEPENDENCY_CONFIGURATION_NAME))
     }
 
-    return Artifact(artifactName, localArtifactFile, artifactGenTask, local, dependencies)
+    return Variant(variantName, localArtifactFile, artifactGenTask, local, dependencies)
 }

@@ -10,9 +10,9 @@ import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_XML_REPORT_NAME
 import org.gradle.configurationcache.extensions.capitalized
 
 /**
- * Name of the default Kover artifact.
+ * Name of the default Kover variant.
  */
-internal const val DEFAULT_KOVER_NAMESPACE_NAME = ""
+internal const val DEFAULT_KOVER_VARIANT_NAME = ""
 
 /**
  * Name of task to find online instrumentation agent jar file.
@@ -22,22 +22,22 @@ internal const val FIND_JAR_TASK = "koverFindJar"
 /**
  * Name for task for generating Kover artifact.
  */
-internal fun artifactGenerationTaskName(namespace: String) = "koverGenerateArtifact${namespace.capitalized()}"
+internal fun artifactGenerationTaskName(variant: String) = "koverGenerateArtifact${variant.capitalized()}"
 
 /**
  * Name for HTML reporting task for specified report namespace.
  */
-internal fun htmlReportTaskName(namespace: String) = "$REGULAR_HTML_REPORT_NAME${namespace.capitalized()}"
+internal fun htmlReportTaskName(variant: String) = "$REGULAR_HTML_REPORT_NAME${variant.capitalized()}"
 
 /**
  * Name for XML reporting task for specified report namespace.
  */
-internal fun xmlReportTaskName(namespace: String) = "$REGULAR_XML_REPORT_NAME${namespace.capitalized()}"
+internal fun xmlReportTaskName(variant: String) = "$REGULAR_XML_REPORT_NAME${variant.capitalized()}"
 
 /**
  * Name for verifying task for specified report namespace.
  */
-internal fun verifyTaskName(namespace: String) = "$REGULAR_VERIFY_REPORT_NAME${namespace.capitalized()}"
+internal fun verifyTaskName(variant: String) = "$REGULAR_VERIFY_REPORT_NAME${variant.capitalized()}"
 
 /**
  * Name of raw report for specified test task name (without directory path).

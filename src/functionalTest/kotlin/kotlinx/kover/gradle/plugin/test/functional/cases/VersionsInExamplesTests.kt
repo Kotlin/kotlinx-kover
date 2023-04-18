@@ -33,16 +33,6 @@ internal class VersionsInExamplesTests {
         }
 
         // check version of tool, it should be default
-        if (toolVariant.vendor == CoverageToolVendor.KOVER) {
-            if (toolVariant.version != KoverVersions.KOVER_TOOL_DEFAULT_VERSION) {
-                return false
-            }
-        } else {
-            if (toolVariant.version != KoverVersions.JACOCO_TOOL_DEFAULT_VERSION) {
-                return false
-            }
-        }
-
-        return true
+        return !(toolVariant.vendor == CoverageToolVendor.JACOCO && toolVariant.version != KoverVersions.JACOCO_TOOL_DEFAULT_VERSION)
     }
 }

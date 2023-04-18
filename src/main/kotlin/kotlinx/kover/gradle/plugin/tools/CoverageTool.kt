@@ -7,6 +7,7 @@ package kotlinx.kover.gradle.plugin.tools
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_VERSION
 import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.tools.jacoco.JacocoTool
 import kotlinx.kover.gradle.plugin.tools.kover.KoverTool
@@ -30,9 +31,7 @@ internal sealed class CoverageToolVariant(
         other as CoverageToolVariant
 
         if (vendor != other.vendor) return false
-        if (version != other.version) return false
-
-        return true
+        return version == other.version
     }
 
     override fun hashCode(): Int {
@@ -47,9 +46,7 @@ internal sealed class CoverageToolVariant(
 }
 
 internal class KoverToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.KOVER, version)
-internal object KoverToolDefaultVariant: CoverageToolVariant(CoverageToolVendor.KOVER,
-    KoverVersions.KOVER_TOOL_DEFAULT_VERSION
-)
+internal object KoverToolDefaultVariant: CoverageToolVariant(CoverageToolVendor.KOVER, KOVER_TOOL_VERSION)
 
 internal class JacocoToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.JACOCO, version)
 

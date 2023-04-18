@@ -4,10 +4,8 @@
 
     <application
         android:allowBackup="true"
-        android:fullBackupContent="@xml/backup_rules"
         android:supportsRtl="true"
         tools:targetApi="31">
-
     </application>
 
 </manifest>

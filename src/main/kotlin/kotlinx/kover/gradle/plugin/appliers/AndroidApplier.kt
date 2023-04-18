@@ -5,36 +5,40 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.*
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportsConfigImpl
 import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
 import org.gradle.api.Named
 import org.gradle.api.Project
 import org.gradle.api.attributes.*
+import org.gradle.api.file.ProjectLayout
+import org.gradle.api.model.ObjectFactory
 import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
 /**
- * Create named Kover artifact for Android code.
+ * Create named Kover variant for Android code.
  */
-internal fun Project.createAndroidArtifact(
+internal fun Project.createAndroidVariant(
     kotlinPlugin: AppliedKotlinPlugin,
     kit: AndroidCompilationKit,
     instrData: InstrumentationData,
     toolVariant: CoverageToolVariant
-): Artifact {
+): Variant {
     // local project tasks and files
     val tests = kit.tests.configureTests(instrData)
     val compilations = kit.compilations.map { it.values }
 
-    val artifactName = kit.buildVariant
-    val artifact = createArtifactGenerationTask(
-        artifactName,
+    val variantName = kit.buildVariant
+    val variant = createArtifactGenerationTask(
+        variantName,
         listOf(compilations),
         listOf(tests),
         toolVariant,
         kotlinPlugin,
     )
 
-    artifact.local.configure {
+    variant.localArtifactConfiguration.configure {
         attributes {
             // set android attributes for Kover Android artifact
 
@@ -46,7 +50,7 @@ internal fun Project.createAndroidArtifact(
         }
     }
 
-    artifact.dependencies.configure {
+    variant.dependentArtifactsConfiguration.configure {
         attributes {
             // set attribute requirements
             attribute(BuildTypeAttr.ATTRIBUTE, project.objects.named(kit.buildType))
@@ -66,7 +70,7 @@ internal fun Project.createAndroidArtifact(
     setBuildTypeStrategy(schema, kit.fallbacks.buildTypes)
     setupFlavorStrategy(schema, kit.fallbacks.flavors)
 
-    return artifact
+    return variant
 }
 
 
@@ -189,3 +193,24 @@ protected constructor(
         AlternateDisambiguationRule<ProductFlavorAttr>(alternates)
 }
 
+internal fun ObjectFactory.androidReports(variant: String, layout: ProjectLayout): KoverReportsConfigImpl {
+    val buildDir = layout.buildDirectory
+
+    val reports = newInstance<KoverReportsConfigImpl>(this)
+
+    reports.xml {
+        setReportFile(buildDir.file(xmlReportPath(variant)))
+        onCheck = false
+    }
+
+    reports.html {
+        setReportDir(buildDir.dir(htmlReportPath(variant)))
+        onCheck = false
+    }
+
+    reports.verify {
+        onCheck = false
+    }
+
+    return reports
+}

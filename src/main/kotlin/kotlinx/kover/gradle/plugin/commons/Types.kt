@@ -53,16 +53,17 @@ internal class ProjectCompilation(
 )
 
 /**
- * Grouped named JVM compilation kits and tests running on them.
+ * Grouped JVM compilations and tests running on them.
  */
 internal class JvmCompilationKit(
     val targetName: String,
     val tests: TaskCollection<Test>,
+    // source set -> compilation
     val compilations: Provider<Map<String, CompilationUnit>>,
 )
 
 /**
- * Grouped named Android compilation kits and tests running on them.
+ * Grouped named Android compilations and tests running on them.
  *
  * Contains additional information about the build variant taken from the Android Gradle Plugin
  */

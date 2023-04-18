@@ -34,11 +34,11 @@ internal fun Project.androidCompilationKits(
     val fallbacks = findFallbacks(androidExtension)
 
     return variants.map {
-        extractArtifact(androidExtension, koverExtension, kotlinTarget, fallbacks, it)
+        extractAndroidKit(androidExtension, koverExtension, kotlinTarget, fallbacks, it)
     }
 }
 
-private fun Project.extractArtifact(
+private fun Project.extractAndroidKit(
     androidExtension: DynamicBean,
     koverExtension: KoverProjectExtensionImpl,
     kotlinTarget: DynamicBean,
@@ -54,7 +54,7 @@ private fun Project.extractArtifact(
         // use only Android unit tests (local tests)
         it.hasSuperclass("AndroidUnitTest")
                 // skip all tests from instrumentation if Kover Plugin is disabled for the project
-                && !koverExtension.disabledForProject
+                && !koverExtension.disabled
                 // skip this test if it disabled by name
                 && it.name !in koverExtension.tests.tasksNames
                 // only tests of current application build variant
@@ -95,7 +95,7 @@ private fun extractCompilationOrEmpty(
     kotlinTarget: DynamicBean,
     variantName: String
 ): CompilationUnit {
-    if (koverExtension.disabledForProject) {
+    if (koverExtension.disabled) {
         // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
         return CompilationUnit()
     }
@@ -104,7 +104,7 @@ private fun extractCompilationOrEmpty(
         it.property<String>("name") == variantName
     }
 
-    return compilation.asJvmCompilationUnit(koverExtension.sources.excludeJavaCode) {
+    return compilation.asJvmCompilationUnit(koverExtension.excludeJava) {
         // exclude java classes from report. Expected java class files are placed in directories like
         //   build/intermediates/javac/debug/classes
         it.parentFile.parentFile.name == "javac"

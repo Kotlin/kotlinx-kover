@@ -6,24 +6,19 @@ package kotlinx.kover.gradle.plugin.dsl
 
 object KoverNames {
     /**
-     * Name of the configurations to add dependency on Kover artifacts in another project.
+     * Name of the configurations to add dependency on Kover reports from another project.
      */
     public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
 
     /**
-     * Name of the project extension to configure Kover artifacts content.
+     * Name of the project extension to configure Kover measurements.
      */
     public const val PROJECT_EXTENSION_NAME = "kover"
 
     /**
-     * Name of the project extension to configure Kover reports for Kotlin JVM and Kotlin Multiplatform projects.
+     * Name of the project extension to configure Kover reports.
      */
-    public const val REGULAR_REPORT_EXTENSION_NAME = "koverReport"
-
-    /**
-     * Name of the project extension to configure Kover reports for Kotlin Android projects.
-     */
-    public const val ANDROID_EXTENSION_NAME = "koverAndroid"
+    public const val REPORT_EXTENSION_NAME = "koverReport"
 
     /**
      * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.

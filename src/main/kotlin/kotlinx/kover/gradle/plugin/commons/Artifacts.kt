@@ -13,14 +13,14 @@ import org.gradle.api.tasks.TaskProvider
 import java.io.File
 
 /**
- * Gradle settings used to generate one Kover artefact.
+ * Comprehensive information sufficient to generate a variant of the report.
  */
-internal class Artifact(
+internal class Variant(
     val name: String,
     val localArtifact: Provider<RegularFile>,
     val localArtifactGenerationTask: TaskProvider<KoverArtifactGenerationTask>,
-    val local: NamedDomainObjectProvider<Configuration>,
-    val dependencies: NamedDomainObjectProvider<Configuration>
+    val localArtifactConfiguration: NamedDomainObjectProvider<Configuration>,
+    val dependentArtifactsConfiguration: NamedDomainObjectProvider<Configuration>
 )
 
 /**

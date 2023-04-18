@@ -101,91 +101,184 @@ Detailed documentation has not yet been completed.
 Refer to [migration guide](docs/migration-to-0.7.0.md) in order to migrate from version `0.6.0` or `0.6.1`.
 
 ## DSL
-The example of Kover configuration is given below
+The example of Kover configuration for Kotlin/JVM or Kotlin/MPP projects is given below
 ```groovy
-
 kover {
-    disabledForProject = false
+    // disable()
+
+    excludeJavaCode()
 
     useKoverTool()
 
     excludeInstrumentation {
-        classes("com.example.Foo*", "*Bar?")
-        packages("com.example.subpackage")
+        classes("com.example.subpackage.*")
+    }
+
+    excludeTests {
+        tasks("myTest")
     }
 }
 
 koverReport {
     filters {
-        excludes {
-            classes("com.example.Foo*", "*Bar?")
-            packages("com.example.subpackage")
-            annotatedBy("*Generated*", "com.example.ExcludeKover")
-        }
         includes {
-            classes("com.example.Biz"")
-            packages("com.example")
+            classes("com.example.*")
         }
     }
 
-    xml {
-        onCheck = false
-        setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
-
+    defaults {
         filters {
             excludes {
-                classes("com.example.xml.Foo*", "*Bar?")
-                packages("com.example.subpackage.xml")
-                annotatedBy("*Generated*", "com.example.xml.ExcludeKover")
+                classes("com.example.subpackage.*")
             }
             includes {
-                classes("com.example.xml.Biz"")
-                packages("com.example.xml")
+                classes("com.example.*")
             }
         }
-    }
 
-    html {
-        title = "My report title"
-        onCheck = false
-        setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
-
-        filters {
-            excludes {
-                classes("com.example.html.Foo*", "*Bar?")
-                packages("com.example.subpackage.html")
-                annotatedBy("*Generated*", "com.example.html.ExcludeKover")
-            }
-            includes {
-                classes("com.example.html.Biz"")
-                packages("com.example.html")
-            }
-        }
-    }
-
-    verify {
-        onCheck = true
-        rule {
-            isEnabled = true
-            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+        xml {
+            onCheck = false
+            setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
 
             filters {
                 excludes {
-                    classes("com.example.verify.Foo*", "*Bar?")
-                    packages("com.example.subpackage.verify")
-                    annotatedBy("*Generated*", "com.example.verify.ExcludeKover")
+                    classes("com.example2.subpackage.*")
                 }
                 includes {
-                    classes("com.example.verify.Biz"")
-                    packages("com.example.verify")
+                    classes("com.example2.*")
                 }
             }
+        }
 
-            bound {
-                minValue = 1
-                maxValue = 99
-                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
-                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+        html {
+            onCheck = false
+            setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+
+            filters {
+                excludes {
+                    classes("com.example2.subpackage.*")
+                }
+                includes {
+                    classes("com.example2.*")
+                }
+            }
+        }
+
+        verify {
+            onCheck = true
+            rule {
+                isEnabled = true
+                entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+
+                filters {
+                    excludes {
+                        classes("com.example.verify.subpackage.*")
+                    }
+                    includes {
+                        classes("com.example.verify.*")
+                    }
+                }
+
+                bound {
+                    minValue = 1
+                    maxValue = 99
+                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                }
+            }
+        }
+    }
+}
+```
+
+example for Kotlin + Android projects 
+```groovy
+kover {
+    // disable()
+
+    excludeJavaCode()
+
+    useKoverTool()
+
+    excludeInstrumentation {
+        classes("com.example.subpackage.*")
+    }
+
+    excludeTests {
+        tasks("myTest")
+    }
+}
+
+koverReport {
+    filters {
+        includes {
+            classes("com.example.*")
+        }
+    }
+
+    defaults {
+        mergeWith("release")
+    }
+    
+    androidReports("release") {
+        filters {
+            excludes {
+                classes("com.example.subpackage.*")
+            }
+            includes {
+                classes("com.example.*")
+            }
+        }
+
+        xml {
+            onCheck = false
+            setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
+
+            filters {
+                excludes {
+                    classes("com.example2.subpackage.*")
+                }
+                includes {
+                    classes("com.example2.*")
+                }
+            }
+        }
+
+        html {
+            onCheck = false
+            setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+
+            filters {
+                excludes {
+                    classes("com.example2.subpackage.*")
+                }
+                includes {
+                    classes("com.example2.*")
+                }
+            }
+        }
+
+        verify {
+            onCheck = true
+            rule {
+                isEnabled = true
+                entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+
+                filters {
+                    excludes {
+                        classes("com.example.verify.subpackage.*")
+                    }
+                    includes {
+                        classes("com.example.verify.*")
+                    }
+                }
+
+                bound {
+                    minValue = 1
+                    maxValue = 99
+                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                }
             }
         }
     }

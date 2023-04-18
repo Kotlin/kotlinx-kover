@@ -67,7 +67,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : Compil
         val tests = project.tasks.withType<Test>().matching {
             it.hasSuperclass("KotlinJvmTest")
                     // skip all tests from instrumentation if Kover Plugin is disabled for the project
-                    && !koverExtension.disabledForProject
+                    && !koverExtension.disabled
                     // skip this test if it disabled by name
                     && it.name !in koverExtension.tests.tasksNames
                     // skip this test if it disabled by its JVM target name
@@ -86,7 +86,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : Compil
         koverExtension: KoverProjectExtensionImpl,
         target: DynamicBean
     ): Map<String, CompilationUnit> {
-        val excludedCompilationsByTarget = koverExtension.sources.mpp.compilationsByTarget
+        val excludedCompilationsByTarget = koverExtension.compilations.mpp.compilationsByTarget
 
         val compilations = target.propertyBeans("compilations").filter {
             val name = it.property<String>("name")
@@ -95,11 +95,11 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : Compil
             // always ignore test source set by default
             name != SourceSet.TEST_SOURCE_SET_NAME
                     // ignore compilation for all JVM targets
-                    && name !in koverExtension.sources.mpp.compilationsForAllTargets
+                    && name !in koverExtension.compilations.mpp.compilationsForAllTargets
                     // ignore compilation for specified JVM target
                     && excludedCompilationsByTarget[targetName]?.contains(name) != true
                     // ignore all compilations fro specified JVM target
-                    && targetName !in koverExtension.sources.mpp.allCompilationsInTarget
+                    && targetName !in koverExtension.compilations.mpp.allCompilationsInTarget
         }
 
         return compilations.associate { compilation ->
@@ -112,15 +112,14 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : Compil
         koverExtension: KoverProjectExtensionImpl,
         compilation: DynamicBean
     ): CompilationUnit {
-        return if (koverExtension.disabledForProject) {
+        return if (koverExtension.disabled) {
             // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
             CompilationUnit()
         } else {
-            compilation.asJvmCompilationUnit(koverExtension.sources.excludeJavaCode) {
+            compilation.asJvmCompilationUnit(koverExtension.excludeJava) {
                 // exclude java classes from report. Expected java class files are placed in directories like
-                //   build/classes/kotlin/foo/main
-                // TODO fix this
-                it.parentFile.parentFile.name == "java"
+                //   build/classes/java/main
+                it.parentFile.name == "java"
             }
         }
     }

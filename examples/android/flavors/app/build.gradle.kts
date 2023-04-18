@@ -98,19 +98,31 @@ dependencies {
 }
 
 
-kover {
-    default {
+koverReport {
+    // filters for all report types of all build variants
+    filters {
+        excludes {
+            classes(
+                "*Fragment",
+                "*Fragment\$*",
+                "*Activity",
+                "*Activity\$*",
+                "*.databinding.*",
+                "*.BuildConfig"
+            )
+        }
+    }
+
+    defaults {
         /**
-         * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the default artifact.
+         * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the default report.
          * Thus, information from the 'app1AppDebug' variant will be included in the default report for this project and any project that specifies this project as a dependency.
          */
-        addWithDependencies("app1AppDebug")
+        mergeWith("app1AppDebug")
     }
-}
 
-koverAndroid {
-    // filters for all report types of all build variants
-    common {
+    androidReports("release") {
+        // filters for all report types only of 'release' build type
         filters {
             excludes {
                 classes(
@@ -119,29 +131,12 @@ koverAndroid {
                     "*Activity",
                     "*Activity\$*",
                     "*.databinding.*",
-                    "*.BuildConfig"
+                    "*.BuildConfig",
+
+                    // excludes debug classes
+                    "*.DebugUtil"
                 )
             }
         }
     }
-
-    report("release") {
-        // filters for all report types only of 'release' build type
-        filters {
-            excludes {
-                classes(
-                        "*Fragment",
-                        "*Fragment\$*",
-                        "*Activity",
-                        "*Activity\$*",
-                        "*.databinding.*",
-                        "*.BuildConfig",
-
-                        // excludes debug classes
-                        "*.DebugUtil"
-                )
-            }
-        }
-    }
-
 }

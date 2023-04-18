@@ -32,11 +32,11 @@ internal class KotlinAndroidLocator(private val project: Project) : CompilationK
         val kotlinTarget = kotlinExtension["target"]
 
 
-        val androidArtifacts = project.androidCompilationKits(androidExtension, koverExtension, kotlinTarget)
+        val androidKits = project.androidCompilationKits(androidExtension, koverExtension, kotlinTarget)
 
         return ProjectCompilation(
             AppliedKotlinPlugin(KotlinPluginType.ANDROID),
-            android = androidArtifacts
+            android = androidKits
         )
     }
 

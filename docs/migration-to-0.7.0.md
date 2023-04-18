@@ -34,7 +34,9 @@ Now all report settings are moved to a separate extension.
 XML, HTML, verify reports configured in special Kover extension
 ```
 koverReport {
-    // reports configs for XML, HTML, verify reports
+    defaults {
+        // reports configs for XML, HTML, verify reports
+    }
 }
 ```
 
@@ -43,30 +45,26 @@ With Gradle API syntax:
 for kts build script
 ```
 extensions.configure<kotlinx.kover.gradle.plugin.dsl.KoverReportExtension> {
-    // reports configs for XML, HTML, verify reports
+    defaults {
+        // reports configs for XML, HTML, verify reports
+    }
 }
 ```
 for Groovy build script
 ```
 extensions.configure(kotlinx.kover.gradle.plugin.dsl.KoverReportExtension.class) {
-    // reports configs for XML, HTML, verify reports
+    defaults {
+        // reports configs for XML, HTML, verify reports
+    }
 }
 ```
 
 #### Report settings for Android projects
 For Android, you may configure report for a certain build variant (Build Type + Flavor)
 ```
-koverAndroid {
-    report("release") {
+koverReport {
+    androidReports("release") {
         // reports configs for XML, HTML, verify reports for 'release' build variant 
-    }
-}
-```
-Or if you want to apply config to all build variants, you may specify common Android reports settings
-```
-koverAndroid {
-    common {
-        // reports configs for XML, HTML, verify reports for all build variant 
     }
 }
 ```
@@ -75,14 +73,18 @@ With Gradle API syntax:
 
 for kts build script
 ```
-extensions.configure<kotlinx.kover.gradle.plugin.dsl.KoverAndroidExtension> {
-    // Kover Android reports configs
+extensions.configure<kotlinx.kover.gradle.plugin.dsl.KoverReportExtension> {
+    androidReports("release") {
+        // reports configs for XML, HTML, verify reports for 'release' build variant 
+    }
 }
 ```
 for Groovy build script
 ```
-extensions.configure(kotlinx.kover.gradle.plugin.dsl.KoverAndroidExtension.class) {
-    // Kover Android reports configs
+extensions.configure(kotlinx.kover.gradle.plugin.dsl.KoverReportExtension.class) {
+    androidReports("release") {
+        // reports configs for XML, HTML, verify reports for 'release' build variant 
+    }
 }
 ```
 
@@ -91,10 +93,8 @@ Full list of report configurations with descriptions.
 
 Use suitable settings for you
 ```
-// or koverAndroid extension, see above
 koverReport {
-
-    // common filters for XML, HTML, verify reports
+    // common filters for all reports of all variants
     filters {
         // exclusions for reports
         excludes {
@@ -115,84 +115,22 @@ koverReport {
         }
     }
 
-    // configure XML report
-    xml {
-        //  generate an XML report when running the `check` task
-        onCheck = false
-        
-        // XML report file
-        setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
-
-        // overriding filters only for the XML report 
-        filters {
-            // exclusions for XML reports
-            excludes {
-                // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
-                classes("com.example.*")
-                // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
-                packages("com.another.subpackage")
-                // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
-                annotatedBy("*Generated*")
-            }
-            
-            // inclusions for XML reports
-            includes {
-                // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
-                classes("com.example.*")
-                // includes all classes located in specified package and it subpackages
-                packages("com.another.subpackage")
-            }
-        }
-    }
-
-    // configure HTML report
-    html {
-        // custom header in HTML reports, project path by default
-        title = "My report title"
+    // configure default reports - for Kotlin/JVM or Kotlin/MPP projects or merged android variants  
+    defaults {
+        // add reports of 'release' Android build variant to default reports - applicable only for Android projects
+        mergeWith("release")
     
-        //  generate a HTML report when running the `check` task
-        onCheck = false
-        
-        // directory for HTML report
-        setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
-
-        // overriding filters only for the HTML report
-        filters {
-            // exclusions for HTML reports
-            excludes {
-                // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
-                classes("com.example.*")
-                // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
-                packages("com.another.subpackage")
-                // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
-                annotatedBy("*Generated*")
-            }
+        // configure XML report
+        xml {
+            //  generate an XML report when running the `check` task
+            onCheck = false
             
-            // inclusions for HTML reports
-            includes {
-                // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
-                classes("com.example.*")
-                // includes all classes located in specified package and it subpackages
-                packages("com.another.subpackage")
-            }
-        }
-    }
-
-    // configure verification
-    verify {
-        //  verify coverage when running the `check` task
-        onCheck = true
-        
-        // add verification rule
-        rule {
-            // check this rule during verification 
-            isEnabled = true
-            
-            // specify the code unit for which coverage will be aggregated 
-            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
-
-            // overriding filters only for current rule
+            // XML report file
+            setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
+    
+            // overriding filters only for the XML report 
             filters {
+                // exclusions for XML reports
                 excludes {
                     // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
                     classes("com.example.*")
@@ -201,6 +139,8 @@ koverReport {
                     // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
                 }
+                
+                // inclusions for XML reports
                 includes {
                     // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
                     classes("com.example.*")
@@ -208,29 +148,101 @@ koverReport {
                     packages("com.another.subpackage")
                 }
             }
-
-            // specify verification bound for this rule
-            bound {
-                // lower bound
-                minValue = 1
+        }
+        
+        // configure HTML report
+        html {
+            // custom header in HTML reports, project path by default
+            title = "My report title"
+        
+            //  generate a HTML report when running the `check` task
+            onCheck = false
+            
+            // directory for HTML report
+            setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+    
+            // overriding filters only for the HTML report
+            filters {
+                // exclusions for HTML reports
+                excludes {
+                    // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                    classes("com.example.*")
+                    // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                    packages("com.another.subpackage")
+                    // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                    annotatedBy("*Generated*")
+                }
                 
-                // upper bound
-                maxValue = 99
-                
-                // specify which units to measure coverage for
-                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
-                
-                // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
-                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                // inclusions for HTML reports
+                includes {
+                    // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                    classes("com.example.*")
+                    // includes all classes located in specified package and it subpackages
+                    packages("com.another.subpackage")
+                }
             }
+        }
+    
+        // configure verification
+        verify {
+            //  verify coverage when running the `check` task
+            onCheck = true
             
-            // add lower bound for percentage of covered lines
-            minBound(2)
-            
-            // add upper bound for percentage of covered lines
-            maxBound(98)
+            // add verification rule
+            rule {
+                // check this rule during verification 
+                isEnabled = true
+                
+                // specify the code unit for which coverage will be aggregated 
+                entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+    
+                // overriding filters only for current rule
+                filters {
+                    excludes {
+                        // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                        classes("com.example.*")
+                        // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                        packages("com.another.subpackage")
+                        // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                        annotatedBy("*Generated*")
+                    }
+                    includes {
+                        // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                        classes("com.example.*")
+                        // includes all classes located in specified package and it subpackages
+                        packages("com.another.subpackage")
+                    }
+                }
+    
+                // specify verification bound for this rule
+                bound {
+                    // lower bound
+                    minValue = 1
+                    
+                    // upper bound
+                    maxValue = 99
+                    
+                    // specify which units to measure coverage for
+                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                    
+                    // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
+                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                }
+                
+                // add lower bound for percentage of covered lines
+                minBound(2)
+                
+                // add upper bound for percentage of covered lines
+                maxBound(98)
+            }
         }
     }
+    
+    // configure reports for 'release' build variant
+    androidReports("release") {
+        // same as for 'defaults' with the exception of 'mergeWith'
+    }
+    
 }
 ```
 
@@ -240,17 +252,12 @@ Previously called engines have been renamed tools.
 
 IntelliJ Engine was renamed to Kover Tool.
 
-To use Kover Tool with default version need to call 
+It is now impossible to specify the version of the Kover Tool, because it is built into the plugin.
+
+To use embedded Kover Tool need to call 
 ```
 kover {
     useKoverTool()
-}
-```
-
-To use Kover Tool with specified version need to call
-```
-kover {
-    useKoverTool("1.0.690")
 }
 ```
 
@@ -312,7 +319,7 @@ Use property 'disabledForProject' instead.
 ### disabledForProject.set(    Unresolved reference
 _Solution_
 
-Use assignment `disabledForProject = `
+Use function `disable()`
 
 ---
 
@@ -321,7 +328,7 @@ or
 ### Using 'engine: Nothing?' is an error
 _Solution_
 
-Use appropriate functions instead `useKoverTool()`, `useJacocoTool()`, `useKoverTool("version")` or `useJacocoTool("version")`
+Use appropriate functions instead `useKoverTool()`, `useJacocoTool()` or `useJacocoTool("version")`
 
 ---
 
@@ -382,8 +389,10 @@ _Solution_
 Configure XML report filter in block
 ```
 koverReport {
-    xml {
-        // configs ...
+    defaults {
+        xml {
+            // configs ...
+        }
     }
 }
 ```
@@ -396,8 +405,10 @@ _Solution_
 Configure HTML report filter in block
 ```
 koverReport {
-    html {
-        // configs ...
+    defaults {
+        html {
+            // configs ...
+        }
     }
 }
 ```
@@ -410,8 +421,10 @@ _Solution_
 Configure verification report filter in block
 ```
 koverReport {
-    verify {
-        // configs ...
+    defaults {
+        verify {
+            // configs ...
+        }
     }
 }
 ```
@@ -431,9 +444,11 @@ _Solution_
 `name` property is deprecated, specify rule custom name in `rule` function
 ```
 koverReport {
-    verify {
-        rule("My rule name") {
-            // ... rule definition
+    defaults {
+        verify {
+            rule("My rule name") {
+                // ... rule definition
+            }
         }
     }
 }
@@ -601,11 +616,7 @@ See [migrate instruction](#merge-reports-config-was-removed).
 ---
 
 ### Using 'IntellijEngine' is an error
-_Solution_
-
-Use function `useKoverTool("version")` instead.
-
----
+or
 ### Using 'DefaultIntellijEngine' is an error
 _Solution_
 

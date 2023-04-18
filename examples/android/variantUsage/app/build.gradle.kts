@@ -47,16 +47,6 @@ dependencies {
 /*
  * Kover configs
  */
-kover {
-    default {
-        /**
-         * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the default artifact.
-         * Thus, information from the 'debug' variant will be included in the default report for this project and any project that specifies this project as a dependency.
-         */
-        addWithDependencies("debug")
-    }
-}
-
 dependencies {
     /**
      * Use artifacts from 'lib' project.
@@ -64,24 +54,30 @@ dependencies {
     kover(project(":lib"))
 }
 
-koverAndroid {
+koverReport {
     // filters for all report types of all build variants
-    common {
-        filters {
-            excludes {
-                classes(
-                    "*Fragment",
-                    "*Fragment\$*",
-                    "*Activity",
-                    "*Activity\$*",
-                    "*.databinding.*",
-                    "*.BuildConfig"
-                )
-            }
+    filters {
+        excludes {
+            classes(
+                "*Fragment",
+                "*Fragment\$*",
+                "*Activity",
+                "*Activity\$*",
+                "*.databinding.*",
+                "*.BuildConfig"
+            )
         }
     }
 
-    report("release") {
+    defaults {
+        /**
+         * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the default reports.
+         * Thus, information from the 'debug' variant will be included in the default report for this project and any project that specifies this project as a dependency.
+         */
+        mergeWith("debug")
+    }
+
+    androidReports("release") {
         // filters for all report types only of 'release' build type
         filters {
             excludes {
@@ -99,5 +95,4 @@ koverAndroid {
             }
         }
     }
-
 }

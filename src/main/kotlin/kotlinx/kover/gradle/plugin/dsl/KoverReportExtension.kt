@@ -4,65 +4,158 @@
 
 package kotlinx.kover.gradle.plugin.dsl
 
-import kotlinx.kover.api.*
-import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.KoverMigrations
 import org.gradle.api.*
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.*
 import java.io.*
 
 /**
- * Configuration of Kover reports for some report context: regular reports for K/JVM and K/MPP, or Android reports for some build variant.
+ * Configuration of Kover reports.
  *
- * Kotlin JVM or Kotlin MPP projects
+ * example:
  * ```
  *  koverReport {
  *      filters {
- *          // ...
+ *          // common filters for all reports of all variants
  *      }
  *
- *      html {
- *          // ...
- *      }
+ *      // default reports - special reports that are filled in by default with class measurements from Kotlin/JVM or Kotlin/MPP projects
+ *      defaults {
+ *          // add content of reports for specified variant to default reports
+ *          mergeWith("buildVariant")
  *
- *      xml {
- *          // ...
- *      }
- *
- *      verify {
- *          // ...
- *      }
- *  }
- * ```
- *
- * Kotlin Android projects
- * ```
- * koverAndroid {
- *      report("release") {
  *          filters {
- *              // ...
+ *              // override report filters for default reports
  *          }
  *
  *          html {
- *              // ...
+ *              // configure default HTML report
  *          }
  *
  *          xml {
- *              // ...
+ *              // configure default XML report
  *          }
  *
  *          verify {
- *              // ...
+ *              // configure default coverage verification
  *          }
  *      }
- * }
- * ```
  *
+ *      androidReports("buildVariant") {
+ *          filters {
+ *              // override report filters for reports of specified Android build variant
+ *          }
+ *
+ *          html {
+ *              // configure HTML report for specified Android build variant
+ *          }
+ *
+ *          xml {
+ *              // configure XML report for specified Android build variant
+ *          }
+ *
+ *          verify {
+ *              // configure coverage verification for specified Android build variant
+ *          }
+ *      }
+ *
+ *  }
+ * ```
  */
 public interface KoverReportExtension {
+    /**
+     * Specify common filters for the current report context, these filters will be inherited in HTML/XML/verification reports.
+     * They can be redefined in the settings of a specific report.
+     * ```
+     *  filters {
+     *      excludes {
+     *          // ...
+     *      }
+     *
+     *      includes {
+     *          // ...
+     *      }
+     *  }
+     * ```
+     */
+    public fun filters(config: Action<KoverReportFilters>)
+
+    /**
+     * Configure reports for classes from Kotlin/JVM or Kotlin/MPP projects.
+     * Also content from specified Android build variant can be added by calling `mergeWith`.
+     *
+     * example:
+     * ```
+     * kover {
+     *      defaults {
+     *          // add content of reports for specified variant to default reports
+     *          mergeWith("buildVariant")
+     *
+     *          filters {
+     *              // override report filters for default reports
+     *          }
+     *
+     *          html {
+     *              // configure default HTML report
+     *          }
+     *
+     *          xml {
+     *              // configure default XML report
+     *          }
+     *
+     *          verify {
+     *              // configure default coverage verification
+     *          }
+     *      }
+     * }
+     * ```
+     */
+    public fun defaults(config: Action<KoverDefaultReportsConfig>)
+
+    /**
+     * Configure reports for classes of specified Android build variant.
+     *
+     * example:
+     * ```
+     * kover {
+     *      androidReports("debug") {
+     *          filters {
+     *              // override report filters for reports of 'debug' Android build variant
+     *          }
+     *
+     *          html {
+     *              // configure HTML report for 'debug' Android build variant
+     *          }
+     *
+     *          xml {
+     *              // configure XML report for 'debug' Android build variant
+     *          }
+     *
+     *          verify {
+     *              // configure coverage verification for 'debug' Android build variant
+     *          }
+     *      }
+     * }
+     * ```
+     */
+    public fun androidReports(variant: String, config: Action<KoverReportsConfig>)
+}
+
+/**
+ *  Configuration for default variant reports
+ */
+public interface KoverDefaultReportsConfig: KoverReportsConfig {
+    /**
+     * Add the contents of the reports with specified variant to the default reports.
+     *
+     * Affects the default reports of this project and any project that specifies this project as a dependency.
+     */
+    public fun mergeWith(otherVariant: String)
+}
+
+public interface KoverReportsConfig {
     /**
      * Specify common filters for the current report context, these filters will be inherited in HTML/XML/verification reports.
      * They can be redefined in the settings of a specific report.
@@ -128,91 +221,6 @@ public interface KoverReportExtension {
      * ```
      */
     public fun verify(config: Action<KoverVerifyReportConfig>)
-}
-
-/**
- * Common configuration of reports for all Android build variant.
- *
- * koverAndroid {
- *      common {
- *          filters {
- *              // ...
- *          }
- *
- *          html {
- *              // ...
- *          }
- *
- *          xml {
- *              // ...
- *          }
- *
- *          verify {
- *              // ...
- *          }
- *      }
- * }
- *
- */
-public interface KoverGeneralAndroidReport {
-    /**
-     * Specify common filters for all Android build variants, these filters will be inherited in HTML/XML/verification reports in any variant.
-     * They can be redefined in the settings of a specific report of specific build variant.
-     * ```
-     *  filters {
-     *      excludes {
-     *          // ...
-     *      }
-     *
-     *      includes {
-     *          // ...
-     *      }
-     *  }
-     * ```
-     */
-    public fun filters(config: Action<KoverReportFilters>)
-
-    /**
-     * Configure HTML report for all Android build variants.
-     * ```
-     *  html {
-     *      filters {
-     *          // ...
-     *      }
-     *
-     *      title = "My report title"
-     *  }
-     * ```
-     */
-    public fun html(config: Action<KoverGeneralHtmlReportConfig>)
-
-    /**
-     * Configure HTML report for all Android build variants.
-     * ```
-     *  xml {
-     *      filters {
-     *          // ...
-     *      }
-     *  }
-     * ```
-     */
-    public fun xml(config: Action<KoverGeneralXmlReportConfig>)
-
-    /**
-     * Configure coverage verification for all Android build variants..
-     * ```
-     *  verify {
-     *      rule {
-     *          // ...
-     *      }
-     *
-     *      rule("Custom Name") {
-     *          // ...
-     *      }
-     *  }
-     * ```
-     */
-    public fun verify(config: Action<KoverGeneralVerifyReportConfig>)
 }
 
 /**
@@ -367,12 +375,23 @@ public interface KoverReportFilter {
     public fun annotatedBy(vararg annotationName: String)
 }
 
-public interface KoverHtmlReportConfig : KoverGeneralHtmlReportConfig {
+public interface KoverHtmlReportConfig {
+    /**
+     * Override common filters only for HTML report.
+     */
+    public fun filters(config: Action<KoverReportFilters>)
+
+    /**
+     * Specify header in HTML reports.
+     *
+     * Project path by default.
+     */
+    public var title: String?
+
     /**
      * Generate an HTML report when running the `check` task.
-     * `null` by default and report isn't generated on `check` task.
      */
-    public var onCheck: Boolean?
+    public var onCheck: Boolean
 
     /**
      * Specify HTML report directory.
@@ -400,26 +419,16 @@ public interface KoverHtmlReportConfig : KoverGeneralHtmlReportConfig {
     public fun overrideFilters(block: () -> Unit) { }
 }
 
-public interface KoverGeneralHtmlReportConfig {
+public interface KoverXmlReportConfig {
     /**
-     * Specify header in HTML reports.
-     *
-     * Project path by default.
-     */
-    public var title: String?
-
-    /**
-     * Override common filters only for HTML report.
+     * Override common filters only for XML report.
      */
     public fun filters(config: Action<KoverReportFilters>)
-}
 
-public interface KoverXmlReportConfig : KoverGeneralXmlReportConfig {
     /**
      * Generate an XML report when running the `check` task.
-     * `null` by default and report isn't generated on `check` task.
      */
-    public var onCheck: Boolean?
+    public var onCheck: Boolean
 
     /**
      * Specify file to generate XML report.
@@ -447,22 +456,13 @@ public interface KoverXmlReportConfig : KoverGeneralXmlReportConfig {
     public fun overrideFilters(block: () -> Unit) { }
 }
 
-public interface KoverGeneralXmlReportConfig {
-    /**
-     * Override common filters only for XML report.
-     */
-    public fun filters(config: Action<KoverReportFilters>)
-}
-
-public interface KoverVerifyReportConfig : KoverGeneralVerifyReportConfig {
+public interface KoverVerifyReportConfig {
     /**
      * Verify coverage when running the `check` task.
      * `null` by default, for Kotlin JVM and Kotlin MPP triggered on `check` task, but not for Android.
      */
     public var onCheck: Boolean
-}
 
-public interface KoverGeneralVerifyReportConfig {
     /**
      * Add new coverage verification rule to check after test task execution.
      */

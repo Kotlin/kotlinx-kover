@@ -23,23 +23,23 @@ internal fun rawReportPath(taskName: String, toolVendor: CoverageToolVendor): St
     return "${rawReportsRootPath()}${separator}${rawReportName(taskName, toolVendor)}"
 }
 
-internal fun htmlReportPath(namespace: String): String {
-    return "reports${separator}kover${separator}html${namespace.capitalized()}"
+internal fun htmlReportPath(variant: String): String {
+    return "reports${separator}kover${separator}html${variant.capitalized()}"
 }
 
-internal fun xmlReportPath(namespace: String): String {
-    return "reports${separator}kover${separator}report${namespace.capitalized()}.xml"
+internal fun xmlReportPath(variant: String): String {
+    return "reports${separator}kover${separator}report${variant.capitalized()}.xml"
 }
 
-internal fun verificationErrorsPath(namespace: String): String {
-    return "reports${separator}kover${separator}verify${namespace.capitalized()}.err"
+internal fun verificationErrorsPath(variant: String): String {
+    return "reports${separator}kover${separator}verify${variant.capitalized()}.err"
 }
 
-internal fun artifactFilePath(namespace: String): String {
-    return if (namespace == DEFAULT_KOVER_NAMESPACE_NAME) {
+internal fun artifactFilePath(variant: String): String {
+    return if (variant == DEFAULT_KOVER_VARIANT_NAME) {
         "kover${separator}default.artifact"
     } else {
-        "kover${separator}$namespace.artifact"
+        "kover${separator}$variant.artifact"
     }
 }
 

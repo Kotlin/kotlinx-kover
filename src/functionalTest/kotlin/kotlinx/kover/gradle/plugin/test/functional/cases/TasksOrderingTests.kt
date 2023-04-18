@@ -12,9 +12,11 @@ internal class TasksOrderingTests {
         addProjectWithKover {
             sourcesFrom("simple")
             koverReport {
-                verify {
-                    rule {
-                        minBound(100)
+                defaults {
+                    verify {
+                        rule {
+                            minBound(100)
+                        }
                     }
                 }
             }

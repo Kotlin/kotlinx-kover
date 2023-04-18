@@ -5,11 +5,9 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.KoverNames.ANDROID_EXTENSION_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEPENDENCY_CONFIGURATION_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.PROJECT_EXTENSION_NAME
-import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_REPORT_EXTENSION_NAME
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverAndroidExtensionImpl
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.REPORT_EXTENSION_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportExtensionImpl
 import kotlinx.kover.gradle.plugin.locators.CompilationsLocatorFactory
@@ -29,8 +27,7 @@ import org.gradle.kotlin.dsl.register
  */
 internal class ProjectApplier(private val project: Project) {
     private lateinit var projectExtension: KoverProjectExtensionImpl
-    private lateinit var androidExtension: KoverAndroidExtensionImpl
-    private lateinit var defaultReportExtension: KoverReportExtensionImpl
+    private lateinit var reportExtension: KoverReportExtensionImpl
 
     /**
      * The code executed right at the moment of applying of the plugin.
@@ -40,9 +37,8 @@ internal class ProjectApplier(private val project: Project) {
             asBucket()
         }
 
-        projectExtension = project.extensions.create(PROJECT_EXTENSION_NAME, project.objects)
-        defaultReportExtension = project.extensions.create(REGULAR_REPORT_EXTENSION_NAME)
-        androidExtension = project.extensions.create(ANDROID_EXTENSION_NAME, project.objects)
+        projectExtension = project.extensions.create(PROJECT_EXTENSION_NAME)
+        reportExtension = project.extensions.create(REPORT_EXTENSION_NAME)
     }
 
     /**
@@ -68,41 +64,41 @@ internal class ProjectApplier(private val project: Project) {
 
         val locate = locator.locate(projectExtension)
 
-        val androidArtifacts = locate.android.associate {
-            it.buildVariant to project.createAndroidArtifact(locate.kotlinPlugin, it, instrData, tool.variant)
+        val androidVariants = locate.android.associate {
+            it.buildVariant to project.createAndroidVariant(locate.kotlinPlugin, it, instrData, tool.variant)
         }
 
-        val defaultArtifact = createDefaultArtifact(locate.kotlinPlugin, locate.jvm, instrData, tool.variant)
+        val defaultVariant = createDefaultVariant(locate.kotlinPlugin, locate.jvm, instrData, tool.variant)
 
-        projectExtension.addToDefault.forEach { usage ->
-            val androidArtifact = androidArtifacts[usage] ?: throw KoverIllegalConfigException("Android artifact '$usage' was not found - it is impossible to add it to the default artifact")
+        reportExtension.default.merged.forEach { addedVariant ->
+            val androidVariant = androidVariants[addedVariant] ?: throw KoverIllegalConfigException("Android build variant '$addedVariant' was not found - it is impossible to add it to the default report")
 
-            defaultArtifact.localArtifactGenerationTask.configure {
-                additionalArtifacts.from(androidArtifact.localArtifact, androidArtifact.dependencies)
-                dependsOn(androidArtifact.localArtifactGenerationTask, androidArtifact.dependencies)
+            defaultVariant.localArtifactGenerationTask.configure {
+                additionalArtifacts.from(androidVariant.localArtifact, androidVariant.dependentArtifactsConfiguration)
+                dependsOn(androidVariant.localArtifactGenerationTask, androidVariant.dependentArtifactsConfiguration)
             }
         }
 
-        ReportsApplier(defaultArtifact, project, instrData.tool, reporterClasspath)
-            .createReports(defaultReportExtension, null)
+        ReportsApplier(defaultVariant, project, instrData.tool, reporterClasspath)
+            .createReports(reportExtension.default, reportExtension.filters)
 
-        val general = androidExtension.common
-        androidArtifacts.forEach { (name, artifact) ->
-            val androidReportExtension = androidExtension.reports[name]
-            ReportsApplier(artifact, project, instrData.tool, reporterClasspath)
-                .createReports(androidReportExtension, general)
+        androidVariants.forEach { (variantName, androidVariant) ->
+            val androidReport = reportExtension.namedReports[variantName] ?: project.objects.androidReports(variantName, project.layout)
+
+            ReportsApplier(androidVariant, project, instrData.tool, reporterClasspath)
+                .createReports(androidReport, reportExtension.filters)
         }
     }
 
     /**
-     * Create default named Kover artifact for default reports.
+     * Create default report variant.
      */
-    private fun createDefaultArtifact(
+    private fun createDefaultVariant(
         kotlinPlugin: AppliedKotlinPlugin,
         kits: List<JvmCompilationKit>,
         instrData: InstrumentationData,
         toolVariant: CoverageToolVariant
-    ): Artifact {
+    ): Variant {
         // local project tasks and files
         val tests = kits.map { kit ->
             kit.tests.configureTests(instrData)
@@ -112,16 +108,16 @@ internal class ProjectApplier(private val project: Project) {
         }
 
         val artifact = project.createArtifactGenerationTask(
-            DEFAULT_KOVER_NAMESPACE_NAME,
+            DEFAULT_KOVER_VARIANT_NAME,
             compilations,
             tests,
             toolVariant,
             kotlinPlugin
         )
 
-        artifact.dependencies.configure {
+        artifact.dependentArtifactsConfiguration.configure {
             attributes {
-                attribute(ArtifactNameAttr.ATTRIBUTE, project.objects.named(DEFAULT_KOVER_NAMESPACE_NAME))
+                attribute(ArtifactNameAttr.ATTRIBUTE, project.objects.named(DEFAULT_KOVER_VARIANT_NAME))
             }
         }
 

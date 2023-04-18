@@ -6,9 +6,9 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
-internal class ArtifactUsageTests {
-    @ExamplesTest("android/artifactUsage", [":app:koverXmlReport"])
-    fun CheckerContext.testAndroidArtifactUsage() {
+internal class VariantUsageTests {
+    @ExamplesTest("android/variantUsage", [":app:koverXmlReport"])
+    fun CheckerContext.testAndroidVariantUsage() {
         subproject(":app") {
             xml(defaultXmlReport()) {
                 // check test tasks
@@ -29,7 +29,7 @@ internal class ArtifactUsageTests {
     }
 
     @ExamplesTest("android/multiplatform", [":koverXmlReport"])
-    fun CheckerContext.testMultiplatformArtifactUsage() {
+    fun CheckerContext.testMultiplatformVariantUsage() {
         xml(defaultXmlReport()) {
             // check test tasks
             checkOutcome(":app:testDebugUnitTest", "SUCCESS")

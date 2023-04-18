@@ -15,6 +15,29 @@ internal class KoverReportExtensionWriter(private val writer: FormattedWriter) :
         writer.call("filters", config) { KoverReportFiltersWriter(it) }
     }
 
+    override fun defaults(config: Action<KoverDefaultReportsConfig>) {
+        writer.call("defaults", config) { KoverDefaultReportsWriter(it) }
+    }
+
+    override fun androidReports(variant: String, config: Action<KoverReportsConfig>) {
+        writer.call("androidReports", config) { KoverReportsWriter(it) }
+    }
+
+}
+
+internal class KoverDefaultReportsWriter(private val writer: FormattedWriter): KoverReportsWriter(writer), KoverDefaultReportsConfig {
+    override fun mergeWith(otherVariant: String) {
+        writer.call("mergeWith", otherVariant)
+    }
+
+}
+
+
+internal open class KoverReportsWriter(private val writer: FormattedWriter): KoverReportsConfig {
+    override fun filters(config: Action<KoverReportFilters>) {
+        writer.call("filters", config) { KoverReportFiltersWriter(it) }
+    }
+
     override fun html(config: Action<KoverHtmlReportConfig>) {
         writer.call("html", config) { KoverHtmlReportConfigWriter(it) }
     }
@@ -63,7 +86,7 @@ internal class KoverReportFilterWriter(private val writer: FormattedWriter) : Ko
 }
 
 internal class KoverHtmlReportConfigWriter(private val writer: FormattedWriter) : KoverHtmlReportConfig {
-    override var onCheck: Boolean? = null
+    override var onCheck: Boolean = false
         set(value) {
             writer.assign("onCheck", value.toString())
             field = value
@@ -89,7 +112,7 @@ internal class KoverHtmlReportConfigWriter(private val writer: FormattedWriter) 
 }
 
 internal class KoverXmlReportConfigWriter(private val writer: FormattedWriter) : KoverXmlReportConfig {
-    override var onCheck: Boolean? = null
+    override var onCheck: Boolean = false
         set(value) {
             writer.assign("onCheck", value.toString())
             field = value

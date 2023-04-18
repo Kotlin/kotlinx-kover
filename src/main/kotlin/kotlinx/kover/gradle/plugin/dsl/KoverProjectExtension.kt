@@ -5,22 +5,46 @@
 package kotlinx.kover.gradle.plugin.dsl
 
 import kotlinx.kover.gradle.plugin.commons.KoverMigrations
-import kotlinx.kover.gradle.plugin.dsl.KoverNames.REGULAR_REPORT_EXTENSION_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.REPORT_EXTENSION_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
-import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_DEFAULT_VERSION
 import org.gradle.api.*
 
+/**
+ * Setting up how the coverage for the current project will be collected.
+ *
+ * example:
+ * ```
+ * kover {
+ *      // disable measurement of the coverage for current project
+ *      disable()
+ *
+ *      // skip classes defined in java source files
+ *      excludeJavaCode()
+ *
+ *      excludeTests {
+ *          // execution of the specified tests will not be taken into account in the coverage
+ *      }
+ *
+ *      excludeInstrumentation {
+ *          // bytecode of specified classes will not be modified when running tests - this solves some rare problems with instrumentation
+ *      }
+ *
+ *      excludeCompilations {
+ *          // exclude classes from specified compilations. also relevant compilation tasks also will be excluded from dependencies
+ *      }
+ * }
+ * ```
+ */
 public interface KoverProjectExtension {
-
     /**
      * Disables instrumentation of all tests in the corresponding project, also excludes all sources of this project are excluded from the reports.
      *
      * When generating reports, if all projects are disabled, then no report will be generated.
      */
-    public var disabledForProject: Boolean
+    public fun disable()
 
     /**
-     * Configures plugin to use Kover coverage tool with default version [KOVER_TOOL_DEFAULT_VERSION].
+     * Configures plugin to use Kover coverage tool.
      * This option is enabled by default, unless [JaCoCo][useJacocoTool] is enabled.
      */
     public fun useKoverTool()
@@ -31,35 +55,36 @@ public interface KoverProjectExtension {
     public fun useJacocoTool()
 
     /**
-     * Kover Coverage Tool with default version [KOVER_TOOL_DEFAULT_VERSION].
-     */
-    public fun useKoverTool(version: String)
-
-    /**
      * Coverage Tool by [JaCoCo](https://www.jacoco.org/jacoco/).
      */
     public fun useJacocoTool(version: String)
+
+    /**
+     * Excludes form report all classes, defined in Java source files.
+     *
+     * As a side effect, reports cease to depend on Java compilation task.
+     */
+    public fun excludeJavaCode()
 
     /**
      * Disables instrumentation of specified tests.
      *
      * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
      *
-     * As a side effect, reports cease to depend on the specified test tasks.
+     * As a side effect, Kover reports cease to depend on the specified test tasks.
      */
     public fun excludeTests(config: Action<KoverTestsExclusions>)
 
     /**
      * _Experimental_
      *
-     * Exclude specified compilation units from report.
+     * Exclude specified Kotlin compilations from report.
      *
      * The unit is typical for each type of project, for example, for Kotlin JVM it is Source Set, for Kotlin MPP it is target or Kotlin compilation.
-     * Also, JVM sources are an independent compilation unit.
      *
-     * As a side effect, when any compilation unit is excluded, reports cease to depend on the task of compiling this unit.
+     * As a side effect, when any compilation is excluded, Kover reports cease to depend on the appropriate compilation task.
      */
-    public fun excludeSources(config: Action<KoverSourcesExclusions>)
+    public fun excludeCompilations(config: Action<KoverCompilationsExclusions>)
 
     /**
      * Exclude specified class from instrumentation.
@@ -69,13 +94,6 @@ public interface KoverProjectExtension {
      * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
      */
     public fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>)
-
-    /**
-     * Configure default Kover artifact.
-     *
-     * Affects the default reports of this project and any project that specifies this project as a dependency.
-     */
-    public fun default(config: Action<DefaultArtifactConfigs>)
 
     /*
      * Deprecations
@@ -94,15 +112,15 @@ public interface KoverProjectExtension {
         set(@Suppress("UNUSED_PARAMETER") value) {}
 
     @Deprecated(
-        message = "Property was renamed to 'disabledForProject'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
-        replaceWith = ReplaceWith("disabledForProject"),
+        message = "Property was replaced to 'disable()' function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        replaceWith = ReplaceWith("disable()"),
         level = DeprecationLevel.ERROR
     )
     public val isDisabled: Boolean
         get() = false
 
     @Deprecated(
-        message = "Common filters was moved to '$REGULAR_REPORT_EXTENSION_NAME { filters { } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "Common filters was moved to '$REPORT_EXTENSION_NAME { filters { } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun filters(block: () -> Unit) {
@@ -117,38 +135,25 @@ public interface KoverProjectExtension {
     }
 
     @Deprecated(
-        message = "XML report setting was moved to '$REGULAR_REPORT_EXTENSION_NAME { xml { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "XML report setting was moved to '$REPORT_EXTENSION_NAME { xml { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun xmlReport(block: () -> Unit) {
     }
 
     @Deprecated(
-        message = "HTML report setting was moved to '$REGULAR_REPORT_EXTENSION_NAME { html { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "HTML report setting was moved to '$REPORT_EXTENSION_NAME { html { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun htmlReport(block: () -> Unit) {
     }
 
     @Deprecated(
-        message = "Verification report setting was moved to '$REGULAR_REPORT_EXTENSION_NAME { verify { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "Verification report setting was moved to '$REPORT_EXTENSION_NAME { verify { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun verify(block: () -> Unit) {
     }
-}
-
-/**
- * Configurations of default Kover artifact.
- */
-public interface DefaultArtifactConfigs {
-
-    /**
-     * Add the contents of the specified named reports to the default reports.
-     *
-     * Affects the default reports of this project and any project that specifies this project as a dependency.
-     */
-    fun addWithDependencies(names: String)
 }
 
 public interface KoverTestsExclusions {
@@ -190,13 +195,7 @@ public interface KoverTestsExclusions {
 }
 
 
-public interface KoverSourcesExclusions {
-    /**
-     * Excludes form report all classes, defined in Java sources.
-     *
-     * As a side effect, reports cease to depend on Java compilation task.
-     */
-    public var excludeJavaCode: Boolean
+public interface KoverCompilationsExclusions {
 
     /**
      * Specify compilation unit exclusion for Kotlin JVM project.
