@@ -9,8 +9,8 @@ plugins {
     `kotlin-dsl`
 
     `java-gradle-plugin`
-    `maven-publish`
-    signing
+
+    id("kover-publishing-conventions")
 }
 
 repositories {
@@ -126,6 +126,12 @@ tasks.dokkaHtml {
     }
 }
 
+extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
+    description.set("Kover Gradle Plugin - Kotlin code coverage")
+    //`java-gradle-plugin` plugin already creates publication with name `pluginMaven`
+    addPublication.set(false)
+}
+
 publishing {
     repositories {
         /**
@@ -134,20 +140,6 @@ publishing {
         maven(localRepositoryUri) {
             name = "local"
         }
-    }
-
-    publications {
-        // `pluginMaven` - standard name for the publication task of the `java-gradle-plugin`
-        create<MavenPublication>("pluginMaven") {
-            // `java` component will be added by the `java-gradle-plugin` later
-            addExtraMavenArtifacts(project, project.sourceSets.main.get().allSource)
-        }
-    }
-
-    addMavenRepository(project)
-    addMavenMetadata()
-    publications.withType<MavenPublication>().configureEach {
-        signPublicationIfKeyPresent(project)
     }
 }
 
@@ -161,4 +153,8 @@ gradlePlugin {
             description = "Evaluate code coverage for projects written in Kotlin"
         }
     }
+}
+
+apiValidation {
+    ignoredProjects.addAll(listOf("kover-cli", "kover-offline"))
 }

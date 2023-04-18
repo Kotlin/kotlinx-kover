@@ -6,3 +6,6 @@ pluginManagement {
         kotlin("jvm") version kotlinVersion
     }
 }
+
+include(":toolset:kover-cli")
+include(":toolset:kover-offline")
