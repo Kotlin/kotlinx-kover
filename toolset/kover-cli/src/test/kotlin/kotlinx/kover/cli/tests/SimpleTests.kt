@@ -20,6 +20,7 @@ import kotlinx.kover.cli.invokeCli
 import java.io.File
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 private const val RESOURCES_PATH = "src/test/resources"
 
@@ -39,7 +40,7 @@ class SimpleTests {
 
         println("Off-line instrumentation with args: " + args.joinToString(" "))
         println("Output dir file://$targetPath")
-        invokeCli(args.toTypedArray())
+        assertEquals(0, invokeCli(args.toTypedArray()))
     }
 
     @Test
@@ -66,6 +67,6 @@ class SimpleTests {
 
         println("Generate report with args: " + args.joinToString(" "))
         println("Output HTML path file://$targetPath")
-        invokeCli(args.toTypedArray())
+        assertEquals(0, invokeCli(args.toTypedArray()))
     }
 }
