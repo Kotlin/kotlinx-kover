@@ -2,7 +2,7 @@
 
 This single jar artifact allows using some of the functionality of Kover Toolset through command-line calls.
 
-Java 1.6 or greater is required for execution.
+Java 1.6 or higher is required for execution.
 
 ## Commands
 
