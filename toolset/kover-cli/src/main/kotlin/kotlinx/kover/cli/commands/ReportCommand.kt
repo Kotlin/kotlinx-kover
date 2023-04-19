@@ -70,7 +70,7 @@ internal class ReportCommand : Command {
 
     @Option(
         name = "--excludeAnnotation",
-        usage = "filter to include classes and functions marked by this annotation, wildcards `*` and `?` are acceptable",
+        usage = "filter to exclude classes and functions marked by this annotation, wildcards `*` and `?` are acceptable",
         metaVar = "<annotation-name>"
     )
     private var excludeAnnotation: MutableList<String> = ArrayList()

@@ -1,6 +1,6 @@
 # Kover Command Line Interface
 
-This is a single jar artifact that allows to use some of the functionality of Kover Toolset through command-line calls.
+This single jar artifact allows using some of the functionality of Kover Toolset through command-line calls.
 
 Java 1.6 or greater is required for execution.
 
@@ -20,7 +20,7 @@ Java 1.6 or greater is required for execution.
 | --include <class-name>                | instrument only specified classes, wildcards `*` and `?` are acceptable                        |          |    +     |
 
 ### Generating reports
-Allows you to generate HTML and XML reports.
+Allows you to generate HTML and XML reports from the existing binary report.
 
 `java -jar kover-cli.jar report [<binary-report-path> ...] --classfiles <class-file-path> [--exclude <class-name>] [--excludeAnnotation <annotation-name>] [--html <html-dir>] [--include <class-name>] --src <sources-path> [--title <html-title>] [--xml <xml-file-path>]`
 
@@ -29,7 +29,7 @@ Allows you to generate HTML and XML reports.
 | `<binary-report-path>`                | list of binary reports files                                                                            |          |    +     |
 | --classfiles <class-file-path>        | location of the compiled class-files root (must be original and not instrumented)                       |    +     |    +     |
 | --exclude <class-name>                | filter to exclude classes, wildcards `*` and `?` are acceptable                                         |          |    +     |
-| --excludeAnnotation <annotation-name> | filter to include classes and functions marked by this annotation, wildcards `*` and `?` are acceptable |          |    +     |
+| --excludeAnnotation <annotation-name> | filter to exclude classes and functions marked by this annotation, wildcards `*` and `?` are acceptable |          |    +     |
 | --html <html-dir>                     | generate a HTML report in the specified path                                                            |          |          |
 | --include <class-name>                | filter to include classes, wildcards `*` and `?` are acceptable                                         |          |    +     |
 | --src <sources-path>                  | location of the source files root                                                                       |    +     |    +     |
@@ -41,6 +41,6 @@ Allows you to generate HTML and XML reports.
 Off-line instrumentation is suitable when using runtime environments that do not support Java agents.
 It instruments the files located in the file system and saves the result to the specified directory.
 
-To run classes instrumented offline, you need to add `kover-offline` artifact (with group `org.jetbrains.kotlinx`) to the classpath of the application; in build systems, you need to add a dependency.
+To run classes instrumented offline, you need to add `org.jetbrains.kotlinx:kover-offline` artifact to the application's classpath.
 
 You also need to pass the system property `kover.offline.report.path` to the application with the path to the file with the collected coverage.
