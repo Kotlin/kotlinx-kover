@@ -12,7 +12,7 @@ import org.gradle.api.*
 /**
  * Setting up how the coverage for the current project will be collected.
  *
- * example:
+ * Example of usage:
  * ```
  * kover {
  *      // disable measurement of the coverage for current project
