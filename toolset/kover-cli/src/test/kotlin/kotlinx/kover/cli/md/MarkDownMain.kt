@@ -19,6 +19,10 @@ package kotlinx.kover.cli.md
 import kotlinx.kover.cli.commands.RootCommand
 import java.io.PrintWriter
 
+/**
+ * Used for internal purposes to generate documentation.
+ * Not an actual test
+ */
 fun main() {
     val output = PrintWriter(System.out, true)
     RootCommand.commands.forEach { command ->

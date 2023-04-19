@@ -14,7 +14,7 @@ For information about  offline instrumentation, [see](#off-line-instrumentation-
 
 | Option                                | Description                                                                                                                | Required | Multiple |
 |---------------------------------------|----------------------------------------------------------------------------------------------------------------------------|:--------:|:--------:|
-| `<class-file-path>`                   | list of the compiled class-files roots                                                                                     |          |    +     |
+| `<class-file-path>`                   | list of the compiled class-files roots                                                                                     |    +     |    +     |
 | --dest <dir>                          | path to write instrumented Java classes to                                                                                 |    +     |          |
 | --exclude <class-name>                | filter to exclude classes from instrumentation, wildcards `*` and `?` are acceptable. Excludes have priority over includes |          |    +     |
 | --excludeAnnotation <annotation-name> | filter to exclude annotated classes from instrumentation, wildcards `*` and `?` are acceptable                             |          |    +     |
@@ -45,7 +45,7 @@ It instruments the files located in the file system and saves the result to the 
 
 To run classes instrumented offline, you need to add `org.jetbrains.kotlinx:kover-offline` artifact to the application's classpath.
 
-You also need to pass the system property `kover.offline.report.path` to the application with the path to indicate the path where you want binary reports to be saved.
+You also need to pass the system property `kover.offline.report.path` to the application with the path where you want binary report to be saved.
 
 Also see [Gradle example](#gradle-example)
 
