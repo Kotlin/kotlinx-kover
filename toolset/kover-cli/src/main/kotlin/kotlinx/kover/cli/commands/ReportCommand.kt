@@ -80,7 +80,7 @@ internal class ReportCommand : Command {
     override val description: String = "Generates human-readable reports in various formats from binary report files (*.ic)"
 
 
-    override fun call(output: PrintWriter, error: PrintWriter): Int {
+    override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {
         val binaryReports: MutableList<BinaryReport> = ArrayList()
         for (binaryReport in this.binaryReports) {
             binaryReports.add(BinaryReport(binaryReport, null))
@@ -99,7 +99,7 @@ internal class ReportCommand : Command {
                 reporter.createXMLReport(xmlFile)
             } catch (e: IOException) {
                 fail = true
-                error.println("XML generation failed: " + e.message)
+                errorWriter.println("XML generation failed: " + e.message)
             }
         }
         if (htmlDir != null) {
@@ -107,11 +107,11 @@ internal class ReportCommand : Command {
                 reporter.createHTMLReport(htmlDir, htmlTitle)
             } catch (e: IOException) {
                 fail = true
-                error.println("HTML generation failed: " + e.message)
+                errorWriter.println("HTML generation failed: " + e.message)
             }
         }
         if (xmlFile == null && htmlDir == null) {
-            error.println("At least one format must be used: XML, HTML.")
+            errorWriter.println("At least one format must be used: XML, HTML.")
             fail = true
         }
         return if (fail) -1 else 0

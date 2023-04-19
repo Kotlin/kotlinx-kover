@@ -27,7 +27,7 @@ import java.io.PrintWriter
 
 internal class OfflineInstrumentCommand : Command {
     // hint: MutableList used to remove variance, args4j accept java.util.List<File> but not java.util.List<? extends File>
-    @Argument(usage = "list of the compiled class-files roots", metaVar = "<class-file-path>")
+    @Argument(usage = "list of the compiled class-files roots", metaVar = "<class-file-path>", required = true)
     private var roots: MutableList<File> = ArrayList()
 
     @Option(name = "--dest", usage = "path to write instrumented Java classes to", metaVar = "<dir>", required = true)
@@ -45,7 +45,7 @@ internal class OfflineInstrumentCommand : Command {
 
     @Option(
         name = "--exclude",
-        usage = "filter to exclude classes from instrumentation, wildcards `*` and `?` are acceptable",
+        usage = "filter to exclude classes from instrumentation, wildcards `*` and `?` are acceptable. Excludes have priority over includes",
         metaVar = "<class-name>"
     )
     private var excludeClasses: MutableList<String> = ArrayList()
@@ -62,7 +62,7 @@ internal class OfflineInstrumentCommand : Command {
     override val description: String = "Off-line instrumentation of JVM class-files"
 
 
-    override fun call(output: PrintWriter, error: PrintWriter): Int {
+    override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {
         // disable ConDy for offline instrumentations
         System.setProperty("coverage.condy.enable", "false")
 
@@ -80,7 +80,7 @@ internal class OfflineInstrumentCommand : Command {
             val instrumentator = Instrumentator(roots, outputRoots, filters)
             instrumentator.instrument(countHits)
         } catch (e: Exception) {
-            error.println("Instrumentation failed: " + e.message)
+            errorWriter.println("Instrumentation failed: " + e.message)
             return -1
         }
 

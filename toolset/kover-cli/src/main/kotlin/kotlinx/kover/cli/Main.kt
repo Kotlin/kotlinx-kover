@@ -26,7 +26,7 @@ import kotlin.system.exitProcess
 
 internal fun invokeCli(args: Array<String>): Int {
     val output = PrintWriter(System.out, true)
-    val error = PrintWriter(System.err, true)
+    val errorWriter = PrintWriter(System.err, true)
 
     val rootCommand: Command = RootCommand()
     val parser = CommandParser(rootCommand)
@@ -35,15 +35,15 @@ internal fun invokeCli(args: Array<String>): Int {
     } catch (e: CmdLineException) {
         val errorParser = e.parser
         if (errorParser is CommandParser) {
-            TerminalPrinter.printUsage(errorParser.command, error)
-            error.println()
+            TerminalPrinter.printUsage(errorParser.command, errorWriter)
+            errorWriter.println()
         }
-        error.println(e.message)
+        errorWriter.println(e.message)
 
         return -1
     }
 
-    return rootCommand.call(output, error)
+    return rootCommand.call(output, errorWriter)
 }
 
 fun main(args: Array<String>) {

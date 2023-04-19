@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package kotlinx.kover.cli
+package kotlinx.kover.cli.md
 
 import kotlinx.kover.cli.commands.RootCommand
-import kotlinx.kover.cli.printers.MarkdownPrinter
 import java.io.PrintWriter
 
 fun main() {

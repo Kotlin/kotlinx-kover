@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package kotlinx.kover.cli.printers
+package kotlinx.kover.cli.md
 
 import kotlinx.kover.cli.commands.Command
 import kotlinx.kover.cli.commands.CommandParser
+import kotlinx.kover.cli.printers.printSingleLineUsage
 import org.kohsuke.args4j.spi.OptionHandler
 import java.io.PrintWriter
 import kotlin.math.max

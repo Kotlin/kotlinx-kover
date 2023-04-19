@@ -24,7 +24,7 @@ internal interface Command {
 
     val description: String
 
-    fun call(output: PrintWriter, error: PrintWriter): Int
+    fun call(output: PrintWriter, errorWriter: PrintWriter): Int
 }
 
 internal class CommandParser(val command: Command) : CmdLineParser(command)

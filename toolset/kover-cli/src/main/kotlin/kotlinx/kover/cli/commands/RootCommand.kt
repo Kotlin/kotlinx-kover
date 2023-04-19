@@ -37,7 +37,7 @@ internal class RootCommand : Command {
 
     override val description = "Command line interface for Kover - Kotlin Coverage Toolset"
 
-    override fun call(output: PrintWriter, error: PrintWriter) = command?.call(output, error) ?: 0
+    override fun call(output: PrintWriter, errorWriter: PrintWriter) = command?.call(output, errorWriter) ?: 0
 
     // no constructor without args
     class RootHandler(parser: CmdLineParser?, option: OptionDef, setter: Setter<in Command>?) :
