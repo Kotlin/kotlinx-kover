@@ -10,7 +10,7 @@ import kotlinx.kover.gradle.plugin.tools.*
 import java.io.*
 
 internal interface CheckerContext {
-    val project: ProjectAnalyze
+    val project: ProjectAnalysisData
 
     val output: String
 
@@ -41,7 +41,7 @@ internal interface CheckerContext {
 /**
  * Static info about Gradle project.
  */
-internal interface ProjectAnalyze {
+internal interface ProjectAnalysisData {
     val path: String
 
     val rootDir: File
@@ -58,7 +58,7 @@ internal interface ProjectAnalyze {
 
     val kotlinPlugin: AppliedKotlinPlugin
 
-    fun allProjects(): List<ProjectAnalyze>
+    fun allProjects(): List<ProjectAnalysisData>
 }
 
 

@@ -33,7 +33,7 @@ internal fun allExamples(): List<File> {
 }
 
 private class ExampleGradleTest : DirectoryBasedGradleTest() {
-    override fun readAnnotationArgs(element: AnnotatedElement?): Foo {
+    override fun readAnnotationArgs(element: AnnotatedElement?): RunCommand {
         val annotation = (element?.getAnnotation(ExamplesTest::class.java)
             ?: error("Test not marked by '${ExamplesTest::class.qualifiedName}' annotation"))
 
@@ -41,7 +41,7 @@ private class ExampleGradleTest : DirectoryBasedGradleTest() {
         val exampleName = exampleDir.name
         val commands = annotation.commands.toList()
 
-        return Foo(exampleName, exampleDir, commands)
+        return RunCommand(exampleName, exampleDir, commands)
     }
 
     override val testType: String = "Example"

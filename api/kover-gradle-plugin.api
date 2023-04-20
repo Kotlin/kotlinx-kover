@@ -149,11 +149,6 @@ public final class kotlinx/kover/gradle/plugin/dsl/GroupingEntityType$ALL {
 	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType$ALL;
 }
 
-public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverCompilationsExclusions {
-	public abstract fun jvm (Lorg/gradle/api/Action;)V
-	public abstract fun mpp (Lorg/gradle/api/Action;)V
-}
-
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverDefaultReportsConfig : kotlinx/kover/gradle/plugin/dsl/KoverReportsConfig {
 	public abstract fun mergeWith (Ljava/lang/String;)V
 }
@@ -175,17 +170,6 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverInstrumenta
 	public abstract fun classes ([Ljava/lang/String;)V
 	public abstract fun packages (Ljava/lang/Iterable;)V
 	public abstract fun packages ([Ljava/lang/String;)V
-}
-
-public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverJvmSourceSet {
-	public abstract fun sourceSetName (Ljava/lang/Iterable;)V
-	public abstract fun sourceSetName ([Ljava/lang/String;)V
-}
-
-public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverMppSourceSet {
-	public abstract fun compilation (Ljava/lang/String;)V
-	public abstract fun compilation (Ljava/lang/String;Ljava/lang/String;)V
-	public abstract fun targetName ([Ljava/lang/String;)V
 }
 
 public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {

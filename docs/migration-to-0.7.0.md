@@ -254,21 +254,21 @@ IntelliJ Engine was renamed to Kover Tool.
 
 It is now impossible to specify the version of the Kover Tool, because it is embedded into the plugin.
 
-To use embedded Kover Tool need to call 
+To use embedded Kover Tool:
 ```
 kover {
     useKoverTool()
 }
 ```
 
-To use JaCoCo Tool with default version need to call 
+To use JaCoCo Tool with default version:
 ```
 kover {
     useJacocoTool()
 }
 ```
 
-To use JaCoCo Tool with specified version need to call 
+To use JaCoCo Tool with specified version:
 ```
 kover {
     useJacocoTool("0.8.8")
@@ -616,7 +616,12 @@ See [migrate instruction](#merge-reports-config-was-removed).
 ---
 
 ### Using 'IntellijEngine' is an error
-or
+_Solution_
+
+Use function `useKoverTool()` instead.
+
+---
+
 ### Using 'DefaultIntellijEngine' is an error
 _Solution_
 

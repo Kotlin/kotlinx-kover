@@ -52,12 +52,12 @@ internal fun File.createCheckerContext(result: BuildResult): CheckerContext {
     return CheckerContextImpl(this.analyzeProject(), result)
 }
 
-internal fun File.analyzeProject(): ProjectAnalyze {
-    return ProjectAnalyzeImpl(this,  ":")
+internal fun File.analyzeProject(): ProjectAnalysisData {
+    return ProjectAnalysisDataImpl(this,  ":")
 }
 
 private class CheckerContextImpl(
-    override val project: ProjectAnalyze,
+    override val project: ProjectAnalysisData,
     val result: BuildResult
 ) : CheckerContext {
     override val output: String = result.output
@@ -91,7 +91,7 @@ private class CheckerContextImpl(
     }
 
     override fun subproject(path: String, checker: CheckerContext.() -> Unit) {
-        val newAnalyze = ProjectAnalyzeImpl(project.rootDir, path)
+        val newAnalyze = ProjectAnalysisDataImpl(project.rootDir, path)
         CheckerContextImpl(newAnalyze, result).also(checker)
     }
 
@@ -191,7 +191,7 @@ private class CheckerContextImpl(
     }
 }
 
-private class ProjectAnalyzeImpl(override val rootDir: File, override val path: String): ProjectAnalyze {
+private class ProjectAnalysisDataImpl(override val rootDir: File, override val path: String): ProjectAnalysisData {
     private val projectDir: File = rootDir.resolve(path.removePrefix(":").replace(':', '/'));
     private val buildFile: File = projectDir.buildFile()
 
@@ -202,13 +202,13 @@ private class ProjectAnalyzeImpl(override val rootDir: File, override val path: 
     override val definedKoverVersion: String? by lazy { buildScript.definedKoverVersion() }
     override val toolVariant: CoverageToolVariant by lazy { buildScript.definedTool() ?: KoverToolDefaultVariant }
 
-    override fun allProjects(): List<ProjectAnalyze> {
+    override fun allProjects(): List<ProjectAnalysisData> {
         return mutableListOf(this) + subprojects()
     }
 
-    private fun subprojects(): List<ProjectAnalyze> {
+    private fun subprojects(): List<ProjectAnalysisData> {
         val projects = rootDir.settings().detectSubprojects(path)
-        return projects.map { ProjectAnalyzeImpl(rootDir, it.key) }
+        return projects.map { ProjectAnalysisDataImpl(rootDir, it.key) }
     }
 }
 
@@ -256,7 +256,6 @@ private val jacocoToolRegex = """JacocoTool\s*\(\s*["']([^"^']+)["']\s*\)""".toR
  *   - `include(":subproject")`
  *   - `include(':subproject')`
  */
-//private val includeRegex = """include\s*\(\s*["']([^"']+)["']\s*\)""".toRegex()
 private val includeRegex = """\s*include\s*\(.+""".toRegex()
 
 private val pathStringRegex = """["'](:[^"']*)["']""".toRegex()

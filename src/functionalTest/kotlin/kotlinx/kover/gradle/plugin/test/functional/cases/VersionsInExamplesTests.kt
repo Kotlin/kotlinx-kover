@@ -20,11 +20,11 @@ internal class VersionsInExamplesTests {
         assertTrue(examplesWithWrongVersions.isEmpty(), "Incorrect Kover versions in projects: $examplesWithWrongVersions")
     }
 
-    private fun ProjectAnalyze.checkVersionsInBuild(): Boolean {
+    private fun ProjectAnalysisData.checkVersionsInBuild(): Boolean {
         return allProjects().all { checkVersionsInProject() }
     }
 
-    private fun ProjectAnalyze.checkVersionsInProject(): Boolean {
+    private fun ProjectAnalysisData.checkVersionsInProject(): Boolean {
         // check version of Kover plugin if applied
         if (definedKoverVersion != null) {
             if (releaseVersion != definedKoverVersion) {

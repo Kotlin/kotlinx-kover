@@ -71,17 +71,6 @@ public interface KoverProjectExtension {
      */
     public fun excludeTests(config: Action<KoverTestsExclusions>)
 
-//    /**
-//     * _Experimental_
-//     *
-//     * Exclude specified Kotlin compilations from report.
-//     *
-//     * The unit is typical for each type of project, for example, for Kotlin JVM it is Source Set, for Kotlin MPP it is target or Kotlin compilation.
-//     *
-//     * As a side effect, when any compilation is excluded, Kover reports cease to depend on the appropriate compilation task.
-//     */
-//     fun excludeCompilations(config: Action<KoverCompilationsExclusions>)
-
     /**
      * Exclude specified class from instrumentation.
      *
@@ -131,21 +120,21 @@ public interface KoverProjectExtension {
     }
 
     @Deprecated(
-        message = "XML report setting was moved to '$REPORT_EXTENSION_NAME { xml { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "XML report setting was moved to '$REPORT_EXTENSION_NAME { }' project extension. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun xmlReport(block: () -> Unit) {
     }
 
     @Deprecated(
-        message = "HTML report setting was moved to '$REPORT_EXTENSION_NAME { html { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "HTML report setting was moved to '$REPORT_EXTENSION_NAME { }' project extension. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun htmlReport(block: () -> Unit) {
     }
 
     @Deprecated(
-        message = "Verification report setting was moved to '$REPORT_EXTENSION_NAME { verify { ... } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "Verification report setting was moved to '$REPORT_EXTENSION_NAME { }' project extension. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun verify(block: () -> Unit) {
@@ -191,7 +180,7 @@ public interface KoverTestsExclusions {
 }
 
 
-public interface KoverCompilationsExclusions {
+internal interface KoverCompilationsExclusions {
 
     /**
      * Specify compilation unit exclusion for Kotlin JVM project.
@@ -204,7 +193,7 @@ public interface KoverCompilationsExclusions {
     public fun mpp(config: Action<KoverMppSourceSet>)
 }
 
-public interface KoverJvmSourceSet {
+internal interface KoverJvmSourceSet {
     /**
      * Exclude specified source sets from report.
      *
@@ -220,7 +209,7 @@ public interface KoverJvmSourceSet {
     public fun sourceSetName(names: Iterable<String>)
 }
 
-public interface KoverMppSourceSet {
+internal interface KoverMppSourceSet {
     /**
      * Exclude sources of specified targets from Kotlin MPP reports.
      *

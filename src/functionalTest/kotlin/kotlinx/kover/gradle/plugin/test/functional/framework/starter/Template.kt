@@ -24,7 +24,7 @@ private const val TEMPLATES_DIR = "src/functionalTest/templates/builds"
 
 private class TemplateGradleTest : DirectoryBasedGradleTest() {
 
-    override fun readAnnotationArgs(element: AnnotatedElement?): Foo {
+    override fun readAnnotationArgs(element: AnnotatedElement?): RunCommand {
         val annotation = element?.getAnnotation(TemplateTest::class.java)
             ?: throw IllegalStateException("Test not marked by '${TemplateTest::class.qualifiedName}' annotation")
 
@@ -32,7 +32,7 @@ private class TemplateGradleTest : DirectoryBasedGradleTest() {
         val templateDir = File(TEMPLATES_DIR).resolve(templateName)
         val commands = annotation.commands.toList()
 
-        return Foo(templateName, templateDir, commands)
+        return RunCommand(templateName, templateDir, commands)
     }
 
     override val testType: String = "Template"

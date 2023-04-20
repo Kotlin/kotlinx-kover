@@ -19,10 +19,10 @@ import java.nio.file.Files
 private const val DIR_PARAM = "build-directory"
 private const val CHECKER_PARAM = "checker-context"
 
-internal class Foo(val name: String, val dir: File, val commands: List<String>)
+internal class RunCommand(val name: String, val projectDir: File, val gradleArgs: List<String>)
 
 internal abstract class DirectoryBasedGradleTest: BeforeTestExecutionCallback, InvocationInterceptor, ParameterResolver {
-    protected abstract fun readAnnotationArgs(element: AnnotatedElement?): Foo
+    protected abstract fun readAnnotationArgs(element: AnnotatedElement?): RunCommand
 
     protected abstract val testType: String
 
@@ -31,17 +31,17 @@ internal abstract class DirectoryBasedGradleTest: BeforeTestExecutionCallback, I
         val args = readAnnotationArgs(context.element.orElse(null))
         val targetDir = Files.createTempDirectory("${args.name}-").toFile()
 
-        if (!args.dir.exists()) {
-            error("Could not find the $testType '${args.name}' with directory ${args.dir.uri}")
+        if (!args.projectDir.exists()) {
+            error("Could not find the $testType '${args.name}' with directory ${args.projectDir.uri}")
         }
 
         logInfo("Before building $testType '${args.name}' in target directory ${targetDir.uri}")
 
-        args.dir.copyRecursively(targetDir)
+        args.projectDir.copyRecursively(targetDir)
         targetDir.patchSettingsFile("$testType '${args.name}', project dir: ${targetDir.uri}")
 
-        logInfo("Starting build $testType '${args.name}' with commands '${args.commands.joinToString(" ")}'")
-        val runResult = targetDir.runGradleBuild(args.commands)
+        logInfo("Starting build $testType '${args.name}' with commands '${args.gradleArgs.joinToString(" ")}'")
+        val runResult = targetDir.runGradleBuild(args.gradleArgs)
         logInfo("Success build $testType '${args.name}'")
         val checkerContext = targetDir.createCheckerContext(runResult)
 
