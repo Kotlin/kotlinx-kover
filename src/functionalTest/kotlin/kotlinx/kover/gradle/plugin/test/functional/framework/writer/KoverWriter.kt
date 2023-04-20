@@ -34,7 +34,7 @@ internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectEx
         writer.call("excludeTests", config) { KoverTestsExclusionsWriter(it) }
     }
 
-    override fun excludeCompilations(config: Action<KoverCompilationsExclusions>) {
+    internal fun excludeCompilations(config: Action<KoverCompilationsExclusions>) {
         writer.call("excludeCompilations", config) { KoverCompilationsExclusionsWriter(it) }
     }
 

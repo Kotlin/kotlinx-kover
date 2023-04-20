@@ -28,10 +28,6 @@ import org.gradle.api.*
  *      excludeInstrumentation {
  *          // bytecode of specified classes will not be modified when running tests - this solves some rare problems with instrumentation
  *      }
- *
- *      excludeCompilations {
- *          // exclude classes from specified compilations. also relevant compilation tasks also will be excluded from dependencies
- *      }
  * }
  * ```
  */
@@ -75,16 +71,16 @@ public interface KoverProjectExtension {
      */
     public fun excludeTests(config: Action<KoverTestsExclusions>)
 
-    /**
-     * _Experimental_
-     *
-     * Exclude specified Kotlin compilations from report.
-     *
-     * The unit is typical for each type of project, for example, for Kotlin JVM it is Source Set, for Kotlin MPP it is target or Kotlin compilation.
-     *
-     * As a side effect, when any compilation is excluded, Kover reports cease to depend on the appropriate compilation task.
-     */
-    public fun excludeCompilations(config: Action<KoverCompilationsExclusions>)
+//    /**
+//     * _Experimental_
+//     *
+//     * Exclude specified Kotlin compilations from report.
+//     *
+//     * The unit is typical for each type of project, for example, for Kotlin JVM it is Source Set, for Kotlin MPP it is target or Kotlin compilation.
+//     *
+//     * As a side effect, when any compilation is excluded, Kover reports cease to depend on the appropriate compilation task.
+//     */
+//     fun excludeCompilations(config: Action<KoverCompilationsExclusions>)
 
     /**
      * Exclude specified class from instrumentation.

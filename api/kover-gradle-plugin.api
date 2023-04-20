@@ -200,7 +200,6 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectExtension {
 	public abstract fun disable ()V
-	public abstract fun excludeCompilations (Lorg/gradle/api/Action;)V
 	public abstract fun excludeInstrumentation (Lorg/gradle/api/Action;)V
 	public abstract fun excludeJavaCode ()V
 	public abstract fun excludeTests (Lorg/gradle/api/Action;)V

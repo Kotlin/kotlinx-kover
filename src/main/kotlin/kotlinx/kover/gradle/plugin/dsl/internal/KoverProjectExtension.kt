@@ -47,7 +47,7 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
         config(tests)
     }
 
-    override fun excludeCompilations(config: Action<KoverCompilationsExclusions>) {
+    internal fun excludeCompilations(config: Action<KoverCompilationsExclusions>) {
         config(compilations)
     }
 
