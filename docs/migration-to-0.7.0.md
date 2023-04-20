@@ -252,7 +252,7 @@ Previously called engines have been renamed tools.
 
 IntelliJ Engine was renamed to Kover Tool.
 
-It is now impossible to specify the version of the Kover Tool, because it is built into the plugin.
+It is now impossible to specify the version of the Kover Tool, because it is embedded into the plugin.
 
 To use embedded Kover Tool need to call 
 ```
@@ -328,7 +328,7 @@ or
 ### Using 'engine: Nothing?' is an error
 _Solution_
 
-Use appropriate functions instead `useKoverTool()`, `useJacocoTool()` or `useJacocoTool("version")`
+Use appropriate functions instead: `useKoverTool()`, `useJacocoTool()` or `useJacocoTool("version")`
 
 ---
 
