@@ -56,7 +56,7 @@ public interface KoverProjectExtension {
     public fun useJacocoTool(version: String)
 
     /**
-     * Excludes form report all classes, defined in Java source files.
+     * Excludes from report all classes, defined in Java source files.
      *
      * As a side effect, reports cease to depend on Java compilation task.
      */
@@ -108,7 +108,7 @@ public interface KoverProjectExtension {
         set(@Suppress("UNUSED_PARAMETER") value) {}
 
     @Deprecated(
-        message = "Property was replaced to 'disable()' function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "Property was replaced with 'disable()' function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         replaceWith = ReplaceWith("disable()"),
         level = DeprecationLevel.ERROR
     )
@@ -116,7 +116,7 @@ public interface KoverProjectExtension {
         get() = false
 
     @Deprecated(
-        message = "Common filters was moved to '$REPORT_EXTENSION_NAME { filters { } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
+        message = "Common filters were moved to '$REPORT_EXTENSION_NAME { filters { } }'. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         level = DeprecationLevel.ERROR
     )
     public fun filters(block: () -> Unit) {

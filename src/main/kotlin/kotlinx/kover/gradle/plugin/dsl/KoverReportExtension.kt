@@ -14,7 +14,7 @@ import java.io.*
 /**
  * Configuration of Kover reports.
  *
- * example:
+ * Example of usage:
  * ```
  *  koverReport {
  *      filters {
@@ -384,7 +384,7 @@ public interface KoverHtmlReportConfig {
     /**
      * Specify header in HTML reports.
      *
-     * Project path by default.
+     * If not specified, project path is used instead.
      */
     public var title: String?
 
