@@ -290,6 +290,19 @@ public interface KoverReportFilters {
         get() = mutableListOf()
 }
 
+/**
+ * Exclusion or inclusion class filter for Kover reports.
+ *
+ * Example for Kotlin:
+ * ```
+ *      classes("*.foo.Bar", "*.M?Class")
+ *      classes(listOf("*.foo.Bar", "*.M?Class"))
+ *      packages("foo.b?r", "com.*.example")
+ *      val somePackages =
+ *      packages(listOf("foo.b?r", "com.*.example"))
+ *      annotatedBy("*Generated*", "com.example.KoverExclude")
+ * ```
+ */
 public interface KoverReportFilter {
     /**
      * Add specified classes to current filters.
@@ -375,6 +388,30 @@ public interface KoverReportFilter {
     public fun annotatedBy(vararg annotationName: String)
 }
 
+/**
+ * Configure Kover HTML Report.
+ *
+ * Example:
+ * ```
+ * ...
+ *      html {
+ *          // Filter the classes that will be included in the HTML report.
+ *          // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
+ *          filters {
+ *              // ...
+ *          }
+ *
+ *          title = "Custom title"
+ *
+ *          // Generate an HTML report when running the `check` task
+ *          onCheck = false
+ *
+ *          // Specify HTML report directory
+ *          setReportDir(layout.buildDirectory.file("my-html-report"))
+ *      }
+ *  ...
+ * ```
+ */
 public interface KoverHtmlReportConfig {
     /**
      * Override common filters only for HTML report.
@@ -419,6 +456,28 @@ public interface KoverHtmlReportConfig {
     public fun overrideFilters(block: () -> Unit) { }
 }
 
+/**
+ * Configure Kover XML Report.
+ *
+ * Example:
+ * ```
+ * ...
+ *      xml {
+ *          // Filter the classes that will be included in the XML report.
+ *          // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
+ *          filters {
+ *              // ...
+ *          }
+ *
+ *          // Generate an XML report when running the `check` task
+ *          onCheck = false
+ *
+ *          // Specify file to generate XML report
+ *          setReportFile(layout.buildDirectory.file("my-xml-report.xml"))
+ *      }
+ *  ...
+ * ```
+ */
 public interface KoverXmlReportConfig {
     /**
      * Override common filters only for XML report.
@@ -456,6 +515,19 @@ public interface KoverXmlReportConfig {
     public fun overrideFilters(block: () -> Unit) { }
 }
 
+/**
+ * Verify coverage with the specified rules.
+ *
+ * Example:
+ * ```
+ *  verify {
+ *      onCheck = true
+ *      rule {
+ *          // verification rule
+ *      }
+ *  }
+ * ```
+ */
 public interface KoverVerifyReportConfig {
     /**
      * Verify coverage when running the `check` task.

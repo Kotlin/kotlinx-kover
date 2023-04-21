@@ -141,6 +141,19 @@ public interface KoverProjectExtension {
     }
 }
 
+/**
+ * Disables instrumentation of test tasks.
+ *
+ * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+ *
+ * As a side effect, reports cease to depend on the specified test tasks.
+ *
+ * Example:
+ * ```
+ *      tasks("test1", "test2")
+ *      mppTargetName("jvm")
+ * ```
+ */
 public interface KoverTestsExclusions {
 
     /**
@@ -209,6 +222,9 @@ internal interface KoverJvmSourceSet {
     public fun sourceSetName(names: Iterable<String>)
 }
 
+/**
+ * TBD later
+ */
 internal interface KoverMppSourceSet {
     /**
      * Exclude sources of specified targets from Kotlin MPP reports.
@@ -232,7 +248,26 @@ internal interface KoverMppSourceSet {
     public fun compilation(compilationName: String)
 }
 
-
+/**
+ * Exclude classes from instrumentation.
+ *
+ * This means that even if these classes were actually called, their coverage will always be 0 in reports.
+ *
+ * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
+ *
+ * Example:
+ * ```
+ * kover {
+ *     excludeInstrumentation {
+ *         // excludes from instrumentations classes by fully-qualified JVM class name, wildcards '*' and '?' are available
+ *         classes("*Foo*", "*Bar")
+ *
+ *         // excludes from instrumentations all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+ *         packages("com.project")
+ *     }
+ * }
+ * ```
+ */
 public interface KoverInstrumentationExclusions {
     /**
      * Exclude specified classes from instrumentation.
