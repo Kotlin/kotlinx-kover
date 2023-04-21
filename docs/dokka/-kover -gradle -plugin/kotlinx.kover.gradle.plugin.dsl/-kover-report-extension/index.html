@@ -58,14 +58,44 @@
   <div class="breadcrumbs"><a href="../../../index.html">Kover Gradle Plugin</a><span class="delimiter">/</span><a href="../index.html">kotlinx.kover.gradle.plugin.dsl</a><span class="delimiter">/</span><span class="current">KoverReportExtension</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Kover</span><wbr></wbr><span>Report</span><wbr></wbr><span><span>Extension</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverReportExtension</a></div><p class="paragraph">Configuration of Kover reports for some report context: regular reports for K/JVM and K/MPP, or Android reports for some build variant.</p><p class="paragraph">Kotlin JVM or Kotlin MPP projects</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">koverReport {<br>    filters {<br>        // ...<br>    }<br><br>    html {<br>        // ...<br>    }<br><br>    xml {<br>        // ...<br>    }<br><br>    verify {<br>        // ...<br>    }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">Kotlin Android projects</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">koverAndroid {<br>     report(&quot;release&quot;) {<br>         filters {<br>             // ...<br>         }<br><br>         html {<br>             // ...<br>         }<br><br>         xml {<br>             // ...<br>         }<br><br>         verify {<br>             // ...<br>         }<br>     }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverReportExtension</a></div><p class="paragraph">Configuration of Kover reports.</p><p class="paragraph">Example of usage:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">koverReport {<br>    filters {<br>        // common filters for all reports of all variants<br>    }<br><br>    // default reports - special reports that are filled in by default with class measurements from Kotlin/JVM or Kotlin/MPP projects<br>    defaults {<br>        // add content of reports for specified variant to default reports<br>        mergeWith(&quot;buildVariant&quot;)<br><br>        filters {<br>            // override report filters for default reports<br>        }<br><br>        html {<br>            // configure default HTML report<br>        }<br><br>        xml {<br>            // configure default XML report<br>        }<br><br>        verify {<br>            // configure default coverage verification<br>        }<br>    }<br><br>    androidReports(&quot;buildVariant&quot;) {<br>        filters {<br>            // override report filters for reports of specified Android build variant<br>        }<br><br>        html {<br>            // configure HTML report for specified Android build variant<br>        }<br><br>        xml {<br>            // configure XML report for specified Android build variant<br>        }<br><br>        verify {<br>            // configure coverage verification for specified Android build variant<br>        }<br>    }<br><br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-969596077%2FFunctions%2F769193423" anchor-label="filters" id="-969596077%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table"><a data-name="526649429%2FFunctions%2F769193423" anchor-label="androidReports" id="526649429%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="android-reports.html"><span>android</span><wbr></wbr><span><span>Reports</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="526649429%2FFunctions%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="android-reports.html"><span class="token function">androidReports</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">variant<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-reports-config/index.html">KoverReportsConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure reports for classes of specified Android build variant.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1759795369%2FFunctions%2F769193423" anchor-label="defaults" id="-1759795369%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="defaults.html"><span><span>defaults</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1759795369%2FFunctions%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="defaults.html"><span class="token function">defaults</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-default-reports-config/index.html">KoverDefaultReportsConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure reports for classes from Kotlin/JVM or Kotlin/MPP projects. Also content from specified Android build variant can be added by calling <code class="lang-kotlin">mergeWith</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-969596077%2FFunctions%2F769193423" anchor-label="filters" id="-969596077%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -76,51 +106,6 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="filters.html"><span class="token function">filters</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-report-filters/index.html">KoverReportFilters</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Specify common filters for the current report context, these filters will be inherited in HTML/XML/verification reports. They can be redefined in the settings of a specific report.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="734957663%2FFunctions%2F769193423" anchor-label="html" id="734957663%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="html.html"><span><span>html</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="734957663%2FFunctions%2F769193423"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="html.html"><span class="token function">html</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-html-report-config/index.html">KoverHtmlReportConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure HTML report for current report context.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1767246625%2FFunctions%2F769193423" anchor-label="verify" id="-1767246625%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="verify.html"><span><span>verify</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1767246625%2FFunctions%2F769193423"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="verify.html"><span class="token function">verify</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-verify-report-config/index.html">KoverVerifyReportConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure coverage verification for current report context.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1664947947%2FFunctions%2F769193423" anchor-label="xml" id="-1664947947%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="xml.html"><span><span>xml</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1664947947%2FFunctions%2F769193423"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="xml.html"><span class="token function">xml</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-xml-report-config/index.html">KoverXmlReportConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure HTML report for current report context.</p></div></div></div>
                 </div>
               </div>
             </div>

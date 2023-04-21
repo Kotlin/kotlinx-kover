@@ -32,9 +32,6 @@ dependencies {
     implementation("org.jetbrains.intellij.deps:intellij-coverage-offline:1.0.715")
 }
 
-// override version in deploy
-properties["DeployVersion"]?.let { version = it }
-
 tasks.jar {
     from(
         configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
