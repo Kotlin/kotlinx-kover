@@ -264,7 +264,7 @@ koverReport {
 }
 ```
 
-### example for Kotlin + Android projects 
+### Example for Kotlin + Android projects 
 ```groovy
 kover {
     // disable()
@@ -431,7 +431,8 @@ koverReport {
 }
 ```
 
-### To create report, combining coverage info from different projects, needs to add dependency to project, in which the report task will be run
+### To create report combining coverage info from different projects
+You have to add dependency on the project, in which the report task will be run
 ```groovy
 dependencies {
   kover(project(":another:project"))
