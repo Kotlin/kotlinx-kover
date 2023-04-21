@@ -58,14 +58,29 @@
   <div class="breadcrumbs"><a href="../../../index.html">Kover Gradle Plugin</a><span class="delimiter">/</span><a href="../index.html">kotlinx.kover.gradle.plugin.dsl</a><span class="delimiter">/</span><span class="current">KoverProjectExtension</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Kover</span><wbr></wbr><span>Project</span><wbr></wbr><span><span>Extension</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverProjectExtension</a></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverProjectExtension</a></div><p class="paragraph">Setting up how the coverage for the current project will be collected.</p><p class="paragraph">Example of usage:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">kover {<br>     // disable measurement of the coverage for current project<br>     disable()<br><br>     // skip classes defined in java source files<br>     excludeJavaCode()<br><br>     excludeTests {<br>         // execution of the specified tests will not be taken into account in the coverage<br>     }<br><br>     excludeInstrumentation {<br>         // bytecode of specified classes will not be modified when running tests - this solves some rare problems with instrumentation<br>     }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="1539092229%2FFunctions%2F769193423" anchor-label="excludeInstrumentation" id="1539092229%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table"><a data-name="-526916469%2FFunctions%2F769193423" anchor-label="disable" id="-526916469%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="disable.html"><span><span>disable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-526916469%2FFunctions%2F769193423"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="disable.html"><span class="token function">disable</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disables instrumentation of all tests in the corresponding project, also excludes all sources of this project are excluded from the reports.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1539092229%2FFunctions%2F769193423" anchor-label="excludeInstrumentation" id="1539092229%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
@@ -80,17 +95,17 @@
               </div>
             </div>
           </div>
-<a data-name="-234211431%2FFunctions%2F769193423" anchor-label="excludeSources" id="-234211431%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+<a data-name="249452906%2FFunctions%2F769193423" anchor-label="excludeJavaCode" id="249452906%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="exclude-sources.html"><span>exclude</span><wbr></wbr><span><span>Sources</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-234211431%2FFunctions%2F769193423"></span>
+                  <div><a href="exclude-java-code.html"><span>exclude</span><wbr></wbr><span>Java</span><wbr></wbr><span><span>Code</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="249452906%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="exclude-sources.html"><span class="token function">excludeSources</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-sources-exclusions/index.html">KoverSourcesExclusions</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph"><i>Experimental</i></p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="exclude-java-code.html"><span class="token function">excludeJavaCode</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Excludes from report all classes, defined in Java source files.</p></div></div></div>
                 </div>
               </div>
             </div>
@@ -125,36 +140,17 @@
               </div>
             </div>
           </div>
-<a data-name="343440152%2FFunctions%2F769193423" anchor-label="useKoverTool" id="343440152%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+<a data-name="1178047639%2FFunctions%2F769193423" anchor-label="useKoverTool" id="1178047639%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="use-kover-tool.html"><span>use</span><wbr></wbr><span>Kover</span><wbr></wbr><span><span>Tool</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="343440152%2FFunctions%2F769193423"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1178047639%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="use-kover-tool.html"><span class="token function">useKoverTool</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configures plugin to use Kover coverage tool with default version <a href="../-kover-versions/-k-o-v-e-r_-t-o-o-l_-d-e-f-a-u-l-t_-v-e-r-s-i-o-n.html">KOVER_TOOL_DEFAULT_VERSION</a>. This option is enabled by default, unless <a href="use-jacoco-tool.html">JaCoCo</a> is enabled.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="use-kover-tool.html"><span class="token function">useKoverTool</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">version<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Kover Coverage Tool with default version <a href="../-kover-versions/-k-o-v-e-r_-t-o-o-l_-d-e-f-a-u-l-t_-v-e-r-s-i-o-n.html">KOVER_TOOL_DEFAULT_VERSION</a>.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div data-togglable="PROPERTY">
-        <h2 class="">Properties</h2>
-        <div class="table"><a data-name="539747099%2FProperties%2F769193423" anchor-label="disabledForProject" id="539747099%2FProperties%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
-          <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="disabled-for-project.html"><span>disabled</span><wbr></wbr><span>For</span><wbr></wbr><span><span>Project</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="539747099%2FProperties%2F769193423"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">var </span><a href="disabled-for-project.html">disabledForProject</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Disables instrumentation of all tests in the corresponding project, also excludes all sources of this project are excluded from the reports.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="use-kover-tool.html"><span class="token function">useKoverTool</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configures plugin to use Kover coverage tool. This option is enabled by default, unless <a href="use-jacoco-tool.html">JaCoCo</a> is enabled.</p></div></div></div>
                 </div>
               </div>
             </div>

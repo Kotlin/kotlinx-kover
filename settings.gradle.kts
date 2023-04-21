@@ -8,4 +8,4 @@ pluginManagement {
 }
 
 include(":toolset:kover-cli")
-include(":toolset:kover-offline")
+include(":toolset:kover-offline-runtime")

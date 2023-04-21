@@ -1,3 +1,13 @@
+0.7.0-Beta / 2023-04-21
+===================
+### Features
+* Added advanced support of Android projects, flavors ind flavor dimensions (#316, #319)
+* Introduced Kover Tool artifacts for CLI and offline runtime (#322)
+
+### Internal features
+* Added dokka docs
+* Added binary compatibility validator (#305)
+
 0.7.0-Alpha / 2023-02-27
 ===================
 This is a preview version of new major release with the API rework in order to support configuration cache, project isolation model, Android Gradle plugin and source-set level granularity of configuration.

@@ -35,7 +35,7 @@ Add the following to your top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.0-Alpha"
+     id("org.jetbrains.kotlinx.kover") version "0.7.0-Beta"
 }
 ```
 </details>
@@ -45,7 +45,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.7.0-Alpha'
+    id 'org.jetbrains.kotlinx.kover' version '0.7.0-Beta'
 }
 ```
 </details>
@@ -65,7 +65,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Alpha")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Beta")
     }
 }
 
@@ -84,7 +84,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Alpha'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.0-Beta'
     }
 }
   

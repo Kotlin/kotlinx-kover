@@ -36,9 +36,6 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-// override version in deploy
-properties["DeployVersion"]?.let { version = it }
-
 tasks.jar {
     manifest {
         attributes("Main-Class" to "kotlinx.kover.cli.MainKt")
@@ -51,7 +48,6 @@ tasks.jar {
         exclude("META-INF/**")
         exclude("LICENSE")
     }
-
 }
 
 repositories {

@@ -1,3 +1,5 @@
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -22,9 +24,6 @@ repositories {
 val kotlinVersion = property("kotlinVersion")
 val localRepositoryUri = uri("build/.m2")
 val junitParallelism = findProperty("kover.test.junit.parallelism")?.toString()
-
-// override version in deploy
-properties["DeployVersion"]?.let { version = it }
 
 sourceSets {
     create("functionalTest") {
@@ -77,7 +76,8 @@ val functionalTest by tasks.registering(Test::class) {
         systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
         systemProperties["junit.jupiter.execution.parallel.mode.classes.default"] = "concurrent"
         systemProperties["junit.jupiter.execution.parallel.config.strategy"] = "fixed"
-        systemProperties["junit.jupiter.execution.parallel.config.fixed.parallelism"] = junitParallelism?.toIntOrNull()?.toString() ?: "2"
+        systemProperties["junit.jupiter.execution.parallel.config.fixed.parallelism"] =
+            junitParallelism?.toIntOrNull()?.toString() ?: "2"
         // this is necessary if tests are run for debugging, in this case it is more difficult to stop at the test you need when they are executed in parallel and you are not sure on which test the execution will pause
         systemProperties["junit.jupiter.execution.parallel.enabled"] = if (junitParallelism == "no") "false" else "true"
 
@@ -96,7 +96,10 @@ fun Test.setSystemPropertyFromProject(name: String) {
     if (project.hasProperty(name)) systemProperties[name] = project.property(name)
 }
 
-fun Test.setBooleanSystemPropertyFromProject(projectPropertyName: String, systemPropertyName: String = projectPropertyName) {
+fun Test.setBooleanSystemPropertyFromProject(
+    projectPropertyName: String,
+    systemPropertyName: String = projectPropertyName
+) {
     if (project.hasProperty(projectPropertyName)) systemProperties[systemPropertyName] = true.toString()
 }
 
@@ -156,5 +159,88 @@ gradlePlugin {
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("kover-cli", "kover-offline"))
+    ignoredProjects.addAll(listOf("kover-cli", "kover-offline-runtime"))
+}
+
+
+
+// ====================
+// Release preparation
+// ====================
+tasks.register("prepareRelease") {
+    dependsOn(tasks.named("dokkaHtml"))
+
+    doLast {
+        if (!project.hasProperty("releaseVersion")) {
+            throw GradleException("Property 'releaseVersion' is required to run this task")
+        }
+        val releaseVersion = project.property("releaseVersion") as String
+        val prevReleaseVersion = project.property("kover.release.version") as String
+
+        val dir = layout.projectDirectory
+
+
+        dir.file("gradle.properties").asFile.patchProperties(releaseVersion)
+        dir.file("CHANGELOG.md").asFile.patchChangeLog(releaseVersion)
+
+        dir.file("README.md").asFile.replaceInFile(prevReleaseVersion, releaseVersion)
+
+        // replace versions in examples
+        dir.dir("examples").asFileTree.matching {
+            include("**/*gradle")
+            include("**/*gradle.kts")
+        }.files.forEach {
+            it.replaceInFile(prevReleaseVersion, releaseVersion)
+        }
+    }
+}
+
+fun File.patchChangeLog(releaseVersion: String) {
+    val oldContent = readText()
+    writer().use {
+        it.appendLine("$releaseVersion / ${LocalDate.now().format(DateTimeFormatter.ISO_DATE)}")
+        it.appendLine("===================")
+        it.appendLine("TODO add changelog!")
+        it.appendLine()
+        it.append(oldContent)
+    }
+}
+
+fun File.patchProperties(releaseVersion: String) {
+    val oldLines = readLines()
+    writer().use { writer ->
+        oldLines.forEach { line ->
+            when {
+                line.startsWith("version=") -> writer.append("version=").appendLine(increaseSnapshotVersion(releaseVersion))
+                line.startsWith("kover.release.version=") -> writer.append("kover.release.version=").appendLine(releaseVersion)
+                else -> writer.appendLine(line)
+            }
+        }
+    }
+}
+
+// modify version '1.2.3' to '1.2.4' and '1.2.3-Beta' to '1.2.3-SNAPSHOT'
+fun increaseSnapshotVersion(releaseVersion: String): String {
+    // remove postfix like '-Alpha'
+    val correctedVersion = releaseVersion.substringBefore('-')
+    if (correctedVersion != releaseVersion) {
+        return "$correctedVersion-SNAPSHOT"
+    }
+
+    // split version 0.0.0 to int parts
+    val parts = correctedVersion.split('.')
+    val newVersion = parts.mapIndexed { index, value ->
+        if (index == parts.size - 1) {
+            (value.toInt() + 1).toString()
+        } else {
+            value
+        }
+    }.joinToString(".")
+
+    return "$newVersion-SNAPSHOT"
+}
+
+fun File.replaceInFile(old: String, new: String) {
+    val newContent = readText().replace(old, new)
+    writeText(newContent)
 }
