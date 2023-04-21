@@ -49,92 +49,22 @@ internal inline fun CheckerContext.check(
 }
 
 internal fun File.createCheckerContext(result: BuildResult): CheckerContext {
-    return CheckerContextImpl(this, result, ":")
+    return CheckerContextImpl(this.analyzeProject(), result)
 }
 
-internal abstract class CheckerContextWrapper(private val origin: CheckerContext) : CheckerContext {
-    override val definedKoverVersion: String?
-        get() = origin.definedKoverVersion
-    override val toolVariant: CoverageToolVariant
-        get() = origin.toolVariant
-    override val language: ScriptLanguage
-        get() = origin.language
-    override val output: String
-        get() = origin.output
-    override val buildScript: String
-        get() = origin.buildScript
-    override val kotlinPlugin: AppliedKotlinPlugin
-        get() = origin.kotlinPlugin
-    override val defaultRawReport: String
-        get() = origin.defaultRawReport
-
-    override fun prepare(buildErrorExpected: Boolean) = origin.prepare(buildErrorExpected)
-
-    override fun allProjects(checker: CheckerContext.() -> Unit) {
-        origin.allProjects(checker)
-    }
-
-    override fun subproject(path: String, checker: CheckerContext.() -> Unit) {
-        origin.subproject(path, checker)
-    }
-
-    override fun output(checker: String.() -> Unit) {
-        origin.output(checker)
-    }
-
-    override fun file(name: String, checker: File.() -> Unit) {
-        origin.file(name, checker)
-    }
-
-    override fun xml(filename: String, checker: XmlReportChecker.() -> Unit) {
-        origin.xml(filename, checker)
-    }
-
-    override fun verification(checker: VerifyReportChecker.() -> Unit) {
-        origin.verification(checker)
-    }
-
-    override fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
-        origin.checkReports(xmlPath, htmlPath, mustExist)
-    }
-
-    override fun checkOutcome(taskNameOrPath: String, expectedOutcome: String) {
-        origin.checkOutcome(taskNameOrPath, expectedOutcome)
-    }
-
-    override fun taskOutput(taskNameOrPath: String, checker: String.() -> Unit) {
-        origin.taskOutput(taskNameOrPath, checker)
-    }
-
-    override fun checkDefaultReports(mustExist: Boolean) {
-        origin.checkDefaultReports(mustExist)
-    }
-
-    override fun checkDefaultRawReport(mustExist: Boolean) {
-        origin.checkDefaultRawReport(mustExist)
-    }
-
+internal fun File.analyzeProject(): ProjectAnalysisData {
+    return ProjectAnalysisDataImpl(this,  ":")
 }
 
 private class CheckerContextImpl(
-    val rootDir: File,
-    val result: BuildResult,
-    val path: String
+    override val project: ProjectAnalysisData,
+    val result: BuildResult
 ) : CheckerContext {
-    val projectDir: File = rootDir.resolve(path.removePrefix(":").replace(':', '/'));
-    val buildDir: File = projectDir.resolve("build")
-    val buildFile: File = projectDir.buildFile()
-
-    override val buildScript: String = buildFile.readText()
-    override val language = if (buildFile.name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
-    override val kotlinPlugin = buildScript.kotlinPluginType(language)
     override val output: String = result.output
-    override val definedKoverVersion: String? = buildScript.definedKoverVersion()
-    override val toolVariant: CoverageToolVariant = buildScript.definedTool() ?: KoverToolDefaultVariant
 
     override val defaultRawReport: String
         get() {
-            return rawReportsDirectory + "/" + defaultTestTaskName(kotlinPlugin.type!!) + "." + toolVariant.vendor.rawReportExtension
+            return rawReportsDirectory + "/" + defaultTestTaskName(project.kotlinPlugin.type!!) + "." + project.toolVariant.vendor.rawReportExtension
         }
 
     override fun prepare(buildErrorExpected: Boolean) {
@@ -161,13 +91,8 @@ private class CheckerContextImpl(
     }
 
     override fun subproject(path: String, checker: CheckerContext.() -> Unit) {
-        CheckerContextImpl(rootDir, result, path).also(checker)
-    }
-
-    override fun allProjects(checker: CheckerContext.() -> Unit) {
-        this.also(checker)
-        val projects = rootDir.settings().detectSubprojects(path)
-        projects.forEach { subproject(it.key, checker) }
+        val newAnalyze = ProjectAnalysisDataImpl(project.rootDir, path)
+        CheckerContextImpl(newAnalyze, result).also(checker)
     }
 
     private fun checkKoverToolErrors() {
@@ -184,17 +109,17 @@ private class CheckerContextImpl(
     }
 
     override fun file(name: String, checker: File.() -> Unit) {
-        buildDir.resolve(name).checker()
+        project.buildDir.resolve(name).checker()
     }
 
     override fun xml(filename: String, checker: XmlReportChecker.() -> Unit) {
-        val xmlFile = buildDir.resolve(filename)
+        val xmlFile = project.buildDir.resolve(filename)
         if (!xmlFile.exists()) throw IllegalStateException("XML file '$filename' not found")
         XmlReportCheckerImpl(this, xmlFile).checker()
     }
 
     override fun verification(checker: VerifyReportChecker.() -> Unit) {
-        val verificationResultFile = buildDir.resolve(verificationErrorFile)
+        val verificationResultFile = project.buildDir.resolve(verificationErrorFile)
         if (!verificationResultFile.exists()) throw IllegalStateException("Verification result file '$verificationResultFile' not found")
         VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
     }
@@ -257,12 +182,33 @@ private class CheckerContextImpl(
         return if (startsWith(":")) {
             this
         } else {
-            if (path == ":") ":$this" else "$path:$this"
+            if (project.path == ":") ":$this" else "${project.path}:$this"
         }
     }
 
     private fun noTaskFound(origin: String, path: String): Nothing {
         throw IllegalArgumentException("Task '$origin' with path '$path' not found in build result")
+    }
+}
+
+private class ProjectAnalysisDataImpl(override val rootDir: File, override val path: String): ProjectAnalysisData {
+    private val projectDir: File = rootDir.resolve(path.removePrefix(":").replace(':', '/'));
+    private val buildFile: File = projectDir.buildFile()
+
+    override val buildDir: File = projectDir.resolve("build")
+    override val buildScript: String by lazy { buildFile.readText() }
+    override val language = if (buildFile.name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
+    override val kotlinPlugin by lazy { buildScript.kotlinPluginType(language) }
+    override val definedKoverVersion: String? by lazy { buildScript.definedKoverVersion() }
+    override val toolVariant: CoverageToolVariant by lazy { buildScript.definedTool() ?: KoverToolDefaultVariant }
+
+    override fun allProjects(): List<ProjectAnalysisData> {
+        return mutableListOf(this) + subprojects()
+    }
+
+    private fun subprojects(): List<ProjectAnalysisData> {
+        val projects = rootDir.settings().detectSubprojects(path)
+        return projects.map { ProjectAnalysisDataImpl(rootDir, it.key) }
     }
 }
 
@@ -310,7 +256,9 @@ private val jacocoToolRegex = """JacocoTool\s*\(\s*["']([^"^']+)["']\s*\)""".toR
  *   - `include(":subproject")`
  *   - `include(':subproject')`
  */
-private val includeRegex = """include\s*\(\s*["']([^"']+)["']\s*\)""".toRegex()
+private val includeRegex = """\s*include\s*\(.+""".toRegex()
+
+private val pathStringRegex = """["'](:[^"']*)["']""".toRegex()
 
 private fun File.buildFile(): File {
     var file = this.resolve("build.gradle")
@@ -323,10 +271,10 @@ private fun File.buildFile(): File {
 }
 
 private fun File.settings(): String {
-    var file = this.resolve("build.gradle")
+    var file = this.resolve("settings.gradle")
     if (file.exists() && file.isFile) return file.readText()
 
-    file = this.resolve("build.gradle.kts")
+    file = this.resolve("settings.gradle.kts")
     if (file.exists() && file.isFile) return file.readText()
 
     throw Exception("Gradle settings file not found")
@@ -337,15 +285,24 @@ private fun File.settings(): String {
  */
 private fun String.detectSubprojects(rootPath: String): Map<String, String> {
     val result: MutableMap<String, String> = mutableMapOf()
-    includeRegex.findAll(this).mapNotNull { it.groupValues.getOrNull(1) }.forEach { path ->
-        if (path == ":") return@forEach
 
-        val parent = path.substringBeforeLast(':') + ":"
+    lines().forEach { line ->
+        if (!line.matches(includeRegex)) {
+            return@forEach
+        }
 
-        if (parent.startsWith(rootPath)) {
-            result[path] = parent
+         pathStringRegex.findAll(this).mapNotNull { it.groupValues.getOrNull(1) }.forEach { path ->
+            if (path != ":") {
+                val parent = path.substringBeforeLast(':') + ":"
+
+                if (parent.startsWith(rootPath)) {
+                    result[path] = parent
+                }
+
+            }
         }
     }
+
     return result
 }
 
@@ -440,7 +397,7 @@ private class XmlReportCheckerImpl(val context: CheckerContextImpl, file: File) 
 
 private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val content: String) : VerifyReportChecker {
     override fun assertKoverResult(expected: String) {
-        if (context.toolVariant.vendor != CoverageToolVendor.KOVER) return
+        if (context.project.toolVariant.vendor != CoverageToolVendor.KOVER) return
         val regex = expected.wildcardsToRegex().toRegex()
         if (!content.matches(regex)) {
             throw AssertionError("Unexpected verification result for Kover Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
@@ -448,7 +405,7 @@ private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val conte
     }
 
     override fun assertJaCoCoResult(expected: String) {
-        if (context.toolVariant.vendor != CoverageToolVendor.JACOCO) return
+        if (context.project.toolVariant.vendor != CoverageToolVendor.JACOCO) return
         assertEquals(expected, content, "Unexpected verification result for JaCoCo Tool")
     }
 }

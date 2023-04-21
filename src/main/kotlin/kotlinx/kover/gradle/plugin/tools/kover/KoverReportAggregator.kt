@@ -57,12 +57,12 @@ internal class AggregationGroup(val ic: File, val smap: File, val filters: Repor
 }
  */
 private fun File.writeAggJson(
-    buildFiles: BuildFiles,
+    artifactContent: ArtifactContent,
     groups: List<AggregationGroup>
 ) {
     writeJsonObject(mapOf(
-        "reports" to buildFiles.reports.map { mapOf("ic" to it) },
-        "modules" to listOf(mapOf("sources" to buildFiles.sources, "output" to buildFiles.outputs)),
+        "reports" to artifactContent.reports.map { mapOf("ic" to it) },
+        "modules" to listOf(mapOf("sources" to artifactContent.sources, "output" to artifactContent.outputs)),
         "result" to groups.map { group ->
             mapOf(
                 "aggregatedReportFile" to group.ic,

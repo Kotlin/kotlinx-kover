@@ -15,16 +15,18 @@ internal class VerificationTests {
             sourcesFrom("simple")
 
             koverReport {
-                verify {
-                    rule("test rule") {
-                        bound {
-                            minValue = 50
-                            maxValue = 60
-                        }
-                        bound {
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 2
-                            maxValue = 10
+                defaults {
+                    verify {
+                        rule("test rule") {
+                            bound {
+                                minValue = 50
+                                maxValue = 60
+                            }
+                            bound {
+                                aggregation = AggregationType.COVERED_COUNT
+                                minValue = 2
+                                maxValue = 10
+                            }
                         }
                     }
                 }
@@ -40,47 +42,49 @@ internal class VerificationTests {
             sourcesFrom("verification")
 
             koverReport {
-                verify {
-                    rule("counts rule") {
-                        bound {
-                            minValue = 58
-                            maxValue = 60
+                defaults {
+                    verify {
+                        rule("counts rule") {
+                            bound {
+                                minValue = 58
+                                maxValue = 60
+                            }
+                            bound {
+                                aggregation = AggregationType.COVERED_COUNT
+                                minValue = 2
+                                maxValue = 3
+                            }
                         }
-                        bound {
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 2
-                            maxValue = 3
+                        rule("fully uncovered instructions by classes") {
+                            entity = GroupingEntityType.CLASS
+                            bound {
+                                metric = MetricType.INSTRUCTION
+                                aggregation = AggregationType.MISSED_PERCENTAGE
+                                minValue = 100
+                            }
                         }
-                    }
-                    rule("fully uncovered instructions by classes") {
-                        entity = GroupingEntityType.CLASS
-                        bound {
-                            metric = MetricType.INSTRUCTION
-                            aggregation = AggregationType.MISSED_PERCENTAGE
-                            minValue = 100
+                        rule("fully covered instructions by packages") {
+                            entity = GroupingEntityType.PACKAGE
+                            bound {
+                                metric = MetricType.INSTRUCTION
+                                aggregation = AggregationType.COVERED_PERCENTAGE
+                                minValue = 100
+                            }
                         }
-                    }
-                    rule("fully covered instructions by packages") {
-                        entity = GroupingEntityType.PACKAGE
-                        bound {
-                            metric = MetricType.INSTRUCTION
-                            aggregation = AggregationType.COVERED_PERCENTAGE
-                            minValue = 100
+                        rule("branches by classes") {
+                            entity = GroupingEntityType.CLASS
+                            bound {
+                                metric = MetricType.BRANCH
+                                aggregation = AggregationType.COVERED_COUNT
+                                minValue = 1000
+                            }
                         }
-                    }
-                    rule("branches by classes") {
-                        entity = GroupingEntityType.CLASS
-                        bound {
-                            metric = MetricType.BRANCH
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 1000
-                        }
-                    }
-                    rule("missed packages") {
-                        entity = GroupingEntityType.PACKAGE
-                        bound {
-                            aggregation = AggregationType.MISSED_COUNT
-                            maxValue = 1
+                        rule("missed packages") {
+                            entity = GroupingEntityType.PACKAGE
+                            bound {
+                                aggregation = AggregationType.MISSED_COUNT
+                                maxValue = 1
+                            }
                         }
                     }
                 }

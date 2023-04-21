@@ -4,6 +4,8 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
+import kotlinx.kover.gradle.plugin.appliers.androidReports
+import kotlinx.kover.gradle.plugin.appliers.defaultReports
 import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.*
 import org.gradle.api.file.*
@@ -15,75 +17,91 @@ import java.io.*
 import javax.inject.*
 
 
-internal open class KoverReportExtensionImpl @Inject constructor(private val objects: ObjectFactory) :
-    KoverReportExtension {
+internal open class KoverReportExtensionImpl @Inject constructor(
+    private val objects: ObjectFactory,
+    private val layout: ProjectLayout
+) : KoverReportExtension {
+    internal var filters: KoverReportFiltersImpl? = null
+    internal val default: KoverDefaultReportsConfigImpl = objects.defaultReports(layout)
+    internal val namedReports: MutableMap<String, KoverReportsConfigImpl> = mutableMapOf()
 
+    override fun filters(config: Action<KoverReportFilters>) {
+        if (filters == null) {
+            filters = objects.newInstance<KoverReportFiltersImpl>(objects)
+        }
+        filters?.also { config(it) }
+    }
+
+    override fun defaults(config: Action<KoverDefaultReportsConfig>) {
+        config(default)
+    }
+
+    override fun androidReports(variant: String, config: Action<KoverReportsConfig>) {
+        val report = namedReports.getOrPut(variant) { objects.androidReports(variant, layout) }
+        config(report)
+    }
+}
+
+internal open class KoverDefaultReportsConfigImpl @Inject constructor(objects: ObjectFactory) :
+    KoverReportsConfigImpl(objects), KoverDefaultReportsConfig {
+
+    internal val merged: MutableSet<String> = mutableSetOf()
+
+    init {
+        html.onCheck = false
+        xml.onCheck = false
+        verify.onCheck = true
+    }
+
+    override fun mergeWith(otherVariant: String) {
+        merged += otherVariant
+    }
+}
+
+internal open class KoverReportsConfigImpl @Inject constructor(private val objects: ObjectFactory) :
+    KoverReportsConfig {
     internal val html: KoverHtmlReportConfigImpl = objects.newInstance(objects)
     internal val xml: KoverXmlReportConfigImpl = objects.newInstance(objects)
     internal val verify: KoverVerifyReportConfigImpl = objects.newInstance(objects)
-    internal var commonFilters: KoverReportFiltersImpl? = null
-    internal var configured = false
+    internal var filters: KoverReportFiltersImpl? = null
 
     override fun filters(config: Action<KoverReportFilters>) {
-        configured = true
-
-        if (commonFilters == null) {
-            commonFilters = objects.newInstance<KoverReportFiltersImpl>(objects)
+        if (filters == null) {
+            filters = objects.newInstance<KoverReportFiltersImpl>(objects)
         }
-        commonFilters?.also { config(it) }
+        filters?.also { config(it) }
     }
 
     override fun html(config: Action<KoverHtmlReportConfig>) {
-        configured = true
-
         config(html)
     }
 
     override fun xml(config: Action<KoverXmlReportConfig>) {
-        configured = true
-
         config(xml)
     }
 
     override fun verify(config: Action<KoverVerifyReportConfig>) {
-        configured = true
-
         config(verify)
     }
 }
 
-internal open class KoverGeneralAndroidReportImpl @Inject constructor(private val objects: ObjectFactory) :
-    KoverGeneralAndroidReport {
+internal open class KoverHtmlReportConfigImpl @Inject constructor(private val objects: ObjectFactory) :
+    KoverHtmlReportConfig {
 
-    internal val html: KoverGeneralHtmlReportConfigImpl = objects.newInstance(objects)
-    internal val xml: KoverGeneralXmlReportConfigImpl = objects.newInstance(objects)
-    internal val verify: KoverGeneralVerifyReportConfigImpl = objects.newInstance(objects)
-    internal var commonFilters: KoverReportFiltersImpl? = null
+    override var onCheck: Boolean = false
+
+    internal var filters: KoverReportFiltersImpl? = null
+
+    override var title: String? = null
+
+    internal val reportDirProperty: Property<File> = objects.property()
 
     override fun filters(config: Action<KoverReportFilters>) {
-        if (commonFilters == null) {
-            commonFilters = objects.newInstance<KoverReportFiltersImpl>(objects)
+        if (filters == null) {
+            filters = objects.newInstance<KoverReportFiltersImpl>(objects)
         }
-        commonFilters?.also { config(it) }
+        filters?.also { config(it) }
     }
-
-    override fun html(config: Action<KoverGeneralHtmlReportConfig>) {
-        config(html)
-    }
-
-    override fun xml(config: Action<KoverGeneralXmlReportConfig>) {
-        config(xml)
-    }
-
-    override fun verify(config: Action<KoverGeneralVerifyReportConfig>) {
-        config(verify)
-    }
-}
-
-internal open class KoverHtmlReportConfigImpl @Inject constructor(objects: ObjectFactory) :
-    KoverGeneralHtmlReportConfigImpl(objects), KoverHtmlReportConfig {
-
-    override var onCheck: Boolean? = null
 
     override fun setReportDir(dir: File) {
         reportDirProperty.set(dir)
@@ -93,27 +111,21 @@ internal open class KoverHtmlReportConfigImpl @Inject constructor(objects: Objec
         reportDirProperty.set(dir.map { it.asFile })
     }
 
-    internal val reportDirProperty: Property<File> = objects.property()
-}
-
-internal open class KoverGeneralHtmlReportConfigImpl @Inject constructor(
-    private val objects: ObjectFactory,
-) : KoverGeneralHtmlReportConfig {
-    internal var filters: KoverReportFiltersImpl? = null
-
-    override var title: String? = null
-
-    override fun filters(config: Action<KoverReportFilters>) {
-        val filtersToConfigure = filters ?: (objects.newInstance<KoverReportFiltersImpl>(objects).also { filters = it })
-        config(filtersToConfigure)
-    }
-
 }
 
 internal open class KoverXmlReportConfigImpl @Inject constructor(
-    objects: ObjectFactory
-) : KoverGeneralXmlReportConfigImpl(objects), KoverXmlReportConfig {
-    override var onCheck: Boolean? = false
+    private val objects: ObjectFactory
+) : KoverXmlReportConfig {
+    override var onCheck: Boolean = false
+
+    internal var filters: KoverReportFiltersImpl? = null
+
+    override fun filters(config: Action<KoverReportFilters>) {
+        if (filters == null) {
+            filters = objects.newInstance<KoverReportFiltersImpl>(objects)
+        }
+        filters?.also { config(it) }
+    }
 
     override fun setReportFile(xmlFile: File) {
         reportFileProperty.set(xmlFile)
@@ -125,28 +137,15 @@ internal open class KoverXmlReportConfigImpl @Inject constructor(
 
     internal val reportFileProperty: Property<File> = objects.property()
 }
-internal open class KoverGeneralXmlReportConfigImpl @Inject constructor(
-    private val objects: ObjectFactory
-) : KoverGeneralXmlReportConfig {
-    internal var filters: KoverReportFiltersImpl? = null
-
-    override fun filters(config: Action<KoverReportFilters>) {
-        val filtersToConfigure = filters ?: (objects.newInstance<KoverReportFiltersImpl>(objects).also { filters = it })
-        config(filtersToConfigure)
-    }
-}
 
 internal open class KoverVerifyReportConfigImpl @Inject constructor(
-    objects: ObjectFactory,
-) : KoverGeneralVerifyReportConfigImpl(objects), KoverVerifyReportConfig {
-    override var onCheck: Boolean = false
-}
-internal open class KoverGeneralVerifyReportConfigImpl @Inject constructor(
     private val objects: ObjectFactory,
-) : KoverGeneralVerifyReportConfig {
+) : KoverVerifyReportConfig {
+    override var onCheck: Boolean = false
+
     internal var filters: KoverReportFiltersImpl? = null
 
-    private val rules: MutableList<KoverVerifyRuleImpl> = mutableListOf()
+    internal val rules: MutableList<KoverVerifyRuleImpl> = mutableListOf()
 
     override fun rule(config: Action<KoverVerifyRule>) {
         val newRule = objects.newInstance<KoverVerifyRuleImpl>(objects)
@@ -159,10 +158,6 @@ internal open class KoverGeneralVerifyReportConfigImpl @Inject constructor(
         newRule.internalName = name
         config(newRule)
         rules += newRule
-    }
-
-    internal fun definedRules(): List<KoverVerifyRuleImpl>? {
-        return rules.takeIf { it.isNotEmpty() }
     }
 }
 

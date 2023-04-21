@@ -44,44 +44,88 @@ internal enum class KotlinPluginType {
 internal class AppliedKotlinPlugin(val type: KotlinPluginType?)
 
 /**
- * Kover Setup - is a named set of exhaustive information, used in instrumentation and generation of reports.
- *
- * Includes of:
- *  - directories with source files and class-files
- *  - compile tasks used to compile all classes of the project
- *  - test tasks which need to run to measure the coverage
+ * All used compilation kits for some Gradle Project.
  */
-internal class KoverSetup<T : Test>(
-    // Provider is used because the list of directories and compilation tasks may change in the `afterEvaluate` block of another plugin later
-    val lazyInfo: Provider<SetupLazyInfo>,
-
-    val tests: TaskCollection<T>,
-
-    val id: SetupId = SetupId.Regular
+internal class ProjectCompilation(
+    val kotlinPlugin: AppliedKotlinPlugin,
+    val jvm: List<JvmCompilationKit> = emptyList(),
+    val android: List<AndroidCompilationKit> = emptyList()
 )
 
 /**
- * Identifier of Kover setup.
+ * Grouped JVM compilations and tests running on them.
  */
-internal data class SetupId(val name: String) {
-    companion object {
-        /**
-         * Used only if there is supposed to be only one setup in the project, e.g. in case of Kotlin/JVM or Kotlin/MP projects.
-         */
-        val Regular = SetupId(REGULAR_SETUP_NAME)
-    }
-
-    /**
-     * It is used for convenient generation of the task name or other named objects in Gradle.
-     */
-    val capitalized: String = name.capitalize()
-}
+internal class JvmCompilationKit(
+    val targetName: String,
+    val tests: TaskCollection<Test>,
+    // source set -> compilation
+    val compilations: Provider<Map<String, CompilationUnit>>,
+)
 
 /**
- * Part of Kover setup information, received only during the execution of tasks (lazily).
+ * Grouped named Android compilations and tests running on them.
+ *
+ * Contains additional information about the build variant taken from the Android Gradle Plugin
  */
-internal class SetupLazyInfo(
+internal class AndroidCompilationKit(
+    val buildVariant: String,
+    val buildType: String,
+    val flavors: List<AndroidFlavor>,
+
+    val fallbacks: AndroidFallbacks,
+
+    /**
+     * The flavors used in case the dependency contains a dimension that is missing in the current project.
+     * Specific only for this build variant.
+     *
+     * map of (dimension > flavor)
+     */
+    val missingDimensions: Map<String, String>,
+
+    val tests: TaskCollection<Test>,
+    val compilations: Provider<Map<String, CompilationUnit>>
+)
+
+internal class AndroidFallbacks(
+    /**
+     *  Specifies a sorted list of fallback build types that the
+     *  Kover can try to use when a dependency does not include a
+     *  key build type. Kover selects the first build type that's
+     *  available in the dependency
+     *
+     *  map of (buildtype > fallbacks)
+     *  */
+    val buildTypes: Map<String, List<String>>,
+
+    /**
+     * first loop through all the flavors and collect for each dimension, and each value, its
+     * fallbacks.
+     *
+     * map of (dimension > (requested > fallbacks))
+     */
+    val flavors: Map<String, Map<String, List<String>>>,
+)
+
+/**
+ * Flavor in Android Project.
+ */
+internal class AndroidFlavor(
+    val dimension: String,
+    val name: String,
+)
+
+/**
+ * Atomic portion of information about the building of part of the project.
+ */
+internal class CompilationUnit(
+    /**
+     * Directories of sources, used in [compileTasks].
+     */
     val sources: Set<File> = emptySet(),
+
+    /**
+     * Directories with compiled classes, outputs of [compileTasks].
+     */
     val outputs: Set<File> = emptySet(),
 
     /**
@@ -90,17 +134,12 @@ internal class SetupLazyInfo(
      *
      * So compile tasks must be triggered anyway.
      */
-    val compileTasks: List<Task> = emptyList()
+    val compileTasks: List<Task> = emptyList(),
 )
 
-internal class BuildFiles(
-    val sources: Set<File>,
-    val outputs: Set<File>,
-    val reports: Set<File>
-)
 
 internal class ReportContext(
-    val files: BuildFiles,
+    val files: ArtifactContent,
     val classpath: FileCollection,
     val tempDir: File,
     val projectPath: String,

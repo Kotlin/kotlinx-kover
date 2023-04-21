@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.plugin.commons
 
 import kotlinx.kover.gradle.plugin.tools.*
+import org.gradle.configurationcache.extensions.capitalized
 import java.io.File
 
 
@@ -22,18 +23,24 @@ internal fun rawReportPath(taskName: String, toolVendor: CoverageToolVendor): St
     return "${rawReportsRootPath()}${separator}${rawReportName(taskName, toolVendor)}"
 }
 
-internal fun htmlReportPath(setupId: SetupId): String {
-    return "reports${separator}kover${separator}html${setupId.capitalized}"
+internal fun htmlReportPath(variant: String): String {
+    return "reports${separator}kover${separator}html${variant.capitalized()}"
 }
 
-internal fun xmlReportPath(setupId: SetupId): String {
-    return "reports${separator}kover${separator}report${setupId.capitalized}.xml"
+internal fun xmlReportPath(variant: String): String {
+    return "reports${separator}kover${separator}report${variant.capitalized()}.xml"
 }
 
-internal fun verificationErrorsPath(setupId: SetupId): String {
-    return "reports${separator}kover${separator}verify${setupId.capitalized}.err"
+internal fun verificationErrorsPath(variant: String): String {
+    return "reports${separator}kover${separator}verify${variant.capitalized()}.err"
 }
 
-internal fun setupArtifactFile(setupId: SetupId) = "kover${separator}setup${setupId.capitalized}.files"
+internal fun artifactFilePath(variant: String): String {
+    return if (variant == DEFAULT_KOVER_VARIANT_NAME) {
+        "kover${separator}default.artifact"
+    } else {
+        "kover${separator}$variant.artifact"
+    }
+}
 
 private val separator = File.separatorChar

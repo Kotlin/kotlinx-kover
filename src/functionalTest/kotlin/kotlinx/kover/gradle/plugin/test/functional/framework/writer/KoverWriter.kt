@@ -9,11 +9,9 @@ import org.gradle.api.*
 
 internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectExtension {
 
-    override var disabledForProject: Boolean = false
-        set(value) {
-            writer.assign("disabledForProject", value.toString())
-            field = value
-        }
+    override fun disable() {
+        writer.call("disable")
+    }
 
     override fun useKoverTool() {
         writer.call("useKoverTool")
@@ -23,26 +21,26 @@ internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectEx
         writer.call("useJacocoTool")
     }
 
-    override fun useKoverTool(version: String) {
-        writer.call("useKoverTool")
-    }
 
     override fun useJacocoTool(version: String) {
-        writer.call("useJacocoTool")
+        writer.call("useJacocoTool", version)
+    }
+
+    override fun excludeJavaCode() {
+        writer.call("excludeJavaCode")
     }
 
     override fun excludeTests(config: Action<KoverTestsExclusions>) {
         writer.call("excludeTests", config) { KoverTestsExclusionsWriter(it) }
     }
 
-    override fun excludeSources(config: Action<KoverSourcesExclusions>) {
-        writer.call("excludeSources", config) { KoverSourcesExclusionsWriter(it) }
+    internal fun excludeCompilations(config: Action<KoverCompilationsExclusions>) {
+        writer.call("excludeCompilations", config) { KoverCompilationsExclusionsWriter(it) }
     }
 
     override fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>) {
         writer.call("excludeInstrumentation", config) { KoverInstrumentationExclusionsWriter(it) }
     }
-
 }
 
 private class KoverTestsExclusionsWriter(private val writer: FormattedWriter) : KoverTestsExclusions {
@@ -59,12 +57,7 @@ private class KoverTestsExclusionsWriter(private val writer: FormattedWriter) : 
     }
 }
 
-private class KoverSourcesExclusionsWriter(private val writer: FormattedWriter) : KoverSourcesExclusions {
-    override var excludeJavaCode: Boolean = false
-        set(value) {
-            writer.assign("excludeJavaCode", value.toString())
-            field = value
-        }
+private class KoverCompilationsExclusionsWriter(private val writer: FormattedWriter) : KoverCompilationsExclusions {
 
     override fun jvm(config: Action<KoverJvmSourceSet>) {
         writer.call("jvm", config) { KoverJvmSourceSetWriter(it) }

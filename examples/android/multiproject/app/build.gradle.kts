@@ -53,24 +53,22 @@ dependencies {
 }
 
 
-koverAndroid {
+koverReport {
     // filters for all report types of all build variants
-    common {
-        filters {
-            excludes {
-                classes(
-                    "*Fragment",
-                    "*Fragment\$*",
-                    "*Activity",
-                    "*Activity\$*",
-                    "*.databinding.*",
-                    "*.BuildConfig"
-                )
-            }
+    filters {
+        excludes {
+            classes(
+                "*Fragment",
+                "*Fragment\$*",
+                "*Activity",
+                "*Activity\$*",
+                "*.databinding.*",
+                "*.BuildConfig"
+            )
         }
     }
 
-    report("release") {
+    androidReports("release") {
         // filters for all report types only of 'release' build type
         filters {
             excludes {

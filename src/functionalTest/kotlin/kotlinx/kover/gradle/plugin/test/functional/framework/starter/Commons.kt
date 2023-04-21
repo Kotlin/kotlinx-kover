@@ -4,9 +4,88 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.starter
 
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerContext
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.check
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.createCheckerContext
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
+import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runGradleBuild
 import kotlinx.kover.gradle.plugin.test.functional.framework.writer.*
+import org.junit.jupiter.api.extension.*
 import java.io.*
+import java.lang.reflect.AnnotatedElement
+import java.lang.reflect.Method
+import java.nio.file.Files
+
+private const val DIR_PARAM = "build-directory"
+private const val CHECKER_PARAM = "checker-context"
+
+internal class RunCommand(val name: String, val projectDir: File, val gradleArgs: List<String>)
+
+internal abstract class DirectoryBasedGradleTest: BeforeTestExecutionCallback, InvocationInterceptor, ParameterResolver {
+    protected abstract fun readAnnotationArgs(element: AnnotatedElement?): RunCommand
+
+    protected abstract val testType: String
+
+    // BeforeTestExecutionCallback
+    override fun beforeTestExecution(context: ExtensionContext) {
+        val args = readAnnotationArgs(context.element.orElse(null))
+        val targetDir = Files.createTempDirectory("${args.name}-").toFile()
+
+        if (!args.projectDir.exists()) {
+            error("Could not find the $testType '${args.name}' with directory ${args.projectDir.uri}")
+        }
+
+        logInfo("Before building $testType '${args.name}' in target directory ${targetDir.uri}")
+
+        args.projectDir.copyRecursively(targetDir)
+        targetDir.patchSettingsFile("$testType '${args.name}', project dir: ${targetDir.uri}")
+
+        logInfo("Starting build $testType '${args.name}' with commands '${args.gradleArgs.joinToString(" ")}'")
+        val runResult = targetDir.runGradleBuild(args.gradleArgs)
+        logInfo("Success build $testType '${args.name}'")
+        val checkerContext = targetDir.createCheckerContext(runResult)
+
+        val store = context.getStore(ExtensionContext.Namespace.GLOBAL)
+        store.put(DIR_PARAM, targetDir)
+        store.put(CHECKER_PARAM, checkerContext)
+    }
+
+    // InvocationInterceptor
+    override fun interceptTestMethod(
+        invocation: InvocationInterceptor.Invocation<Void>,
+        invocationContext: ReflectiveInvocationContext<Method>,
+        extensionContext: ExtensionContext
+    ) {
+        val annotationArgs = readAnnotationArgs(extensionContext.element.orElse(null))
+        val templateName = annotationArgs.name
+
+        val store = extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)
+        val dir = store.get(DIR_PARAM, File::class.java)
+        val checker = store.get(CHECKER_PARAM, CheckerContext::class.java)
+
+        logInfo("Before checking $testType '$templateName'")
+
+        checker.check("$testType '$templateName'\nProject dir: ${dir.uri}") {
+            invocation.proceed()
+        }
+        logInfo("Deleting the directory ${dir.uri}")
+        dir.deleteRecursively()
+    }
+
+    // ParameterResolver
+    override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
+        return parameterContext.index == 0 && CheckerContext::class.java.isAssignableFrom(parameterContext.parameter.type)
+    }
+
+    override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any {
+        // we don't have to check the index, because only one parameter is used
+        val store = extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)
+        return store.get(CHECKER_PARAM, CheckerContext::class.java)
+    }
+}
+
+
+
 
 /**
  * Override Kover version and add local repository to find artifact for current build.

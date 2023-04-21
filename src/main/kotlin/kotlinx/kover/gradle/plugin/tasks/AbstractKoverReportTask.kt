@@ -16,7 +16,6 @@ import org.gradle.api.tasks.*
 import org.gradle.configurationcache.extensions.*
 import org.gradle.kotlin.dsl.*
 import org.gradle.process.*
-import java.io.File
 
 
 internal abstract class AbstractKoverReportTask(@Internal protected val tool: CoverageTool) : DefaultTask() {
@@ -58,45 +57,9 @@ internal abstract class AbstractKoverReportTask(@Internal protected val tool: Co
         return ReportContext(collectAllFiles(), reportClasspath, temporaryDir, projectPath, services)
     }
 
-    private fun collectAllFiles(): BuildFiles {
-        val local = localArtifact.get().asFile.parseArtifact()
-        return local.joinWith(externalArtifacts.files.map { it.parseArtifact() })
+    private fun collectAllFiles(): ArtifactContent {
+        val local = localArtifact.get().asFile.parseArtifactFile()
+        return local.joinWith(externalArtifacts.files.map { it.parseArtifactFile() })
     }
 }
 
-
-private fun BuildFiles.joinWith(others: List<BuildFiles>): BuildFiles {
-    val sources = this.sources.toMutableSet()
-    val outputs = this.outputs.toMutableSet()
-    val reports = this.reports.toMutableSet()
-
-    others.forEach {
-        sources += it.sources
-        outputs += it.outputs
-        reports += it.reports
-    }
-
-    return BuildFiles(sources, outputs, reports)
-}
-
-private fun File.parseArtifact(): BuildFiles {
-    if (!exists()) return BuildFiles(emptySet(), emptySet(), emptySet())
-
-    val iterator = readLines().iterator()
-
-    val sources = iterator.groupUntil { it.isEmpty() }.map { File(it) }.filter { it.exists() }.toSet()
-    val outputs = iterator.groupUntil { it.isEmpty() }.map { File(it) }.filter { it.exists() }.toSet()
-    val reports = iterator.groupUntil { it.isEmpty() }.map { File(it) }.filter { it.exists() }.toSet()
-
-    return BuildFiles(sources, outputs, reports)
-}
-
-private fun <T> Iterator<T>.groupUntil(block: (T) -> Boolean): List<T> {
-    val result = mutableListOf<T>()
-    while (hasNext()) {
-        val next = next()
-        if (block(next)) break
-        result += next
-    }
-    return result
-}

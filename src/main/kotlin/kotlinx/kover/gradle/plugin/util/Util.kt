@@ -59,9 +59,9 @@ internal val ONE_HUNDRED = 100.toBigDecimal()
 
 private val regexMetacharactersSet = "<([{\\^-=$!|]})+.>".toSet()
 
-internal inline fun File.subdirs(crossinline predicate: (File) -> Boolean): List<File> {
+internal fun File.subdirs(): List<File> {
     return listFiles { it ->
-        it.exists() && it.isDirectory && predicate(it)
+        it.exists() && it.isDirectory
     }?.toList() ?: emptyList()
 }
 

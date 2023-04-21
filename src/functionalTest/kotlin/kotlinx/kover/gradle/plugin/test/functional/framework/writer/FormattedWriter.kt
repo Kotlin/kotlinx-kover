@@ -42,7 +42,7 @@ internal class FormattedWriter(private val append: (String) -> Unit) {
     fun call(functionName: String, config: FormattedWriter.() -> Unit) {
         append(indent(indents))
         append(functionName)
-        append("{\n")
+        append(" {\n")
         indents++
         config(this)
         indents--

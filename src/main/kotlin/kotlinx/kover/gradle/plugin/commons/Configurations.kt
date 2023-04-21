@@ -7,47 +7,67 @@ package kotlinx.kover.gradle.plugin.commons
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
 import org.gradle.api.attributes.*
-import org.gradle.api.model.ObjectFactory
-import org.gradle.kotlin.dsl.*
 
-private interface SetupName : Named {
+/**
+ * Name of the published artifact.
+ */
+internal interface ArtifactNameAttr : Named {
     companion object {
         val ATTRIBUTE = Attribute.of(
-            "kotlinx.kover.setup.name",
-            SetupName::class.java
+            "kotlinx.kover.artifact.name",
+            ArtifactNameAttr::class.java
         )
     }
 }
 
-private interface ProjectPath : Named {
+/**
+ * Path of the project for which the artifact is published.
+ */
+internal interface ProjectPathAttr : Named {
     companion object {
         val ATTRIBUTE = Attribute.of(
             "kotlinx.kover.project.path",
-            ProjectPath::class.java
+            ProjectPathAttr::class.java
         )
     }
 }
 
-private interface KotlinPlugin : Named {
+/**
+ * Kotlin Plugin used in the project for which the artifact is published.
+ */
+internal interface KotlinPluginAttr : Named {
     companion object {
         val ATTRIBUTE = Attribute.of(
             "kotlinx.kover.kotlin.plugin",
-            KotlinPlugin::class.java
+            KotlinPluginAttr::class.java
         )
     }
 }
 
-
-internal fun AttributeContainer.setupName(name: String, objects: ObjectFactory) {
-    attribute(SetupName.ATTRIBUTE, objects.named(name))
+/**
+ * Build type of the Android project.
+ */
+internal interface BuildTypeAttr : Named {
+    companion object {
+        val ATTRIBUTE = Attribute.of(
+            "kotlinx.kover.android.build-type",
+            BuildTypeAttr::class.java
+        )
+    }
 }
 
-internal fun AttributeContainer.projectPath(path: String, objects: ObjectFactory) {
-    attribute(ProjectPath.ATTRIBUTE, objects.named(path))
-}
-
-internal fun AttributeContainer.kotlinType(kotlinPlugin: AppliedKotlinPlugin, objects: ObjectFactory) {
-    attribute(KotlinPlugin.ATTRIBUTE, objects.named(kotlinPlugin.type?.name ?: "NONE"))
+/**
+ * Product flavor of the Android project.
+ */
+internal interface ProductFlavorAttr : Named {
+    companion object {
+        fun of(flavorDimension: String): Attribute<ProductFlavorAttr> {
+            return Attribute.of(
+                "kotlinx.kover.android.flavor-dimension:$flavorDimension",
+                ProductFlavorAttr::class.java
+            )
+        }
+    }
 }
 
 /**
