@@ -19,11 +19,11 @@ in this case report will be generated for current project joined with `core` and
 
 _If you don't specify these dependencies, then the reports will be generated only for the current project._ 
 
-#### Kotlin JVM and Kotlin Multiplatform projects (regular projects)
-If you using merged-reports move all report configurations from `koverMerged` extension (with type `kotlinx.kover.api.KoverMergedConfig`) to [regular report extension](#report-settings-for-kotlin-jvm-and-kotlin-multiplatform-projects). 
+#### Kotlin JVM and Kotlin Multiplatform projects
+If you using merged-reports move all report configurations from `koverMerged` extension (with type `kotlinx.kover.api.KoverMergedConfig`) to [default reports configuration block](#report-settings-for-kotlin-jvm-and-kotlin-multiplatform-projects). 
 
 #### Kotlin Android projects
-If you using merged-reports move all report configurations from `koverMerged` extension (with type `kotlinx.kover.api.KoverMergedConfig`) to [Android extension](#report-settings-for-android-projects).
+If you using merged-reports move all report configurations from `koverMerged` extension (with type `kotlinx.kover.api.KoverMergedConfig`) to [Android reports configuration block](#report-settings-for-android-projects).
 
 
 

@@ -23,15 +23,15 @@ object KoverNames {
     /**
      * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.
      */
-    public const val REGULAR_XML_REPORT_NAME = "koverXmlReport"
+    public const val DEFAULT_XML_REPORT_NAME = "koverXmlReport"
 
     /**
      * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
      */
-    public const val REGULAR_HTML_REPORT_NAME = "koverHtmlReport"
+    public const val DEFAULT_HTML_REPORT_NAME = "koverHtmlReport"
 
     /**
      * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
      */
-    public const val REGULAR_VERIFY_REPORT_NAME = "koverVerify"
+    public const val DEFAULT_VERIFY_REPORT_NAME = "koverVerify"
 }

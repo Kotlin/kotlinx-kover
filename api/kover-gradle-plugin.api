@@ -173,12 +173,12 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverInstrumenta
 }
 
 public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
+	public static final field DEFAULT_HTML_REPORT_NAME Ljava/lang/String;
+	public static final field DEFAULT_VERIFY_REPORT_NAME Ljava/lang/String;
+	public static final field DEFAULT_XML_REPORT_NAME Ljava/lang/String;
 	public static final field DEPENDENCY_CONFIGURATION_NAME Ljava/lang/String;
 	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/KoverNames;
 	public static final field PROJECT_EXTENSION_NAME Ljava/lang/String;
-	public static final field REGULAR_HTML_REPORT_NAME Ljava/lang/String;
-	public static final field REGULAR_VERIFY_REPORT_NAME Ljava/lang/String;
-	public static final field REGULAR_XML_REPORT_NAME Ljava/lang/String;
 	public static final field REPORT_EXTENSION_NAME Ljava/lang/String;
 }
 
