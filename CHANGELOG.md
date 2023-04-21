@@ -1,8 +1,8 @@
 0.7.0-Beta / 2023-04-21
 ===================
 ### Features
-* Added advanced support of Android projects, flavors ind flavor dimensions (#316, #319)
-* Introduced Kover Tool artifacts for CLI and offline runtime (#322)
+* Added advanced support of Android projects, flavors and flavor dimensions (#316, #319)
+* Introduced Kover Tool artifacts for CLI and runtime for offline instrumentation (#322)
 
 ### Internal features
 * Added dokka docs
