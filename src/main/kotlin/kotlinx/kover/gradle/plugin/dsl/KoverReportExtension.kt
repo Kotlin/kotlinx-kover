@@ -389,6 +389,13 @@ public interface KoverHtmlReportConfig {
     public var title: String?
 
     /**
+     * Specify charset in HTML reports.
+     *
+     * If not specified, Charset.defaultCharset() is used instead.
+     */
+    public var charset: String?
+
+    /**
      * Generate an HTML report when running the `check` task.
      */
     public var onCheck: Boolean

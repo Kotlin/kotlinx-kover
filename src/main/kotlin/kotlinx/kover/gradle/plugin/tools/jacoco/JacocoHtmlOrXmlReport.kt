@@ -8,10 +8,16 @@ import kotlinx.kover.gradle.plugin.commons.*
 import java.io.*
 
 
-internal fun ReportContext.jacocoHtmlReport(htmlDir: File, title: String, filters: ReportFilters) {
+internal fun ReportContext.jacocoHtmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters) {
     callAntReport(filters, title) {
         htmlDir.mkdirs()
-        invokeMethod("html", mapOf("destdir" to htmlDir))
+
+        val element = if (charset != null) {
+            mapOf("destdir" to htmlDir, "encoding" to charset)
+        } else {
+            mapOf("destdir" to htmlDir)
+        }
+        invokeMethod("html", element)
     }
 }
 

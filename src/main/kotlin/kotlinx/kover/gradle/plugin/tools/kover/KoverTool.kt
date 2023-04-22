@@ -37,8 +37,8 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
         context.koverXmlReport(xmlFile, filters)
     }
 
-    override fun htmlReport(htmlDir: File, title: String, filters: ReportFilters, context: ReportContext) {
-        context.koverHtmlReport(htmlDir, title, filters)
+    override fun htmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters, context: ReportContext) {
+        context.koverHtmlReport(htmlDir, title, charset, filters)
     }
 
     override fun verify(
