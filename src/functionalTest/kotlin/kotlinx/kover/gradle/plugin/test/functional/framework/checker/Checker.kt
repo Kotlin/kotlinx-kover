@@ -151,6 +151,11 @@ private class CheckerContextImpl(
         assertEquals(expectedOutcome, outcome, "Unexpected outcome for task '$taskPath'")
     }
 
+    override fun taskNotCalled(taskNameOrPath: String) {
+        val taskPath = taskNameOrPath.asPath()
+        assertNull(result.taskOutcome(taskPath), "Task '$taskNameOrPath' should not have been called")
+    }
+
     override fun taskOutput(taskNameOrPath: String, checker: String.() -> Unit) {
         val taskPath = taskNameOrPath.asPath()
         val taskLog = result.taskLog(taskPath) ?: noTaskFound(taskNameOrPath, taskPath)
