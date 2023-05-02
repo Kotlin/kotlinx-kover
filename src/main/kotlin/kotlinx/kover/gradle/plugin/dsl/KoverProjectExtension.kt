@@ -150,8 +150,12 @@ public interface KoverProjectExtension {
  *
  * Example:
  * ```
- *      tasks("test1", "test2")
- *      mppTargetName("jvm")
+ *     kover {
+ *         excludeTests {
+ *             tasks("test1", "test2")
+ *             mppTargetName("jvm")
+ *         }
+ *     }
  * ```
  */
 public interface KoverTestsExclusions {

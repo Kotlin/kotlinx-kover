@@ -293,14 +293,16 @@ public interface KoverReportFilters {
 /**
  * Exclusion or inclusion class filter for Kover reports.
  *
- * Example for Kotlin:
+ * Exclusions example for Kotlin:
  * ```
- *      classes("*.foo.Bar", "*.M?Class")
- *      classes(listOf("*.foo.Bar", "*.M?Class"))
- *      packages("foo.b?r", "com.*.example")
- *      val somePackages =
- *      packages(listOf("foo.b?r", "com.*.example"))
- *      annotatedBy("*Generated*", "com.example.KoverExclude")
+ *     excludes {
+ *          classes("*.foo.Bar", "*.M?Class")
+ *          classes(listOf("*.foo.Bar", "*.M?Class"))
+ *          packages("foo.b?r", "com.*.example")
+ *          val somePackages =
+ *          packages(listOf("foo.b?r", "com.*.example"))
+ *          annotatedBy("*Generated*", "com.example.KoverExclude")
+ *      }
  * ```
  */
 public interface KoverReportFilter {
