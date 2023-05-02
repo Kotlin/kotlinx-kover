@@ -34,6 +34,7 @@ internal interface CheckerContext {
     val defaultRawReport: String
     fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean)
     fun checkOutcome(taskNameOrPath: String, expectedOutcome: String)
+    fun taskNotCalled(taskNameOrPath: String)
     fun checkDefaultReports(mustExist: Boolean = true)
     fun checkDefaultRawReport(mustExist: Boolean = true)
 }

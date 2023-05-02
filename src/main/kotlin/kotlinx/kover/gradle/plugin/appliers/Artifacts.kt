@@ -66,6 +66,9 @@ internal fun Project.createArtifactGenerationTask(
     }
 
     val local = configurations.register(localArtifactConfigurationName(variantName)) {
+        // disable generation of Kover artifacts on `assemble`, fix of https://github.com/Kotlin/kotlinx-kover/issues/353
+        isVisible = false
+
         outgoing.artifact(localArtifactFile) {
             asProducer()
             attributes {
