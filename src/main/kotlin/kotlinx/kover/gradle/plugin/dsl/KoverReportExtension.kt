@@ -518,7 +518,7 @@ public interface KoverXmlReportConfig {
 }
 
 /**
- * Verify coverage with the specified rules.
+ * Configuration of the coverage's result verification with the specified rules.
  *
  * Example:
  * ```
@@ -790,7 +790,7 @@ public enum class AggregationType(val isPercentage: Boolean) {
 }
 
 /**
- *  Entity type for grouping code to coverage evaluation.
+ * Entity type for grouping code to coverage evaluation.
  */
 public enum class GroupingEntityType {
     /**

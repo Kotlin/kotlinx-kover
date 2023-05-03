@@ -144,18 +144,18 @@ public interface KoverProjectExtension {
 /**
  * Disables instrumentation of test tasks.
  *
- * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+ * This means that even if the excluded tests are executed, the function calls that happened in it will not be counted in the coverage reports.
  *
- * As a side effect, reports cease to depend on the specified test tasks.
+ * As a side effect, reports stop depending on the specified test tasks.
  *
  * Example:
  * ```
- *     kover {
- *         excludeTests {
- *             tasks("test1", "test2")
- *             mppTargetName("jvm")
- *         }
+ * kover {
+ *     excludeTests {
+ *         tasks("test1", "test2")
+ *         mppTargetName("jvm")
  *     }
+ * }
  * ```
  */
 public interface KoverTestsExclusions {
@@ -163,7 +163,7 @@ public interface KoverTestsExclusions {
     /**
      * Disables instrumentation of specified tests.
      *
-     * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+     * This means that even if the excluded tests are executed, the function calls that happened in it will not be counted in the coverage reports.
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
@@ -172,7 +172,7 @@ public interface KoverTestsExclusions {
     /**
      * Disables instrumentation of specified tests.
      *
-     * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+     * This means that even if the excluded tests are executed, the function calls that happened in it will not be counted in the coverage reports.
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
@@ -255,7 +255,7 @@ internal interface KoverMppSourceSet {
 /**
  * Exclude classes from instrumentation.
  *
- * This means that even if these classes were actually called, their coverage will always be 0 in reports.
+ * This means that even if these classes were actually invoked, their coverage will always be 0 in reports.
  *
  * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
  *
