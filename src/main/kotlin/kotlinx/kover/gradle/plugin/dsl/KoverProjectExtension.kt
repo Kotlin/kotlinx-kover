@@ -72,7 +72,7 @@ public interface KoverProjectExtension {
     public fun excludeTests(config: Action<KoverTestsExclusions>)
 
     /**
-     * Exclude specified class from instrumentation.
+     * Excludes specified class from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -212,14 +212,14 @@ internal interface KoverCompilationsExclusions {
 
 internal interface KoverJvmSourceSet {
     /**
-     * Exclude specified source sets from report.
+     * Excludes specified source sets from report.
      *
      * As a side effect, reports cease to depend on the task of compiling this source sets.
      */
     public fun sourceSetName(vararg name: String)
 
     /**
-     * Exclude specified source sets from report.
+     * Excludes specified source sets from report.
      *
      * As a side effect, reports cease to depend on the task of compiling this source sets.
      */
@@ -231,21 +231,21 @@ internal interface KoverJvmSourceSet {
  */
 internal interface KoverMppSourceSet {
     /**
-     * Exclude sources of specified targets from Kotlin MPP reports.
+     * Excludes sources of specified targets from Kotlin MPP reports.
      *
      * As a side effect, reports cease to depend on the task of compiling specified targets.
      */
     public fun targetName(vararg name: String)
 
     /**
-     * Exclude sources of specified Kotlin compilations from Kotlin MPP reports.
+     * Excludes sources of specified Kotlin compilations from Kotlin MPP reports.
      *
      * As a side effect, reports cease to depend on the task of compiling specified compilations.
      */
     public fun compilation(targetName: String, compilationName: String)
 
     /**
-     * Exclude sources of all Kotlin compilations with specified name from Kotlin MPP reports.
+     * Excludes sources of all Kotlin compilations with specified name from Kotlin MPP reports.
      *
      * As a side effect, reports cease to depend on the task of compiling specified compilations.
      */
@@ -253,7 +253,7 @@ internal interface KoverMppSourceSet {
 }
 
 /**
- * Exclude classes from instrumentation.
+ * Excludes classes from instrumentation.
  *
  * This means that even if these classes were actually invoked, their coverage will always be 0 in reports.
  *
@@ -274,7 +274,7 @@ internal interface KoverMppSourceSet {
  */
 public interface KoverInstrumentationExclusions {
     /**
-     * Exclude specified classes from instrumentation.
+     * Excludes specified classes from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -283,7 +283,7 @@ public interface KoverInstrumentationExclusions {
     public fun classes(vararg names: String)
 
     /**
-     * Exclude specified classes from instrumentation.
+     * Excludes specified classes from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -292,7 +292,7 @@ public interface KoverInstrumentationExclusions {
     public fun classes(names: Iterable<String>)
 
     /**
-     * Exclude classes from specified packages and its subpackages from instrumentation.
+     * Excludes classes from specified packages and its subpackages from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -301,7 +301,7 @@ public interface KoverInstrumentationExclusions {
     public fun packages(vararg names: String)
 
     /**
-     * Exclude classes from specified packages and its subpackages from instrumentation.
+     * Excludes classes from specified packages and its subpackages from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
