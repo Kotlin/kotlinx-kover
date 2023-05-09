@@ -161,18 +161,18 @@ public interface KoverProjectExtension {
 public interface KoverTestsExclusions {
 
     /**
-     * Disables instrumentation of specified tests.
+     * Disables instrumentation of specified test tasks.
      *
-     * This means that even if the excluded tests are executed, the function calls that happened in it will not be counted in the coverage reports.
+     * This means that even if the tests from excluded tasks are executed, the function calls that happened in it will not be counted in the coverage reports.
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
     public fun tasks(vararg name: String)
 
     /**
-     * Disables instrumentation of specified tests.
+     * Disables instrumentation of specified test tasks.
      *
-     * This means that even if the excluded tests are executed, the function calls that happened in it will not be counted in the coverage reports.
+     * This means that even if the tests from excluded tasks are executed, the function calls that happened in it will not be counted in the coverage reports.
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
@@ -181,7 +181,7 @@ public interface KoverTestsExclusions {
     /**
      * Disables instrumentation of test tasks owned by the specified MPP targets.
      *
-     * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+     * This means that even if the tests from excluded task is executed, the function calls that occurred in it will not be counted in the reports.
      *
      * As a side effect, reports cease to depend on the relevant test tasks.
      */
@@ -227,7 +227,7 @@ internal interface KoverJvmSourceSet {
 }
 
 /**
- * TBD later
+ * Internal API that will be open in the future.
  */
 internal interface KoverMppSourceSet {
     /**

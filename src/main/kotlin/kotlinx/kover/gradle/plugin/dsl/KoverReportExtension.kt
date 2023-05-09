@@ -396,21 +396,21 @@ public interface KoverReportFilter {
  * Example:
  * ```
  * ...
- *      html {
- *          // Filter the classes that will be included in the HTML report.
- *          // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
- *          filters {
- *              // ...
- *          }
+ * html {
+ *     // Filter the classes that will be included in the HTML report.
+ *     // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
+ *     filters {
+ *         // ...
+ *     }
  *
- *          title = "Custom title"
+ *     title = "Custom title"
  *
- *          // Generate an HTML report when running the `check` task
- *          onCheck = false
+ *     // Generate an HTML report when running the `check` task
+ *     onCheck = false
  *
- *          // Specify HTML report directory
- *          setReportDir(layout.buildDirectory.file("my-html-report"))
- *      }
+ *     // Specify HTML report directory
+ *     setReportDir(layout.buildDirectory.file("my-html-report"))
+ * }
  *  ...
  * ```
  */
@@ -464,19 +464,19 @@ public interface KoverHtmlReportConfig {
  * Example:
  * ```
  * ...
- *      xml {
- *          // Filter the classes that will be included in the XML report.
- *          // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
- *          filters {
- *              // ...
- *          }
+ * xml {
+ *     // Filter the classes that will be included in the XML report.
+ *     // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
+ *     filters {
+ *         // ...
+ *     }
  *
- *          // Generate an XML report when running the `check` task
- *          onCheck = false
+ *     // Generate an XML report when running the `check` task
+ *     onCheck = false
  *
- *          // Specify file to generate XML report
- *          setReportFile(layout.buildDirectory.file("my-xml-report.xml"))
- *      }
+ *     // Specify file to generate XML report
+ *     setReportFile(layout.buildDirectory.file("my-xml-report.xml"))
+ * }
  *  ...
  * ```
  */
