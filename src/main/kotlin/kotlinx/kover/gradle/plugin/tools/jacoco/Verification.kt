@@ -51,14 +51,14 @@ internal fun ReportContext.jacocoVerify(
 
                             AggregationType.COVERED_PERCENTAGE -> {
                                 limitArgs["value"] = "COVEREDRATIO"
-                                min = min?.divide(ONE_HUNDRED)
-                                max = max?.divide(ONE_HUNDRED)
+                                min = min?.divide(ONE_HUNDRED)?.setScale(4)
+                                max = max?.divide(ONE_HUNDRED)?.setScale(4)
                             }
 
                             AggregationType.MISSED_PERCENTAGE -> {
                                 limitArgs["value"] = "MISSEDRATIO"
-                                min = min?.divide(ONE_HUNDRED)
-                                max = max?.divide(ONE_HUNDRED)
+                                min = min?.divide(ONE_HUNDRED)?.setScale(4)
+                                max = max?.divide(ONE_HUNDRED)?.setScale(4)
                             }
                         }
 

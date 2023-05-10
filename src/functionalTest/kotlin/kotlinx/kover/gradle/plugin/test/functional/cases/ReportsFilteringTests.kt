@@ -3,6 +3,7 @@
  */
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultXmlReport
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
@@ -10,7 +11,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 internal class ReportsFilteringTests {
 
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
-    fun BuildConfigurator.testExclude() {
+    fun BuildConfigurator.testXmlCommonExclude() {
         addProjectWithKover {
             sourcesFrom("simple")
 
@@ -20,9 +21,103 @@ internal class ReportsFilteringTests {
                         classes("org.jetbrains.*Exa?ple*")
                     }
                 }
+
+                defaults {
+                    verify {
+                        rule {
+                            // without ExampleClass covered lines count = 2, but 4 with it
+                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                        }
+                    }
+                }
             }
         }
-        run("koverXmlReport") {
+        run("koverXmlReport", "koverVerify") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertAbsent()
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
+    fun BuildConfigurator.testXmlDefaultsExclude() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            koverReport {
+                filters {
+                    excludes {
+                        classes("org.*")
+                    }
+                }
+
+                defaults {
+                    filters {
+                        excludes {
+                            classes("org.jetbrains.*Exa?ple*")
+                        }
+                    }
+
+                    verify {
+                        rule {
+                            // without ExampleClass covered lines count = 2, but 4 with it
+                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                        }
+                    }
+                }
+            }
+        }
+        run("koverXmlReport", "koverVerify") {
+            xml(defaultXmlReport()) {
+                classCounter("org.jetbrains.ExampleClass").assertAbsent()
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
+    fun BuildConfigurator.testXmlExclude() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            koverReport {
+                filters {
+                    excludes {
+                        classes("foo.*")
+                    }
+                }
+
+                defaults {
+                    filters {
+                        excludes {
+                            classes("org.*")
+                        }
+                    }
+
+                    xml {
+                        filters {
+                            excludes {
+                                classes("org.jetbrains.*Exa?ple*")
+                            }
+                        }
+                    }
+
+                    verify {
+                        filters {
+                            excludes {
+                                classes("org.jetbrains.*Exa?ple*")
+                            }
+                        }
+                        rule {
+                            // without ExampleClass covered lines count = 2, but 4 with it
+                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                        }
+                    }
+                }
+            }
+        }
+        run("koverXmlReport", "koverVerify") {
             xml(defaultXmlReport()) {
                 classCounter("org.jetbrains.ExampleClass").assertAbsent()
                 classCounter("org.jetbrains.SecondClass").assertCovered()

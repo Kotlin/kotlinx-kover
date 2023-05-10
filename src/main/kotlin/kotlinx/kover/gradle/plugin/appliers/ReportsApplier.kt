@@ -35,7 +35,7 @@ internal class ReportsApplier(
 
             reportDir.convention(project.layout.dir(reportConfig.html.reportDirProperty))
             title.convention(reportConfig.html.title ?: project.name)
-            filters.set((reportConfig.html.filters ?: commonFilters).convert())
+            filters.set((reportConfig.html.filters ?: reportConfig.filters ?: commonFilters).convert())
         }
         if (reportConfig.html.onCheck) {
             runOnCheck += htmlTask
@@ -43,7 +43,7 @@ internal class ReportsApplier(
 
         val xmlTask = project.tasks.createReportTask<KoverXmlTask>(xmlReportTaskName(variant.name)) {
             reportFile.convention(project.layout.file(reportConfig.xml.reportFileProperty))
-            filters.set((reportConfig.xml.filters ?: commonFilters).convert())
+            filters.set((reportConfig.xml.filters ?: reportConfig.filters ?: commonFilters).convert())
         }
         if (reportConfig.xml.onCheck) {
             runOnCheck += xmlTask
@@ -55,7 +55,7 @@ internal class ReportsApplier(
 
             // path can't be changed
             resultFile.convention(project.layout.buildDirectory.file(verificationErrorsPath(variant.name)))
-            filters.set((reportConfig.verify.filters ?: commonFilters).convert())
+            filters.set((reportConfig.verify.filters ?: reportConfig.filters ?: commonFilters).convert())
             rules.addAll(converted)
 
             shouldRunAfter(htmlTask)
