@@ -391,7 +391,7 @@ public interface KoverHtmlReportConfig {
     /**
      * Specify charset in HTML reports.
      *
-     * If not specified, Charset.defaultCharset() is used instead.
+     * If not specified, UTF-8 is used instead.
      */
     public var charset: String?
 
