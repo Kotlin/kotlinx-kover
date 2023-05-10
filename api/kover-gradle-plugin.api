@@ -155,10 +155,12 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverDefaultRepo
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverHtmlReportConfig {
 	public abstract fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun getCharset ()Ljava/lang/String;
 	public abstract fun getOnCheck ()Z
 	public fun getReportDir ()Ljava/lang/Void;
 	public abstract fun getTitle ()Ljava/lang/String;
 	public fun overrideFilters (Lkotlin/jvm/functions/Function0;)V
+	public abstract fun setCharset (Ljava/lang/String;)V
 	public abstract fun setOnCheck (Z)V
 	public abstract fun setReportDir (Ljava/io/File;)V
 	public abstract fun setReportDir (Lorg/gradle/api/provider/Provider;)V

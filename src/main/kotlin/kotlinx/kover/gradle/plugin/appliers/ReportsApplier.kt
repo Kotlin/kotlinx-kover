@@ -35,6 +35,7 @@ internal class ReportsApplier(
 
             reportDir.convention(project.layout.dir(reportConfig.html.reportDirProperty))
             title.convention(reportConfig.html.title ?: project.name)
+            charset.convention(reportConfig.html.charset)
             filters.set((reportConfig.html.filters ?: reportConfig.filters ?: commonFilters).convert())
         }
         if (reportConfig.html.onCheck) {

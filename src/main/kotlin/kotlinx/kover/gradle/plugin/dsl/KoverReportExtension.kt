@@ -389,6 +389,13 @@ public interface KoverHtmlReportConfig {
     public var title: String?
 
     /**
+     * Specify charset in HTML reports.
+     *
+     * If not specified, used return value of `Charset.defaultCharset()` for Kover report generator and UTF-8 is used for JaCoCo.
+     */
+    public var charset: String?
+
+    /**
      * Generate an HTML report when running the `check` task.
      */
     public var onCheck: Boolean

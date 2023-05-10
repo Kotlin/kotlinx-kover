@@ -98,7 +98,7 @@ internal interface CoverageTool {
     /**
      * Generate HTML report.
      */
-    fun htmlReport(htmlDir: File, title: String, filters: ReportFilters, context: ReportContext)
+    fun htmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters, context: ReportContext)
 
     /**
      * Perform verification.

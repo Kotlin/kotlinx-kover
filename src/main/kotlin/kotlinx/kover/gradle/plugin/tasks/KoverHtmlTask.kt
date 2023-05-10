@@ -16,14 +16,18 @@ internal open class KoverHtmlTask @Inject constructor(tool: CoverageTool) : Abst
     @get:OutputDirectory
     val reportDir: DirectoryProperty = project.objects.directoryProperty()
 
-    @get: Input
+    @get:Input
     val title: Property<String> = project.objects.property()
+
+    @get:Input
+    @get:Optional
+    val charset: Property<String> = project.objects.property()
 
     @TaskAction
     fun generate() {
         val htmlDir = reportDir.get().asFile
         htmlDir.mkdirs()
-        tool.htmlReport(htmlDir, title.get(), filters.get(), context())
+        tool.htmlReport(htmlDir, title.get(), charset.orNull, filters.get(), context())
     }
 
     fun printPath(): Boolean {

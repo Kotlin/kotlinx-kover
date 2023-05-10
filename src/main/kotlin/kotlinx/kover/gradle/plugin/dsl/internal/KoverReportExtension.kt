@@ -94,6 +94,8 @@ internal open class KoverHtmlReportConfigImpl @Inject constructor(private val ob
 
     override var title: String? = null
 
+    override var charset: String? = null
+
     internal val reportDirProperty: Property<File> = objects.property()
 
     override fun filters(config: Action<KoverReportFilters>) {

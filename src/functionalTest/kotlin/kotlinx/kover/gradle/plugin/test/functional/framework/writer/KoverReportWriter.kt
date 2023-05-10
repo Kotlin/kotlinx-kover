@@ -96,6 +96,11 @@ internal class KoverHtmlReportConfigWriter(private val writer: FormattedWriter) 
             writer.assign("title", "\"$value\"")
             field = value
         }
+    override var charset: String? = null
+        set(value) {
+            writer.assign("charset", "\"$value\"")
+            field = value
+        }
 
     override fun setReportDir(dir: File) {
         writer.assign("reportDir", dir.forScript())

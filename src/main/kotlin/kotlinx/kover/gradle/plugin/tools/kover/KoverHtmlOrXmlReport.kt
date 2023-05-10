@@ -9,9 +9,9 @@ import kotlinx.kover.gradle.plugin.commons.ReportFilters
 import kotlinx.kover.gradle.plugin.util.json.*
 import java.io.*
 
-internal fun ReportContext.koverHtmlReport(htmlDir: File, title: String, filters: ReportFilters) {
+internal fun ReportContext.koverHtmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters) {
     val aggGroups = aggregateRawReports(listOf(filters))
-    generateHtmlOrXml(aggGroups.first(), htmlDir = htmlDir, title = title)
+    generateHtmlOrXml(aggGroups.first(), htmlDir = htmlDir, title = title, charset = charset)
 }
 
 internal fun ReportContext.koverXmlReport(xmlFile: File, filters: ReportFilters) {
@@ -24,9 +24,10 @@ private fun ReportContext.generateHtmlOrXml(
     htmlDir: File? = null,
     xmlFile: File? = null,
     title: String? = null,
+    charset: String? = null,
 ) {
     val argsFile = tempDir.resolve("kover-report.json")
-    argsFile.writeHtmlOrXmlJson(files.sources, aggGroup, xmlFile, htmlDir, title)
+    argsFile.writeHtmlOrXmlJson(files.sources, aggGroup, xmlFile, htmlDir, title, charset)
 
     services.exec.javaexec {
         mainClass.set("com.intellij.rt.coverage.report.Main")
@@ -54,7 +55,8 @@ private fun File.writeHtmlOrXmlJson(
     aggregationGroup: AggregationGroup,
     xmlFile: File?,
     htmlDir: File?,
-    title: String?
+    title: String?,
+    charset: String?,
 ) {
     writeJsonObject(mutableMapOf(
         // required fields
@@ -73,6 +75,9 @@ private fun File.writeHtmlOrXmlJson(
         }
         htmlDir?.also { d ->
             it["html"] = d
+        }
+        charset?.also { c ->
+            it["charset"] = c
         }
     })
 }
