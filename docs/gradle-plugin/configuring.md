@@ -368,7 +368,7 @@ By specifying an empty filter `filters { }`, you can completely disable report f
 
 Inclusion/exclusion value rules:
 
-* Can be a fully-qualified class name.
+* Should be a fully-qualified class name.
 * Can contain wildcards:
     * `*` for zero or more of any char.
     * `**` is the same as `*`.
@@ -416,7 +416,7 @@ The `GroupingEntityType` type is used for this:
 ## Merging reports
 If it is necessary to generate a report for a specific build variant using the Kover default report tasks, it is possible to combine the contents of the Android report and the default report.
 
-This is done by configuring reports by default
+This is done by configuring default reports
 ```
 koverReport {
     defaults {

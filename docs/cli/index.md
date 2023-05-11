@@ -6,9 +6,9 @@ Java 1.6 or higher is required for execution.
 
 ## Commands
 
-### Off-line instrumentation
+### Offline instrumentation
 
-For information about  offline instrumentation, [see](#off-line-instrumentation-1).
+For information about  offline instrumentation, [see](#offline-instrumentation-1).
 
 `java -jar kover-cli.jar instrument [<class-file-path> ...] --dest <dir> [--exclude <class-name>] [--excludeAnnotation <annotation-name>] [--hits] [--include <class-name>]`
 
@@ -38,9 +38,9 @@ Allows you to generate HTML and XML reports from the existing binary report.
 | --title <html-title>                  | title in the HTML report                                                                                |          |          |
 | --xml <xml-file-path>                 | generate a XML report in the specified path                                                             |          |          |
 
-## Off-line instrumentation
+## Offline instrumentation
 
-Off-line instrumentation is suitable when using runtime environments that do not support Java agents.
+Offline instrumentation is suitable when using runtime environments that do not support Java agents.
 It instruments the files located in the file system and saves the result to the specified directory.
 
 To run classes instrumented offline, you need to add `org.jetbrains.kotlinx:kover-offline` artifact to the application's classpath.

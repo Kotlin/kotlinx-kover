@@ -20,12 +20,13 @@
 
 ## Features
 
-* Collection of code coverage through `JVM` test tasks.
-* `HTML` and `XML` reports.
-* Support for `Kotlin/JVM`, `Kotlin Multiplatform` and mixed `Kotlin-Java` sources with zero additional configuration.
-* Support for `Kotlin Android` without the need to divide it into build types and flavours.
+* Collection of code coverage through `JVM` tests (JS and native targets are not supported yet).
+* generating `HTML` and `XML` reports.
+* Support for `Kotlin JVM`, `Kotlin Multiplatform` projects.
+* Support for `Kotlin Android` projects with build variants (instrumentation tests executing on the Android device are not supported yet).
+* Support mixed `Kotlin` and `Java` sources
 * Verification rules with bounds to keep track of coverage.
-* Customizable filters for instrumented classes.
+* Using JaCoCo library as an alternative for coverage measuring and report generation.
 
 ## Quickstart
 
@@ -217,7 +218,7 @@ Kover default task list:
 
 Example:
 ```
-gradlew koverHtmlReport
+./gradlew koverHtmlReport
 ```
 
 ### Kover Android tasks
@@ -235,7 +236,7 @@ Kover Android task list:
 
 Example:
 ```
-gradlew koverHtmlReportRelease
+./gradlew koverHtmlReportRelease
 ```
 
 

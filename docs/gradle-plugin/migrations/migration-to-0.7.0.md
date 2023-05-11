@@ -250,16 +250,16 @@ koverReport {
 ### Renaming Coverage Engines to Coverage Tools
 Previously called engines have been renamed tools.
 
-IntelliJ Engine was built in by default.
+Kover instrumentation agent and report generator are used by default.
 
-To use JaCoCo Tool with default version:
+To use JaCoCo tools with default version:
 ```
 kover {
     useJacoco()
 }
 ```
 
-To use JaCoCo Tool with specified version:
+To use JaCoCo tools with specified version:
 ```
 kover {
     useJacoco("0.8.8")

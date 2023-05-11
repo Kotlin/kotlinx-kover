@@ -6,9 +6,9 @@
 
 Kotlin Code Coverage Toolset
 
-For more information about Kover Gradle Plugin, please refer to the [documentation of the latest release](https://Kotlin.github.io/kotlinx-kover/gradle-plugin).
+For more information about Kover Gradle Plugin, please refer to the [documentation of the latest release](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
 
-For more information about Kover CLI, please refer to the [documentation of the latest release](https://Kotlin.github.io/kotlinx-kover/cli).
+For more information about Kover CLI, please refer to the [documentation of the latest release](https://kotlin.github.io/kotlinx-kover/cli).
 
 ## Features
 
@@ -21,12 +21,13 @@ For more information about Kover CLI, please refer to the [documentation of the 
 * Using JaCoCo library in Gradle plugin as an alternative for coverage measuring and report generation.
 * Offline instrumentation of class files.
 * Instrumentation and report generation using Command Line Interface
-* Minimum supported version of `Gradle` is `6.8`
 
 ## Gradle Quickstart
 
 The recommended way of applying Kover is with the
 [plugins DSL](https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block).
+
+Minimum supported version of `Gradle` is `6.8`.
 
 Add the following to your top-level build file:
 
@@ -49,6 +50,9 @@ plugins {
 }
 ```
 </details>
+
+After you applied Kover Gradle plugin, [Kover tasks](https://kotlin.github.io/kotlinx-kover/gradle-plugin#kover-tasks) will be created for generating reports and verification. 
+E.g. to generate HTML report for non-Android project run `./gradlew koverHtmlReport` - this will automatically start code compilation, execution of instrumented tests, and an HTML report will be generated with measurement results in the build folder.
 
 #### Legacy Plugin Application
 
