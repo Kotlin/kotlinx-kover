@@ -361,7 +361,7 @@ Filter definition levels in ascending order of priority:
 - report level - specifies the xml or html filters of the report, or verification, for the default variant or Android build variant
 - verification rule level - applies only to one specific verification rule
 
-If a higher priority filter is specified, it completely overrides the rules written by the level above.
+If a higher priority filter is specified, it completely replaces the rules written by the level above.
 By specifying an empty filter `filters { }`, you can completely disable report filtering.
 
 ## Class name with wildcards
@@ -370,7 +370,7 @@ Inclusion/exclusion value rules:
 
 * Can be a fully-qualified class name.
 * Can contain wildcards:
-    * `*` for zero or several of any char.
+    * `*` for zero or more of any char.
     * `**` is the same as `*`.
     * `?` for one of any char.
 * File and directory names are not allowed.
@@ -411,7 +411,7 @@ But you can group code units by other named entities.
 The `GroupingEntityType` type is used for this:
 - `APPLICATION` - one current coverage value for the entire application will be calculated
 - `CLASS` - the current value will be calculated individually for each class. So the bounds will be checked for each class
-- `PACKAGE` - the current value will be calculated individually for all classes in each package. So the bounds will be checked for each class
+- `PACKAGE` - the current value will be calculated individually for all classes in each package. So the bounds will be checked for each package
 
 ## Merging reports
 If it is necessary to generate a report for a specific build variant using the Kover default report tasks, it is possible to combine the contents of the Android report and the default report.
