@@ -424,7 +424,7 @@ koverReport {
     }
 }
 ```
-This will add the contents of the reports of `release` Android build variant to default reports.
+This will add the reports contents of `release` Android build variant to default reports.
 
 This can be useful if only one command is run in a multimodule project for uniformity, instead of many different ones for each module.
 Or if in a multiplatform project it is necessary to generate a single report for JVM and Android targets.
