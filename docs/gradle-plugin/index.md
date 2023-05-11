@@ -141,7 +141,7 @@ In this case, starting default task like `koverHtmlReport` will result in a mess
 
 A special case is when JVM and Android targets are present in the project at the same time -
 in this case, Kover default tasks (e.g. `koverHtmlReport`) will generate reports for all JVM targets, and Kover Android tasks (e.g. `koverHtmlReportRelease`) generate reports for specific build variant.
-However, if there is a need for a single report to contain measurements for both JVM targets and for any Android build variant, in this case, [reports merging](configuring#merging-reports) is used.
+However, if there is a need for a single report to contain measurements for both JVM targets and for any Android build variant, [reports merging](configuring#merging-reports) can be used.
 ```kotlin
 koverReport {
     defaults {
@@ -286,7 +286,7 @@ kover {
 }
 ```
 
-**It is important that if used [dependencies in multi-project builds](#single-report-over-several-projects), one type of coverage library: embedded Kover or JaCoCo of the same version is used**
+**It is important that if [dependencies in multi-project builds](#single-report-over-several-projects) are specified, only one type of coverage library (embedded Kover or JaCoCo) is used across these projects**
 
 
 ## Implicit plugin dependencies
