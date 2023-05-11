@@ -40,20 +40,14 @@ public interface KoverProjectExtension {
     public fun disable()
 
     /**
-     * Configures plugin to use Kover coverage tool.
-     * This option is enabled by default, unless [JaCoCo][useJacocoTool] is enabled.
-     */
-    public fun useKoverTool()
-
-    /**
      * JaCoCo Coverage Tool with default version [JACOCO_TOOL_DEFAULT_VERSION].
      */
-    public fun useJacocoTool()
+    public fun useJacoco()
 
     /**
      * Coverage Tool by [JaCoCo](https://www.jacoco.org/jacoco/).
      */
-    public fun useJacocoTool(version: String)
+    public fun useJacoco(version: String)
 
     /**
      * Excludes from report all classes, defined in Java source files.

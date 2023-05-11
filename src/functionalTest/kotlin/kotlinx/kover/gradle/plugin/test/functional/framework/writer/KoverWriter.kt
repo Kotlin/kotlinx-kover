@@ -13,17 +13,13 @@ internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectEx
         writer.call("disable")
     }
 
-    override fun useKoverTool() {
-        writer.call("useKoverTool")
-    }
-
-    override fun useJacocoTool() {
-        writer.call("useJacocoTool")
+    override fun useJacoco() {
+        writer.call("useJacoco")
     }
 
 
-    override fun useJacocoTool(version: String) {
-        writer.call("useJacocoTool", version)
+    override fun useJacoco(version: String) {
+        writer.call("useJacoco", version)
     }
 
     override fun excludeJavaCode() {

@@ -95,9 +95,8 @@ private fun FormattedWriter.writeOverriddenTool(slice: BuildSlice) {
 
     call("kover") {
         val koverWriter = KoverWriter(this)
-        when (vendor) {
-            CoverageToolVendor.KOVER -> koverWriter.useKoverTool()
-            CoverageToolVendor.JACOCO -> koverWriter.useJacocoTool()
+        if (vendor == CoverageToolVendor.JACOCO) {
+            koverWriter.useJacoco()
         }
     }
 }

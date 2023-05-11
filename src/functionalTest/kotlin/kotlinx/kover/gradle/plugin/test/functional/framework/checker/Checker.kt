@@ -329,8 +329,7 @@ private fun String.kotlinPluginType(language: ScriptLanguage): AppliedKotlinPlug
 
 internal fun String.definedTool(): CoverageToolVariant? {
     when {
-        contains("useKoverTool()") -> return KoverToolDefaultVariant
-        contains("useJacocoTool()") -> return JacocoToolDefaultVariant
+        contains("useJacoco()") -> return JacocoToolDefaultVariant
     }
 
     val koverToolVersion = koverToolRegex.findAll(this).singleOrNull()?.groupValues?.getOrNull(1)

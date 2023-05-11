@@ -1,0 +1,16 @@
+---
+---
+
+@import "{{ site.theme }}";
+.inner{max-width:1280px;}
+#project_title {
+    visibility: hidden;
+    position: relative;
+}
+#project_title:after {
+    visibility: visible;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: "Kover - Kotlin Coverage Tool";
+}
