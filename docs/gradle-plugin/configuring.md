@@ -1,4 +1,4 @@
-# Description of configuring the Kover plugin
+# Configuring the Kover plugin
 - [Configuring default reports](#configuring-default-reports)
 - [Configuring Android reports](#configuring-android-reports)
 - [Reports filtering](#reports-filtering)
@@ -10,6 +10,7 @@
 ## Configuring default reports
 
 The full configuration for default reports is given below.
+These reports are avialable by default when Kover is applied by tasks such as  `:koverHtmlReport` and `:koverXmlReport`.
 
 See also [verification explanations](#verification)
 
