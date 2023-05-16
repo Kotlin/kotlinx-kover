@@ -40,7 +40,7 @@
             </a>
     </div>
     <div>
-0.7.0-SNAPSHOT    </div>
+0.7.0    </div>
     <div class="pull-right d-flex">
         <div class="filter-section" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":dokkaHtml/main">jvm</button>
@@ -58,7 +58,7 @@
   <div class="breadcrumbs"><a href="../../../index.html">Kover Gradle Plugin</a><span class="delimiter">/</span><a href="../index.html">kotlinx.kover.gradle.plugin.dsl</a><span class="delimiter">/</span><span class="current">KoverXmlReportConfig</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Kover</span><wbr></wbr><span>Xml</span><wbr></wbr><span>Report</span><wbr></wbr><span><span>Config</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverXmlReportConfig</a></div></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverXmlReportConfig</a></div><p class="paragraph">Configure Kover XML Report.</p><p class="paragraph">Example:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">...<br>xml {<br>    // Filter the classes that will be included in the XML report.<br>    // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.<br>    filters {<br>        // ...<br>    }<br><br>    // Generate an XML report when running the `check` task<br>    onCheck = false<br><br>    // Specify file to generate XML report<br>    setReportFile(layout.buildDirectory.file(&quot;my-xml-report.xml&quot;))<br>}<br> ...</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
