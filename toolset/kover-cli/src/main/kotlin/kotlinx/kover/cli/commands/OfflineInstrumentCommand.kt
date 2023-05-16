@@ -59,7 +59,7 @@ internal class OfflineInstrumentCommand : Command {
 
     override val name: String = "instrument"
 
-    override val description: String = "Off-line instrumentation of JVM class-files"
+    override val description: String = "Offline instrumentation of JVM class-files"
 
 
     override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {

@@ -120,7 +120,7 @@ tasks.withType<KotlinCompile>().configureEach {
 
 tasks.dokkaHtml {
     moduleName.set("Kover Gradle Plugin")
-    outputDirectory.set(layout.projectDirectory.dir("docs/dokka").asFile)
+    outputDirectory.set(layout.projectDirectory.dir("docs/gradle-plugin/dokka").asFile)
     dokkaSourceSets.configureEach {
         // source set configuration section
         perPackageOption {

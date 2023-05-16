@@ -8,7 +8,6 @@ import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
 import kotlinx.kover.gradle.plugin.tools.JacocoToolDefaultVariant
 import kotlinx.kover.gradle.plugin.tools.JacocoToolVariant
-import kotlinx.kover.gradle.plugin.tools.KoverToolDefaultVariant
 import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
 import org.gradle.kotlin.dsl.invoke
@@ -27,15 +26,11 @@ internal open class KoverProjectExtensionImpl @Inject constructor(objects: Objec
         disabled = true
     }
 
-    override fun useKoverTool() {
-        toolVariant = KoverToolDefaultVariant
-    }
-
-    override fun useJacocoTool() {
+    override fun useJacoco() {
         toolVariant = JacocoToolDefaultVariant
     }
 
-    override fun useJacocoTool(version: String) {
+    override fun useJacoco(version: String) {
         toolVariant = JacocoToolVariant(version)
     }
 

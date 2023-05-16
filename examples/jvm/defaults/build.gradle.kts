@@ -16,8 +16,6 @@ kover {
 
     excludeJavaCode()
 
-    useKoverTool()
-
     excludeInstrumentation {
         classes("com.example.subpackage.*")
     }
