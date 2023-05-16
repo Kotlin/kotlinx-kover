@@ -1,3 +1,4 @@
+# Kover Gradle Plugin
 ## Table of contents
 
 - [Features](#features)
