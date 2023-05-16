@@ -121,6 +121,11 @@ tasks.withType<KotlinCompile>().configureEach {
 tasks.dokkaHtml {
     moduleName.set("Kover Gradle Plugin")
     outputDirectory.set(layout.projectDirectory.dir("docs/gradle-plugin/dokka").asFile)
+
+    if (project.hasProperty("releaseVersion")) {
+        moduleVersion.set(project.property("releaseVersion") as String)
+    }
+
     dokkaSourceSets.configureEach {
         // source set configuration section
         perPackageOption {
@@ -190,6 +195,11 @@ tasks.register("prepareRelease") {
             include("**/*gradle")
             include("**/*gradle.kts")
         }.files.forEach {
+            it.replaceInFile(prevReleaseVersion, releaseVersion)
+        }
+
+        // replace versions in docs
+        dir.dir("docs").asFileTree.files.forEach {
             it.replaceInFile(prevReleaseVersion, releaseVersion)
         }
     }

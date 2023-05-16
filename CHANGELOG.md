@@ -1,3 +1,42 @@
+0.7.0 / 2023-05-16
+===================
+This release introduce API rework in order to support configuration cache, project isolation model, Android Gradle plugin.
+It is incompatible with the previous version, and we provide best-effort migration assistance as well as [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.7.0/docs/migration-to-0.7.0.md)
+
+### Features
+
+* Implemented improved Kover DSL (#284)
+* Added Gradle project isolation support (#144)
+* Introduced API for Coverage Tools (#195)
+* Added support of Android build variants (#18)
+* Implemented support filtering of source sets for Kotlin JVM and Kotlin compilations for Kotlin multiplatform (#245)
+* Added customizable header in HTML report for Kover and JaCoCo report generator (#194)
+* Added advanced support of Android projects, flavors and flavor dimensions (#316, #319)
+* Introduced Kover Tool artifacts for CLI and runtime for offline instrumentation (#322)
+* Added support charset for HTML report
+
+### Internal features
+* Added dokka docs
+* Added binary compatibility validator (#305)
+* IntelliJ coverage dependency versions upgraded to 1.0.716
+
+### Bugfixes
+* Fixed `Cannot run Project.afterEvaluate` (#221)
+* Fixed missing report path in logs for cached HTML task (#283)
+* Disabled artifact generation when calling the `assemble` task (#353)
+* Fixed variant level filters for reports (#366)
+
+### Changelog relative to version `0.7.0-Beta`
+#### Features
+* Added support charset for html report
+
+#### Bugfixes
+* Disabled artifact generation when calling the `assemble` task (#353)
+* Fixed variant level filters for reports (#366)
+
+#### Internal features
+* IntelliJ coverage dependency versions upgraded to 1.0.716
+
 0.7.0-Beta / 2023-04-21
 ===================
 ### Features
