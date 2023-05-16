@@ -66,7 +66,7 @@ public interface KoverProjectExtension {
     public fun excludeTests(config: Action<KoverTestsExclusions>)
 
     /**
-     * Exclude specified class from instrumentation.
+     * Excludes specified class from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -135,21 +135,38 @@ public interface KoverProjectExtension {
     }
 }
 
+/**
+ * Disables instrumentation of test tasks.
+ *
+ * This means that even if the excluded tests are executed, the function calls that happened in it will not be counted in the coverage reports.
+ *
+ * As a side effect, reports stop depending on the specified test tasks.
+ *
+ * Example:
+ * ```
+ * kover {
+ *     excludeTests {
+ *         tasks("test1", "test2")
+ *         mppTargetName("jvm")
+ *     }
+ * }
+ * ```
+ */
 public interface KoverTestsExclusions {
 
     /**
-     * Disables instrumentation of specified tests.
+     * Disables instrumentation of specified test tasks.
      *
-     * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+     * This means that even if the tests from excluded tasks are executed, the function calls that happened in it will not be counted in the coverage reports.
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
     public fun tasks(vararg name: String)
 
     /**
-     * Disables instrumentation of specified tests.
+     * Disables instrumentation of specified test tasks.
      *
-     * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+     * This means that even if the tests from excluded tasks are executed, the function calls that happened in it will not be counted in the coverage reports.
      *
      * As a side effect, reports cease to depend on the specified test tasks.
      */
@@ -158,7 +175,7 @@ public interface KoverTestsExclusions {
     /**
      * Disables instrumentation of test tasks owned by the specified MPP targets.
      *
-     * This means that even if the excluded test is executed, the function calls that occurred in it will not be counted in the reports.
+     * This means that even if the tests from excluded task is executed, the function calls that occurred in it will not be counted in the reports.
      *
      * As a side effect, reports cease to depend on the relevant test tasks.
      */
@@ -189,47 +206,69 @@ internal interface KoverCompilationsExclusions {
 
 internal interface KoverJvmSourceSet {
     /**
-     * Exclude specified source sets from report.
+     * Excludes specified source sets from report.
      *
      * As a side effect, reports cease to depend on the task of compiling this source sets.
      */
     public fun sourceSetName(vararg name: String)
 
     /**
-     * Exclude specified source sets from report.
+     * Excludes specified source sets from report.
      *
      * As a side effect, reports cease to depend on the task of compiling this source sets.
      */
     public fun sourceSetName(names: Iterable<String>)
 }
 
+/**
+ * Internal API that will be open in the future.
+ */
 internal interface KoverMppSourceSet {
     /**
-     * Exclude sources of specified targets from Kotlin MPP reports.
+     * Excludes sources of specified targets from Kotlin MPP reports.
      *
      * As a side effect, reports cease to depend on the task of compiling specified targets.
      */
     public fun targetName(vararg name: String)
 
     /**
-     * Exclude sources of specified Kotlin compilations from Kotlin MPP reports.
+     * Excludes sources of specified Kotlin compilations from Kotlin MPP reports.
      *
      * As a side effect, reports cease to depend on the task of compiling specified compilations.
      */
     public fun compilation(targetName: String, compilationName: String)
 
     /**
-     * Exclude sources of all Kotlin compilations with specified name from Kotlin MPP reports.
+     * Excludes sources of all Kotlin compilations with specified name from Kotlin MPP reports.
      *
      * As a side effect, reports cease to depend on the task of compiling specified compilations.
      */
     public fun compilation(compilationName: String)
 }
 
-
+/**
+ * Excludes classes from instrumentation.
+ *
+ * This means that even if these classes were actually invoked, their coverage will always be 0 in reports.
+ *
+ * This is necessary when there are errors in the instrumentation of classes from external dependencies, for example https://github.com/Kotlin/kotlinx-kover/issues/89
+ *
+ * Example:
+ * ```
+ * kover {
+ *     excludeInstrumentation {
+ *         // excludes from instrumentations classes by fully-qualified JVM class name, wildcards '*' and '?' are available
+ *         classes("*Foo*", "*Bar")
+ *
+ *         // excludes from instrumentations all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+ *         packages("com.project")
+ *     }
+ * }
+ * ```
+ */
 public interface KoverInstrumentationExclusions {
     /**
-     * Exclude specified classes from instrumentation.
+     * Excludes specified classes from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -238,7 +277,7 @@ public interface KoverInstrumentationExclusions {
     public fun classes(vararg names: String)
 
     /**
-     * Exclude specified classes from instrumentation.
+     * Excludes specified classes from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -247,7 +286,7 @@ public interface KoverInstrumentationExclusions {
     public fun classes(names: Iterable<String>)
 
     /**
-     * Exclude classes from specified packages and its subpackages from instrumentation.
+     * Excludes classes from specified packages and its subpackages from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
@@ -256,7 +295,7 @@ public interface KoverInstrumentationExclusions {
     public fun packages(vararg names: String)
 
     /**
-     * Exclude classes from specified packages and its subpackages from instrumentation.
+     * Excludes classes from specified packages and its subpackages from instrumentation.
      *
      * This means that even if these classes were actually called, their coverage will always be 0 in reports.
      *
