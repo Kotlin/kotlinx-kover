@@ -1,7 +1,7 @@
 0.7.0 / 2023-05-16
 ===================
 This release introduce API rework in order to support configuration cache, project isolation model, Android Gradle plugin.
-It is incompatible with the previous version, and we provide best-effort migration assistance as well as [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.7.0/docs/migration-to-0.7.0.md)
+It is incompatible with the previous version, and we provide best-effort migration assistance as well as [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.7.0/docs/gradle-plugin/migrations/migration-to-0.7.0.md)
 
 ### Features
 
