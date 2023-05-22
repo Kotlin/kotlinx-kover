@@ -10,7 +10,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.common.logInfo
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import java.io.*
 
-internal fun File.runAndCheck(runs: List<TestRunConfig>) {
+internal fun File.runAndCheck(steps: List<TestExecutionStep>) {
     logInfo(
         """
 Project builds are being started, directory ${this.absolutePath}
@@ -20,13 +20,32 @@ ${this.buildScript()}
     """.trimIndent()
     )
 
-    runs.forEachIndexed { i, run ->
-        val description = "run #$i, commands: '${run.args.joinToString(" ")}'\nProject dir: ${this.uri}"
+    steps.forEachIndexed { i, step ->
+        val description = "step #$i, ${step.name}\nProject dir: ${this.uri}"
 
-        val runResult = this.runGradleBuild(run.args, i)
+        when(step) {
+            is TestGradleStep -> {
+                val runResult = this.runGradleBuild(step.args, i)
+                createCheckerContext(runResult)
+                    .check(description, step.errorExpected, step.checker)
+            }
+            is TestFileEditStep -> {
+                if (File(step.filePath).isAbsolute) {
+                    throw Exception("It is not allowed to edit a file by an absolute path. For $description")
+                }
 
-        createCheckerContext(runResult)
-            .check(description, run.errorExpected, run.checker)
+                val file = this.resolve(step.filePath)
+                if (!file.exists()) {
+                    throw Exception("Project file not found for editing. For $description")
+                }
+
+                val content = file.readText()
+                val newContent = step.editor(content)
+                file.writeText(newContent)
+            }
+        }
+
+
     }
 }
 

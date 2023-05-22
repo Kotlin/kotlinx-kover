@@ -19,19 +19,32 @@ internal fun createConfigurator(): BuildConfigurator {
  */
 internal class TestBuildConfig(
     val projects: Map<String, TestProjectConfigurator>,
-    val runs: List<TestRunConfig>,
+    val steps: List<TestExecutionStep>,
     val useLocalCache: Boolean
 )
 
-internal data class TestRunConfig(
+internal sealed class TestExecutionStep {
+    abstract val name: String
+}
+
+internal data class TestGradleStep(
     val args: List<String>,
     val checker: CheckerContext.() -> Unit,
     val errorExpected: Boolean = false
-)
+): TestExecutionStep() {
+    override val name: String = "Gradle: '${args.joinToString(" ")}'"
+}
+
+internal data class TestFileEditStep(
+    val filePath: String,
+    val editor: (String) -> String
+): TestExecutionStep() {
+    override val name: String = "Edit: $filePath"
+}
 
 private open class TestBuildConfigurator : BuildConfigurator {
     private val projects: MutableMap<String, TestProjectConfigurator> = mutableMapOf()
-    private val runs: MutableList<TestRunConfig> = mutableListOf()
+    private val steps: MutableList<TestExecutionStep> = mutableListOf()
     private var useCache: Boolean = false
 
     override fun addProject(path: String, name: String, generator: ProjectConfigurator.() -> Unit) {
@@ -60,11 +73,15 @@ private open class TestBuildConfigurator : BuildConfigurator {
     }
 
     override fun run(vararg args: String, checker: CheckerContext.() -> Unit) {
-        runs += TestRunConfig(listOf(*args), checker)
+        steps += TestGradleStep(listOf(*args), checker)
+    }
+
+    override fun edit(filePath: String, editor: (String) -> String) {
+        steps += TestFileEditStep(filePath, editor)
     }
 
     override fun runWithError(vararg args: String, errorChecker: CheckerContext.() -> Unit) {
-        runs += TestRunConfig(listOf(*args), errorChecker, true)
+        steps += TestGradleStep(listOf(*args), errorChecker, true)
     }
 
     override fun useLocalCache(use: Boolean) {
@@ -72,7 +89,7 @@ private open class TestBuildConfigurator : BuildConfigurator {
     }
 
     override fun prepare(): TestBuildConfig {
-        return TestBuildConfig(projects, runs, useCache)
+        return TestBuildConfig(projects, steps, useCache)
     }
 
 }

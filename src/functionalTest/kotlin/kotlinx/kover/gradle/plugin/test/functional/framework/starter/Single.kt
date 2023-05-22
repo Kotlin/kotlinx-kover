@@ -4,7 +4,6 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.starter
 
-import kotlinx.kover.api.*
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
@@ -74,7 +73,7 @@ private class SingleTestInterceptor : InvocationInterceptor {
         dir.writeBuild(config, slice)
         logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
 
-        dir.runAndCheck(config.runs)
+        dir.runAndCheck(config.steps)
         // clear directory if where are no errors
         logInfo("Build successfully for slice ($slice), deleting the directory ${dir.uri}")
         dir.deleteRecursively()

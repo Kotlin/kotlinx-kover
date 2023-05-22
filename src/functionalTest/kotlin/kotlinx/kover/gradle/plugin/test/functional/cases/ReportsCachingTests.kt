@@ -14,24 +14,36 @@ internal class ReportsCachingTests {
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
-            checkDefaultRawReport()
-            checkDefaultReports()
-            checkOutcome("test", "SUCCESS")
-            checkOutcome("koverXmlReport", "SUCCESS")
-            checkOutcome("koverHtmlReport", "SUCCESS")
-        }
+        runAndCheckCached("SUCCESS")
+
         run("clean", "--build-cache") {
             checkDefaultRawReport(false)
             checkDefaultReports(false)
         }
-        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
-            checkDefaultRawReport()
-            checkDefaultReports()
-            checkOutcome("test", "FROM-CACHE")
-            checkOutcome("koverXmlReport", "FROM-CACHE")
-            checkOutcome("koverHtmlReport", "FROM-CACHE")
+        runAndCheckCached("FROM-CACHE")
+    }
+
+    @SlicedGeneratedTest(allTools = true)
+    fun BuildConfigurator.testOuOfDateOnSources() {
+        useLocalCache()
+
+        addProjectWithKover {
+            sourcesFrom("simple")
         }
+        runAndCheckCached("SUCCESS")
+
+        edit("src/main/kotlin/Sources.kt") {
+            "$it\n class Additional"
+        }
+        // tasks must be restarted after the source code is edited
+        runAndCheckCached("SUCCESS")
+
+        edit("src/test/kotlin/TestClass.kt") {
+            "$it\n class AdditionalTest"
+        }
+
+        // tasks must be restarted after tests are edited
+        runAndCheckCached("SUCCESS")
     }
 
     @SlicedGeneratedTest(allTools = true)
@@ -41,24 +53,22 @@ internal class ReportsCachingTests {
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
-            checkDefaultRawReport()
-            checkDefaultReports()
-            checkOutcome("test", "SUCCESS")
-            checkOutcome("koverXmlReport", "SUCCESS")
-            checkOutcome("koverHtmlReport", "SUCCESS")
-        }
+        runAndCheckCached("SUCCESS")
         run("clean", "--build-cache") {
             checkDefaultRawReport(false)
             checkDefaultReports(false)
         }
+        runAndCheckCached("FROM-CACHE")
+    }
+
+
+    private fun BuildConfigurator.runAndCheckCached(outcome: String) {
         run("koverXmlReport", "koverHtmlReport", "--build-cache") {
             checkDefaultRawReport()
             checkDefaultReports()
-            checkOutcome("test", "FROM-CACHE")
-            checkOutcome("koverXmlReport", "FROM-CACHE")
-            checkOutcome("koverHtmlReport", "FROM-CACHE")
+            checkOutcome("test", outcome)
+            checkOutcome("koverXmlReport", outcome)
+            checkOutcome("koverHtmlReport", outcome)
         }
     }
-
 }
