@@ -16,6 +16,7 @@ import org.gradle.api.tasks.*
 import org.gradle.configurationcache.extensions.*
 import org.gradle.kotlin.dsl.*
 import org.gradle.process.*
+import java.io.File
 
 
 internal abstract class AbstractKoverReportTask(@Internal protected val tool: CoverageTool) : DefaultTask() {
@@ -30,6 +31,22 @@ internal abstract class AbstractKoverReportTask(@Internal protected val tool: Co
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val reportClasspath: ConfigurableFileCollection = project.objects.fileCollection()
+
+    /**
+     * This will cause the task to be considered out-of-date when source files have changed.
+     */
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    internal val sources: Collection<File>
+        get() = collectAllFiles().sources
+
+    /**
+     * This will cause the task to be considered out-of-date when binary reports have changed.
+     */
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    internal val reports: Collection<File>
+        get() = collectAllFiles().reports
 
     @get:Nested
     val toolVariant: CoverageToolVariant = tool.variant

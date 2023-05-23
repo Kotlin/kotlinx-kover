@@ -67,7 +67,7 @@ private class SlicedTestInterceptor : InvocationInterceptor {
         dir.writeBuild(config, slice)
         logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
 
-        dir.runAndCheck(config.runs)
+        dir.runAndCheck(config.steps)
         // clear directory if where are no errors
         logInfo("Build successfully for slice ($slice), deleting the directory ${dir.uri}")
         dir.deleteRecursively()
