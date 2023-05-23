@@ -8,19 +8,34 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
 internal class ReportsCachingTests {
     @SlicedGeneratedTest(allTools = true)
+    fun BuildConfigurator.testNoCaching() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+        }
+        reportAndCheck("SUCCESS")
+        reportAndCheck("UP-TO-DATE")
+
+        run("clean") {
+            checkDefaultRawReport(false)
+            checkDefaultReports(false)
+        }
+        reportAndCheck("SUCCESS")
+    }
+
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testCaching() {
         useLocalCache()
 
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        runAndCheckCached("SUCCESS")
+        reportAndCheck("SUCCESS", true)
 
         run("clean", "--build-cache") {
             checkDefaultRawReport(false)
             checkDefaultReports(false)
         }
-        runAndCheckCached("FROM-CACHE")
+        reportAndCheck("FROM-CACHE", true)
     }
 
     @SlicedGeneratedTest(allTools = true)
@@ -30,20 +45,20 @@ internal class ReportsCachingTests {
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        runAndCheckCached("SUCCESS")
+        reportAndCheck("SUCCESS", true)
 
         edit("src/main/kotlin/Sources.kt") {
             "$it\n class Additional"
         }
         // tasks must be restarted after the source code is edited
-        runAndCheckCached("SUCCESS")
+        reportAndCheck("SUCCESS", true)
 
         edit("src/test/kotlin/TestClass.kt") {
             "$it\n class AdditionalTest"
         }
 
         // tasks must be restarted after tests are edited
-        runAndCheckCached("SUCCESS")
+        reportAndCheck("SUCCESS", true)
     }
 
     @SlicedGeneratedTest(allTools = true)
@@ -53,17 +68,22 @@ internal class ReportsCachingTests {
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        runAndCheckCached("SUCCESS")
+        reportAndCheck("SUCCESS", true)
         run("clean", "--build-cache") {
             checkDefaultRawReport(false)
             checkDefaultReports(false)
         }
-        runAndCheckCached("FROM-CACHE")
+        reportAndCheck("FROM-CACHE", true)
     }
 
 
-    private fun BuildConfigurator.runAndCheckCached(outcome: String) {
-        run("koverXmlReport", "koverHtmlReport", "--build-cache") {
+    private fun BuildConfigurator.reportAndCheck(outcome: String, cached: Boolean = false) {
+        val args = if (cached) {
+            arrayOf("koverXmlReport", "koverHtmlReport", "--build-cache")
+        } else {
+            arrayOf("koverXmlReport", "koverHtmlReport")
+        }
+        run(*args) {
             checkDefaultRawReport()
             checkDefaultReports()
             checkOutcome("test", outcome)
