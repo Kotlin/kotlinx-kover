@@ -24,8 +24,8 @@ If this is not feasible, give an example of the code on which the problem manife
 If applicable, report files or screenshots.
 
 **Environment**
- - Kover Gradle Plugin version: [e.g. 0.7.0-Alpha]
- - Gradle version: [e.g. 7.5.1]
- - Kotlin project type: [e.g. Kotlin/JVM, Kotlin/Multiplatform, Kotlin/Android]
- - Coverage Engine version (if customized in build script): [e.g. DefaultJacocoEngine, KoverEngine("1.0.656")]
+ - Kover Gradle Plugin version: [e.g. 0.7.0]
+ - Gradle version: [e.g. 8.1.1]
+ - Kotlin project type: [e.g. Kotlin/JVM, Kotlin/Multiplatform, Kotlin/Android,  Kotlin/Multiplatform + Android]
+ - Coverage Toolset (if customized in build script): [e.g. Kover, JaCoCo, JaCoCo("0.8.10")]
  - Other context important for this bug: [e.g. OS version]
