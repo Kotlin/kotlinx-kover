@@ -42,7 +42,7 @@ koverReport {
                     classes("com.example.*")
                     // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
                     packages("com.another.subpackage")
-                    // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                    // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
                 }
 
@@ -78,7 +78,7 @@ koverReport {
                     classes("com.example.*")
                     // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
                     packages("com.another.subpackage")
-                    // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                    // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
                 }
 
@@ -112,7 +112,7 @@ koverReport {
                         classes("com.example.*")
                         // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
                         packages("com.another.subpackage")
-                        // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                        // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                         annotatedBy("*Generated*")
                     }
                     includes {
@@ -183,7 +183,7 @@ koverReport {
                     classes("com.example.*")
                     // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
                     packages("com.another.subpackage")
-                    // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                    // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
                 }
 
@@ -219,7 +219,7 @@ koverReport {
                     classes("com.example.*")
                     // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
                     packages("com.another.subpackage")
-                    // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                    // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
                 }
 
@@ -253,7 +253,7 @@ koverReport {
                         classes("com.example.*")
                         // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
                         packages("com.another.subpackage")
-                        // excludes all classes and functions, annotated by specified annotations, wildcards '*' and '?' are available
+                        // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                         annotatedBy("*Generated*")
                     }
                     includes {
@@ -298,6 +298,9 @@ Exclusion rules are names of the classes that must be excluded from the report. 
 
 If inclusion and exclusion rules are specified at the same time, then excludes have priority over includes.
 This means that even if a class is specified in both the inclusion and exclusion rules, it will be excluded from the report (e.g. class `com.example.Class1` above).
+
+It is acceptable to filter a class from the report by its fully-qualified name - using `classes` or `packages`. Also acceptable to filter a class, function or getter marked with the specified annotation - `annotatedBy`.
+**Kover supports filtering by annotations having `AnnotationRetention` `BINARY` or `RUNTIME`.
 
 [Wildcards](#class-name-with-wildcards) `*` and `?` are allowed in class names.
 
