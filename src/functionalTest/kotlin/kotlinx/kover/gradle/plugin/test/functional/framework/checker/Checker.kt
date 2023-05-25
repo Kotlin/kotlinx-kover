@@ -56,19 +56,19 @@ private class CheckerContextImpl(
                 throw AssertionError("Build error expected")
             }
         }
-        if (buildErrorExpected == false) {
-            if (!result.isSuccessful) {
-                throw AssertionError("Build error")
-            }
-        }
 
-        if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
-            output.contains("Android Gradle plugin requires Java 11 to run.")
-        ) {
-            if (isAndroidTestDisabled) {
-                throw TestAbortedException("Android tests are disabled")
-            } else {
-                throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -Pkover.test.android.sdk. To ignore Android tests pass parameter -Pkover.test.android.disable")
+        if (!result.isSuccessful) {
+            if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
+                output.contains("Android Gradle plugin requires Java 11 to run.")
+            ) {
+                if (isAndroidTestDisabled) {
+                    throw TestAbortedException("Android tests are disabled")
+                } else {
+                    throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -Pkover.test.android.sdk. To ignore Android tests pass parameter -Pkover.test.android.disable")
+                }
+            }
+            if (buildErrorExpected == false) {
+                throw AssertionError("Build error")
             }
         }
 
