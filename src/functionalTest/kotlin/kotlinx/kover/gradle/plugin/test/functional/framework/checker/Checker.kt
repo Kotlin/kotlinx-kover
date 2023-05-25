@@ -59,7 +59,8 @@ private class CheckerContextImpl(
 
         if (!result.isSuccessful) {
             if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
-                output.contains("Android Gradle plugin requires Java 11 to run.")
+                output.contains("Android Gradle plugin requires Java 11 to run.")  ||
+                output.contains("Could not resolve com.android.tools.build:gradle:")
             ) {
                 if (isAndroidTestDisabled) {
                     throw TestAbortedException("Android tests are disabled")
