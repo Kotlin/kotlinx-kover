@@ -33,20 +33,42 @@ internal abstract class AbstractKoverReportTask(@Internal protected val tool: Co
     val reportClasspath: ConfigurableFileCollection = project.objects.fileCollection()
 
     /**
-     * This will cause the task to be considered out-of-date when source files have changed.
+     * This will cause the task to be considered out-of-date when source files of dependencies have changed.
      */
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal val sources: Collection<File>
-        get() = collectAllFiles().sources
+    internal val externalSources: Provider<Set<File>> = externalArtifacts.elements.map {
+        val content = ArtifactContent(emptySet(), emptySet(), emptySet())
+        content.joinWith(it.map { file -> file.asFile.parseArtifactFile() }).sources
+    }
 
     /**
-     * This will cause the task to be considered out-of-date when binary reports have changed.
+     * This will cause the task to be considered out-of-date when coverage measurements of dependencies have changed.
      */
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal val reports: Collection<File>
-        get() = collectAllFiles().reports
+    internal val externalReports: Provider<Set<File>> = externalArtifacts.elements.map {
+        val content = ArtifactContent(emptySet(), emptySet(), emptySet())
+        content.joinWith(it.map { file -> file.asFile.parseArtifactFile() }).reports
+    }
+
+    /**
+     * This will cause the task to be considered out-of-date when source files of this project have changed.
+     */
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    internal val localSources: Provider<Set<File>> = localArtifact.map {
+        it.asFile.parseArtifactFile().sources
+    }
+
+    /**
+     * This will cause the task to be considered out-of-date when coverage measurements of this project have changed.
+     */
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    internal val localReports: Provider<Set<File>> = localArtifact.map {
+        it.asFile.parseArtifactFile().reports
+    }
 
     @get:Nested
     val toolVariant: CoverageToolVariant = tool.variant
