@@ -98,7 +98,7 @@ fun MavenPublication.signPublicationIfKeyPresent() {
                 // declaring an explicit dependency between tasks
                 tasks.withType<PublishToMavenRepository>().configureEach {
                     if (this.publication.name == this@signPublicationIfKeyPresent.name) {
-                        this.dependsOn(dependsOn(signTasks))
+                        this.dependsOn(signTasks)
                     }
                 }
             }
