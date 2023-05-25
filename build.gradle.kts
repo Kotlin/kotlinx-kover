@@ -27,7 +27,7 @@ val junitParallelism = findProperty("kover.test.junit.parallelism")?.toString()
 
 sourceSets {
     create("functionalTest") {
-        compileClasspath += sourceSets.main.get().output + configurations.testRuntimeClasspath
+        compileClasspath += files(sourceSets.main.get().output, configurations.testRuntimeClasspath)
         runtimeClasspath += output + compileClasspath
     }
 }
@@ -109,6 +109,7 @@ tasks.check { dependsOn(functionalTest) }
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
         allWarningsAsErrors = true
+        jvmTarget = "1.8"
 
         // Kover works with the stdlib of at least version `1.4.x`
         languageVersion = "1.4"

@@ -5,7 +5,6 @@
 package kotlinx.kover.gradle.plugin.commons
 
 import kotlinx.kover.gradle.plugin.tools.*
-import org.gradle.configurationcache.extensions.capitalized
 import java.io.File
 
 

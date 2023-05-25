@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright 2000-2023 JetBrains s.r.o.
  *
@@ -25,8 +27,8 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_6
-    targetCompatibility = JavaVersion.VERSION_1_6
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 dependencies {
@@ -34,6 +36,12 @@ dependencies {
     implementation("args4j:args4j:2.33")
 
     testImplementation(kotlin("test"))
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 tasks.jar {

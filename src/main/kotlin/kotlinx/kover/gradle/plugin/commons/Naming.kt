@@ -7,7 +7,7 @@ package kotlinx.kover.gradle.plugin.commons
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_HTML_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_VERIFY_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_XML_REPORT_NAME
-import org.gradle.configurationcache.extensions.capitalized
+import java.util.*
 
 /**
  * Name of the default Kover variant.
@@ -65,3 +65,12 @@ internal fun localArtifactConfigurationName(namespace: String): String = "koverA
  * Name of the Gradle configuration for collecting Kover artifacts from dependencies.
  */
 internal fun externalArtifactConfigurationName(namespace: String): String = "koverExternalArtifacts${namespace.capitalized()}"
+
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+internal fun String.capitalized(): String {
+    return when {
+        isEmpty() -> this
+        length == 1 -> (this as java.lang.String).toUpperCase(Locale.ROOT)
+        else -> Character.toUpperCase(this[0]) + this.substring(1)
+    }
+}

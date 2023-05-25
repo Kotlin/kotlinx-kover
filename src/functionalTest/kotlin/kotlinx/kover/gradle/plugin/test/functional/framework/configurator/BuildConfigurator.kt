@@ -30,7 +30,7 @@ internal sealed class TestExecutionStep {
 internal data class TestGradleStep(
     val args: List<String>,
     val checker: CheckerContext.() -> Unit,
-    val errorExpected: Boolean = false
+    val errorExpected: Boolean? = null
 ): TestExecutionStep() {
     override val name: String = "Gradle: '${args.joinToString(" ")}'"
 }
@@ -72,16 +72,12 @@ private open class TestBuildConfigurator : BuildConfigurator {
         }
     }
 
-    override fun run(vararg args: String, checker: CheckerContext.() -> Unit) {
-        steps += TestGradleStep(listOf(*args), checker)
+    override fun run(vararg args: String, errorExpected: Boolean?, checker: CheckerContext.() -> Unit) {
+        steps += TestGradleStep(listOf(*args), checker, errorExpected)
     }
 
     override fun edit(filePath: String, editor: (String) -> String) {
         steps += TestFileEditStep(filePath, editor)
-    }
-
-    override fun runWithError(vararg args: String, errorChecker: CheckerContext.() -> Unit) {
-        steps += TestGradleStep(listOf(*args), errorChecker, true)
     }
 
     override fun useLocalCache(use: Boolean) {

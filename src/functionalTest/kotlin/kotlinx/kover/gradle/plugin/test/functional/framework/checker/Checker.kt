@@ -15,27 +15,9 @@ import java.io.*
 import javax.xml.parsers.*
 import kotlin.test.*
 
-
-internal fun File.checkResult(
-    result: BuildResult,
-    description: String,
-    buildErrorExpected: Boolean,
-    checker: CheckerContext.() -> Unit
-) {
-    try {
-        val checkerContext = createCheckerContext(result)
-        checkerContext.prepare(buildErrorExpected)
-        checkerContext.checker()
-    } catch (e: TestAbortedException) {
-        throw e
-    } catch (e: Throwable) {
-        throw AssertionError("${e.message}\n For $description\n\n${result.output}", e)
-    }
-}
-
 internal inline fun CheckerContext.check(
     description: String,
-    buildErrorExpected: Boolean = false,
+    buildErrorExpected: Boolean? = false,
     checker: CheckerContext.() -> Unit
 ){
     try {
@@ -63,27 +45,30 @@ private class CheckerContextImpl(
     override val output: String = result.output
 
     override val defaultRawReport: String
-        get() {
-            return rawReportsDirectory + "/" + defaultTestTaskName(project.kotlinPlugin.type!!) + "." + project.toolVariant.vendor.rawReportExtension
-        }
+        get() = rawReportsDirectory + "/" + defaultTestTaskName(project.kotlinPlugin.type!!) + "." + project.toolVariant.vendor.rawReportExtension
 
-    override fun prepare(buildErrorExpected: Boolean) {
-        if (result.isSuccessful) {
-            if (buildErrorExpected) {
+    override val hasError: Boolean
+        get() = !result.isSuccessful
+
+    override fun prepare(buildErrorExpected: Boolean?) {
+        if (buildErrorExpected == true) {
+            if (result.isSuccessful) {
                 throw AssertionError("Build error expected")
             }
-        } else {
-            if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
-                output.contains("Android Gradle plugin requires Java 11 to run.")
-            ) {
-                if (isAndroidTestDisabled) {
-                    throw TestAbortedException("Android tests are disabled")
-                } else {
-                    throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -Pkover.test.android.sdk. To ignore Android tests pass parameter -Pkover.test.android.disable")
-                }
-            }
-            if (!buildErrorExpected) {
+        }
+        if (buildErrorExpected == false) {
+            if (!result.isSuccessful) {
                 throw AssertionError("Build error")
+            }
+        }
+
+        if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
+            output.contains("Android Gradle plugin requires Java 11 to run.")
+        ) {
+            if (isAndroidTestDisabled) {
+                throw TestAbortedException("Android tests are disabled")
+            } else {
+                throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -Pkover.test.android.sdk. To ignore Android tests pass parameter -Pkover.test.android.disable")
             }
         }
 
@@ -410,7 +395,10 @@ private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val conte
 
     override fun assertJaCoCoResult(expected: String) {
         if (context.project.toolVariant.vendor != CoverageToolVendor.JACOCO) return
-        assertEquals(expected, content, "Unexpected verification result for JaCoCo Tool")
+        val regex = expected.wildcardsToRegex().toRegex()
+        if (!content.matches(regex)) {
+            throw AssertionError("Unexpected verification result for JaCoCo Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
+        }
     }
 }
 

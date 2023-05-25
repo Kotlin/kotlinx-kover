@@ -13,11 +13,9 @@ internal interface BuildConfigurator {
 
     fun addProject(path: String, name: String, generator: ProjectConfigurator.() -> Unit)
 
-    fun run(vararg args: String, checker: CheckerContext.() -> Unit = {})
+    fun run(vararg args: String, errorExpected: Boolean? = false, checker: CheckerContext.() -> Unit = {})
 
     fun edit(filePath: String, editor: (String) -> String)
-
-    fun runWithError(vararg args: String, errorChecker: CheckerContext.() -> Unit = {})
 
     fun useLocalCache(use: Boolean = true)
 
@@ -59,16 +57,12 @@ internal abstract class BuilderConfiguratorWrapper(private val origin: BuildConf
         origin.addProject(path, name, generator)
     }
 
-    override fun run(vararg args: String, checker: CheckerContext.() -> Unit) {
-        origin.run(*args) { checker() }
+    override fun run(vararg args: String, errorExpected: Boolean?, checker: CheckerContext.() -> Unit) {
+        origin.run(*args, errorExpected = errorExpected) { checker() }
     }
 
     override fun edit(filePath: String, editor: (String) -> String) {
         origin.edit(filePath, editor)
-    }
-
-    override fun runWithError(vararg args: String, errorChecker: CheckerContext.() -> Unit) {
-        origin.runWithError(*args) { errorChecker() }
     }
 
     override fun useLocalCache(use: Boolean) {
