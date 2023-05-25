@@ -106,6 +106,7 @@ fun MavenPublication.signPublicationIfKeyPresent() {
     }
 }
 
+
 fun MavenPublication.addMetadata() {
     pom {
         if (!name.isPresent) {
