@@ -48,13 +48,15 @@ publishing {
         archiveClassifier.set("sources")
         from(sources)
     }
-
     publications.withType<MavenPublication>().configureEach {
         addMetadata()
         signPublicationIfKeyPresent()
 
         artifact(javadocJar)
         artifact(sourcesJar)
+    }
+    tasks.withType<PublishToMavenRepository>().configureEach {
+        dependsOn(tasks.withType<Sign>())
     }
 }
 
@@ -91,17 +93,7 @@ fun MavenPublication.signPublicationIfKeyPresent() {
     if (!signingKey.isNullOrBlank()) {
         extensions.configure<SigningExtension>("signing") {
             useInMemoryPgpKeys(keyId, signingKey, signingKeyPassphrase)
-            val signTasks = sign(this@signPublicationIfKeyPresent)
-
-            afterEvaluate {
-                // troubleshooting the error "Task ':publishXXXToYYY' uses this output of task ':signXXXPublication' without declaring an explicit or implicit dependency"
-                // declaring an explicit dependency between tasks
-                tasks.withType<PublishToMavenRepository>().configureEach {
-                    if (this.publication.name == this@signPublicationIfKeyPresent.name) {
-                        this.dependsOn(signTasks)
-                    }
-                }
-            }
+            sign(this@signPublicationIfKeyPresent)
         }
     }
 }
