@@ -88,7 +88,7 @@ public interface KoverReportExtension {
      *
      * example:
      * ```
-     * kover {
+     * koverReport {
      *      defaults {
      *          // add content of reports for specified variant to default reports
      *          mergeWith("buildVariant")
@@ -119,7 +119,7 @@ public interface KoverReportExtension {
      *
      * example:
      * ```
-     * kover {
+     * koverReport {
      *      androidReports("debug") {
      *          filters {
      *              // override report filters for reports of 'debug' Android build variant
