@@ -72,56 +72,17 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : Compil
                     && it.name !in koverExtension.tests.tasksNames
                     // skip this test if it disabled by its JVM target name
                     && it.bean().property<String>("targetName") == targetName
-                    && it.bean().property("targetName") !in koverExtension.tests.mppTargetNames
         }
 
         val compilations = project.provider {
-            extractJvmCompilations(koverExtension, target)
-        }
-
-        return JvmCompilationKit(targetName, tests, compilations)
-    }
-
-    private fun extractJvmCompilations(
-        koverExtension: KoverProjectExtensionImpl,
-        target: DynamicBean
-    ): Map<String, CompilationUnit> {
-        val excludedCompilationsByTarget = koverExtension.compilations.mpp.compilationsByTarget
-
-        val compilations = target.propertyBeans("compilations").filter {
-            val name = it.property<String>("name")
-            val targetName = it["target"].property<String>("name")
-
-            // always ignore test source set by default
-            name != SourceSet.TEST_SOURCE_SET_NAME
-                    // ignore compilation for all JVM targets
-                    && name !in koverExtension.compilations.mpp.compilationsForAllTargets
-                    // ignore compilation for specified JVM target
-                    && excludedCompilationsByTarget[targetName]?.contains(name) != true
-                    // ignore all compilations fro specified JVM target
-                    && targetName !in koverExtension.compilations.mpp.allCompilationsInTarget
-        }
-
-        return compilations.associate { compilation ->
-            val name = compilation.property<String>("name")
-            name to extractJvmCompilation(koverExtension, compilation)
-        }
-    }
-
-    private fun extractJvmCompilation(
-        koverExtension: KoverProjectExtensionImpl,
-        compilation: DynamicBean
-    ): CompilationUnit {
-        return if (koverExtension.disabled) {
-            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
-            CompilationUnit()
-        } else {
-            compilation.asJvmCompilationUnit(koverExtension.excludeJava) {
+            target.extractJvmCompilations(koverExtension) {
                 // exclude java classes from report. Expected java class files are placed in directories like
                 //   build/classes/java/main
                 it.parentFile.name == "java"
             }
         }
+
+        return JvmCompilationKit(targetName, tests, compilations)
     }
 
 }

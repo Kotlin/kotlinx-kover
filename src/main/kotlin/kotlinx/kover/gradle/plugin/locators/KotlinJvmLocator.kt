@@ -37,7 +37,11 @@ internal class KotlinJvmLocator(private val project: Project) : CompilationKitLo
         }
 
         val compilations = project.provider {
-            extractJvmCompilations(koverExtension, kotlinExtension)
+            kotlinExtension["target"].extractJvmCompilations(koverExtension) {
+                // exclude java classes from report. Expected java class files are placed in directories like
+                //   build/classes/java/main
+                it.parentFile.name == "java"
+            }
         }
 
         return ProjectCompilation(
@@ -47,42 +51,7 @@ internal class KotlinJvmLocator(private val project: Project) : CompilationKitLo
     }
 
 
-    private fun extractJvmCompilations(
-        koverExtension: KoverProjectExtensionImpl,
-        kotlinExtension: DynamicBean
-    ): Map<String, CompilationUnit> {
-        if (koverExtension.disabled) {
-            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
-            return emptyMap()
-        }
 
-        val compilations = kotlinExtension["target"].propertyBeans("compilations").filter {
-            // always ignore test source set by default
-            val name = it.property<String>("name")
-            name != SourceSet.TEST_SOURCE_SET_NAME
-                    // ignore specified JVM source sets
-                    && name !in koverExtension.compilations.jvm.sourceSets
-        }
 
-        return compilations.associate { compilation ->
-            val name = compilation.property<String>("name")
-            name to extractJvmCompilation(koverExtension, compilation)
-        }
-    }
 
-    private fun extractJvmCompilation(
-        koverExtension: KoverProjectExtensionImpl,
-        compilation: DynamicBean
-    ): CompilationUnit {
-        return if (koverExtension.disabled) {
-            // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
-            CompilationUnit()
-        } else {
-            compilation.asJvmCompilationUnit(koverExtension.excludeJava) {
-                // exclude java classes from report. Expected java class files are placed in directories like
-                //   build/classes/java/main
-                it.parentFile.name == "java"
-            }
-        }
-    }
 }

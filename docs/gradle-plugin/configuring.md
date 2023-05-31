@@ -3,6 +3,7 @@
 - [Configuring Android reports](#configuring-android-reports)
 - [Reports filtering](#reports-filtering)
 - [Class name with wildcards](#class-name-with-wildcards)
+- [Configuring measurements](#configuring-measurements)
 - [Verification](#verification)
 - [Merging reports](#merging-reports)
 
@@ -385,6 +386,23 @@ Examples:
 * (good) `my.*.*Name`
 * (bad) `my/package/ClassName.kt`
 * (bad) `src/my.**.ClassName`
+
+## Configuring measurements
+The configuration of measurements can affect not only the content of the report in a particular project, but also the instrumentation of the code and reports in all projects that depend on the configurable.
+
+### Exclusion of JVM source sets
+
+It is possible to exclude from all reports the code declared in certain source sets.
+
+As a side effect, the generation of Kover reports ceases to depend on the compilation tasks of these source sets.
+
+```kotlin
+kover {
+    excludeSourceSets {
+        names("test1", "extra")
+    }
+}
+```
 
 ## Verification
 When checking a certain verification rule, the entire code is divided into units of code for which it determines whether it was covered (executed) or skipped (not executed).

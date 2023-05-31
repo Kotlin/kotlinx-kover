@@ -74,6 +74,9 @@ public interface KoverProjectExtension {
      */
     public fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>)
 
+
+    public fun excludeSourceSets(config: Action<SourceSetsExclusions>)
+
     /*
      * Deprecations
      * TODO remove in 0.8.0
@@ -147,7 +150,6 @@ public interface KoverProjectExtension {
  * kover {
  *     excludeTests {
  *         tasks("test1", "test2")
- *         mppTargetName("jvm")
  *     }
  * }
  * ```
@@ -172,15 +174,6 @@ public interface KoverTestsExclusions {
      */
     public fun tasks(names: Iterable<String>)
 
-    /**
-     * Disables instrumentation of test tasks owned by the specified MPP targets.
-     *
-     * This means that even if the tests from excluded task is executed, the function calls that occurred in it will not be counted in the reports.
-     *
-     * As a side effect, reports cease to depend on the relevant test tasks.
-     */
-    public fun mppTargetName(vararg name: String)
-
     @Deprecated(
         message = "Use function `tasks(...)` instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_6_TO_0_7}",
         replaceWith = ReplaceWith("tasks"),
@@ -190,60 +183,52 @@ public interface KoverTestsExclusions {
         get() = mutableListOf()
 }
 
-
-internal interface KoverCompilationsExclusions {
-
-    /**
-     * Specify compilation unit exclusion for Kotlin JVM project.
-     */
-    public fun jvm(config: Action<KoverJvmSourceSet>)
-
-    /**
-     * Specify compilation unit exclusion for Kotlin MPP project.
-     */
-    public fun mpp(config: Action<KoverMppSourceSet>)
-}
-
-internal interface KoverJvmSourceSet {
-    /**
-     * Excludes specified source sets from report.
-     *
-     * As a side effect, reports cease to depend on the task of compiling this source sets.
-     */
-    public fun sourceSetName(vararg name: String)
-
-    /**
-     * Excludes specified source sets from report.
-     *
-     * As a side effect, reports cease to depend on the task of compiling this source sets.
-     */
-    public fun sourceSetName(names: Iterable<String>)
-}
-
 /**
- * Internal API that will be open in the future.
+ * Excludes classes of the specified source sets from Kover reports.
+ *
+ * As a side effect, the generation of Kover reports ceases to depend on the compilation tasks of these source sets.
+ *
+ * Example:
+ * ```
+ * kover {
+ *     excludeSourceSets {
+ *         names("test1", "extra")
+ *     }
+ * }
+ * ```
  */
-internal interface KoverMppSourceSet {
+public interface SourceSetsExclusions {
     /**
-     * Excludes sources of specified targets from Kotlin MPP reports.
+     * Excludes classes of the specified source sets from Kover reports.
      *
-     * As a side effect, reports cease to depend on the task of compiling specified targets.
+     * As a side effect, the generation of Kover reports ceases to depend on the compilation tasks of these source sets.
+     *
+     * Example:
+     * ```
+     * kover {
+     *     excludeSourceSets {
+     *         names("test1", "extra")
+     *     }
+     * }
+     * ```
      */
-    public fun targetName(vararg name: String)
+    public fun names(vararg name: String)
 
     /**
-     * Excludes sources of specified Kotlin compilations from Kotlin MPP reports.
+     * Excludes classes of the specified source sets from Kover reports.
      *
-     * As a side effect, reports cease to depend on the task of compiling specified compilations.
-     */
-    public fun compilation(targetName: String, compilationName: String)
-
-    /**
-     * Excludes sources of all Kotlin compilations with specified name from Kotlin MPP reports.
+     * As a side effect, the generation of Kover reports ceases to depend on the compilation tasks of these source sets.
      *
-     * As a side effect, reports cease to depend on the task of compiling specified compilations.
+     * Example:
+     * ```
+     * kover {
+     *     excludeSourceSets {
+     *         names(listOf("test1", "extra"))
+     *     }
+     * }
+     * ```
      */
-    public fun compilation(compilationName: String)
+    public fun names(names: Iterable<String>)
 }
 
 /**

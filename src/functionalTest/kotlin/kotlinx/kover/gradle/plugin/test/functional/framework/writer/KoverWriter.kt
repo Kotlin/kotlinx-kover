@@ -30,8 +30,8 @@ internal class KoverWriter(private val writer: FormattedWriter) : KoverProjectEx
         writer.call("excludeTests", config) { KoverTestsExclusionsWriter(it) }
     }
 
-    internal fun excludeCompilations(config: Action<KoverCompilationsExclusions>) {
-        writer.call("excludeCompilations", config) { KoverCompilationsExclusionsWriter(it) }
+    override fun excludeSourceSets(config: Action<SourceSetsExclusions>) {
+        writer.call("excludeCompilations", config) { SourceSetsExclusionsWriter(it) }
     }
 
     override fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>) {
@@ -47,48 +47,17 @@ private class KoverTestsExclusionsWriter(private val writer: FormattedWriter) : 
     override fun tasks(names: Iterable<String>) {
         writer.callStr("tasks", names)
     }
-
-    override fun mppTargetName(vararg name: String) {
-        writer.callStr("mppTargetName", name.asIterable())
-    }
 }
 
-private class KoverCompilationsExclusionsWriter(private val writer: FormattedWriter) : KoverCompilationsExclusions {
+private class SourceSetsExclusionsWriter(private val writer: FormattedWriter) : SourceSetsExclusions {
 
-    override fun jvm(config: Action<KoverJvmSourceSet>) {
-        writer.call("jvm", config) { KoverJvmSourceSetWriter(it) }
+    override fun names(vararg name: String) {
+        names(name.toList())
     }
 
-    override fun mpp(config: Action<KoverMppSourceSet>) {
-        writer.call("mpp", config) { KoverMppSourceSetWriter(it) }
+    override fun names(names: Iterable<String>) {
+        writer.callStr("names", names)
     }
-
-}
-
-private class KoverJvmSourceSetWriter(private val writer: FormattedWriter): KoverJvmSourceSet {
-    override fun sourceSetName(vararg name: String) {
-        sourceSetName(name.asIterable())
-    }
-
-    override fun sourceSetName(names: Iterable<String>) {
-        writer.callStr("sourceSetName", names)
-    }
-
-}
-
-private class KoverMppSourceSetWriter(private val writer: FormattedWriter): KoverMppSourceSet {
-    override fun targetName(vararg name: String) {
-        writer.callStr("targetName", name.asIterable())
-    }
-
-    override fun compilation(targetName: String, compilationName: String) {
-        writer.callStr("compilation", listOf(targetName, compilationName))
-    }
-
-    override fun compilation(compilationName: String) {
-        writer.callStr("compilation", listOf(compilationName))
-    }
-
 }
 
 private class KoverInstrumentationExclusionsWriter(private val writer: FormattedWriter) :

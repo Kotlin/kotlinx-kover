@@ -201,8 +201,6 @@ This means that even if a class is specified in both the inclusion and exclusion
 
 [Wildcards](configuring#class-name-with-wildcards) `*` and `?` are allowed in class names.
 
-## Kover configuration
-
 
 ## Kover Tasks
 ### Kover default tasks

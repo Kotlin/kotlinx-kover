@@ -188,6 +188,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectExte
 	public abstract fun disable ()V
 	public abstract fun excludeInstrumentation (Lorg/gradle/api/Action;)V
 	public abstract fun excludeJavaCode ()V
+	public abstract fun excludeSourceSets (Lorg/gradle/api/Action;)V
 	public abstract fun excludeTests (Lorg/gradle/api/Action;)V
 	public fun filters (Lkotlin/jvm/functions/Function0;)V
 	public fun getEngine ()Ljava/lang/Void;
@@ -232,7 +233,6 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportsConf
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverTestsExclusions {
 	public fun getExcludeTasks ()Ljava/util/List;
-	public abstract fun mppTargetName ([Ljava/lang/String;)V
 	public abstract fun tasks (Ljava/lang/Iterable;)V
 	public abstract fun tasks ([Ljava/lang/String;)V
 }
@@ -304,5 +304,10 @@ public final class kotlinx/kover/gradle/plugin/dsl/MetricType : java/lang/Enum {
 	public static final field LINE Lkotlinx/kover/gradle/plugin/dsl/MetricType;
 	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/gradle/plugin/dsl/MetricType;
 	public static fun values ()[Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/SourceSetsExclusions {
+	public abstract fun names (Ljava/lang/Iterable;)V
+	public abstract fun names ([Ljava/lang/String;)V
 }
 
