@@ -73,7 +73,7 @@ buildscript {
     }
 }
 
-apply(plugin = "kover")
+apply(plugin = "org.jetbrains.kotlinx.kover")
 
 ```
 
@@ -92,7 +92,7 @@ buildscript {
     }
 }
   
-apply plugin: 'kover'
+apply plugin: 'org.jetbrains.kotlinx.kover'
 ```
 </details>
 
