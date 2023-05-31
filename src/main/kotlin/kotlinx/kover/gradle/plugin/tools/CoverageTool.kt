@@ -93,17 +93,17 @@ internal interface CoverageTool {
     /**
      * Generate XML report.
      */
-    fun xmlReport(xmlFile: File, filters: ReportFilters, context: ReportContext)
+    fun xmlReport(xmlFile: File, context: ReportContext)
 
     /**
      * Generate HTML report.
      */
-    fun htmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters, context: ReportContext)
+    fun htmlReport(htmlDir: File, title: String, charset: String?, context: ReportContext)
 
     /**
      * Perform verification.
      */
-    fun verify(rules: List<VerificationRule>, commonFilters: ReportFilters, context: ReportContext): List<RuleViolations>
+    fun verify(rules: List<VerificationRule>, outputFile: File, context: ReportContext)
 }
 
 /**

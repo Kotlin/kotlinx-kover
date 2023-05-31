@@ -43,6 +43,8 @@ dependencies {
 
     compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
 
+    compileOnly("org.jetbrains.intellij.deps:intellij-coverage-reporter:1.0.719")
+
     testImplementation(kotlin("test"))
 
     "functionalTestImplementation"("org.junit.jupiter:junit-jupiter:5.9.0")

@@ -11,7 +11,7 @@ import kotlinx.kover.gradle.plugin.dsl.KoverNames.REPORT_EXTENSION_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportExtensionImpl
 import kotlinx.kover.gradle.plugin.locators.CompilationsLocatorFactory
-import kotlinx.kover.gradle.plugin.tasks.internal.KoverAgentJarTask
+import kotlinx.kover.gradle.plugin.tasks.services.KoverAgentJarTask
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import kotlinx.kover.gradle.plugin.tools.CoverageToolFactory
 import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant

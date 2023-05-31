@@ -5,7 +5,6 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.AppliedKotlinPlugin
-import kotlinx.kover.gradle.plugin.commons.Variant
 import kotlinx.kover.gradle.plugin.commons.ArtifactNameAttr
 import kotlinx.kover.gradle.plugin.commons.CompilationUnit
 import kotlinx.kover.gradle.plugin.commons.KotlinPluginAttr
@@ -19,11 +18,15 @@ import kotlinx.kover.gradle.plugin.commons.localArtifactConfigurationName
 import kotlinx.kover.gradle.plugin.commons.rawReportName
 import kotlinx.kover.gradle.plugin.commons.rawReportsRootPath
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEPENDENCY_CONFIGURATION_NAME
-import kotlinx.kover.gradle.plugin.tasks.internal.KoverArtifactGenerationTask
+import kotlinx.kover.gradle.plugin.tasks.services.KoverArtifactGenerationTask
 import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
+import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskCollection
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
@@ -60,7 +63,7 @@ internal fun Project.createArtifactGenerationTask(
         dependsOn(compileTasks)
 
         this.sources.from(sources)
-        this.outputs.from(outputs)
+        this.outputDirs.from(outputs)
         this.reports.from(rawReportFiles)
         this.artifactFile.set(localArtifactFile)
     }
@@ -91,3 +94,14 @@ internal fun Project.createArtifactGenerationTask(
 
     return Variant(variantName, localArtifactFile, artifactGenTask, local, dependencies)
 }
+
+/**
+ * Comprehensive information sufficient to generate a variant of the report.
+ */
+internal class Variant(
+    val name: String,
+    val localArtifact: Provider<RegularFile>,
+    val localArtifactGenerationTask: TaskProvider<KoverArtifactGenerationTask>,
+    val localArtifactConfiguration: NamedDomainObjectProvider<Configuration>,
+    val dependentArtifactsConfiguration: NamedDomainObjectProvider<Configuration>
+)

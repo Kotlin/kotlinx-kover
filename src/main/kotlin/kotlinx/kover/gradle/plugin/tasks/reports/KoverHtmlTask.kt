@@ -2,32 +2,31 @@
  * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.gradle.plugin.tasks
+package kotlinx.kover.gradle.plugin.tasks.reports
 
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.file.*
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
-import org.gradle.kotlin.dsl.*
 import javax.inject.*
 
 @CacheableTask
-internal open class KoverHtmlTask @Inject constructor(tool: CoverageTool) : AbstractKoverReportTask(tool) {
+internal abstract class KoverHtmlTask @Inject constructor(tool: CoverageTool) : AbstractKoverReportTask(tool) {
     @get:OutputDirectory
-    val reportDir: DirectoryProperty = project.objects.directoryProperty()
+    abstract val reportDir: DirectoryProperty
 
     @get:Input
-    val title: Property<String> = project.objects.property()
+    abstract val title: Property<String>
 
     @get:Input
     @get:Optional
-    val charset: Property<String> = project.objects.property()
+    abstract val charset: Property<String>
 
     @TaskAction
     fun generate() {
         val htmlDir = reportDir.get().asFile
         htmlDir.mkdirs()
-        tool.htmlReport(htmlDir, title.get(), charset.orNull, filters.get(), context())
+        tool.htmlReport(htmlDir, title.get(), charset.orNull, context())
     }
 
     fun printPath(): Boolean {

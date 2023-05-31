@@ -4,35 +4,93 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
+import com.intellij.rt.coverage.verify.Verifier
+import com.intellij.rt.coverage.verify.api.*
+import com.intellij.rt.coverage.verify.api.Target
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.tools.*
-import kotlinx.kover.gradle.plugin.util.*
-import kotlinx.kover.gradle.plugin.util.json.*
-import org.gradle.api.*
-import org.gradle.api.file.*
-import org.gradle.process.*
-import org.jetbrains.kotlin.gradle.utils.*
-import java.io.*
-import java.math.*
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
+import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.tools.BoundViolations
+import kotlinx.kover.gradle.plugin.tools.RuleViolations
+import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
+import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
+import org.gradle.workers.WorkAction
+import org.gradle.workers.WorkQueue
+import java.io.File
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.util.*
 
-internal fun ReportContext.koverVerify(rules: List<VerificationRule>, commonFilters: ReportFilters): List<RuleViolations> {
+internal fun ReportContext.koverVerify(specifiedRules: List<VerificationRule>, outputReportFile: File) {
+    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
+        this.classpath.from(this@koverVerify.classpath)
+    }
+
+    workQueue.submit(VerifyReportAction::class.java) {
+        outputFile.set(outputReportFile)
+        rules.convention(specifiedRules)
+        filters.convention(this@koverVerify.filters)
+
+        files.convention(this@koverVerify.files)
+        tempDir.set(this@koverVerify.tempDir)
+        projectPath.convention(this@koverVerify.projectPath)
+    }
+}
+
+
+
+internal abstract class VerifyReportAction : WorkAction<VerifyReportParameters> {
+    override fun execute() {
+        val violations = koverVerify(
+            parameters.rules.get(),
+            parameters.filters.get(),
+            parameters.tempDir.get().asFile,
+            parameters.files.get()
+        )
+
+        val errorMessage = generateErrorMessage(violations)
+        parameters.outputFile.get().asFile.writeText(errorMessage)
+
+        if (violations.isNotEmpty()) {
+            throw KoverVerificationException(errorMessage)
+        }
+    }
+}
+
+internal fun koverVerify(
+    rules: List<VerificationRule>,
+    commonFilters: ReportFilters,
+    tempDir: File,
+    files: ArtifactContent
+): List<RuleViolations> {
     val rulesByFilter = groupRules(rules, commonFilters)
     val usedFilters = rulesByFilter.map { it.first }
     val groupedRules = rulesByFilter.map { it.second }
-    val groups = aggregateRawReports(usedFilters)
 
-    val verifyRequest = tempDir.resolve("verify-request.json")
-    val verifyResponseFile = tempDir.resolve("verify-result.json")
-    verifyRequest.writeVerifyJson(groups, groupedRules, verifyResponseFile)
-    services.exec.javaexec {
-        mainClass.set("com.intellij.rt.coverage.verify.Main")
-        this@javaexec.classpath = this@koverVerify.classpath
-        args = mutableListOf(verifyRequest.canonicalPath)
+    val groups = aggregateRawReports(files, usedFilters, tempDir)
+
+    val rulesArray = mutableListOf<Rule>()
+    groups.forEachIndexed { index, group ->
+        val rulesForGroup = groupedRules[index]
+        rulesForGroup.forEachIndexed { ruleIndex, rule ->
+            val bounds = rule.bounds.mapIndexed { boundIndex, b ->
+                Bound(
+                    boundIndex, b.counterToReporter(), b.valueTypeToReporter(), b.valueToReporter(b.minValue),
+                    b.valueToReporter(b.maxValue)
+                )
+
+            }
+            rulesArray += Rule(ruleIndex, group.ic, rule.targetToReporter(), bounds)
+        }
     }
 
-    val violations = verifyResponseFile.readJsonObject()
+
+    val verifier = Verifier(rulesArray)
+    verifier.processRules()
+
+    val violations = VerificationApi.verify(rulesArray)
+
     return processViolations(rules, violations)
 }
 
@@ -56,90 +114,34 @@ private fun groupRules(
     return groupedMap.entries.map { it.key to it.value }
 }
 
-/*
-{
-  "resultFile": String,
-  "rules": [{
-    "id": Int,
-    "aggregatedReportFile": String,
-    "targetType": String, // enum values: "CLASS", "PACKAGE", "ALL", (later may be added "FILE" and "FUNCTION")
-    "bounds": [
-      {
-        "id": Int,
-        "counter": String, // "LINE", "INSTRUCTION", "BRANCH"
-        "valueType": String, // "MISSED", "COVERED", "MISSED_RATE", "COVERED_RATE"
-        "min": BigDecimal, // optional
-        "max": BigDecimal, // optional
-      },...
-    ]
-  },...
-  ]
-}
- */
-private fun File.writeVerifyJson(
-    groups: List<AggregationGroup>,
-    groupedRules: List<List<VerificationRule>>,
-    result: File,
-) {
-    val rulesArray = mutableListOf<Map<String, Any>>()
 
-    groups.forEachIndexed { index, group ->
-        val rules = groupedRules[index]
-        rules.forEachIndexed { ruleIndex, rule ->
-            rulesArray += mapOf(
-                "id" to ruleIndex,
-                "aggregatedReportFile" to group.ic,
-                "smapFile" to group.smap,
-                "targetType" to rule.targetToReporter(),
-                "bounds" to rule.bounds.mapIndexed { boundIndex, b ->
-                    mutableMapOf(
-                        "id" to boundIndex,
-                        "counter" to b.counterToReporter(),
-                        "valueType" to b.valueTypeToReporter(),
-                    ).also {
-                        val minValue = b.minValue
-                        val maxValue = b.maxValue
-                        if (minValue != null) {
-                            it["min"] = b.valueToReporter(minValue)
-                        }
-                        if (maxValue != null) {
-                            it["max"] = b.valueToReporter(maxValue)
-                        }
-                    }
-                }
-            )
-        }
-    }
-
-    writeJsonObject(mapOf("resultFile" to result, "rules" to rulesArray))
-}
-
-private fun VerificationRule.targetToReporter(): String {
+private fun VerificationRule.targetToReporter(): Target {
     return when (entityType) {
-        GroupingEntityType.APPLICATION -> "ALL"
-        GroupingEntityType.CLASS -> "CLASS"
-        GroupingEntityType.PACKAGE -> "PACKAGE"
+        GroupingEntityType.APPLICATION -> Target.ALL
+        GroupingEntityType.CLASS -> Target.CLASS
+        GroupingEntityType.PACKAGE -> Target.PACKAGE
     }
 }
 
-private fun VerificationBound.counterToReporter(): String {
+private fun VerificationBound.counterToReporter(): Counter {
     return when (metric) {
-        MetricType.LINE -> "LINE"
-        MetricType.INSTRUCTION -> "INSTRUCTION"
-        MetricType.BRANCH -> "BRANCH"
+        MetricType.LINE -> Counter.LINE
+        MetricType.INSTRUCTION -> Counter.INSTRUCTION
+        MetricType.BRANCH -> Counter.BRANCH
     }
 }
 
-private fun VerificationBound.valueTypeToReporter(): String {
+private fun VerificationBound.valueTypeToReporter(): ValueType {
     return when (aggregation) {
-        AggregationType.COVERED_COUNT -> "COVERED"
-        AggregationType.MISSED_COUNT -> "MISSED"
-        AggregationType.COVERED_PERCENTAGE -> "COVERED_RATE"
-        AggregationType.MISSED_PERCENTAGE -> "MISSED_RATE"
+        AggregationType.COVERED_COUNT -> ValueType.COVERED
+        AggregationType.MISSED_COUNT -> ValueType.MISSED
+        AggregationType.COVERED_PERCENTAGE -> ValueType.COVERED_RATE
+        AggregationType.MISSED_PERCENTAGE -> ValueType.MISSED_RATE
     }
 }
 
-private fun VerificationBound.valueToReporter(value: BigDecimal): BigDecimal {
+private fun VerificationBound.valueToReporter(value: BigDecimal?): BigDecimal? {
+    value ?: return null
     return if (aggregation.isPercentage) {
         value.divide(ONE_HUNDRED, 6, RoundingMode.HALF_UP)
     } else {
@@ -147,10 +149,9 @@ private fun VerificationBound.valueToReporter(value: BigDecimal): BigDecimal {
     }
 }
 
-@Suppress("UNCHECKED_CAST")
 private fun processViolations(
     rules: List<VerificationRule>,
-    violations: Map<String, Any>
+    violations: List<RuleViolation>
 ): List<RuleViolations> {
 
     val rulesMap = rules.mapIndexed { index, rule -> index to rule }.associate { it }
@@ -158,8 +159,8 @@ private fun processViolations(
     val result = TreeMap<Int, RuleViolations>()
 
     try {
-        violations.forEach { (ruleIdString, boundViolations) ->
-            val ruleIndex = ruleIdString.toInt()
+        violations.forEach { violation ->
+            val ruleIndex = violation.id
             val rule = rulesMap[ruleIndex]
                 ?: throw KoverCriticalException("Error occurred while parsing verification result: unmapped rule with index $ruleIndex")
 
@@ -168,19 +169,18 @@ private fun processViolations(
             // the order of the bound is guaranteed for Kover (as in config + suborder by entity name)
             val boundsResult = TreeMap<ViolationId, BoundViolations>()
 
-            (boundViolations as Map<String, Map<String, Map<String, Any>>>).forEach { (boundIdString, v) ->
-                val boundIndex = boundIdString.toInt()
+            violation.violations.forEach { boundViolation ->
+                val boundIndex = boundViolation.id
 
                 val bound = boundsMap[boundIndex]
                     ?: throw KoverCriticalException("Error occurred while parsing verification error: unmapped bound with index $boundIndex and rule index $ruleIndex")
 
-                v["min"]?.map {
+                boundViolation.minViolations.forEach {
                     bound.minValue
                         ?: throw KoverCriticalException("Error occurred while parsing verification error: no minimal bound with ID $boundIndex and rule index $ruleIndex")
 
-                    val entityName = it.key.ifEmpty { null }
-                    val rawValue = it.value
-                    val value = if (rawValue is String) rawValue.toBigDecimal() else rawValue as BigDecimal
+                    val entityName = it.targetName.ifEmpty { null }
+                    val value = it.targetValue
                     val actual = if (bound.aggregation.isPercentage) value * ONE_HUNDRED else value
                     boundsResult += ViolationId(boundIndex, entityName) to BoundViolations(
                         false,
@@ -192,13 +192,12 @@ private fun processViolations(
                     )
                 }
 
-                v["max"]?.map {
+                boundViolation.maxViolations.forEach {
                     bound.maxValue
                         ?: throw KoverCriticalException("Error occurred while parsing verification error: no maximal bound with index $boundIndex and rule index $ruleIndex")
 
-                    val entityName = it.key.ifEmpty { null }
-                    val rawValue = it.value
-                    val value = if (rawValue is String) rawValue.toBigDecimal() else rawValue as BigDecimal
+                    val entityName = it.targetName.ifEmpty { null }
+                    val value = it.targetValue
                     val actual = if (bound.aggregation.isPercentage) value * ONE_HUNDRED else value
                     boundsResult += ViolationId(boundIndex, entityName) to BoundViolations(
                         true,
@@ -220,7 +219,7 @@ private fun processViolations(
     return result.values.toList()
 }
 
-private data class ViolationId(val index: Int, val entityName: String?): Comparable<ViolationId> {
+private data class ViolationId(val index: Int, val entityName: String?) : Comparable<ViolationId> {
     override fun compareTo(other: ViolationId): Int {
         // first compared by index
         index.compareTo(other.index).takeIf { it != 0 }?.let { return it }

@@ -3,7 +3,9 @@ plugins {
     id("org.jetbrains.kotlinx.kover")
 }
 
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     testImplementation(kotlin("test"))

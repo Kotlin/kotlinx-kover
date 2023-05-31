@@ -4,11 +4,16 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
-import kotlinx.kover.gradle.plugin.commons.*
+import kotlinx.kover.gradle.plugin.commons.ArtifactContent
+import kotlinx.kover.gradle.plugin.commons.ReportContext
+import kotlinx.kover.gradle.plugin.commons.ReportFilters
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
 import org.gradle.api.file.*
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.workers.WorkParameters
 import java.io.*
 
 
@@ -33,19 +38,35 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
         return buildJvmAgentArgs(jarFile, tempDir, rawReportFile, excludedClasses)
     }
 
-    override fun xmlReport(xmlFile: File, filters: ReportFilters, context: ReportContext) {
-        context.koverXmlReport(xmlFile, filters)
+    override fun xmlReport(xmlFile: File, context: ReportContext) {
+        context.koverXmlReport(xmlFile)
     }
 
-    override fun htmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters, context: ReportContext) {
-        context.koverHtmlReport(htmlDir, title, charset, filters)
+    override fun htmlReport(htmlDir: File, title: String, charset: String?, context: ReportContext) {
+        context.koverHtmlReport(htmlDir, title, charset)
     }
 
     override fun verify(
         rules: List<VerificationRule>,
-        commonFilters: ReportFilters,
+        outputFile: File,
         context: ReportContext
-    ): List<RuleViolations> {
-        return context.koverVerify(rules, commonFilters)
+    ) {
+        context.koverVerify(rules, outputFile)
     }
+}
+
+
+internal interface ReportParameters: WorkParameters {
+    val filters: Property<ReportFilters>
+
+    val files: Property<ArtifactContent>
+    val tempDir: DirectoryProperty
+    val projectPath: Property<String>
+    val charset: Property<String>
+}
+
+
+internal interface VerifyReportParameters: ReportParameters {
+    val outputFile: RegularFileProperty
+    val rules: ListProperty<VerificationRule>
 }

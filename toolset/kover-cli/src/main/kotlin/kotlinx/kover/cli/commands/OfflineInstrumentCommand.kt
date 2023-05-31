@@ -16,8 +16,8 @@
 
 package kotlinx.kover.cli.commands
 
-import com.intellij.rt.coverage.instrument.Instrumentator
-import com.intellij.rt.coverage.report.data.Filters
+import com.intellij.rt.coverage.instrument.api.OfflineInstrumentationApi
+import com.intellij.rt.coverage.report.api.Filters
 import kotlinx.kover.cli.util.asPatterns
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.Option
@@ -77,8 +77,7 @@ internal class OfflineInstrumentCommand : Command {
         )
 
         try {
-            val instrumentator = Instrumentator(roots, outputRoots, filters)
-            instrumentator.instrument(countHits)
+            OfflineInstrumentationApi.instrument(roots, outputRoots, filters, countHits)
         } catch (e: Exception) {
             errorWriter.println("Instrumentation failed: " + e.message)
             return -1

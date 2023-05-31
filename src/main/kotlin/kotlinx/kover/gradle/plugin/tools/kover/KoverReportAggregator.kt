@@ -4,15 +4,15 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
-import kotlinx.kover.gradle.plugin.commons.*
+import com.intellij.rt.coverage.aggregate.api.AggregatorApi
+import com.intellij.rt.coverage.aggregate.api.Request
+import com.intellij.rt.coverage.report.api.Filters
+import kotlinx.kover.gradle.plugin.commons.ArtifactContent
 import kotlinx.kover.gradle.plugin.commons.ReportFilters
-import kotlinx.kover.gradle.plugin.util.*
-import kotlinx.kover.gradle.plugin.util.json.*
-import java.io.*
+import kotlinx.kover.gradle.plugin.util.asPatterns
+import java.io.File
 
-internal fun ReportContext.aggregateRawReports(filters: List<ReportFilters>): List<AggregationGroup> {
-    val aggRequestFile = tempDir.resolve("agg-request.json")
-
+internal fun aggregateRawReports(files: ArtifactContent, filters: List<ReportFilters>, tempDir: File): List<AggregationGroup> {
     val aggGroups = filters.mapIndexed { index: Int, reportFilters: ReportFilters ->
         val filePrefix = if (filters.size > 1) "-$index" else ""
         AggregationGroup(
@@ -22,68 +22,18 @@ internal fun ReportContext.aggregateRawReports(filters: List<ReportFilters>): Li
         )
     }
 
-    aggRequestFile.writeAggJson(files, aggGroups)
-    services.exec.javaexec {
-        mainClass.set("com.intellij.rt.coverage.aggregate.Main")
-        this@javaexec.classpath = this@aggregateRawReports.classpath
-        args = mutableListOf(aggRequestFile.canonicalPath)
+    val requests = aggGroups.map { group ->
+        val filtersR = Filters(
+            group.filters.includesClasses.toList().asPatterns(),
+            group.filters.excludesClasses.toList().asPatterns(),
+            group.filters.excludesAnnotations.toList().asPatterns()
+        )
+        Request(filtersR, group.ic, group.smap)
     }
+
+    AggregatorApi.aggregate(requests, files.reports.toList(), files.outputs.toList())
 
     return aggGroups
 }
 
 internal class AggregationGroup(val ic: File, val smap: File, val filters: ReportFilters)
-
-/*
-{
-  "reports": [{"ic": "path"}, ...],
-  "modules": [{"output": ["path1", "path2"], "sources": ["source1",...]},... ],
-  "result": [{
-    "filters": {   // optional
-      "include": { // optional
-        "classes": [ String,... ]
-      },
-      "exclude": { // optional
-        "classes": [ String,... ]
-        "annotations": [String,...]
-      }
-    },
-    "aggregatedReportFile": String,
-    "smapFile": String
-  },...
-  ]
-
-  }
-}
- */
-private fun File.writeAggJson(
-    artifactContent: ArtifactContent,
-    groups: List<AggregationGroup>
-) {
-    writeJsonObject(mapOf(
-        "reports" to artifactContent.reports.map { mapOf("ic" to it) },
-        "modules" to listOf(mapOf("sources" to artifactContent.sources, "output" to artifactContent.outputs)),
-        "result" to groups.map { group ->
-            mapOf(
-                "aggregatedReportFile" to group.ic,
-                "smapFile" to group.smap,
-                "filters" to mutableMapOf<String, Any>().also {
-                    if (group.filters.includesClasses.isNotEmpty()) {
-                        it["include"] =
-                            mapOf("classes" to group.filters.includesClasses.map { c -> c.wildcardsToRegex() })
-                    }
-                    val excludes = mutableMapOf<String, Any>()
-                    if (group.filters.excludesClasses.isNotEmpty()) {
-                        excludes += "classes" to group.filters.excludesClasses.map { c -> c.wildcardsToRegex() }
-                    }
-                    if (group.filters.excludesAnnotations.isNotEmpty()) {
-                        excludes += "annotations" to group.filters.excludesAnnotations.map { c -> c.wildcardsToRegex() }
-                    }
-                    if (excludes.isNotEmpty()) {
-                        it["exclude"] = excludes
-                    }
-                }
-            )
-        }
-    ))
-}

@@ -6,7 +6,10 @@ package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.*
-import kotlinx.kover.gradle.plugin.tasks.*
+import kotlinx.kover.gradle.plugin.tasks.reports.AbstractKoverReportTask
+import kotlinx.kover.gradle.plugin.tasks.reports.KoverHtmlTask
+import kotlinx.kover.gradle.plugin.tasks.reports.KoverVerifyTask
+import kotlinx.kover.gradle.plugin.tasks.reports.KoverXmlTask
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
 import org.gradle.api.artifacts.*

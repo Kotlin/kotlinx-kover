@@ -2,7 +2,7 @@
  * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.gradle.plugin.tasks.internal
+package kotlinx.kover.gradle.plugin.tasks.services
 
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.tools.*
@@ -19,18 +19,19 @@ import javax.inject.*
  * The task is cached, so in general there should not be a performance issue on large projects.
  */
 @CacheableTask
-internal open class KoverAgentJarTask @Inject constructor(private val tool: CoverageTool) : DefaultTask() {
-    private val archiveOperations: ArchiveOperations = project.serviceOf()
-
+internal abstract class KoverAgentJarTask @Inject constructor(private val tool: CoverageTool) : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.ABSOLUTE)
-    val agentClasspath: ConfigurableFileCollection = project.objects.fileCollection()
+    abstract val agentClasspath: ConfigurableFileCollection
 
     @get:OutputFile
-    val agentJar: RegularFileProperty = project.objects.fileProperty()
+    abstract val agentJar: RegularFileProperty
 
     @get:Nested
     val toolVariant: CoverageToolVariant = tool.variant
+
+    @get:Inject
+    protected abstract val archiveOperations: ArchiveOperations
 
     @TaskAction
     fun find() {

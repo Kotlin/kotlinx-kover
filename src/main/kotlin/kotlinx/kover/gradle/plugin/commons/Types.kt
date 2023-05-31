@@ -11,7 +11,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
-import org.gradle.process.*
+import org.gradle.workers.WorkerExecutor
 import java.io.*
 import java.math.BigDecimal
 import javax.annotation.*
@@ -140,6 +140,7 @@ internal class CompilationUnit(
 
 internal class ReportContext(
     val files: ArtifactContent,
+    val filters: ReportFilters,
     val classpath: FileCollection,
     val tempDir: File,
     val projectPath: String,
@@ -147,7 +148,7 @@ internal class ReportContext(
 )
 
 internal class GradleReportServices(
-    val exec: ExecOperations,
+    val workerExecutor: WorkerExecutor,
     val antBuilder: AntBuilder,
     val objects: ObjectFactory
 )
@@ -161,7 +162,7 @@ internal data class ReportFilters(
     val excludesClasses: Set<String> = emptySet(),
     @get:Input
     val excludesAnnotations: Set<String> = emptySet()
-)
+): Serializable
 
 internal open class VerificationRule @Inject constructor(
     @get:Input
@@ -182,7 +183,7 @@ internal open class VerificationRule @Inject constructor(
 
     @get:Nested
     internal val bounds: List<VerificationBound>
-)
+): Serializable
 
 internal open class VerificationBound(
     @get:Input
@@ -200,4 +201,4 @@ internal open class VerificationBound(
 
     @get:Input
     val aggregation: AggregationType
-)
+): Serializable

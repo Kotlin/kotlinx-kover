@@ -4,24 +4,8 @@
 
 package kotlinx.kover.gradle.plugin.commons
 
-import kotlinx.kover.gradle.plugin.tasks.internal.KoverArtifactGenerationTask
-import org.gradle.api.NamedDomainObjectProvider
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.file.RegularFile
-import org.gradle.api.provider.Provider
-import org.gradle.api.tasks.TaskProvider
 import java.io.File
-
-/**
- * Comprehensive information sufficient to generate a variant of the report.
- */
-internal class Variant(
-    val name: String,
-    val localArtifact: Provider<RegularFile>,
-    val localArtifactGenerationTask: TaskProvider<KoverArtifactGenerationTask>,
-    val localArtifactConfiguration: NamedDomainObjectProvider<Configuration>,
-    val dependentArtifactsConfiguration: NamedDomainObjectProvider<Configuration>
-)
+import java.io.Serializable
 
 /**
  * The contents of a single Kover artifact.
@@ -30,7 +14,7 @@ internal class ArtifactContent(
     val sources: Set<File>,
     val outputs: Set<File>,
     val reports: Set<File>
-) {
+): Serializable {
     fun joinWith(others: List<ArtifactContent>): ArtifactContent {
         val sources = this.sources.toMutableSet()
         val outputs = this.outputs.toMutableSet()
