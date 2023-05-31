@@ -5,13 +5,12 @@
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
 import kotlinx.kover.gradle.plugin.commons.ReportContext
-import kotlinx.kover.gradle.plugin.commons.ReportFilters
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
-import kotlinx.kover.gradle.plugin.tools.*
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
-import kotlinx.kover.gradle.plugin.tools.RuleViolations
-import org.gradle.api.file.*
-import java.io.*
+import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
+import org.gradle.api.file.ArchiveOperations
+import org.gradle.api.file.FileCollection
+import java.io.File
 
 
 internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageTool {
@@ -36,16 +35,16 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
         return buildJvmAgentArgs(jarFile, rawReportFile, excludedClasses)
     }
 
-    override fun xmlReport(xmlFile: File, filters: ReportFilters, context: ReportContext) {
-        context.jacocoXmlReport(xmlFile, filters)
+    override fun xmlReport(xmlFile: File, context: ReportContext) {
+        context.jacocoXmlReport(xmlFile)
     }
 
-    override fun htmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters, context: ReportContext) {
-        context.jacocoHtmlReport(htmlDir, title, charset, filters)
+    override fun htmlReport(htmlDir: File, title: String, charset: String?, context: ReportContext) {
+        context.jacocoHtmlReport(htmlDir, title, charset)
     }
 
-    override fun verify(rules: List<VerificationRule>, commonFilters: ReportFilters, context: ReportContext): List<RuleViolations> {
-        return context.jacocoVerify(rules, commonFilters)
+    override fun verify(rules: List<VerificationRule>, outputFile: File, context: ReportContext) {
+        context.jacocoVerify(rules, outputFile)
     }
 
 }

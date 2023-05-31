@@ -30,7 +30,7 @@ java {
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij.deps:intellij-coverage-reporter:1.0.715")
+    implementation("org.jetbrains.intellij.deps:intellij-coverage-reporter:1.0.719")
     implementation("args4j:args4j:2.33")
 
     testImplementation(kotlin("test"))

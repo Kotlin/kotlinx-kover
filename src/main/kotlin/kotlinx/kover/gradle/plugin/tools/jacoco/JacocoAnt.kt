@@ -4,17 +4,13 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
-import groovy.lang.*
-import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.commons.ReportFilters
-import kotlinx.kover.gradle.plugin.util.*
-import org.gradle.api.*
-import org.gradle.api.file.*
-import java.io.*
+import groovy.lang.Closure
+import groovy.lang.GroovyObject
+import kotlinx.kover.gradle.plugin.commons.ReportContext
+import kotlinx.kover.gradle.plugin.util.wildcardsToClassFileRegex
 
 
 internal fun ReportContext.callAntReport(
-    filters: ReportFilters,
     reportName: String,
     block: GroovyObject.() -> Unit
 ) {

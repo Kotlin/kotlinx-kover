@@ -4,24 +4,39 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
-import groovy.lang.*
+import groovy.lang.GroovyObject
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.commons.ReportFilters
-import kotlinx.kover.gradle.plugin.commons.VerificationRule
-import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.tools.*
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
+import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.tools.BoundViolations
 import kotlinx.kover.gradle.plugin.tools.RuleViolations
+import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
-import org.gradle.internal.reflect.*
-import java.math.*
+import org.gradle.internal.reflect.JavaMethod
+import java.io.File
+import java.math.BigDecimal
 import java.util.*
 
 
 internal fun ReportContext.jacocoVerify(
     rules: List<VerificationRule>,
-    filters: ReportFilters
-): List<RuleViolations> {
-    callAntReport(filters, projectPath) {
+    outputFile: File
+) {
+    val violations = doVerify(rules)
+
+    val errorMessage = generateErrorMessage(violations)
+    outputFile.writeText(errorMessage)
+
+    if (violations.isNotEmpty()) {
+        throw KoverVerificationException(errorMessage)
+    }
+}
+
+
+private fun ReportContext.doVerify(rules: List<VerificationRule>): List<RuleViolations> {
+
+    callAntReport(projectPath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
             rules.forEach {
                 val entityType = when (it.entityType) {
@@ -78,7 +93,6 @@ internal fun ReportContext.jacocoVerify(
 
     return services.antBuilder.violations()
 }
-
 
 
 private val errorMessageRegex =

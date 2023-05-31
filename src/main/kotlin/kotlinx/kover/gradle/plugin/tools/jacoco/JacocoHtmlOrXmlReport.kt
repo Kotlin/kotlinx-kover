@@ -8,8 +8,8 @@ import kotlinx.kover.gradle.plugin.commons.*
 import java.io.*
 
 
-internal fun ReportContext.jacocoHtmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters) {
-    callAntReport(filters, title) {
+internal fun ReportContext.jacocoHtmlReport(htmlDir: File, title: String, charset: String?) {
+    callAntReport(title) {
         htmlDir.mkdirs()
 
         val element = if (charset != null) {
@@ -21,8 +21,8 @@ internal fun ReportContext.jacocoHtmlReport(htmlDir: File, title: String, charse
     }
 }
 
-internal fun ReportContext.jacocoXmlReport(xmlFile: File, filters: ReportFilters) {
-    callAntReport(filters, projectPath) {
+internal fun ReportContext.jacocoXmlReport(xmlFile: File) {
+    callAntReport(projectPath) {
         xmlFile.parentFile.mkdirs()
         invokeMethod("xml", mapOf("destfile" to xmlFile))
     }

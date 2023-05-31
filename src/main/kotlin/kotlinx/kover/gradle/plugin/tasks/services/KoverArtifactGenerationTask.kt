@@ -2,7 +2,7 @@
  * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.gradle.plugin.tasks.internal
+package kotlinx.kover.gradle.plugin.tasks.services
 
 import kotlinx.kover.gradle.plugin.commons.*
 import org.gradle.api.*
@@ -20,30 +20,29 @@ import javax.inject.*
  * This artifact that will be shared between projects through dependencies for creating merged reports.
  */
 @CacheableTask
-internal open class KoverArtifactGenerationTask : DefaultTask() {
+internal abstract class KoverArtifactGenerationTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    val sources: ConfigurableFileCollection = project.objects.fileCollection()
+    abstract val sources: ConfigurableFileCollection
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    val outputs: ConfigurableFileCollection = project.objects.fileCollection()
+    abstract val outputDirs: ConfigurableFileCollection
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    val reports: ConfigurableFileCollection = project.objects.fileCollection()
+    abstract val reports: ConfigurableFileCollection
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    val additionalArtifacts: ConfigurableFileCollection = project.objects.fileCollection()
+    abstract val additionalArtifacts: ConfigurableFileCollection
 
     @get:OutputFile
-    val artifactFile: RegularFileProperty = project.objects.fileProperty()
-
+    abstract val artifactFile: RegularFileProperty
 
     @TaskAction
     fun generate() {
-        val mainContent = ArtifactContent(sources.toSet(), outputs.toSet(), reports.toSet())
+        val mainContent = ArtifactContent(sources.toSet(), outputDirs.toSet(), reports.toSet())
         val additional = additionalArtifacts.files.map { it.parseArtifactFile() }
         mainContent.joinWith(additional).write(artifactFile.get().asFile)
     }

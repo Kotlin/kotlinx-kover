@@ -4,80 +4,100 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
-import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.commons.ReportFilters
-import kotlinx.kover.gradle.plugin.util.json.*
-import java.io.*
+import com.intellij.rt.coverage.report.api.Filters
+import com.intellij.rt.coverage.report.api.ReportApi
+import kotlinx.kover.gradle.plugin.commons.ReportContext
+import kotlinx.kover.gradle.plugin.util.asPatterns
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.workers.WorkAction
+import org.gradle.workers.WorkQueue
+import java.io.File
 
-internal fun ReportContext.koverHtmlReport(htmlDir: File, title: String, charset: String?, filters: ReportFilters) {
-    val aggGroups = aggregateRawReports(listOf(filters))
-    generateHtmlOrXml(aggGroups.first(), htmlDir = htmlDir, title = title, charset = charset)
-}
 
-internal fun ReportContext.koverXmlReport(xmlFile: File, filters: ReportFilters) {
-    val aggGroups = aggregateRawReports(listOf(filters))
-    generateHtmlOrXml(aggGroups.first(), xmlFile = xmlFile)
-}
+internal fun ReportContext.koverHtmlReport(htmlReportDir: File, htmlTitle: String, charsetName: String?) {
+    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
+        this.classpath.from(this@koverHtmlReport.classpath)
+    }
 
-private fun ReportContext.generateHtmlOrXml(
-    aggGroup: AggregationGroup,
-    htmlDir: File? = null,
-    xmlFile: File? = null,
-    title: String? = null,
-    charset: String? = null,
-) {
-    val argsFile = tempDir.resolve("kover-report.json")
-    argsFile.writeHtmlOrXmlJson(files.sources, aggGroup, xmlFile, htmlDir, title, charset)
+    workQueue.submit(HtmlReportAction::class.java) {
+        htmlDir.set(htmlReportDir)
+        title.convention(htmlTitle)
+        charset.convention(charsetName)
+        filters.convention(this@koverHtmlReport.filters)
 
-    services.exec.javaexec {
-        mainClass.set("com.intellij.rt.coverage.report.Main")
-        this@javaexec.classpath = this@generateHtmlOrXml.classpath
-        args = mutableListOf(argsFile.canonicalPath)
+        files.convention(this@koverHtmlReport.files)
+        tempDir.set(this@koverHtmlReport.tempDir)
+        projectPath.convention(this@koverHtmlReport.projectPath)
+    }}
+
+internal fun ReportContext.koverXmlReport(xmlReportFile: File) {
+    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
+        classpath.from(this@koverXmlReport.classpath)
+    }
+
+    workQueue.submit(XmlReportAction::class.java) {
+        xmlFile.set(xmlReportFile)
+        filters.convention(this@koverXmlReport.filters)
+
+        files.convention(this@koverXmlReport.files)
+
+        tempDir.set(this@koverXmlReport.tempDir)
+        projectPath.convention(this@koverXmlReport.projectPath)
     }
 }
 
-
-/*
-JSON format:
-```
-{
-  "format": "kover-agg",
-  "title": "report title"  [OPTIONAL],
-  "reports": [{ic: String, "smap": String}], // single element
-  "modules": [{sources: [String...]}],       // single element
-  "xml": String, // optional
-  "html": String // optional
+internal interface XmlReportParameters: ReportParameters {
+    val xmlFile: RegularFileProperty
 }
-```
- */
-private fun File.writeHtmlOrXmlJson(
-    sources: Set<File>,
-    aggregationGroup: AggregationGroup,
-    xmlFile: File?,
-    htmlDir: File?,
-    title: String?,
-    charset: String?,
-) {
-    writeJsonObject(mutableMapOf(
-        // required fields
 
-        "format" to "kover-agg",
-        "reports" to listOf(mapOf("ic" to aggregationGroup.ic, "smap" to aggregationGroup.smap)),
-        "modules" to listOf(mapOf("sources" to sources)),
-    ).also {
-        // optional fields
+internal interface HtmlReportParameters: ReportParameters {
+    val htmlDir: DirectoryProperty
+    val title: Property<String>
+}
 
-        title?.also { t ->
-            it["title"] = t
-        }
-        xmlFile?.also { f ->
-            it["xml"] = f
-        }
-        htmlDir?.also { d ->
-            it["html"] = d
-        }
-        charset?.also { c ->
-            it["charset"] = c
-        }
-    })
+internal abstract class XmlReportAction : WorkAction<XmlReportParameters> {
+    override fun execute() {
+        val files = parameters.files.get()
+        val filtersIntern = parameters.filters.get()
+        val filters = Filters(
+            filtersIntern.includesClasses.toList().asPatterns(),
+            filtersIntern.excludesClasses.toList().asPatterns(),
+            filtersIntern.excludesAnnotations.toList().asPatterns()
+        )
+
+        ReportApi.xmlReport(
+            parameters.xmlFile.get().asFile,
+            files.reports.toList(),
+            files.outputs.toList(),
+            files.sources.toList(),
+            filters
+        )
+    }
+}
+
+internal abstract class HtmlReportAction : WorkAction<HtmlReportParameters> {
+    override fun execute() {
+        val htmlDir = parameters.htmlDir.get().asFile
+        htmlDir.mkdirs()
+
+        val files = parameters.files.get()
+        val filtersIntern = parameters.filters.get()
+        val filters = Filters(
+            filtersIntern.includesClasses.toList().asPatterns(),
+            filtersIntern.excludesClasses.toList().asPatterns(),
+            filtersIntern.excludesAnnotations.toList().asPatterns()
+        )
+
+        ReportApi.htmlReport(
+            parameters.htmlDir.get().asFile,
+            parameters.title.get(),
+            parameters.charset.orNull,
+            files.reports.toList(),
+            files.outputs.toList(),
+            files.sources.toList(),
+            filters
+        )
+    }
 }

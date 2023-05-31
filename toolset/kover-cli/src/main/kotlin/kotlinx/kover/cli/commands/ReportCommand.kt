@@ -16,12 +16,8 @@
 
 package kotlinx.kover.cli.commands
 
-import com.intellij.rt.coverage.report.ReportLoadStrategy
-import com.intellij.rt.coverage.report.ReportLoadStrategy.RawReportLoadStrategy
-import com.intellij.rt.coverage.report.Reporter
-import com.intellij.rt.coverage.report.data.BinaryReport
-import com.intellij.rt.coverage.report.data.Filters
-import com.intellij.rt.coverage.report.data.Module
+import com.intellij.rt.coverage.report.api.Filters
+import com.intellij.rt.coverage.report.api.ReportApi
 import kotlinx.kover.cli.util.asPatterns
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.Option
@@ -81,22 +77,15 @@ internal class ReportCommand : Command {
 
 
     override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {
-        val binaryReports: MutableList<BinaryReport> = ArrayList()
-        for (binaryReport in this.binaryReports) {
-            binaryReports.add(BinaryReport(binaryReport, null))
-        }
-        val module = Module(outputRoots, sourceRoots)
         val filters = Filters(
             includeClasses.asPatterns(),
             excludeClasses.asPatterns(),
             excludeAnnotation.asPatterns()
         )
-        val loadStrategy: ReportLoadStrategy = RawReportLoadStrategy(binaryReports, listOf(module), filters)
-        val reporter = Reporter(loadStrategy)
         var fail = false
         if (xmlFile != null) {
             try {
-                reporter.createXMLReport(xmlFile)
+                ReportApi.xmlReport(xmlFile, binaryReports, outputRoots, sourceRoots, filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("XML generation failed: " + e.message)
@@ -104,7 +93,7 @@ internal class ReportCommand : Command {
         }
         if (htmlDir != null) {
             try {
-                reporter.createHTMLReport(htmlDir, htmlTitle)
+                ReportApi.htmlReport(htmlDir, htmlTitle, null, binaryReports, outputRoots, sourceRoots, filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("HTML generation failed: " + e.message)
