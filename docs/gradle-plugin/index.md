@@ -1,6 +1,6 @@
 # Kover Gradle Plugin
 
-Gradle plugin that measures the coverage with tests of code running on the JVM and generates coverage reports.
+Gradle plugin that measures the coverage for tests running on the JVM and generates coverage reports.
 
 ## Table of contents
 
@@ -28,7 +28,7 @@ Gradle plugin that measures the coverage with tests of code running on the JVM a
 * Collection of code coverage through `JVM` tests (JS and native targets are not supported yet).
 * generating `HTML` and `XML` reports.
 * Verification rules with bounds to keep track of coverage.
-* Create tasks to generate reports and automatically adjusts the dependencies between it
+* Create tasks to generate reports and automatically adjust the dependencies between it
 * Detect project source code, compilation tasks, test tasks, Android build variant for automatic Kover task configuration
 * Support for `Kotlin JVM`, `Kotlin Multiplatform` projects.
 * Support for `Kotlin Android` projects with build variants (instrumentation tests executing on the Android device are not supported yet).
@@ -161,7 +161,7 @@ koverReport {
 
 ## Multiproject build
 [Multi-project build](https://docs.gradle.org/current/userguide/multi_project_builds.html#sec:creating_multi_project_builds) 
-(sometimes called multimodule project) - this is a Gradle build in which there are several Gradle projects (most often each of which has its own `build.gradle` or `build.gradle.kts` file)
+(sometimes called multimodule project) - this is a Gradle build in which there are several Gradle projects (most often each has its own `build.gradle` or `build.gradle.kts` file)
 
 In this case, it is necessary to [apply Kover plugin](#quickstart) in each subproject for which coverage needs to be measured.
 Thus, for each subproject, it will be possible to generate a report showing the coverage of only those classes that are declared in this subproject.
