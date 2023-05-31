@@ -13,7 +13,7 @@ For more information about Kover CLI, please refer to the [documentation of the 
 ## Features
 
 * Collection of code coverage through `JVM` tests (JS and native targets are not supported yet).
-* generating `HTML` and `XML` reports.
+* Generating `HTML` and `XML` reports.
 * Support for `Kotlin JVM`, `Kotlin Multiplatform` projects.
 * Support for `Kotlin Android` projects with build variants (instrumentation tests executing on the Android device are not supported yet).
 * Support mixed `Kotlin` and `Java` sources

@@ -26,7 +26,7 @@ Gradle plugin that measures the coverage for tests running on the JVM and genera
 ## Features
 
 * Collection of code coverage through `JVM` tests (JS and native targets are not supported yet).
-* generating `HTML` and `XML` reports.
+* Generating `HTML` and `XML` reports.
 * Verification rules with bounds to keep track of coverage.
 * Create tasks to generate reports and automatically adjust the dependencies between it
 * Detect project source code, compilation tasks, test tasks, Android build variant for automatic Kover task configuration
