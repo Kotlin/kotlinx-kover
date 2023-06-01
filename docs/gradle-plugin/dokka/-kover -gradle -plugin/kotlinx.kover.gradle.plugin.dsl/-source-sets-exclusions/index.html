@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>KoverTestsExclusions</title>
+    <title>SourceSetsExclusions</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
     <script>var pathToRoot = "../../../";</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -54,28 +54,28 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageIds="Kover Gradle Plugin::kotlinx.kover.gradle.plugin.dsl/KoverTestsExclusions///PointingToDeclaration//769193423">
-  <div class="breadcrumbs"><a href="../../../index.html">Kover Gradle Plugin</a><span class="delimiter">/</span><a href="../index.html">kotlinx.kover.gradle.plugin.dsl</a><span class="delimiter">/</span><span class="current">KoverTestsExclusions</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageIds="Kover Gradle Plugin::kotlinx.kover.gradle.plugin.dsl/SourceSetsExclusions///PointingToDeclaration//769193423">
+  <div class="breadcrumbs"><a href="../../../index.html">Kover Gradle Plugin</a><span class="delimiter">/</span><a href="../index.html">kotlinx.kover.gradle.plugin.dsl</a><span class="delimiter">/</span><span class="current">SourceSetsExclusions</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Kover</span><wbr></wbr><span>Tests</span><wbr></wbr><span><span>Exclusions</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverTestsExclusions</a></div><p class="paragraph">Disables instrumentation of test tasks.</p><p class="paragraph">This means that even if the excluded tests are executed, the function calls that happened in it will not be counted in the coverage reports.</p><p class="paragraph">As a side effect, reports stop depending on the specified test tasks.</p><p class="paragraph">Example:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">kover {<br>    excludeTests {<br>        tasks(&quot;test1&quot;, &quot;test2&quot;)<br>    }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+    <h1 class="cover"><span>Source</span><wbr></wbr><span>Sets</span><wbr></wbr><span><span>Exclusions</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">SourceSetsExclusions</a></div><p class="paragraph">Excludes classes of the specified source sets from Kover reports.</p><p class="paragraph">As a side effect, the generation of Kover reports ceases to depend on the compilation tasks of these source sets.</p><p class="paragraph">Example:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">kover {<br>    excludeSourceSets {<br>        names(&quot;test1&quot;, &quot;extra&quot;)<br>    }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="FUNCTION">
         <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-120363796%2FFunctions%2F769193423" anchor-label="tasks" id="-120363796%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
+        <div class="table"><a data-name="1293637028%2FFunctions%2F769193423" anchor-label="names" id="1293637028%2FFunctions%2F769193423" data-filterable-set=":dokkaHtml/main"></a>
           <div class="table-row" data-filterable-current=":dokkaHtml/main" data-filterable-set=":dokkaHtml/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="tasks.html"><span><span>tasks</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-120363796%2FFunctions%2F769193423"></span>
+                  <div><a href="names.html"><span><span>names</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1293637028%2FFunctions%2F769193423"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="tasks.html"><span class="token function">tasks</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="tasks.html"><span class="token function">tasks</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">names<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html">Iterable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Disables instrumentation of specified test tasks.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="names.html"><span class="token function">names</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">vararg </span>name<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="names.html"><span class="token function">names</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">names<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html">Iterable</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Excludes classes of the specified source sets from Kover reports.</p></div></div></div>
                 </div>
               </div>
             </div>

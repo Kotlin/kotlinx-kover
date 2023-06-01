@@ -1,3 +1,23 @@
+0.7.1 / 2023-06-01
+===================
+### Features
+* Added a filter of source sets (#376)
+
+### Bugfixes
+* Fixed up-to-date checks for Kover tasks (#371)
+
+### Documentation
+* Updated documentation on filtering by annotations (#370)
+* Improved Kover documentation (282)
+* Fix broken migration link in CHANGELOG.md
+* Fix documentation for KoverReportExtension
+* Fixed Kover Plugin ID for legacy plugin application
+
+### Internal features
+* Implemented Worker API for use with Kover toolset
+* Updated Gradle and Kotlin versions
+* IntelliJ coverage dependency versions upgraded to `1.0.721`
+
 0.7.0 / 2023-05-16
 ===================
 This release introduce API rework in order to support configuration cache, project isolation model, Android Gradle plugin.

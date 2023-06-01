@@ -1,7 +1,7 @@
-# Kover migration guide from 0.6.x to 0.7.0
+# Kover migration guide from 0.6.x to 0.7.1
 
 ## Migration steps
-To migrate to version `0.7.0`, you must follow all steps below if they are applicable to your project.
+To migrate to version `0.7.1`, you must follow all steps below if they are applicable to your project.
 
 ### Merge reports config was removed
 Now all Kotlin report tasks (`koverHtmlReport`, `koverXmlReport`, `koverVerify`) are in single copy, they can be both single-project or merged cross-projects reports.  
@@ -271,7 +271,7 @@ kover {
 ### report filters now not affects instrumentation
 In version `0.6.1`, report filters also excluded classes from instrumentation.
 
-However, starting from version `0.7.0`, classes are excluded from instrumentation separately (see [this](#excluding-from-instrumentation))
+However, starting from version `0.7.1`, classes are excluded from instrumentation separately (see [this](#excluding-from-instrumentation))
 
 ### Kover extension for test tasks was removed
 The `kover` task extension has been removed from the JVM test tasks.
@@ -575,7 +575,7 @@ kover {
 
 ---
 
-### Could not find org.jetbrains.kotlinx:kover:0.7.0
+### Could not find org.jetbrains.kotlinx:kover:0.7.1
 _Solution_
 
 rename dependencies in _buildSrc_ from `org.jetbrains.kotlinx:kover:` to `org.jetbrains.kotlinx:kover-gradle-plugin:`
