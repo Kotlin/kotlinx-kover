@@ -1,4 +1,7 @@
 # Kover Gradle Plugin
+
+Gradle plugin that measures the coverage for tests running on the JVM and generates coverage reports.
+
 ## Table of contents
 
 - [Features](#features)
@@ -14,6 +17,7 @@
 - [Kover Tasks](#kover-tasks)
   - [Kover default tasks](#kover-default-tasks)
   - [Kover Android tasks](#kover-android-tasks)
+- [HTML report description](#html-report-description)
 - [Instrumentation](#instrumentation)
 - [Using JaCoCo](#using-jacoco)
 - [Implicit plugin dependencies](#implicit-plugin-dependencies)
@@ -22,11 +26,13 @@
 ## Features
 
 * Collection of code coverage through `JVM` tests (JS and native targets are not supported yet).
-* generating `HTML` and `XML` reports.
+* Generating `HTML` and `XML` reports.
+* Verification rules with bounds to keep track of coverage.
+* Create tasks to generate reports and automatically adjust the dependencies between it
+* Detect project source code, compilation tasks, test tasks, Android build variant for automatic Kover task configuration
 * Support for `Kotlin JVM`, `Kotlin Multiplatform` projects.
 * Support for `Kotlin Android` projects with build variants (instrumentation tests executing on the Android device are not supported yet).
 * Support mixed `Kotlin` and `Java` sources
-* Verification rules with bounds to keep track of coverage.
 * Using JaCoCo library as an alternative for coverage measuring and report generation.
 
 ## Quickstart
@@ -154,8 +160,8 @@ koverReport {
 ```
 
 ## Multiproject build
-[Multi-project build](https://docs.gradle.org/current/userguide/multi_project_builds.html#sec:creating_multi_project_builds) (sometimes called multimodule project) 
-- this is a Gradle build in which there are several Gradle projects (most often each of which has its own `build.gradle` or `build.gradle.kts` file)
+[Multi-project build](https://docs.gradle.org/current/userguide/multi_project_builds.html#sec:creating_multi_project_builds) 
+(sometimes called multimodule project) - this is a Gradle build in which there are several Gradle projects (most often each has its own `build.gradle` or `build.gradle.kts` file)
 
 In this case, it is necessary to [apply Kover plugin](#quickstart) in each subproject for which coverage needs to be measured.
 Thus, for each subproject, it will be possible to generate a report showing the coverage of only those classes that are declared in this subproject.
@@ -177,6 +183,8 @@ It is important that the settings from the `koverReport { ... }` extension only 
 For the example above, you need to configure `koverReport` only in the `:app` project, settings from dependencies (`:core`) are not inherited during the execution of `:app:koverHtmlReport`.
 
 However, the settings specified in the `kover { ... }` extension affect all reports, even those generated using dependencies.
+
+**When generating a single report for several projects, all these projects should use the same coverage toolset - Kover or JaCoCo.**
 
 ## Filtering reports
 For a full description of working with filters, see the [extended manual](configuring#reports-filtering).
@@ -239,6 +247,16 @@ Example:
 ```
 ./gradlew koverHtmlReportRelease
 ```
+
+
+## HTML report description
+![Example of HTML report](html.png)
+- green indicates a line that has been executed at least once (covered)
+- red indicates a line that has never been executed (missed)
+- yellow indicates a line in which there is a branching, but at least one of the branches was not executed (partially covered)
+- code that was excluded from the report using filters is not highlighted in any color
+
+In the HTML report, Kover shows coverage by lines, it cannot display detailed coverage for an expression or separately for each code branch on a line.
 
 
 ## Instrumentation
