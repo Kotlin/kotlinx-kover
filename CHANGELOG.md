@@ -1,14 +1,14 @@
 0.7.1 / 2023-06-01
 ===================
 ### Features
-* Added a filter of source sets (#376)
+* Added a filter for source sets (#376)
 
 ### Bugfixes
 * Fixed up-to-date checks for Kover tasks (#371)
 
 ### Documentation
 * Updated documentation on filtering by annotations (#370)
-* Improved Kover documentation (282)
+* Improved Kover documentation (#282)
 * Fix broken migration link in CHANGELOG.md
 * Fix documentation for KoverReportExtension
 * Fixed Kover Plugin ID for legacy plugin application
