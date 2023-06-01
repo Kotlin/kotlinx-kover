@@ -48,13 +48,15 @@ publishing {
         archiveClassifier.set("sources")
         from(sources)
     }
-
     publications.withType<MavenPublication>().configureEach {
         addMetadata()
         signPublicationIfKeyPresent()
 
         artifact(javadocJar)
         artifact(sourcesJar)
+    }
+    tasks.withType<PublishToMavenRepository>().configureEach {
+        dependsOn(tasks.withType<Sign>())
     }
 }
 
@@ -95,6 +97,7 @@ fun MavenPublication.signPublicationIfKeyPresent() {
         }
     }
 }
+
 
 fun MavenPublication.addMetadata() {
     pom {

@@ -14,10 +14,12 @@ internal interface CheckerContext {
 
     val output: String
 
+    val hasError: Boolean
+
     /**
      * Perform built-in checks.
      */
-    fun prepare(buildErrorExpected: Boolean)
+    fun prepare(buildErrorExpected: Boolean? = false)
 
     fun subproject(path: String, checker: CheckerContext.() -> Unit)
 

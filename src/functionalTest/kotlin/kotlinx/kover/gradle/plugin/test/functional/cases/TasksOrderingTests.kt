@@ -21,7 +21,7 @@ internal class TasksOrderingTests {
                 }
             }
         }
-        runWithError("koverVerify", "koverXmlReport", "koverHtmlReport") {
+        run("koverVerify", "koverXmlReport", "koverHtmlReport", errorExpected = true) {
             // reports should be generated even if verification failed with an error
             checkDefaultReports()
         }

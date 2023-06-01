@@ -4,7 +4,6 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.kotlinVersion
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 import java.io.*
@@ -46,12 +45,17 @@ internal class ConfigurationCacheTests {
             dependencyKover(subprojectPath)
         }
 
-        runWithError(
+        run(
             ":koverXmlReport",
             ":koverHtmlReport",
             ":koverVerify",
             "-Dorg.gradle.unsafe.isolated-projects=true",
+            errorExpected = null,
         ) {
+            if (!hasError) {
+                return@run
+            }
+
             // With the current versions of the Kotlin plugin, an error occurs breaking the isolation of projects. The easiest way to check that the error is not caused by the Kover plugin, then it is enough to find occurrences of this word.
             // However, the report in any case contains 'kover' words (for example, task names), so they need to be excluded
             val errorLine: String = output.lineSequence().firstOrNull { it.startsWith("See the complete report at ") }
@@ -59,7 +63,14 @@ internal class ConfigurationCacheTests {
             val filePath = errorLine.substringAfter("See the complete report at ")
 
             val hasKoverErrors = File(filePath.removePrefix("file://")).bufferedReader()
-                .containsWord("kover", "kover-functional-test", "koverXmlReport", "koverHtmlReport", "koverVerify")
+                .containsWord("kover", "kover-functional-test", "koverXmlReport", "koverHtmlReport", "koverVerify",
+                    // {"name":"build/kover/default.artifact"}]},{"trace":[{"kind":"BuildLogicClass","type":"kotlinx.kover.gradle.plugin.commons.ArtifactsKt"}]
+                    "kover/default.artifact",
+                    "kover.gradle.plugin.commons.ArtifactsKt",
+                    // Execution of task ':common:compileKotlin' caused invocation of 'Task.project' by task ':common:koverFindJar' at execution time which is unsupported.
+                    "koverFindJar' at execution time which is unsupported.",
+                    // Execution of task ':common:compileKotlin' caused invocation of 'Task.project' by task ':common:koverGenerateArtifact' at execution time which is unsupported.
+                    "koverGenerateArtifact' at execution time which is unsupported.")
 
             assertFalse(hasKoverErrors, "Project isolation report contains unexpected words 'kover', perhaps the Kover plugin breaks the project isolation")
         }

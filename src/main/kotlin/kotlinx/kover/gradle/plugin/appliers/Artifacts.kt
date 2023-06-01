@@ -57,7 +57,8 @@ internal fun Project.createArtifactGenerationTask(
 
     val localArtifactFile = project.layout.buildDirectory.file(artifactFilePath(variantName))
 
-    val artifactGenTask = tasks.register<KoverArtifactGenerationTask>(artifactGenerationTaskName(variantName)) {
+    val artifactGenTask = tasks.register<KoverArtifactGenerationTask>(artifactGenerationTaskName(variantName))
+    artifactGenTask.configure {
         // to generate an artifact, need to compile the entire project and perform all test tasks
         dependsOn(tests)
         dependsOn(compileTasks)
