@@ -4,6 +4,8 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.common
 
+import java.io.File
+
 /**
  * Name of environment variable with Android SDK path.
  */
@@ -65,4 +67,8 @@ internal fun logInfo(message: String) {
     }
 }
 
-private val testLogsEnabled = System.getProperty("testLogsEnabled") == "true"
+internal val gradleWrappersRoot = File("gradle-wrappers")
+
+internal val defaultGradleWrapperDir = File("..")
+
+internal val testLogsEnabled = System.getProperty("testLogsEnabled") == "true"

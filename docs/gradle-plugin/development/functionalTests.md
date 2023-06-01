@@ -4,10 +4,10 @@ Functional tests run Gradle in a separate system process, and then check the res
 By default, to run functional tests, Gradle is used, which builds the plugin as its dependency.
 
 ## Test types
- * examples - used to demonstrate the use of the Kover plugin on ready-made projects. Located in specified subdirectory of [examples](/examples). 
+ * examples - used to demonstrate the use of the Kover plugin on ready-made projects. Located in specified subdirectory of [examples](/kover-gradle-plugin/examples). 
 For such projects, it is mandatory that the latest release version of the plugin is used in the build script (the value of the `releaseVersion` property). 
 <br/>To create test on all examples, use `@kotlinx.kover.test.functional.framework.starter.ExamplesTest` annotation on function. This function must have receiver or single parameter with type `kotlinx.kover.test.functional.framework.checker.CheckerContext` to check result of Gradle run.
- * templates - test on some specific rare case. Located in special [directory](/src/functionalTest/templates). You can execute any Gradle command for template project.
+ * templates - test on some specific rare case. Located in special [directory](/kover-gradle-plugin/src/functionalTest/templates). You can execute any Gradle command for template project.
 <br/>To create test on all examples, use `@kotlinx.kover.test.functional.framework.starter.TemplateTest` annotation on function. This function must have receiver or single parameter with type `kotlinx.kover.test.functional.framework.checker.CheckerContext` to check result of Gradle run. 
  * single generated test - launching a project without a ready source code. The project is builded using the configurator in the code of the test itself. This makes the test code more versatile - it is suitable for creating builds in different script languages and using different Kotlin plugins or different Coverage Tools.
 <br/>To create test on all examples, use `@kotlinx.kover.test.functional.framework.starter.TemplateTest` annotation on function. This function must have receiver or single parameter with type `kotlinx.kover.test.functional.framework.configurator.BuildConfigurator` to generate projects and perform Gradle run with checks. 

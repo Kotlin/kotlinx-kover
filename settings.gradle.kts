@@ -7,5 +7,6 @@ pluginManagement {
     }
 }
 
-include(":toolset:kover-cli")
-include(":toolset:kover-offline-runtime")
+include(":kover-gradle-plugin")
+include(":kover-cli")
+include(":kover-offline-runtime")

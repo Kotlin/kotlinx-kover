@@ -4,9 +4,7 @@
 
 package kotlinx.kover.api
 
-import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.KoverMigrations.MIGRATION_0_6_TO_0_7
-import org.gradle.api.tasks.*
 
 
 // DEPRECATIONS

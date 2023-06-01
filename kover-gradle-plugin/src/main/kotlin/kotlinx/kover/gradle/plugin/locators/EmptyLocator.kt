@@ -6,7 +6,6 @@ package kotlinx.kover.gradle.plugin.locators
 
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
-import org.gradle.api.*
 
 
 internal class EmptyLocator : CompilationKitLocator {

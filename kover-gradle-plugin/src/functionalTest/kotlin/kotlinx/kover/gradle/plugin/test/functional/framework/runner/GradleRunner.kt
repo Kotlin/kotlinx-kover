@@ -8,10 +8,6 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.isDebugEnabled
 import java.io.*
 
-private val wrappersRoot = File("gradle-wrappers")
-private val defaultWrapperDir = File(".")
-
-
 /**
  * Options:
  *  - build cache - disabled by default, to enable it, you need to pass the "--build-cache" argument.
@@ -27,7 +23,7 @@ internal fun File.runGradleBuild(args: List<String>, runIndex: Int = 0): BuildRe
         gradleArgs += "--no-daemon"
     }
 
-    val wrapperDir = if (gradleWrapperVersion == null) defaultWrapperDir else getWrapper(gradleWrapperVersion)
+    val wrapperDir = if (gradleWrapperVersion == null) defaultGradleWrapperDir else getWrapper(gradleWrapperVersion)
 
     logInfo("Run Gradle commands $gradleArgs for project '${this.canonicalPath}' with wrapper '${wrapperDir.canonicalPath}'")
 
@@ -83,7 +79,7 @@ internal class BuildResult(exitCode: Int, private val logFile: File) {
 }
 
 private fun getWrapper(version: String): File {
-    val wrapperDir = wrappersRoot.resolve(version)
+    val wrapperDir = gradleWrappersRoot.resolve(version)
     if (!wrapperDir.exists()) throw Exception("Wrapper for Gradle version '$version' is not supported by functional tests")
     return wrapperDir
 }

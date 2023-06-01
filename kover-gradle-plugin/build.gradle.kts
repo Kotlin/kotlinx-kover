@@ -166,11 +166,6 @@ gradlePlugin {
     }
 }
 
-apiValidation {
-    ignoredProjects.addAll(listOf("kover-cli", "kover-offline-runtime"))
-}
-
-
 
 // ====================
 // Release preparation
@@ -186,12 +181,12 @@ tasks.register("prepareRelease") {
         val prevReleaseVersion = project.property("kover.release.version") as String
 
         val dir = layout.projectDirectory
+        val rootDir = rootProject.layout.projectDirectory
 
+        rootDir.file("gradle.properties").asFile.patchProperties(releaseVersion)
+        rootDir.file("CHANGELOG.md").asFile.patchChangeLog(releaseVersion)
 
-        dir.file("gradle.properties").asFile.patchProperties(releaseVersion)
-        dir.file("CHANGELOG.md").asFile.patchChangeLog(releaseVersion)
-
-        dir.file("README.md").asFile.replaceInFile(prevReleaseVersion, releaseVersion)
+        rootDir.file("README.md").asFile.replaceInFile(prevReleaseVersion, releaseVersion)
 
         // replace versions in examples
         dir.dir("examples").asFileTree.matching {
@@ -202,7 +197,7 @@ tasks.register("prepareRelease") {
         }
 
         // replace versions in docs
-        dir.dir("docs").asFileTree.files.forEach {
+        rootDir.dir("docs").asFileTree.files.forEach {
             it.replaceInFile(prevReleaseVersion, releaseVersion)
         }
     }

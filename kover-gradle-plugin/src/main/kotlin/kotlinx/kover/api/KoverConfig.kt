@@ -7,11 +7,6 @@
 package kotlinx.kover.api
 
 import kotlinx.kover.gradle.plugin.commons.KoverMigrations.MIGRATION_0_6_TO_0_7
-import org.gradle.api.*
-import org.gradle.api.model.*
-import org.gradle.api.provider.*
-import org.gradle.kotlin.dsl.*
-import javax.inject.*
 
 @Deprecated(
     message = "Class was removed. Please refer to migration guide in order to migrate: $MIGRATION_0_6_TO_0_7",

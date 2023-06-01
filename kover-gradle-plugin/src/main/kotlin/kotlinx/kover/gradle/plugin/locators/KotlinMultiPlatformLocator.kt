@@ -8,7 +8,6 @@ import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.*
-import org.gradle.api.tasks.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.kotlin.dsl.*
 
