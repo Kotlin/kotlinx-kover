@@ -74,7 +74,20 @@ public interface KoverProjectExtension {
      */
     public fun excludeInstrumentation(config: Action<KoverInstrumentationExclusions>)
 
-
+    /**
+     * Excludes classes of the specified source sets from Kover reports.
+     *
+     * As a side effect, the generation of Kover reports ceases to depend on the compilation tasks of these source sets.
+     *
+     * Example:
+     * ```
+     * kover {
+     *     excludeSourceSets {
+     *         names("test1", "extra")
+     *     }
+     * }
+     * ```
+     */
     public fun excludeSourceSets(config: Action<SourceSetsExclusions>)
 
     /*

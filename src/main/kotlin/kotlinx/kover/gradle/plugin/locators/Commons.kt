@@ -11,7 +11,6 @@ import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
-import org.jetbrains.kotlin.gradle.utils.`is`
 import java.io.File
 
 /**
