@@ -262,7 +262,7 @@ kover {
 To use JaCoCo tools with specified version:
 ```
 kover {
-    useJacoco("0.8.8")
+    useJacoco("0.8.10")
 }
 ```
 
