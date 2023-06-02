@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij.deps:intellij-coverage-offline:1.0.721")
+    implementation(libs.intellij.offline)
 }
 
 tasks.jar {
@@ -40,5 +40,4 @@ tasks.jar {
         exclude("META-INF/**")
         exclude("LICENSE")
     }
-
 }

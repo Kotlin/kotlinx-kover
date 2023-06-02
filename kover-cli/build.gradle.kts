@@ -26,14 +26,15 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
     fatJar.set(true)
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }
 
 dependencies {
-    implementation("org.jetbrains.intellij.deps:intellij-coverage-reporter:1.0.721")
-    implementation("args4j:args4j:2.33")
+    implementation(libs.intellij.reporter)
+    implementation(libs.args4j)
 
     testImplementation(kotlin("test"))
 }

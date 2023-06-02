@@ -5,11 +5,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.13.0"
+    alias(libs.plugins.kotlinx.binaryCompatibilityValidator)
+    alias(libs.plugins.kotlinx.dokka)
 
-    id("org.jetbrains.dokka") version "1.8.10"
     `kotlin-dsl`
-
     `java-gradle-plugin`
 
     id("kover-publishing-conventions")
@@ -21,7 +20,6 @@ repositories {
     google()
 }
 
-val kotlinVersion = property("kotlinVersion")
 val localRepositoryUri = uri("build/.m2")
 val junitParallelism = findProperty("kover.test.junit.parallelism")?.toString()
 
@@ -41,14 +39,14 @@ dependencies {
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
 
-    compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    compileOnly(libs.gradlePlugin.kotlin)
 
-    compileOnly("org.jetbrains.intellij.deps:intellij-coverage-reporter:1.0.721")
+    compileOnly(libs.intellij.reporter)
 
     testImplementation(kotlin("test"))
 
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter:5.9.0")
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-params:5.9.0")
+    "functionalTestImplementation"(libs.junit.jupiter)
+    "functionalTestImplementation"(libs.junit.params)
 }
 
 kotlin {
@@ -71,7 +69,7 @@ val functionalTest by tasks.registering(Test::class) {
         // basic build properties
         setSystemPropertyFromProject("kover.test.kotlin.version")
 
-        systemProperties["kotlinVersion"] = kotlinVersion
+        systemProperties["kotlinVersion"] = embeddedKotlinVersion
         systemProperties["koverVersion"] = version
         systemProperties["localRepositoryPath"] = localRepositoryUri.path
 

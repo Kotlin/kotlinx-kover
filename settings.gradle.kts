@@ -3,9 +3,14 @@ rootProject.name = "kover"
 pluginManagement {
     includeBuild("build-logic")
 
-    val kotlinVersion: String by settings
     plugins {
-        kotlin("jvm") version kotlinVersion
+        kotlin("jvm") version embeddedKotlinVersion
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs")
     }
 }
 
