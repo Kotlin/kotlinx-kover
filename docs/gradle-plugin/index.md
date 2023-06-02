@@ -169,7 +169,7 @@ Thus, for each subproject, it will be possible to generate a report showing the 
 ### Single report over several projects
 If it is necessary to use coverage from several subprojects in one report, then a special dependency should be added to the subproject.
 ```kotlin
-dependency {
+dependencies {
     kover(project(":core"))
 }
 ```
