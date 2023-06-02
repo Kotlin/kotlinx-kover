@@ -38,13 +38,10 @@ kotlin.target.compilations.run {
 dependencies {
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
-
     compileOnly(libs.gradlePlugin.kotlin)
-
     compileOnly(libs.intellij.reporter)
 
-    testImplementation(kotlin("test"))
-
+    "functionalTestImplementation"(kotlin("test"))
     "functionalTestImplementation"(libs.junit.jupiter)
     "functionalTestImplementation"(libs.junit.params)
 }
