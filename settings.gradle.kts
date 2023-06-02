@@ -1,6 +1,8 @@
-rootProject.name = "kover-gradle-plugin"
+rootProject.name = "kover"
 
 pluginManagement {
+    includeBuild("build-logic")
+
     val kotlinVersion: String by settings
     plugins {
         kotlin("jvm") version kotlinVersion
