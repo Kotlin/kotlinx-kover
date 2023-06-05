@@ -1,11 +1,19 @@
-rootProject.name = "kover-gradle-plugin"
+rootProject.name = "kover"
 
 pluginManagement {
-    val kotlinVersion: String by settings
+    includeBuild("build-logic")
+
     plugins {
-        kotlin("jvm") version kotlinVersion
+        kotlin("jvm") version embeddedKotlinVersion
     }
 }
 
-include(":toolset:kover-cli")
-include(":toolset:kover-offline-runtime")
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs")
+    }
+}
+
+include(":kover-gradle-plugin")
+include(":kover-cli")
+include(":kover-offline-runtime")

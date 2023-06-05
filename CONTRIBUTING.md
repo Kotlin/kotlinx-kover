@@ -41,8 +41,8 @@ so do familiarize yourself with the following guidelines.
   * Write the test that reproduces the bug.
   * Fixes without tests are accepted only in exceptional circumstances if it can be shown that writing the 
     corresponding test is too hard or otherwise impractical.
-  * Place a test for the functionality of one or more Kover plugin classes in [unit tests directory](src/test/kotlin)
-  * Place in [functional test directory](src/functionalTest/kotlin) the test that check the functionality of the Kover plugin by the Gradle runs
+  * Place a test for the functionality of one or more Kover plugin classes in [unit tests directory](kover-gradle-plugin/src/test/kotlin)
+  * Place in [functional test directory](kover-gradle-plugin/src/functionalTest/kotlin) the test that check the functionality of the Kover plugin by the Gradle runs
   * Follow the style of writing tests that is used in this project: 
     name test functions as `test...`, don't use backticks in test names. Name test classes as `...Tests`.
   * Fixes that, in addition to directly solving the bug, add a large piece of new functionality or change the existing one, will be considered as features

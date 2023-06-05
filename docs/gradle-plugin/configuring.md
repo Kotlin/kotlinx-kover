@@ -301,7 +301,8 @@ If inclusion and exclusion rules are specified at the same time, then excludes h
 This means that even if a class is specified in both the inclusion and exclusion rules, it will be excluded from the report (e.g. class `com.example.Class1` above).
 
 It is acceptable to filter a class from the report by its fully-qualified name - using `classes` or `packages`. Also acceptable to filter a class, function or getter marked with the specified annotation - `annotatedBy`.
-**Kover supports filtering by annotations having `AnnotationRetention` `BINARY` or `RUNTIME`.
+
+**Kover supports filtering by annotations having `AnnotationRetention` `BINARY` or `RUNTIME`.**
 
 [Wildcards](#class-name-with-wildcards) `*` and `?` are allowed in class names.
 

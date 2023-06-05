@@ -1,0 +1,25 @@
+[versions]
+
+intellij-coverage = "1.0.721"
+junit = "5.9.0"
+kotlinx-bcv = "0.13.0"
+kotlinx-dokka = "1.8.10"
+args4j = "2.33"
+
+[libraries]
+
+# IntelliJ coverage library
+intellij-reporter = { module = "org.jetbrains.intellij.deps:intellij-coverage-reporter", version.ref = "intellij-coverage" }
+intellij-offline = { module = "org.jetbrains.intellij.deps:intellij-coverage-offline", version.ref = "intellij-coverage" }
+
+# JUnit
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+
+args4j = { module = "args4j:args4j", version.ref = "args4j" }
+
+gradlePlugin-kotlin =  { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" }
+
+[plugins]
+kotlinx-binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlinx-bcv" }
+kotlinx-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinx-dokka" }

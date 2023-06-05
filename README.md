@@ -107,7 +107,7 @@ dependencies {
 
 in this case report will be generated for current project joined with `:another:project` project.
 
-**More examples of Gradle plugin applying can be found in [example folder](examples)**
+**More examples of Gradle plugin applying can be found in [example folder](kover-gradle-plugin/examples)**
 
 ## Building locally and Contributing
 
