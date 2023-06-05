@@ -35,15 +35,18 @@ kotlin.target.compilations.run {
     getByName("functionalTest").associateWith(getByName(KotlinCompilation.MAIN_COMPILATION_NAME))
 }
 
+// name of configuration for functionalTest source set with implementation dependencies
+val functionalTestImplementation = "functionalTestImplementation"
+
 dependencies {
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
     compileOnly(libs.gradlePlugin.kotlin)
     compileOnly(libs.intellij.reporter)
 
-    "functionalTestImplementation"(kotlin("test"))
-    "functionalTestImplementation"(libs.junit.jupiter)
-    "functionalTestImplementation"(libs.junit.params)
+    functionalTestImplementation(kotlin("test"))
+    functionalTestImplementation(libs.junit.jupiter)
+    functionalTestImplementation(libs.junit.params)
 }
 
 kotlin {

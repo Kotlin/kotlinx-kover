@@ -14,7 +14,7 @@ intellij-offline = { module = "org.jetbrains.intellij.deps:intellij-coverage-off
 
 # JUnit
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
-junit-params = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 
 args4j = { module = "args4j:args4j", version.ref = "args4j" }
 
