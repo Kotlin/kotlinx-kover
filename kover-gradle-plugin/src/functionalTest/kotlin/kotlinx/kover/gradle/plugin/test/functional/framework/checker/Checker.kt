@@ -38,6 +38,21 @@ internal fun File.analyzeProject(): ProjectAnalysisData {
     return ProjectAnalysisDataImpl(this,  ":")
 }
 
+internal fun BuildResult.checkNoAndroidSdk() {
+    if (!isSuccessful) {
+        if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
+            output.contains("Android Gradle plugin requires Java 11 to run.")  ||
+            output.contains("Could not resolve com.android.tools.build:gradle:")
+        ) {
+            if (isAndroidTestDisabled) {
+                throw TestAbortedException("Android tests are disabled")
+            } else {
+                throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -Pkover.test.android.sdk. To ignore Android tests pass parameter -Pkover.test.android.disable")
+            }
+        }
+    }
+}
+
 private class CheckerContextImpl(
     override val project: ProjectAnalysisData,
     val result: BuildResult
@@ -57,17 +72,10 @@ private class CheckerContextImpl(
             }
         }
 
+
+        result.checkNoAndroidSdk()
+
         if (!result.isSuccessful) {
-            if (output.contains("Define a valid SDK location with an ANDROID_HOME environment variable") ||
-                output.contains("Android Gradle plugin requires Java 11 to run.")  ||
-                output.contains("Could not resolve com.android.tools.build:gradle:")
-            ) {
-                if (isAndroidTestDisabled) {
-                    throw TestAbortedException("Android tests are disabled")
-                } else {
-                    throw Exception("Android SDK directory not specified, specify environment variable $ANDROID_HOME_ENV or parameter -Pkover.test.android.sdk. To ignore Android tests pass parameter -Pkover.test.android.disable")
-                }
-            }
             if (buildErrorExpected == false) {
                 throw AssertionError("Build error")
             }

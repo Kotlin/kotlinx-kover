@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerContext
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.checkNoAndroidSdk
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.buildFromTemplate
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.generateBuild
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
@@ -47,6 +48,7 @@ internal class ConfigurationOrderTests {
         val build = buildSource.generate("No variant config", "template")
         val buildResult = build.runWithParams("clean")
 
+        buildResult.checkNoAndroidSdk()
         assertFalse(buildResult.isSuccessful, "Build must fall")
         assertContains(buildResult.output, "impossible to configure Android reports for it")
     }
@@ -57,6 +59,7 @@ internal class ConfigurationOrderTests {
         val build = buildSource.generate("No variant merge", "template")
         val buildResult = build.runWithParams("clean")
 
+        buildResult.checkNoAndroidSdk()
         assertFalse(buildResult.isSuccessful, "Build must fall")
         assertContains(buildResult.output, "impossible to merge default reports with its measurements")
     }
