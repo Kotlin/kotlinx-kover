@@ -4,13 +4,11 @@
 
 package kotlinx.kover.gradle.plugin.tasks.reports
 
-import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.file.*
 import org.gradle.api.tasks.*
-import javax.inject.*
 
 @CacheableTask
-internal abstract class KoverXmlTask @Inject constructor(tool: CoverageTool) : AbstractKoverReportTask(tool) {
+internal abstract class KoverXmlTask : AbstractKoverReportTask() {
     @get:OutputFile
     internal abstract val reportFile: RegularFileProperty
 
@@ -18,6 +16,6 @@ internal abstract class KoverXmlTask @Inject constructor(tool: CoverageTool) : A
     fun generate() {
         val xmlFile = reportFile.get().asFile
         xmlFile.parentFile.mkdirs()
-        tool.xmlReport(xmlFile, context())
+        tool.get().xmlReport(xmlFile, context())
     }
 }

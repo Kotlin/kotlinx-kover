@@ -6,9 +6,9 @@ package kotlinx.kover.gradle.plugin.tools.jacoco
 
 import java.io.*
 
-internal fun buildJvmAgentArgs(jarFile: File, rawReportFile: File, excludedClasses: Set<String>): List<String> {
+internal fun buildJvmAgentArgs(jarFile: File, binReportFile: File, excludedClasses: Set<String>): List<String> {
     val agentArgs = listOfNotNull(
-        "destfile=${rawReportFile.canonicalPath},append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false",
+        "destfile=${binReportFile.canonicalPath},append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false",
         excludedClasses.joinToFilterString("excludes")
     ).joinToString(",")
 

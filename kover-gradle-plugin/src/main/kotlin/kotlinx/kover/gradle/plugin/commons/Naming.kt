@@ -40,10 +40,10 @@ internal fun xmlReportTaskName(variant: String) = "$DEFAULT_XML_REPORT_NAME${var
 internal fun verifyTaskName(variant: String) = "$DEFAULT_VERIFY_REPORT_NAME${variant.capitalized()}"
 
 /**
- * Name of raw report for specified test task name (without directory path).
+ * Name of binary report for specified test task name (without directory path).
  */
-internal fun rawReportName(taskName: String, toolVendor: CoverageToolVendor): String {
-    return "${taskName}.${toolVendor.rawReportExtension}"
+internal fun binReportName(taskName: String, toolVendor: CoverageToolVendor): String {
+    return "${taskName}.${toolVendor.binReportExtension}"
 }
 
 /**
@@ -59,12 +59,12 @@ internal const val JVM_REPORTER_CONFIGURATION_NAME = "koverJvmReporter"
 /**
  * Name of the Gradle configuration for sharing Kover artifact.
  */
-internal fun localArtifactConfigurationName(namespace: String): String = "koverArtifact${namespace.capitalized()}"
+internal fun artifactConfigurationName(variantName: String): String = "koverArtifact${variantName.capitalized()}"
 
 /**
  * Name of the Gradle configuration for collecting Kover artifacts from dependencies.
  */
-internal fun externalArtifactConfigurationName(namespace: String): String = "koverExternalArtifacts${namespace.capitalized()}"
+internal fun externalArtifactConfigurationName(variantName: String): String = "koverExternalArtifacts${variantName.capitalized()}"
 
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 internal fun String.capitalized(): String {

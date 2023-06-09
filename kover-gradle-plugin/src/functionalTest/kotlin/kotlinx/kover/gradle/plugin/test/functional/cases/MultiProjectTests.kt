@@ -75,14 +75,14 @@ internal class MultiProjectTests {
         }
 
         run("koverXmlReport", "koverHtmlReport", "koverVerify") {
-            checkDefaultRawReport(false)
+            checkDefaultBinReport(false)
 
             checkOutcome("koverHtmlReport", "SKIPPED")
             checkOutcome("koverXmlReport", "SKIPPED")
             checkOutcome("koverVerify", "SKIPPED")
 
             subproject(subprojectPath) {
-                checkDefaultRawReport(false)
+                checkDefaultBinReport(false)
                 checkOutcome("koverHtmlReport", "SKIPPED")
                 checkOutcome("koverXmlReport", "SKIPPED")
                 checkOutcome("koverVerify", "SKIPPED")
@@ -112,14 +112,14 @@ internal class MultiProjectTests {
         }
 
         run("koverXmlReport", "koverHtmlReport", "koverVerify") {
-            checkDefaultRawReport(false)
+            checkDefaultBinReport(false)
 
             checkOutcome("koverHtmlReport", "SKIPPED")
             checkOutcome("koverXmlReport", "SKIPPED")
             checkOutcome("koverVerify", "SKIPPED")
 
             subproject(subprojectPath) {
-                checkDefaultRawReport(false)
+                checkDefaultBinReport(false)
                 checkOutcome("koverHtmlReport", "SKIPPED")
                 checkOutcome("koverXmlReport", "SKIPPED")
                 checkOutcome("koverVerify", "SKIPPED")

@@ -16,10 +16,8 @@ import java.io.File
 internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageTool {
     override val jvmAgentDependency: String = "org.jacoco:org.jacoco.agent:${variant.version}"
 
-    override val jvmReporterDependencies: List<String> = listOf(
-        "org.jacoco:org.jacoco.agent:${variant.version}",
-        "org.jacoco:org.jacoco.ant:${variant.version}"
-    )
+    override val jvmReporterDependency: String = "org.jacoco:org.jacoco.agent:${variant.version}"
+    override val jvmReporterExtraDependency: String = "org.jacoco:org.jacoco.ant:${variant.version}"
 
     override fun findJvmAgentJar(classpath: FileCollection, archiveOperations: ArchiveOperations): File {
         val fatJar = classpath.filter { it.name.startsWith("org.jacoco.agent") }.singleFile
@@ -29,10 +27,10 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
     override fun jvmAgentArgs(
         jarFile: File,
         tempDir: File,
-        rawReportFile: File,
+        binReportFile: File,
         excludedClasses: Set<String>
     ): List<String> {
-        return buildJvmAgentArgs(jarFile, rawReportFile, excludedClasses)
+        return buildJvmAgentArgs(jarFile, binReportFile, excludedClasses)
     }
 
     override fun xmlReport(xmlFile: File, context: ReportContext) {

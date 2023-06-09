@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
-import kotlinx.kover.gradle.plugin.appliers.androidReports
+import kotlinx.kover.gradle.plugin.appliers.reports.androidReports
 import kotlinx.kover.gradle.plugin.appliers.defaultReports
 import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.*

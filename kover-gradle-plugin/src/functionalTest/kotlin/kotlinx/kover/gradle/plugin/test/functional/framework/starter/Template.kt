@@ -20,8 +20,6 @@ import java.nio.file.*
 @Extensions(ExtendWith(TemplateGradleTest::class))
 internal annotation class TemplateTest(val templateName: String, val commands: Array<String>)
 
-private const val TEMPLATES_DIR = "src/functionalTest/templates/builds"
-
 private class TemplateGradleTest : DirectoryBasedGradleTest() {
 
     override fun readAnnotationArgs(element: AnnotatedElement?): RunCommand {
@@ -29,10 +27,10 @@ private class TemplateGradleTest : DirectoryBasedGradleTest() {
             ?: throw IllegalStateException("Test not marked by '${TemplateTest::class.qualifiedName}' annotation")
 
         val templateName = annotation.templateName
-        val templateDir = File(TEMPLATES_DIR).resolve(templateName)
-        val commands = annotation.commands.toList()
 
-        return RunCommand(templateName, templateDir, commands)
+        val sources = buildFromTemplate(templateName)
+        val commands = annotation.commands.toList()
+        return RunCommand(templateName, sources, commands)
     }
 
     override val testType: String = "Template"

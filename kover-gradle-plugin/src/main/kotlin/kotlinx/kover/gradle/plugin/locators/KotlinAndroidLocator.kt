@@ -15,29 +15,38 @@ Because of this, Kover may not have direct access to the Android plugin classes,
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal class KotlinAndroidLocator(private val project: Project) : CompilationKitLocator {
-    companion object {
-        fun isApplied(project: Project): Boolean {
-            return project.plugins.hasPlugin("kotlin-android")
+internal class KotlinAndroidLocator(
+    private val project: Project,
+    private val koverExtension: KoverProjectExtensionImpl,
+    private val listener: CompilationsListenerWrapper
+) {
+    init {
+        listener.onApplyPlugin(KotlinPluginType.ANDROID)
+
+        project.pluginManager.withPlugin(ANDROID_APP_PLUGIN_ID) {
+            project.afterAndroidPluginApplied(::processAndroidTarget)
+        }
+        project.pluginManager.withPlugin(ANDROID_LIB_PLUGIN_ID) {
+            project.afterAndroidPluginApplied(::processAndroidTarget)
         }
     }
 
-    override fun locate(koverExtension: KoverProjectExtensionImpl): ProjectCompilation {
+    private fun processAndroidTarget() {
+        val kotlinExtension = project.getKotlinExtension()
+
+        locateAndroidCompilations(kotlinExtension)
+
+        listener.finalize()
+    }
+
+    private fun locateAndroidCompilations(kotlinExtension: DynamicBean) {
         val androidExtension = project.extensions.findByName("android")?.bean()
             ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
 
-        val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
-            ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/Android project")
-
         val kotlinTarget = kotlinExtension["target"]
 
-
-        val androidKits = project.androidCompilationKits(androidExtension, koverExtension, kotlinTarget)
-
-        return ProjectCompilation(
-            AppliedKotlinPlugin(KotlinPluginType.ANDROID),
-            android = androidKits
-        )
+        val androidCompilations = project.androidCompilationKits(androidExtension, koverExtension, kotlinTarget)
+        listener.android(androidCompilations)
     }
 
 }

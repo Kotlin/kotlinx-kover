@@ -44,8 +44,8 @@ private class CheckerContextImpl(
 ) : CheckerContext {
     override val output: String = result.output
 
-    override val defaultRawReport: String
-        get() = rawReportsDirectory + "/" + defaultTestTaskName(project.kotlinPlugin.type!!) + "." + project.toolVariant.vendor.rawReportExtension
+    override val defaultBinReport: String
+        get() = binReportsDirectory + "/" + defaultTestTaskName(project.kotlinPlugin.type!!) + "." + project.toolVariant.vendor.binReportExtension
 
     override val hasError: Boolean
         get() = !result.isSuccessful
@@ -110,24 +110,22 @@ private class CheckerContextImpl(
         VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
     }
 
-    override fun checkDefaultRawReport(mustExist: Boolean) {
+    override fun checkDefaultBinReport(mustExist: Boolean) {
         if (mustExist) {
-            file(defaultRawReport) {
-                assertTrue(exists(), "Default raw report is not exists: $defaultRawReport")
-                assertTrue(length() > 0, "Default raw report is empty: $defaultRawReport")
+            file(defaultBinReport) {
+                assertTrue(exists(), "Default binary report is not exists: $defaultBinReport")
+                assertTrue(length() > 0, "Default binary report is empty: $defaultBinReport")
             }
         } else {
-            file(defaultRawReport) {
-                assertFalse(exists(), "Default raw report must not exist: $defaultRawReport" )
+            file(defaultBinReport) {
+                assertFalse(exists(), "Default binary report must not exist: $defaultBinReport" )
             }
         }
     }
 
     override fun checkDefaultReports(mustExist: Boolean) {
-        checkReports(
-            defaultXmlReport(),
-            defaultHtmlReport(), mustExist
-        )
+        checkXmlReport(mustExist = mustExist)
+        checkHtmlReport(mustExist = mustExist)
     }
 
     override fun checkOutcome(taskNameOrPath: String, expectedOutcome: String) {
@@ -149,22 +147,23 @@ private class CheckerContextImpl(
         checker(taskLog)
     }
 
-    override fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean) {
-        if (mustExist) {
-            file(xmlPath) {
-                assertTrue(exists(), "XML file must exist '$xmlPath'")
-                assertTrue(length() > 0, "XML file mustn't be empty '$xmlPath'")
+    override fun checkXmlReport(variantName: String, mustExist: Boolean) {
+        file("${defaultReportsDir}/report$variantName.xml") {
+            if (mustExist) {
+                assertTrue(exists(), "XML report file for ${if (variantName.isEmpty()) "variant '$variantName'" else "default variant"} must exist")
+            } else {
+                assertFalse(exists(), "XML report file for ${if (variantName.isEmpty()) "variant '$variantName'" else "default variant"} mustn't exist")
             }
-            file(htmlPath) {
-                assertTrue(exists(), "HTML report must exists '$htmlPath'")
-                assertTrue(isDirectory, "HTML report must be directory '$htmlPath'" )
-            }
-        } else {
-            file(xmlPath) {
-                assertFalse(exists(), "XML file mustn't exist '$xmlPath'")
-            }
-            file(htmlPath) {
-                assertFalse(exists(), "HTML report mustn't exist '$htmlPath'")
+        }
+    }
+
+    override fun checkHtmlReport(variantName: String, mustExist: Boolean) {
+        file("${defaultReportsDir}/html${variantName.capitalized()}") {
+            if (mustExist) {
+                assertTrue(exists(), "HTML report for ${if (variantName.isEmpty()) "variant '$variantName'" else "default variant"} must exist")
+                assertTrue(isDirectory, "HTML report for ${if (variantName.isEmpty()) "variant '$variantName'" else "default variant"} must be directory" )
+            } else {
+                assertFalse(exists(), "XML report file for ${if (variantName.isEmpty()) "variant '$variantName'" else "default variant"} mustn't exist")
             }
         }
     }
@@ -302,12 +301,14 @@ private fun String.kotlinPluginType(language: ScriptLanguage): AppliedKotlinPlug
         when {
             contains("""kotlin("jvm")""") -> AppliedKotlinPlugin(KotlinPluginType.JVM)
             contains("""kotlin("multiplatform")""") -> AppliedKotlinPlugin(KotlinPluginType.MULTIPLATFORM)
+            contains("""org.jetbrains.kotlin.android""") -> AppliedKotlinPlugin(KotlinPluginType.ANDROID)
             else -> AppliedKotlinPlugin(null)
         }
     } else {
         when {
             contains("""org.jetbrains.kotlin.jvm""") -> AppliedKotlinPlugin(KotlinPluginType.JVM)
             contains("""org.jetbrains.kotlin.multiplatform""") -> AppliedKotlinPlugin(KotlinPluginType.MULTIPLATFORM)
+            contains("""org.jetbrains.kotlin.android""") -> AppliedKotlinPlugin(KotlinPluginType.ANDROID)
             else -> AppliedKotlinPlugin(null)
         }
     }

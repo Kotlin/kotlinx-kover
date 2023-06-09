@@ -22,7 +22,7 @@ import java.io.File
 import javax.inject.Inject
 
 
-internal abstract class AbstractKoverReportTask(@Internal protected val tool: CoverageTool) : DefaultTask() {
+internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val localArtifact: RegularFileProperty
@@ -74,10 +74,14 @@ internal abstract class AbstractKoverReportTask(@Internal protected val tool: Co
     }
 
     @get:Nested
-    val toolVariant: CoverageToolVariant = tool.variant
+    val toolVariant: CoverageToolVariant
+        get() = tool.get().variant
 
     @get:Nested
     val filters: Property<ReportFilters> = project.objects.property()
+
+    @get:Internal
+    abstract val tool: Property<CoverageTool>
 
     @get:Internal
     protected val projectPath: String = project.path
@@ -88,7 +92,7 @@ internal abstract class AbstractKoverReportTask(@Internal protected val tool: Co
     @get:Inject
     protected abstract val workerExecutor: WorkerExecutor
 
-    fun hasRawReportsAndLog(): Boolean {
+    fun hasBinReportsAndLog(): Boolean {
         val hasReports = collectAllFiles().reports.isNotEmpty()
         if (!hasReports) {
             logger.lifecycle("Task '$name' will be skipped because no tests were executed")

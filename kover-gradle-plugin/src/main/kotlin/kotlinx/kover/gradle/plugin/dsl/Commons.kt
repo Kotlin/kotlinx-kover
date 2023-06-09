@@ -4,6 +4,10 @@
 
 package kotlinx.kover.gradle.plugin.dsl
 
+import kotlinx.kover.gradle.plugin.commons.htmlReportTaskName
+import kotlinx.kover.gradle.plugin.commons.verifyTaskName
+import kotlinx.kover.gradle.plugin.commons.xmlReportTaskName
+
 object KoverNames {
     /**
      * Name of the configurations to add dependency on Kover reports from another project.
@@ -34,4 +38,25 @@ object KoverNames {
      * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
      */
     public const val DEFAULT_VERIFY_REPORT_NAME = "koverVerify"
+
+    /**
+     * Name of the XML report generation task for [buildVariant] Android build variant for Android projects.
+     */
+    public fun androidXmlReport(buildVariant: String): String {
+        return xmlReportTaskName(buildVariant)
+    }
+
+    /**
+     * Name of the HTML report generation task for [buildVariant] Android build variant for Android projects.
+     */
+    public fun androidHtmlReport(buildVariant: String): String {
+        return htmlReportTaskName(buildVariant)
+    }
+
+    /**
+     * Name of the verification task for [buildVariant] Android build variant for Android projects.
+     */
+    public fun androidVerifyReport(buildVariant: String): String {
+        return verifyTaskName(buildVariant)
+    }
 }

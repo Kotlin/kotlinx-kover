@@ -35,8 +35,8 @@ internal class TaskFilteringTests {
                 contains("Task '${defaultTestTaskName(slice.type)}' will be skipped because no tests were executed")
             }
 
-            // if task `test` is excluded from instrumentation then the raw report is not created for it
-            checkDefaultRawReport(false)
+            // if task `test` is excluded from instrumentation then the binary report is not created for it
+            checkDefaultBinReport(false)
         }
     }
 }

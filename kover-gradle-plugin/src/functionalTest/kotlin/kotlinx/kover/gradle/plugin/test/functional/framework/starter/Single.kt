@@ -30,7 +30,6 @@ internal annotation class GeneratedTest(
 )
 
 private const val CONFIGURATOR_PARAM = "configurator"
-private const val TMP_PREFIX = "kover-generated-"
 
 private class SingleTestParams : ParameterResolver {
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {
@@ -68,14 +67,15 @@ private class SingleTestInterceptor : InvocationInterceptor {
         val tool = if (annotation.defaultTool) null else annotation.tool
         val slice = BuildSlice(annotation.language, annotation.type, tool)
 
-        val dir = Files.createTempDirectory(TMP_PREFIX).toFile()
         val config = configurator.prepare()
-        dir.writeBuild(config, slice)
-        logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
+        val buildSource = generateBuild { dir ->
+            dir.writeBuild(config, slice)
+            logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
+        }
 
-        dir.runAndCheck(config.steps)
+        val build = buildSource.generate(slice.toString(), "single generated")
+        build.runAndCheck(config.steps)
         // clear directory if where are no errors
-        logInfo("Build successfully for slice ($slice), deleting the directory ${dir.uri}")
-        dir.deleteRecursively()
+        build.clear()
     }
 }

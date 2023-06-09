@@ -16,10 +16,10 @@ internal fun agentFilePath(toolVariant: CoverageToolVariant): String {
     }
 }
 
-internal fun rawReportsRootPath() = "kover${separator}raw-reports"
+internal fun binReportsRootPath() = "kover${separator}bin-reports"
 
-internal fun rawReportPath(taskName: String, toolVendor: CoverageToolVendor): String {
-    return "${rawReportsRootPath()}${separator}${rawReportName(taskName, toolVendor)}"
+internal fun binReportPath(taskName: String, toolVendor: CoverageToolVendor): String {
+    return "${binReportsRootPath()}${separator}${binReportName(taskName, toolVendor)}"
 }
 
 internal fun htmlReportPath(variant: String): String {

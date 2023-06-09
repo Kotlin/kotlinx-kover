@@ -20,9 +20,9 @@ import javax.inject.*
 /**
  * The name of the author or the brand of the instrument.
  *
- * @param[rawReportExtension] The coverage report file extension, without the first `.`
+ * @param[binReportExtension] The coverage report file extension, without the first `.`
  */
-internal enum class CoverageToolVendor(val rawReportExtension: String) {
+internal enum class CoverageToolVendor(val binReportExtension: String) {
     KOVER("ic"),
     JACOCO("exec"),
 }
@@ -37,6 +37,14 @@ internal enum class KotlinPluginType {
 }
 
 /**
+ * Source of reports variant.
+ */
+internal enum class ReportsVariantType {
+    DEFAULT,
+    ANDROID
+}
+
+/**
  * Type of Kotlin plugin, applied in a specific project.
  *
  * If no Kotlin plugin is used in this project, then [type] is `null`.
@@ -44,30 +52,28 @@ internal enum class KotlinPluginType {
 internal class AppliedKotlinPlugin(val type: KotlinPluginType?)
 
 /**
- * All used compilation kits for some Gradle Project.
+ * Set of Kotlin compilations and test on them.
  */
-internal class ProjectCompilation(
-    val kotlinPlugin: AppliedKotlinPlugin,
-    val jvm: List<JvmCompilationKit> = emptyList(),
-    val android: List<AndroidCompilationKit> = emptyList()
-)
+internal interface CompilationKit {
+    val tests: TaskCollection<Test>
+    val compilations: Provider<Map<String, CompilationUnit>>
+}
 
 /**
  * Grouped JVM compilations and tests running on them.
  */
 internal class JvmCompilationKit(
-    val targetName: String,
-    val tests: TaskCollection<Test>,
+    override val tests: TaskCollection<Test>,
     // source set -> compilation
-    val compilations: Provider<Map<String, CompilationUnit>>,
-)
+    override val compilations: Provider<Map<String, CompilationUnit>>,
+): CompilationKit
 
 /**
  * Grouped named Android compilations and tests running on them.
  *
  * Contains additional information about the build variant taken from the Android Gradle Plugin
  */
-internal class AndroidCompilationKit(
+internal class AndroidVariantCompilationKit(
     val buildVariant: String,
     val buildType: String,
     val flavors: List<AndroidFlavor>,
@@ -82,9 +88,9 @@ internal class AndroidCompilationKit(
      */
     val missingDimensions: Map<String, String>,
 
-    val tests: TaskCollection<Test>,
-    val compilations: Provider<Map<String, CompilationUnit>>
-)
+    override val tests: TaskCollection<Test>,
+    override val compilations: Provider<Map<String, CompilationUnit>>
+): CompilationKit
 
 internal class AndroidFallbacks(
     /**

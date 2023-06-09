@@ -17,46 +17,77 @@ Because of this, Kover may not have direct access to the K/MPP plugin classes, a
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal class KotlinMultiPlatformLocator(private val project: Project) : CompilationKitLocator {
-    companion object {
-        fun isApplied(project: Project): Boolean {
-            return project.plugins.hasPlugin("kotlin-multiplatform")
+internal class KotlinMultiPlatformLocator(
+    private val project: Project,
+    private val koverExtension: KoverProjectExtensionImpl,
+    private val listener: CompilationsListenerWrapper
+) {
+
+    init {
+        listener.onApplyPlugin(KotlinPluginType.MULTIPLATFORM)
+
+        project.pluginManager.withPlugin(ANDROID_APP_PLUGIN_ID) {
+            project.afterAndroidPluginApplied(::processWithAndroidTarget)
+        }
+        project.pluginManager.withPlugin(ANDROID_LIB_PLUGIN_ID) {
+            project.afterAndroidPluginApplied(::processWithAndroidTarget)
+        }
+
+        project.afterEvaluate {
+            if (!hasAnyAndroidPlugin) {
+                // In case the Android plugin is not applied, then we are only looking for JVM compilations
+                processJvmTarget()
+            }
         }
     }
 
-    override fun locate(koverExtension: KoverProjectExtensionImpl): ProjectCompilation {
-        val kotlinExtension = project.extensions.findByName("kotlin")?.bean()
-            ?: throw KoverCriticalException("Kover requires extension with name 'kotlin' for project '${project.path}' since it is recognized as Kotlin/Multiplatform project")
+    private fun processWithAndroidTarget() {
+        val kotlinExtension = project.getKotlinExtension()
 
-        val targets = kotlinExtension.propertyBeans("targets").filter {
-            it["platformType"].property<String>("name") == "jvm"
-        }
+        locateJvmCompilations(kotlinExtension)
+        locateAndroidCompilations(kotlinExtension)
 
+        listener.finalize()
+    }
+
+    private fun processJvmTarget() {
+        val kotlinExtension = project.getKotlinExtension()
+
+        locateJvmCompilations(kotlinExtension)
+
+        listener.finalize()
+    }
+
+    private fun locateAndroidCompilations(kotlinExtension: DynamicBean) {
+        // only one Android target is allowed, so we can take the first one
         val androidTarget = kotlinExtension.propertyBeans("targets").firstOrNull {
             it["platformType"].property<String>("name") == "androidJvm"
         }
 
-        val androidCompilationKits = if (androidTarget != null) {
+        if (androidTarget != null) {
             val androidExtension = project.extensions.findByName("android")?.bean()
                 ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
 
-            project.androidCompilationKits(androidExtension, koverExtension, androidTarget)
-        } else {
-            emptyList()
-        }
+            val androidCompilations = project.androidCompilationKits(androidExtension, koverExtension, androidTarget)
 
-        val jvmKits = targets.map {
-            extractJvmKit(koverExtension, it)
+            listener.android(androidCompilations)
         }
-
-        return ProjectCompilation(
-            AppliedKotlinPlugin(KotlinPluginType.MULTIPLATFORM),
-            jvmKits,
-            androidCompilationKits
-        )
     }
 
-    private fun extractJvmKit(
+    private fun locateJvmCompilations(kotlinExtension: DynamicBean) {
+        // only one JVM target is allowed, so we can take the first one
+        val jvmTarget = kotlinExtension.propertyBeans("targets").firstOrNull {
+            it["platformType"].property<String>("name") == "jvm"
+        }
+
+        if (jvmTarget != null) {
+            val jvmCompilations = extractJvmCompilations(koverExtension, jvmTarget)
+            listener.jvm(jvmCompilations)
+        }
+    }
+
+
+    private fun extractJvmCompilations(
         koverExtension: KoverProjectExtensionImpl,
         target: DynamicBean
     ): JvmCompilationKit {
@@ -81,7 +112,7 @@ internal class KotlinMultiPlatformLocator(private val project: Project) : Compil
             }
         }
 
-        return JvmCompilationKit(targetName, tests, compilations)
+        return JvmCompilationKit(tests, compilations)
     }
 
 }

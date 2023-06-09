@@ -15,6 +15,14 @@ internal class DynamicBean(val origin: Any) {
         return gradleWrapper.getProperty(name).bean()
     }
 
+    fun hasFunction(functionName: String, vararg args: Any?): Boolean {
+        return gradleWrapper.hasMethod(functionName, *args)
+    }
+
+    fun call(functionName: String, vararg args: Any?): Any? {
+        return gradleWrapper.invokeMethod(functionName, *args)
+    }
+
     @Suppress("UNCHECKED_CAST")
     fun <T> property(name: String): T {
         return gradleWrapper.getProperty(name) as T

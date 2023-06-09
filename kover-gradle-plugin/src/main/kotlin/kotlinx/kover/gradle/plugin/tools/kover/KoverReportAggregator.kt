@@ -12,7 +12,7 @@ import kotlinx.kover.gradle.plugin.commons.ReportFilters
 import kotlinx.kover.gradle.plugin.util.asPatterns
 import java.io.File
 
-internal fun aggregateRawReports(files: ArtifactContent, filters: List<ReportFilters>, tempDir: File): List<AggregationGroup> {
+internal fun aggregateBinReports(files: ArtifactContent, filters: List<ReportFilters>, tempDir: File): List<AggregationGroup> {
     val aggGroups = filters.mapIndexed { index: Int, reportFilters: ReportFilters ->
         val filePrefix = if (filters.size > 1) "-$index" else ""
         AggregationGroup(

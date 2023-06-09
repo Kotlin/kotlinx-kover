@@ -16,7 +16,7 @@ internal class ReportsCachingTests {
         reportAndCheck("UP-TO-DATE")
 
         run("clean") {
-            checkDefaultRawReport(false)
+            checkDefaultBinReport(false)
             checkDefaultReports(false)
         }
         reportAndCheck("SUCCESS")
@@ -32,7 +32,7 @@ internal class ReportsCachingTests {
         reportAndCheck("SUCCESS", true)
 
         run("clean", "--build-cache") {
-            checkDefaultRawReport(false)
+            checkDefaultBinReport(false)
             checkDefaultReports(false)
         }
         reportAndCheck("FROM-CACHE", true)
@@ -70,7 +70,7 @@ internal class ReportsCachingTests {
         }
         reportAndCheck("SUCCESS", true)
         run("clean", "--build-cache") {
-            checkDefaultRawReport(false)
+            checkDefaultBinReport(false)
             checkDefaultReports(false)
         }
         reportAndCheck("FROM-CACHE", true)
@@ -84,7 +84,7 @@ internal class ReportsCachingTests {
             arrayOf("koverXmlReport", "koverHtmlReport")
         }
         run(*args) {
-            checkDefaultRawReport()
+            checkDefaultBinReport()
             checkDefaultReports()
             checkOutcome("test", outcome)
             checkOutcome("koverXmlReport", outcome)

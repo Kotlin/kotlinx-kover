@@ -5,19 +5,20 @@
 package kotlinx.kover.gradle.plugin.test.functional.framework.writer
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.BuildSlice
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.localRepositoryPath
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.TestBuildConfig
 import java.io.*
 
-internal fun FormattedWriter.writePluginManagement(language: ScriptLanguage) {
+internal fun FormattedWriter.writePluginManagement(language: ScriptLanguage,
+                                                   koverVersion: String,
+                                                   localRepositoryPath: String,
+                                                   overrideKotlinVersion: String?) {
     call("resolutionStrategy") {
         call("eachPlugin") {
             line("if (requested.id.id == \"org.jetbrains.kotlinx.kover\") { useVersion(\"$koverVersion\") }")
-            if (overriddenTestKotlinVersion != null) {
-                line("if (requested.id.id == \"org.jetbrains.kotlin.jvm\") useVersion(\"$overriddenTestKotlinVersion\")")
-                line("if (requested.id.id == \"org.jetbrains.kotlin.multiplatform\") useVersion(\"$overriddenTestKotlinVersion\")")
-                line("if (requested.id.id == \"org.jetbrains.kotlin.android\") useVersion(\"$overriddenTestKotlinVersion\")")
+            if (overrideKotlinVersion != null) {
+                line("if (requested.id.id == \"org.jetbrains.kotlin.jvm\") useVersion(\"$overrideKotlinVersion\")")
+                line("if (requested.id.id == \"org.jetbrains.kotlin.multiplatform\") useVersion(\"$overrideKotlinVersion\")")
+                line("if (requested.id.id == \"org.jetbrains.kotlin.android\") useVersion(\"$overrideKotlinVersion\")")
             }
         }
     }
@@ -30,12 +31,8 @@ internal fun FormattedWriter.writePluginManagement(language: ScriptLanguage) {
 }
 
 
-internal fun File.writeSettings(build: TestBuildConfig, slice: BuildSlice) {
+internal fun File.writeSettings(build: TestBuildConfig) {
     writeScript {
-        call("pluginManagement") {
-            writePluginManagement(slice.language)
-        }
-        line("")
         line("""rootProject.name = "kover-functional-test"""")
         build.projects.keys.forEach { path ->
             if (path != ":") {

@@ -4,12 +4,18 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
-import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
+import org.gradle.api.Project
 
-
-internal class EmptyLocator : CompilationKitLocator {
-    override fun locate(koverExtension: KoverProjectExtensionImpl): ProjectCompilation {
-        return ProjectCompilation(AppliedKotlinPlugin(null))
+/**
+ * A locator that works if no Kotlin plugins were detected.
+ */
+internal class EmptyLocator(
+    project: Project,
+    listener: CompilationsListenerWrapper
+) {
+    init {
+        project.afterEvaluate {
+            listener.defaultFinalize()
+        }
     }
 }

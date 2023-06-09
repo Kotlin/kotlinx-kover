@@ -26,10 +26,8 @@ internal annotation class ExamplesTest(
     val commands: Array<String> = ["build"]
 )
 
-private const val EXAMPLES_DIR = "examples"
-
 internal fun allExamples(): List<File> {
-    return File(EXAMPLES_DIR).subdirs().flatMap { it.subdirs() }
+    return File("examples").subdirs().flatMap { it.subdirs() }
 }
 
 private class ExampleGradleTest : DirectoryBasedGradleTest() {
@@ -37,11 +35,10 @@ private class ExampleGradleTest : DirectoryBasedGradleTest() {
         val annotation = (element?.getAnnotation(ExamplesTest::class.java)
             ?: error("Test not marked by '${ExamplesTest::class.qualifiedName}' annotation"))
 
-        val exampleDir = File(EXAMPLES_DIR, annotation.exampleDir)
-        val exampleName = exampleDir.name
+        val exampleName = annotation.exampleDir
+        val buildSource = buildFromExample(exampleName)
         val commands = annotation.commands.toList()
-
-        return RunCommand(exampleName, exampleDir, commands)
+        return RunCommand(exampleName, buildSource, commands)
     }
 
     override val testType: String = "Example"

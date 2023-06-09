@@ -20,9 +20,9 @@ import java.io.*
 internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTool {
     override val jvmAgentDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-agent:${variant.version}"
 
-    override val jvmReporterDependencies: List<String> = listOf(
-        "org.jetbrains.intellij.deps:intellij-coverage-reporter:${variant.version}"
-    )
+    override val jvmReporterDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-reporter:${variant.version}"
+    override val jvmReporterExtraDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-reporter:${variant.version}"
+
 
     override fun findJvmAgentJar(classpath: FileCollection, archiveOperations: ArchiveOperations): File {
         return classpath.filter { it.name.startsWith("intellij-coverage-agent") }.files.firstOrNull()
@@ -32,10 +32,10 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
     override fun jvmAgentArgs(
         jarFile: File,
         tempDir: File,
-        rawReportFile: File,
+        binReportFile: File,
         excludedClasses: Set<String>
     ): List<String> {
-        return buildJvmAgentArgs(jarFile, tempDir, rawReportFile, excludedClasses)
+        return buildJvmAgentArgs(jarFile, tempDir, binReportFile, excludedClasses)
     }
 
     override fun xmlReport(xmlFile: File, context: ReportContext) {

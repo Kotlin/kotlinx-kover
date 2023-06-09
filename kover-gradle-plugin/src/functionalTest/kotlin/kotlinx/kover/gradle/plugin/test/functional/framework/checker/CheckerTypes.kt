@@ -33,12 +33,14 @@ internal interface CheckerContext {
 
     fun verification(checker: VerifyReportChecker.() -> Unit)
 
-    val defaultRawReport: String
-    fun checkReports(xmlPath: String, htmlPath: String, mustExist: Boolean)
+    val defaultBinReport: String
+
+    fun checkXmlReport(variantName: String = "", mustExist: Boolean = true)
+    fun checkHtmlReport(variantName: String = "", mustExist: Boolean = true)
     fun checkOutcome(taskNameOrPath: String, expectedOutcome: String)
     fun taskNotCalled(taskNameOrPath: String)
     fun checkDefaultReports(mustExist: Boolean = true)
-    fun checkDefaultRawReport(mustExist: Boolean = true)
+    fun checkDefaultBinReport(mustExist: Boolean = true)
 }
 
 /**

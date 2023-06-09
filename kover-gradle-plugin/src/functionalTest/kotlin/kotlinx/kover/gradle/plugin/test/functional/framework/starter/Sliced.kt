@@ -32,8 +32,6 @@ internal interface SlicedBuildConfigurator : BuildConfigurator {
     val slice: BuildSlice
 }
 
-private const val TMP_PREFIX = "kover-sliced-build-"
-
 private val ALL_LANGUAGES = listOf(ScriptLanguage.KOTLIN, ScriptLanguage.GROOVY)
 private val ALL_TOOLS = listOf(CoverageToolVendor.KOVER, CoverageToolVendor.JACOCO)
 private val ALL_TYPES = listOf(KotlinPluginType.JVM, KotlinPluginType.MULTIPLATFORM)
@@ -61,16 +59,16 @@ private class SlicedTestInterceptor : InvocationInterceptor {
         logInfo("Starting configuration for slice ($slice)")
         invocation.proceed()
         logInfo("Starting writing build for slice ($slice)")
-
-        val dir = Files.createTempDirectory(TMP_PREFIX).toFile()
         val config = configurator.prepare()
-        dir.writeBuild(config, slice)
-        logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
 
-        dir.runAndCheck(config.steps)
+        val buildSource = generateBuild { dir ->
+            dir.writeBuild(config, slice)
+            logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
+        }
+        val build = buildSource.generate(slice.toString(), "sliced generated")
+        build.runAndCheck(config.steps)
         // clear directory if where are no errors
-        logInfo("Build successfully for slice ($slice), deleting the directory ${dir.uri}")
-        dir.deleteRecursively()
+        build.clear()
     }
 }
 
