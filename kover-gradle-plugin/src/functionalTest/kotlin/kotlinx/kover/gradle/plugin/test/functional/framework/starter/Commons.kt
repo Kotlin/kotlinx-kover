@@ -36,7 +36,7 @@ internal abstract class DirectoryBasedGradleTest : BeforeTestExecutionCallback, 
         logInfo("Before building $testType '${args.name}' in target directory ${build.targetDir.uri}")
 
         val runResult = build.runWithParams(args.gradleArgs)
-        val checkerContext = build.targetDir.createCheckerContext(runResult)
+        val checkerContext = build.createCheckerContext(runResult)
 
         val store = context.getStore(ExtensionContext.Namespace.GLOBAL)
         store.put(DIR_PARAM, build)

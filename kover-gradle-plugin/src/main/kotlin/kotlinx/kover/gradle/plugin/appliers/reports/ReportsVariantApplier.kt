@@ -187,9 +187,6 @@ internal sealed class ReportsVariantApplier(
 
             localArtifact.set(artifactGenTask.flatMap { task -> task.artifactFile })
             externalArtifacts.from(dependencies)
-
-            // task can't be executed if where is no raw report files (no any executed test task)
-            onlyIf { hasBinReportsAndLog() }
         }
         return task
     }

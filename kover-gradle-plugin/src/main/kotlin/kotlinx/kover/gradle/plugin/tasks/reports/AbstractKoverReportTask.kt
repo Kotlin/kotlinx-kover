@@ -92,14 +92,6 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:Inject
     protected abstract val workerExecutor: WorkerExecutor
 
-    fun hasBinReportsAndLog(): Boolean {
-        val hasReports = collectAllFiles().reports.isNotEmpty()
-        if (!hasReports) {
-            logger.lifecycle("Task '$name' will be skipped because no tests were executed")
-        }
-        return hasReports
-    }
-
     protected fun context(): ReportContext {
         val services = GradleReportServices(workerExecutor, ant, obj)
         return ReportContext(collectAllFiles(), filters.get(), reportClasspath, temporaryDir, projectPath, services)
