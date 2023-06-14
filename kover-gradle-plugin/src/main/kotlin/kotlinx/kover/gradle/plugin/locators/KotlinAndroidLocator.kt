@@ -15,38 +15,30 @@ Because of this, Kover may not have direct access to the Android plugin classes,
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal class KotlinAndroidLocator(
-    private val project: Project,
-    private val koverExtension: KoverProjectExtensionImpl,
-    private val listener: CompilationsListenerWrapper
-) {
-    init {
-        listener.onApplyPlugin(KotlinPluginType.ANDROID)
+internal fun LocatorContext.initKotlinAndroidPluginLocator() {
+    listener.onApplyPlugin(KotlinPluginType.ANDROID)
 
-        project.pluginManager.withPlugin(ANDROID_APP_PLUGIN_ID) {
-            project.afterAndroidPluginApplied(::processAndroidTarget)
-        }
-        project.pluginManager.withPlugin(ANDROID_LIB_PLUGIN_ID) {
-            project.afterAndroidPluginApplied(::processAndroidTarget)
-        }
+    project.pluginManager.withPlugin(ANDROID_APP_PLUGIN_ID) {
+        project.afterAndroidPluginApplied { processAndroidTarget() }
     }
-
-    private fun processAndroidTarget() {
-        val kotlinExtension = project.getKotlinExtension()
-
-        locateAndroidCompilations(kotlinExtension)
-
-        listener.finalize()
+    project.pluginManager.withPlugin(ANDROID_LIB_PLUGIN_ID) {
+        project.afterAndroidPluginApplied { processAndroidTarget() }
     }
+}
 
-    private fun locateAndroidCompilations(kotlinExtension: DynamicBean) {
-        val androidExtension = project.extensions.findByName("android")?.bean()
-            ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
+private fun LocatorContext.processAndroidTarget() {
+    val kotlinExtension = project.getKotlinExtension()
+    locateAndroidCompilations(kotlinExtension)
 
-        val kotlinTarget = kotlinExtension["target"]
+    listener.finalize()
+}
 
-        val androidCompilations = project.androidCompilationKits(androidExtension, koverExtension, kotlinTarget)
-        listener.android(androidCompilations)
-    }
+private fun LocatorContext.locateAndroidCompilations(kotlinExtension: DynamicBean) {
+    val androidExtension = project.extensions.findByName("android")?.bean()
+        ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
 
+    val kotlinTarget = kotlinExtension["target"]
+
+    val androidCompilations = project.androidCompilationKits(androidExtension, koverExtension, kotlinTarget)
+    listener.android(androidCompilations)
 }

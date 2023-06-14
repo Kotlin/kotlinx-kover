@@ -67,8 +67,6 @@ internal interface CoverageTool {
     /**
      * Dependency on JVM online instrumentation agent.
      *
-     * It is necessary that Gradle automatically loads the dependency.
-     *
      * Written as Gradle dependency notation (like 'group.name:artifact.name:version').
      */
     val jvmAgentDependency: String
@@ -76,16 +74,12 @@ internal interface CoverageTool {
     /**
      * Dependencies on coverage report generator.
      *
-     * It is necessary that Gradle automatically loads the dependency.
-     *
      *  Written as Gradle dependency notation (like 'group.name:artifact.name:version').
      */
     val jvmReporterDependency: String
 
     /**
      * Dependencies on coverage report generator.
-     *
-     * It is necessary that Gradle automatically loads the dependency.
      *
      *  Written as Gradle dependency notation (like 'group.name:artifact.name:version').
      */

@@ -41,20 +41,26 @@ internal object CompilationsListenerManager {
     fun locate(project: Project, koverExtension: KoverProjectExtensionImpl, listener: CompilationsListener) {
         val wrapper = CompilationsListenerWrapper(listener)
 
-        EmptyLocator(project, wrapper)
+        val context = LocatorContext(project, koverExtension, wrapper)
+        context.initNoKotlinPluginLocator()
 
         project.pluginManager.withPlugin("kotlin") {
-            KotlinJvmLocator(project, koverExtension, wrapper)
+            context.initKotlinJvmPluginLocator()
         }
         project.pluginManager.withPlugin("kotlin-multiplatform") {
-            KotlinMultiPlatformLocator(project, koverExtension, wrapper)
+            context.initKotlinMultiplatformPluginLocator()
         }
         project.pluginManager.withPlugin("kotlin-android") {
-            KotlinAndroidLocator(project, koverExtension, wrapper)
+            context.initKotlinAndroidPluginLocator()
         }
     }
-
 }
+
+internal class LocatorContext(
+    val project: Project,
+    val koverExtension: KoverProjectExtensionImpl,
+    val listener: CompilationsListenerWrapper
+)
 
 /**
  * Locate information about Kotlin project's compilations.
@@ -91,9 +97,9 @@ internal class CompilationsListenerWrapper(private val listener: CompilationsLis
         listener.onAndroidCompilations(compilations)
     }
 
-    fun defaultFinalize() {
+    fun finalizeIfNoKotlinPlugin() {
         if (pluginType == null) {
-            // if no plugin has been applied, then calls the finalization
+            // if no plugin has been applied, then calls the finalization to process dependencies
             finalize()
         }
     }

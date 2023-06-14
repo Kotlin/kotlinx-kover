@@ -63,12 +63,7 @@ internal fun GradleBuild.runWithParams(args: List<String>): BuildResult {
     return run(args, buildEnv)
 }
 internal fun GradleBuild.runWithParams(vararg args: String): BuildResult {
-    val wrapperDir =
-        if (gradleWrapperVersionParam == null) defaultGradleWrapperDir else getWrapper(gradleWrapperVersionParam)
-
-    val buildEnv = BuildEnv(wrapperDir, androidSdkDirParam)
-
-    return run(args.toList(), buildEnv)
+    return runWithParams(args.toList())
 }
 
 private fun getWrapper(version: String): File {

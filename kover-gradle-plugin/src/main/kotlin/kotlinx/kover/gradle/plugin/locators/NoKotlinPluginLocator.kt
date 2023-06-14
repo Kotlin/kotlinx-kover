@@ -4,18 +4,11 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
-import org.gradle.api.Project
-
 /**
  * A locator that works if no Kotlin plugins were detected.
  */
-internal class EmptyLocator(
-    project: Project,
-    listener: CompilationsListenerWrapper
-) {
-    init {
-        project.afterEvaluate {
-            listener.defaultFinalize()
-        }
+internal fun LocatorContext.initNoKotlinPluginLocator() {
+    project.afterEvaluate {
+        listener.finalizeIfNoKotlinPlugin()
     }
 }
