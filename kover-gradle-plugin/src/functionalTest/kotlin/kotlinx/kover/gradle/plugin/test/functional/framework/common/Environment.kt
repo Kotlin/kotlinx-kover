@@ -32,17 +32,17 @@ internal val kotlinVersionCurrent = System.getProperty("kotlinVersion")
 /**
  * Overridden Kotlin version for all tests.
  */
-internal val overriddenKotlinVersionParam = System.getProperty("kover.test.kotlin.version")
+internal val overriddenKotlinVersion = System.getProperty("kover.test.kotlin.version")
 
 /**
  * Custom version of Gradle runner for functional tests.
  */
-internal val gradleWrapperVersionParam: String? = System.getProperty("kover.test.gradle.version")
+internal val overriddenGradleWrapperVersion: String? = System.getProperty("kover.test.gradle.version")
 
 /**
  * Result path to the Android SDK. `null` if not defined.
  */
-internal val androidSdkDirParam: String? = System.getProperty("kover.test.android.sdk")?: System.getenv(ANDROID_HOME_ENV)
+internal val androidSdkDir: String? = System.getProperty("kover.test.android.sdk")?: System.getenv(ANDROID_HOME_ENV)
 
 
 

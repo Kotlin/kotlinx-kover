@@ -5,20 +5,20 @@
 package kotlinx.kover.gradle.plugin.test.functional.framework.runner
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.androidSdkDirParam
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.androidSdkDir
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.koverVersionCurrent
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.defaultGradleWrapperDir
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.examplesDir
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.gradleWrapperVersionParam
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenGradleWrapperVersion
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.localRepositoryPath
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenKotlinVersionParam
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenKotlinVersion
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.templateBuildsDir
 import java.io.File
 import java.nio.file.Files
 
 internal fun buildFromTemplate(templateName: String): BuildSource {
     val source = createBuildSource(localRepositoryPath, koverVersionCurrent)
-    source.overriddenKotlinVersion = overriddenKotlinVersionParam
+    source.overriddenKotlinVersion = overriddenKotlinVersion
 
     val dir = templateBuildsDir.resolve(templateName)
     if (!dir.exists()) {
@@ -31,7 +31,7 @@ internal fun buildFromTemplate(templateName: String): BuildSource {
 
 internal fun buildFromExample(examplePath: String): BuildSource {
     val source = createBuildSource(localRepositoryPath, koverVersionCurrent)
-    source.overriddenKotlinVersion = overriddenKotlinVersionParam
+    source.overriddenKotlinVersion = overriddenKotlinVersion
 
     val exampleDir = examplesDir.resolve(examplePath)
     if (!exampleDir.exists()) {
@@ -47,7 +47,7 @@ internal fun generateBuild(generator: (File) -> Unit): BuildSource {
 
     generator(dir)
     val source = createBuildSource(localRepositoryPath, koverVersionCurrent)
-    source.overriddenKotlinVersion = overriddenKotlinVersionParam
+    source.overriddenKotlinVersion = overriddenKotlinVersion
     source.from(dir)
 
     return source
@@ -56,9 +56,9 @@ internal fun generateBuild(generator: (File) -> Unit): BuildSource {
 
 internal fun GradleBuild.runWithParams(args: List<String>): BuildResult {
     val wrapperDir =
-        if (gradleWrapperVersionParam == null) defaultGradleWrapperDir else getWrapper(gradleWrapperVersionParam)
+        if (overriddenGradleWrapperVersion == null) defaultGradleWrapperDir else getWrapper(overriddenGradleWrapperVersion)
 
-    val buildEnv = BuildEnv(wrapperDir, androidSdkDirParam)
+    val buildEnv = BuildEnv(wrapperDir, androidSdkDir)
 
     return run(args, buildEnv)
 }
