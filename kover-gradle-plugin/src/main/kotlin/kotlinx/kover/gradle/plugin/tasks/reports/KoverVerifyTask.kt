@@ -5,17 +5,15 @@
 package kotlinx.kover.gradle.plugin.tasks.reports
 
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
-import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import javax.inject.Inject
 
 @CacheableTask
-internal abstract class KoverVerifyTask @Inject constructor(tool: CoverageTool) : AbstractKoverReportTask(tool) {
+internal abstract class KoverVerifyTask : AbstractKoverReportTask() {
     @get:Nested
     abstract val rules: ListProperty<VerificationRule>
 
@@ -25,7 +23,7 @@ internal abstract class KoverVerifyTask @Inject constructor(tool: CoverageTool) 
     @TaskAction
     fun verify() {
         val enabledRules = rules.get().filter { it.isEnabled }
-        tool.verify(enabledRules, resultFile.get().asFile, context())
+        tool.get().verify(enabledRules, resultFile.get().asFile, context())
     }
 
 }

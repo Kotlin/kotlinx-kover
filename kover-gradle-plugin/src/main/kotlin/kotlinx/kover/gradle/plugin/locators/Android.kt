@@ -4,18 +4,45 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
-import kotlinx.kover.gradle.plugin.commons.AndroidCompilationKit
 import kotlinx.kover.gradle.plugin.commons.AndroidFallbacks
 import kotlinx.kover.gradle.plugin.commons.AndroidFlavor
+import kotlinx.kover.gradle.plugin.commons.AndroidVariantCompilationKit
 import kotlinx.kover.gradle.plugin.commons.CompilationUnit
+import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.util.DynamicBean
 import kotlinx.kover.gradle.plugin.util.bean
 import kotlinx.kover.gradle.plugin.util.hasSuperclass
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.withType
+
+internal fun Project.afterAndroidPluginApplied(afterAndroid: () -> Unit) {
+    val androidComponents = project.extensions.findByName("androidComponents")?.bean()
+        ?: throw KoverCriticalException("Kover requires extension with name 'androidComponents' for project '${project.path}' since it is recognized as Kotlin+Android project")
+
+    val callback = Action<Any> {
+        project.afterEvaluate {
+            afterAndroid()
+        }
+    }
+
+    if (androidComponents.hasFunction("finalizeDsl", callback)) {
+        /*
+        Assumption: `finalizeDsl` is called in the `afterEvaluate` action, in which build variants are created.
+        Therefore,  if an action is added to the queue inside it, it will be executed only after variants are created
+         */
+        androidComponents.call("finalizeDsl", callback)
+    } else {
+        // for old versions < 7.0 an action is added to the AAA queue.
+        // Since this code is executed after the applying of AGP, there is a high probability that the action will fall into the `afterEvaluate` queue after the actions of the AGP
+        project.afterEvaluate {
+            afterAndroid()
+        }
+    }
+}
 
 /**
  * Locate Android compilation kits for the given Kotlin Target.
@@ -24,7 +51,7 @@ internal fun Project.androidCompilationKits(
     androidExtension: DynamicBean,
     koverExtension: KoverProjectExtensionImpl,
     kotlinTarget: DynamicBean
-): List<AndroidCompilationKit> {
+): List<AndroidVariantCompilationKit> {
     val variants = if ("applicationVariants" in androidExtension) {
         androidExtension.propertyBeans("applicationVariants")
     } else {
@@ -44,7 +71,7 @@ private fun Project.extractAndroidKit(
     kotlinTarget: DynamicBean,
     fallbacks: AndroidFallbacks,
     variant: DynamicBean
-): AndroidCompilationKit {
+): AndroidVariantCompilationKit {
     val variantName = variant.property<String>("name")
     val compilations = provider {
         mapOf("main" to extractCompilationOrEmpty(koverExtension, kotlinTarget, variantName))
@@ -72,7 +99,7 @@ private fun Project.extractAndroidKit(
     // merge flavors to get missing dimensions for variant
     val missingDimensions = findMissingDimensions(androidExtension, variant)
 
-    return AndroidCompilationKit(variantName, buildTypeName, flavors, fallbacks, missingDimensions, tests, compilations)
+    return AndroidVariantCompilationKit(variantName, buildTypeName, flavors, fallbacks, missingDimensions, tests, compilations)
 }
 
 private fun findMissingDimensions(androidExtension: DynamicBean, variant: DynamicBean): Map<String, String> {

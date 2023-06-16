@@ -121,8 +121,8 @@ koverReport {
         mergeWith("app1AppDebug")
     }
 
-    androidReports("release") {
-        // filters for all report types only of 'release' build type
+    androidReports("app1AppRelease") {
+        // filters for all report types only of 'app1AppRelease' build variant
         filters {
             excludes {
                 classes(

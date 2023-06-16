@@ -14,11 +14,12 @@ internal fun defaultTestTaskName(projectType: KotlinPluginType): String {
     }
 }
 
-internal fun defaultXmlReport() = "reports/kover/report.xml"
-internal fun defaultHtmlReport() = "reports/kover/html"
+internal const val defaultReportsDir = "reports/kover"
+
+internal fun defaultXmlReport() = "$defaultReportsDir/report.xml"
 
 internal fun errorsDirectory() = "kover/errors"
 
-internal const val rawReportsDirectory = "kover/raw-reports"
+internal const val binReportsDirectory = "kover/bin-reports"
 
 internal const val verificationErrorFile = "reports/kover/verify.err"

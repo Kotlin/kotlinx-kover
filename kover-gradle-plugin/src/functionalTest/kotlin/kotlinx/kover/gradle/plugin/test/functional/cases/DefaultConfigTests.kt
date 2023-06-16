@@ -15,7 +15,7 @@ internal class DefaultConfigTests {
         }
 
         run("koverXmlReport", "koverHtmlReport") {
-            checkDefaultRawReport()
+            checkDefaultBinReport()
             checkDefaultReports()
         }
     }

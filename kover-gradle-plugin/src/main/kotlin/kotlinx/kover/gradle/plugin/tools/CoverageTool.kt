@@ -11,7 +11,9 @@ import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_VERSION
 import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.tools.jacoco.JacocoTool
 import kotlinx.kover.gradle.plugin.tools.kover.KoverTool
+import org.gradle.api.Project
 import org.gradle.api.file.*
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
 import java.io.*
 
@@ -65,8 +67,6 @@ internal interface CoverageTool {
     /**
      * Dependency on JVM online instrumentation agent.
      *
-     * It is necessary that Gradle automatically loads the dependency.
-     *
      * Written as Gradle dependency notation (like 'group.name:artifact.name:version').
      */
     val jvmAgentDependency: String
@@ -74,11 +74,16 @@ internal interface CoverageTool {
     /**
      * Dependencies on coverage report generator.
      *
-     * It is necessary that Gradle automatically loads the dependency.
+     *  Written as Gradle dependency notation (like 'group.name:artifact.name:version').
+     */
+    val jvmReporterDependency: String
+
+    /**
+     * Dependencies on coverage report generator.
      *
      *  Written as Gradle dependency notation (like 'group.name:artifact.name:version').
      */
-    val jvmReporterDependencies: List<String>
+    val jvmReporterExtraDependency: String
 
     /**
      * Find jar-file with JVM online instrumentation agent in classpath, loaded from [jvmAgentDependency].
@@ -88,7 +93,7 @@ internal interface CoverageTool {
     /**
      * Generate additional JVM argument for test task.
      */
-    fun jvmAgentArgs(jarFile: File, tempDir: File, rawReportFile: File, excludedClasses: Set<String>): List<String>
+    fun jvmAgentArgs(jarFile: File, tempDir: File, binReportFile: File, excludedClasses: Set<String>): List<String>
 
     /**
      * Generate XML report.
@@ -110,13 +115,16 @@ internal interface CoverageTool {
  * Factory to create instance of coverage tool according project settings from Kover project extension.
  */
 internal object CoverageToolFactory {
-    fun get(projectExtension: KoverProjectExtensionImpl): CoverageTool {
-        // Kover Tool Default by default
-        val variant = projectExtension.toolVariant ?: return KoverTool(KoverToolDefaultVariant)
+    fun get(project: Project, projectExtension: KoverProjectExtensionImpl): Provider<CoverageTool> {
+        return project.provider {
+            // Kover Tool Default by default
+            val variant = projectExtension.toolVariant
 
-        return when (variant.vendor) {
-            CoverageToolVendor.KOVER -> KoverTool(variant)
-            CoverageToolVendor.JACOCO -> JacocoTool(variant)
+            when (variant?.vendor) {
+                CoverageToolVendor.KOVER -> KoverTool(variant)
+                CoverageToolVendor.JACOCO -> JacocoTool(variant)
+                null -> KoverTool(KoverToolDefaultVariant)
+            }
         }
     }
 

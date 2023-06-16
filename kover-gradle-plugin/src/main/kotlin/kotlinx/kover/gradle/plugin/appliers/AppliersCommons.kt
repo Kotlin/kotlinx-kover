@@ -10,20 +10,7 @@ import kotlinx.kover.gradle.plugin.commons.xmlReportPath
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverDefaultReportsConfigImpl
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.tasks.TaskCollection
-import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.newInstance
-
-/**
- * Add online instrumentation to all JVM test tasks.
- */
-internal fun TaskCollection<Test>.configureTests(data: InstrumentationData): TaskCollection<Test> {
-    configureEach {
-        JvmTestTaskApplier(this, data).apply()
-    }
-
-    return this
-}
 
 internal fun ObjectFactory.defaultReports(layout: ProjectLayout): KoverDefaultReportsConfigImpl {
     val buildDir = layout.buildDirectory

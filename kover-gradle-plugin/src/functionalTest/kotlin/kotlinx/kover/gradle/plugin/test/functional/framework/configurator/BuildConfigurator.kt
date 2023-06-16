@@ -7,7 +7,7 @@ package kotlinx.kover.gradle.plugin.test.functional.framework.configurator
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.kotlinVersion
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.kotlinVersionCurrent
 import kotlinx.kover.gradle.plugin.test.functional.framework.writer.*
 
 internal fun createConfigurator(): BuildConfigurator {
@@ -56,8 +56,8 @@ private open class TestBuildConfigurator : BuildConfigurator {
         addProject(path, name) {
             plugins {
                 if (path == ":") {
-                    kotlin(kotlinVersion)
-                    kover(koverVersion)
+                    kotlin(kotlinVersionCurrent)
+                    kover(koverVersionCurrent)
                 } else {
                     kotlin()
                     kover()

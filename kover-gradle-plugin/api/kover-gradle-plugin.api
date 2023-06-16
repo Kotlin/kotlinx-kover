@@ -182,6 +182,9 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
 	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/KoverNames;
 	public static final field PROJECT_EXTENSION_NAME Ljava/lang/String;
 	public static final field REPORT_EXTENSION_NAME Ljava/lang/String;
+	public final fun androidHtmlReport (Ljava/lang/String;)Ljava/lang/String;
+	public final fun androidVerifyReport (Ljava/lang/String;)Ljava/lang/String;
+	public final fun androidXmlReport (Ljava/lang/String;)Ljava/lang/String;
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectExtension {

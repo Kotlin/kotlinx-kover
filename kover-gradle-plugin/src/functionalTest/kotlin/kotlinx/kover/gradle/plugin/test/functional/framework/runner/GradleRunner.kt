@@ -4,34 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.runner
 
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.isDebugEnabled
 import java.io.*
-
-/**
- * Options:
- *  - build cache - disabled by default, to enable it, you need to pass the "--build-cache" argument.
- *  - Gradle daemon - is not used by default, a new process is started for each test, which stops when the run is finished.
- */
-internal fun File.runGradleBuild(args: List<String>, runIndex: Int = 0): BuildResult {
-    val gradleArgs: MutableList<String> = mutableListOf()
-    gradleArgs += args
-    if (args.none { it == "--build-cache" }) gradleArgs += "--no-build-cache"
-
-    if (isDebugEnabled) {
-        gradleArgs += "-Dorg.gradle.debug=true"
-        gradleArgs += "--no-daemon"
-    }
-
-    val wrapperDir = if (gradleWrapperVersion == null) defaultGradleWrapperDir else getWrapper(gradleWrapperVersion)
-
-    logInfo("Run Gradle commands $gradleArgs for project '${this.canonicalPath}' with wrapper '${wrapperDir.canonicalPath}'")
-
-    val env: MutableMap<String, String> = mutableMapOf()
-    androidSdkDir?.also { env[ANDROID_HOME_ENV] = it }
-
-    return buildGradleByShell(runIndex, wrapperDir, gradleArgs, env)
-}
 
 
 internal class BuildResult(exitCode: Int, private val logFile: File) {
@@ -78,11 +51,6 @@ internal class BuildResult(exitCode: Int, private val logFile: File) {
     }
 }
 
-private fun getWrapper(version: String): File {
-    val wrapperDir = gradleWrappersRoot.resolve(version)
-    if (!wrapperDir.exists()) throw Exception("Wrapper for Gradle version '$version' is not supported by functional tests")
-    return wrapperDir
-}
 
 internal fun File.buildGradleByShell(
     runIndex: Int,

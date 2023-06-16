@@ -9,7 +9,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import java.io.*
 
 internal fun File.writeBuild(build: TestBuildConfig, slice: BuildSlice) {
-    this.resolve("settings.${slice.scriptExtension}").writeSettings(build, slice)
+    this.resolve("settings.${slice.scriptExtension}").writeSettings(build)
     build.projects.forEach { (path, conf) -> this.subproject(path).writeProject(conf, slice) }
 }
 

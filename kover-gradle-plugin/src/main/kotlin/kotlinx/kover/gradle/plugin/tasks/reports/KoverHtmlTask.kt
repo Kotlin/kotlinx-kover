@@ -4,14 +4,12 @@
 
 package kotlinx.kover.gradle.plugin.tasks.reports
 
-import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.file.*
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
-import javax.inject.*
 
 @CacheableTask
-internal abstract class KoverHtmlTask @Inject constructor(tool: CoverageTool) : AbstractKoverReportTask(tool) {
+internal abstract class KoverHtmlTask : AbstractKoverReportTask() {
     @get:OutputDirectory
     abstract val reportDir: DirectoryProperty
 
@@ -26,7 +24,7 @@ internal abstract class KoverHtmlTask @Inject constructor(tool: CoverageTool) : 
     fun generate() {
         val htmlDir = reportDir.get().asFile
         htmlDir.mkdirs()
-        tool.htmlReport(htmlDir, title.get(), charset.orNull, context())
+        tool.get().htmlReport(htmlDir, title.get(), charset.orNull, context())
     }
 
     fun printPath(): Boolean {

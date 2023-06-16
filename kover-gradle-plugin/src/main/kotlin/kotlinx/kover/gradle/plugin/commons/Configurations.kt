@@ -11,11 +11,11 @@ import org.gradle.api.attributes.*
 /**
  * Name of the published artifact.
  */
-internal interface ArtifactNameAttr : Named {
+internal interface VariantNameAttr : Named {
     companion object {
         val ATTRIBUTE = Attribute.of(
-            "kotlinx.kover.artifact.name",
-            ArtifactNameAttr::class.java
+            "kotlinx.kover.variant.name",
+            VariantNameAttr::class.java
         )
     }
 }
@@ -28,18 +28,6 @@ internal interface ProjectPathAttr : Named {
         val ATTRIBUTE = Attribute.of(
             "kotlinx.kover.project.path",
             ProjectPathAttr::class.java
-        )
-    }
-}
-
-/**
- * Kotlin Plugin used in the project for which the artifact is published.
- */
-internal interface KotlinPluginAttr : Named {
-    companion object {
-        val ATTRIBUTE = Attribute.of(
-            "kotlinx.kover.kotlin.plugin",
-            KotlinPluginAttr::class.java
         )
     }
 }

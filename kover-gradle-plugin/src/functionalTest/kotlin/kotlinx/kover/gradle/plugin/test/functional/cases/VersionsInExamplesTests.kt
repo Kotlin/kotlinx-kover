@@ -7,7 +7,7 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.releaseVersion
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.releaseVersionParam
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
@@ -27,7 +27,7 @@ internal class VersionsInExamplesTests {
     private fun ProjectAnalysisData.checkVersionsInProject(): Boolean {
         // check version of Kover plugin if applied
         if (definedKoverVersion != null) {
-            if (releaseVersion != definedKoverVersion) {
+            if (releaseVersionParam != definedKoverVersion) {
                 return false
             }
         }

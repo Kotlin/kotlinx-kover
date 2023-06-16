@@ -54,11 +54,11 @@ private const val DO_NOT_COUNT_HIT_AMOUNT = "idea.coverage.calculate.hits=false"
 internal fun buildJvmAgentArgs(
     jarFile: File,
     tempDir: File,
-    rawReportFile: File,
+    binReportFile: File,
     excludedClasses: Set<String>
 ): List<String> {
     val argsFile = tempDir.resolve("kover-agent.args")
-    argsFile.writeAgentArgs(rawReportFile, excludedClasses)
+    argsFile.writeAgentArgs(binReportFile, excludedClasses)
 
     return mutableListOf(
         "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
@@ -70,12 +70,12 @@ internal fun buildJvmAgentArgs(
 }
 
 
-private fun File.writeAgentArgs(rawReportFile: File, excludedClasses: Set<String>) {
-    rawReportFile.parentFile.mkdirs()
-    val rawReportPath = rawReportFile.canonicalPath
+private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String>) {
+    binReportFile.parentFile.mkdirs()
+    val binReportPath = binReportFile.canonicalPath
 
     printWriter().use { pw ->
-        pw.appendLine(rawReportPath)
+        pw.appendLine(binReportPath)
         pw.appendLine(TRACKING_PER_TEST.toString())
         pw.appendLine(CALCULATE_FOR_UNLOADED_CLASSES.toString())
         pw.appendLine(APPEND_TO_DATA_FILE.toString())

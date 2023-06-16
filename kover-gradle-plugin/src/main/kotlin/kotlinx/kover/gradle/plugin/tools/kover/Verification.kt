@@ -68,7 +68,7 @@ internal fun koverVerify(
     val usedFilters = rulesByFilter.map { it.first }
     val groupedRules = rulesByFilter.map { it.second }
 
-    val groups = aggregateRawReports(files, usedFilters, tempDir)
+    val groups = aggregateBinReports(files, usedFilters, tempDir)
 
     val rulesArray = mutableListOf<Rule>()
     groups.forEachIndexed { index, group ->

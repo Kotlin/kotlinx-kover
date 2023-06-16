@@ -29,10 +29,6 @@ class KoverGradlePlugin : Plugin<Project> {
         val applier = ProjectApplier(target)
         applier.onApply()
 
-        target.afterEvaluate {
-            applier.onAfterEvaluate()
-        }
-
         target.addDeprecations()
     }
 
@@ -50,7 +46,6 @@ class KoverGradlePlugin : Plugin<Project> {
 
     @Suppress("DEPRECATION")
     private fun Project.addDeprecations() {
-
         extensions.create<KoverMergedConfig>("koverMerged")
         tasks.withType<Test>().configureEach {
             this.extensions.create<KoverTaskExtension>("kover")

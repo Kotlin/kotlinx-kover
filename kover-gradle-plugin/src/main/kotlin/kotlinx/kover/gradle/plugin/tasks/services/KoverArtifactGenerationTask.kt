@@ -15,7 +15,7 @@ import java.io.*
 import javax.inject.*
 
 /**
- * A task that writes a Kover artifact - named lists of sources directories, directories with class-files, raw reports.
+ * A task that writes a Kover artifact - named lists of sources directories, directories with class-files, binary reports.
  *
  * This artifact that will be shared between projects through dependencies for creating merged reports.
  */
