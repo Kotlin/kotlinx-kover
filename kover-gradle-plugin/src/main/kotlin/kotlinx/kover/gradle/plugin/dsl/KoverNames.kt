@@ -6,6 +6,9 @@ import kotlinx.kover.gradle.plugin.commons.xmlReportTaskName
 import org.gradle.api.plugins.ExtensionContainer
 import org.gradle.api.tasks.TaskContainer
 
+/**
+ * An object with public names of Kover objects that can be accessed by this name.
+ */
 public object KoverNames {
     /**
      * Name of the configuration to add dependency on Kover reports from another project.
@@ -62,7 +65,7 @@ public object KoverNames {
 /**
  * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.
  *
- * Same as a [KoverNames.DEFAULT_XML_REPORT_NAME].
+ * Has the same value as [KoverNames.DEFAULT_XML_REPORT_NAME].
  */
 public val TaskContainer.koverXmlReportName
     get() = KoverNames.DEFAULT_XML_REPORT_NAME
@@ -70,7 +73,7 @@ public val TaskContainer.koverXmlReportName
 /**
  * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
  *
- * Same as a [KoverNames.DEFAULT_HTML_REPORT_NAME].
+ * Has the same value as [KoverNames.DEFAULT_HTML_REPORT_NAME].
  */
 public val TaskContainer.koverHtmlReportName
     get() = KoverNames.DEFAULT_HTML_REPORT_NAME
@@ -78,7 +81,7 @@ public val TaskContainer.koverHtmlReportName
 /**
  * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
  *
- * Same as a [KoverNames.DEFAULT_VERIFY_REPORT_NAME].
+ * Has the same value as [KoverNames.DEFAULT_VERIFY_REPORT_NAME].
  */
 public val TaskContainer.koverVerifyName
     get() = KoverNames.DEFAULT_VERIFY_REPORT_NAME
@@ -87,7 +90,7 @@ public val TaskContainer.koverVerifyName
 /**
  * Name of the XML report generation task for [buildVariantName] Android build variant for Android projects.
  *
- * Same as a [KoverNames.androidXmlReport].
+ * Returns the same value as [KoverNames.androidXmlReport].
  */
 public fun TaskContainer.koverAndroidXmlReportName(buildVariantName: String): String {
     return KoverNames.androidXmlReport(buildVariantName)
@@ -96,7 +99,7 @@ public fun TaskContainer.koverAndroidXmlReportName(buildVariantName: String): St
 /**
  * Name of the HTML report generation task for [buildVariantName] Android build variant for Android projects.
  *
- * Same as a [KoverNames.androidHtmlReport].
+ * Returns the same value as [KoverNames.androidHtmlReport].
  */
 public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): String {
     return KoverNames.androidHtmlReport(buildVariantName)
@@ -105,7 +108,7 @@ public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): S
 /**
  * Name of the XML report generation task for [buildVariantName] Android build variant for Android projects.
  *
- * Same as a [KoverNames.androidVerify].
+ * Returns the same value as [KoverNames.androidVerify].
  */
 public fun TaskContainer.koverAndroidVerifyName(buildVariantName: String): String {
     return KoverNames.androidVerify(buildVariantName)
