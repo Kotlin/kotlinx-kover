@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskContainer
 
 public object KoverNames {
     /**
-     * Name of the configurations to add dependency on Kover reports from another project.
+     * Name of the configuration to add dependency on Kover reports from another project.
      */
     public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
 
