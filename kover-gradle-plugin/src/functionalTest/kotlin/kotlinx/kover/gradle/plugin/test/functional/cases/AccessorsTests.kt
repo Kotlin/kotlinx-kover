@@ -8,10 +8,11 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.runner.generateBuil
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 internal class AccessorsTests {
     @Test
-    fun testDefaultAccessors() {
+    fun testDefaultTasks() {
         val build = generateBuild { dir ->
             dir.resolve("settings.gradle.kts").createNewFile()
 
@@ -45,5 +46,60 @@ internal class AccessorsTests {
         assertEquals("SKIPPED", result.taskOutcome(":koverXmlReport"))
         assertEquals("SKIPPED", result.taskOutcome(":koverHtmlReport"))
         assertEquals("SKIPPED", result.taskOutcome(":koverVerify"))
+    }
+
+    @Test
+    fun testNames() {
+        val build = generateBuild { dir ->
+            dir.resolve("settings.gradle.kts").createNewFile()
+
+            dir.resolve("build.gradle.kts").writeText(
+                """
+                import kotlinx.kover.gradle.plugin.dsl.*
+
+                plugins {
+                    id("org.jetbrains.kotlinx.kover")
+                }
+
+
+
+                tasks.koverXmlReportName mustBe "koverXmlReport"
+                tasks.koverXmlReportName mustBe KoverNames.DEFAULT_XML_REPORT_NAME
+
+                tasks.koverHtmlReportName mustBe "koverHtmlReport"
+                tasks.koverHtmlReportName mustBe KoverNames.DEFAULT_HTML_REPORT_NAME
+
+                tasks.koverVerifyName mustBe "koverVerify"
+                tasks.koverVerifyName mustBe KoverNames.DEFAULT_VERIFY_REPORT_NAME
+
+
+
+                tasks.koverAndroidXmlReportName("variant") mustBe "koverXmlReportVariant"
+                tasks.koverAndroidXmlReportName("variant") mustBe KoverNames.androidXmlReport("variant")
+
+                tasks.koverAndroidHtmlReportName("variant") mustBe "koverHtmlReportVariant"
+                tasks.koverAndroidHtmlReportName("variant") mustBe KoverNames.androidHtmlReport("variant")
+
+                tasks.koverAndroidVerifyName("variant") mustBe "koverVerifyVariant"
+                tasks.koverAndroidVerifyName("variant") mustBe KoverNames.androidVerify("variant")
+
+
+
+                extensions.koverExtensionName mustBe "kover"
+                extensions.koverExtensionName mustBe KoverNames.PROJECT_EXTENSION_NAME
+
+                extensions.koverReportExtensionName mustBe "koverReport"
+                extensions.koverReportExtensionName mustBe KoverNames.REPORT_EXTENSION_NAME
+
+                infix fun String.mustBe(a: String) {
+                    if (this != a) throw AssertionError("Expected " + a + ", actual " + this)
+                }
+            """.trimIndent()
+            )
+        }.generate("Test names accessors", "custom")
+
+        val result = build.runWithParams("tasks")
+
+        assertTrue(result.isSuccessful)
     }
 }
