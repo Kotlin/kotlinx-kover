@@ -19,11 +19,15 @@ internal fun createBuildSource(localMavenDir: String, koverVersion: String): Bui
 internal interface BuildSource {
     var overriddenKotlinVersion: String?
 
+    var buildName: String
+
+    var buildType: String
+
     fun copyFrom(rootProjectDir: File)
 
     fun from(rootProjectDir: File)
 
-    fun generate(buildName: String, buildType: String): GradleBuild
+    fun generate(): GradleBuild
 }
 
 internal interface GradleBuild {
@@ -45,6 +49,10 @@ private class BuildSourceImpl(val localMavenDir: String, val koverVersion: Strin
 
     private var copy: Boolean = false
 
+    override var buildName: String = "default"
+
+    override var buildType: String = "default"
+
     override var overriddenKotlinVersion: String? = null
 
     override fun copyFrom(rootProjectDir: File) {
@@ -57,7 +65,7 @@ private class BuildSourceImpl(val localMavenDir: String, val koverVersion: Strin
         copy = false
     }
 
-    override fun generate(buildName: String, buildType: String): GradleBuild {
+    override fun generate(): GradleBuild {
         val actualDir = dir ?: throw Exception("No source was specified for the build")
         val targetDir = if (copy) {
             val tmpDir = Files.createTempDirectory("${buildName.substringAfterLast('/')}-").toFile()

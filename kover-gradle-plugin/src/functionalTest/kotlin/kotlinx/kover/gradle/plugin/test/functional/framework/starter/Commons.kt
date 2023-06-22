@@ -20,20 +20,17 @@ import java.lang.reflect.Method
 private const val DIR_PARAM = "build-directory"
 private const val CHECKER_PARAM = "checker-context"
 
-internal class RunCommand(val name: String, val buildSource: BuildSource, val gradleArgs: List<String>)
+internal class RunCommand(val buildSource: BuildSource, val gradleArgs: List<String>)
 
 internal abstract class DirectoryBasedGradleTest : BeforeTestExecutionCallback, InvocationInterceptor,
     ParameterResolver {
     protected abstract fun readAnnotationArgs(element: AnnotatedElement?): RunCommand
 
-    protected abstract val testType: String
-
     // BeforeTestExecutionCallback
     override fun beforeTestExecution(context: ExtensionContext) {
         val args = readAnnotationArgs(context.element.orElse(null))
-
-        val build = args.buildSource.generate(args.name, testType)
-        logInfo("Before building $testType '${args.name}' in target directory ${build.targetDir.uri}")
+        val build = args.buildSource.generate()
+        logInfo("Before building ${args.buildSource.buildType} '${args.buildSource.buildName}' in target directory ${build.targetDir.uri}")
 
         val runResult = build.runWithParams(args.gradleArgs)
         val checkerContext = build.targetDir.createCheckerContext(runResult)
@@ -50,15 +47,14 @@ internal abstract class DirectoryBasedGradleTest : BeforeTestExecutionCallback, 
         extensionContext: ExtensionContext
     ) {
         val annotationArgs = readAnnotationArgs(extensionContext.element.orElse(null))
-        val templateName = annotationArgs.name
 
         val store = extensionContext.getStore(ExtensionContext.Namespace.GLOBAL)
         val build = store.get(DIR_PARAM, GradleBuild::class.java)
         val checker = store.get(CHECKER_PARAM, CheckerContext::class.java)
 
-        logInfo("Before checking $testType '$templateName'")
+        logInfo("Before checking ${annotationArgs.buildSource.buildType} '${annotationArgs.buildSource.buildName}'")
 
-        checker.check("$testType '$templateName'\nProject dir: ${build.targetDir.uri}") {
+        checker.check("${annotationArgs.buildSource.buildType} '${annotationArgs.buildSource.buildName}'\nProject dir: ${build.targetDir.uri}") {
             invocation.proceed()
         }
         logInfo("Deleting the directory ${build.targetDir.uri}")

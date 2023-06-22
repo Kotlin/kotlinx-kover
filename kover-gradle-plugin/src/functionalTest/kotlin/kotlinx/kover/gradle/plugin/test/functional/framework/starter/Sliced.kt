@@ -65,7 +65,9 @@ private class SlicedTestInterceptor : InvocationInterceptor {
             dir.writeBuild(config, slice)
             logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
         }
-        val build = buildSource.generate(slice.toString(), "sliced generated")
+        buildSource.buildType = "sliced generated"
+        buildSource.buildName = slice.toString()
+        val build = buildSource.generate()
         build.runAndCheck(config.steps)
         // clear directory if where are no errors
         build.clear()
