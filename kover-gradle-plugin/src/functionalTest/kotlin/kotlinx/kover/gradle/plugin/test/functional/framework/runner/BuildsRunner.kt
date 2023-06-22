@@ -4,7 +4,6 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.runner
 
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.ANDROID_HOME_ENV
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.isDebugEnabled
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.logInfo
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.uri
@@ -104,7 +103,7 @@ private class GradleBuildImpl(
         logInfo("Run Gradle commands $gradleArgs for project '${targetDir.canonicalPath}' with wrapper '${env.wrapperDir.canonicalPath}'")
 
         val envVars: MutableMap<String, String> = mutableMapOf()
-        env.androidSdkDir?.also { dir -> envVars[ANDROID_HOME_ENV] = dir }
+        env.androidSdkDir?.also { dir -> envVars["ANDROID_HOME"] = dir }
 
         val result = targetDir.buildGradleByShell(runCount++, env.wrapperDir, gradleArgs, envVars)
         logInfo("Success build $buildType '$buildName'")

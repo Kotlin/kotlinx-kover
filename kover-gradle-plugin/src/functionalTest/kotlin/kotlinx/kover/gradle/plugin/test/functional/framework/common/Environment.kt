@@ -7,11 +7,6 @@ package kotlinx.kover.gradle.plugin.test.functional.framework.common
 import java.io.File
 
 /**
- * Name of environment variable with Android SDK path.
- */
-internal const val ANDROID_HOME_ENV = "ANDROID_HOME"
-
-/**
  * Version of current Kover build.
  */
 internal val koverVersionCurrent = System.getProperty("koverVersion")
@@ -42,7 +37,7 @@ internal val overriddenGradleWrapperVersion: String? = System.getProperty("kover
 /**
  * Result path to the Android SDK. `null` if not defined.
  */
-internal val androidSdkDir: String? = System.getProperty("kover.test.android.sdk")?: System.getenv(ANDROID_HOME_ENV)
+internal val androidSdkDir: String? = System.getProperty("kover.test.android.sdk")
 
 
 

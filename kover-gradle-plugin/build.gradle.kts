@@ -84,6 +84,7 @@ val functionalTest by tasks.registering(Test::class) {
 
 
         // customizing functional tests
+        setAndroidSdkDir()
         setSystemPropertyFromProject("kover.release.version")
         setSystemPropertyFromProject("kover.test.gradle.version")
         setSystemPropertyFromProject("kover.test.android.sdk")
@@ -91,6 +92,24 @@ val functionalTest by tasks.registering(Test::class) {
         setBooleanSystemPropertyFromProject("kover.test.junit.logs.info", "testLogsEnabled")
         setBooleanSystemPropertyFromProject("debug", "isDebugEnabled")
     }
+}
+
+fun Test.setAndroidSdkDir() {
+    if (project.hasProperty("kover.test.android.disable")) {
+        // do nothing if android tests are skipped
+        return
+    }
+    val sdkDir = if (project.hasProperty("kover.test.android.sdk")) {
+        project.property("kover.test.android.sdk")
+    } else {
+        environment["ANDROID_HOME"]
+    }
+
+    if (sdkDir == null) {
+        throw GradleException("Android SDK directory not specified, specify environment variable ANDROID_HOME or parameter -Pkover.test.android.sdk. To skip Android tests pass parameter -Pkover.test.android.disable")
+    }
+
+    systemProperties[name] = sdkDir
 }
 
 fun Test.setSystemPropertyFromProject(name: String) {
@@ -105,7 +124,6 @@ fun Test.setBooleanSystemPropertyFromProject(
 }
 
 tasks.check { dependsOn(functionalTest) }
-
 
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
