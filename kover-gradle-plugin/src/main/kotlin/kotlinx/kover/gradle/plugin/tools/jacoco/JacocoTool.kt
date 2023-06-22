@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.tools.jacoco
 
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
+import kotlinx.kover.gradle.plugin.tools.CoverageRequest
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
 import org.gradle.api.file.ArchiveOperations
@@ -43,6 +44,14 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
 
     override fun verify(rules: List<VerificationRule>, outputFile: File, context: ReportContext) {
         context.jacocoVerify(rules, outputFile)
+    }
+
+    override fun collectCoverage(
+        request: CoverageRequest,
+        outputFile: File,
+        context: ReportContext
+    ) {
+        context.printJacocoCoverage(request, outputFile)
     }
 
 }

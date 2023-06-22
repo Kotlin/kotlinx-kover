@@ -53,6 +53,10 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
     ) {
         context.koverVerify(rules, outputFile)
     }
+
+    override fun collectCoverage(request: CoverageRequest, outputFile: File, context: ReportContext) {
+        context.printCoverage(request, outputFile)
+    }
 }
 
 

@@ -49,6 +49,10 @@ internal open class KoverReportsWriter(private val writer: FormattedWriter): Kov
     override fun verify(config: Action<KoverVerifyReportConfig>) {
         writer.call("verify", config) { KoverVerifyReportConfigWriter(it) }
     }
+
+    override fun log(config: Action<KoverLogReportConfig>) {
+        writer.call("log", config) { KoverLogReportConfigWriter(it) }
+    }
 }
 
 internal class KoverReportFiltersWriter(private val writer: FormattedWriter) : KoverReportFilters {
@@ -151,6 +155,67 @@ internal class KoverVerifyReportConfigWriter(private val writer: FormattedWriter
     override fun rule(name: String, config: Action<KoverVerifyRule>) {
         writer.callStr("rule", listOf(name), config) { KoverVerifyRuleWriter(it) }
     }
+}
+
+internal class KoverLogReportConfigWriter(private val writer: FormattedWriter) : KoverLogReportConfig {
+    override var onCheck: Boolean = true
+        set(value) {
+            writer.assign("onCheck", value.toString())
+            field = value
+        }
+
+    override fun filters(config: Action<KoverReportFilters>) {
+        writer.call("filters", config) { KoverReportFiltersWriter(it) }
+    }
+
+    override var header: String? = null
+        set(value) {
+            if (value == null) {
+                writer.assign("header", "null")
+            } else {
+                writer.assign("header", "\"$value\"")
+            }
+            field = value
+        }
+
+    override var format: String? = null
+        set(value) {
+            if (value == null) {
+                writer.assign("format", "null")
+            } else {
+                writer.assign("format", "\"$value\"")
+            }
+            field = value
+        }
+
+    override var groupBy: GroupingEntityType? = null
+        set(value) {
+            if (value == null) {
+                writer.assign("groupBy", "null")
+            } else {
+                writer.assign("groupBy", GroupingEntityType::class.qualifiedName + "." + value)
+            }
+            field = value
+        }
+
+    override var coverageUnits: MetricType? = null
+        set(value) {
+            if (value == null) {
+                writer.assign("coverageUnits", "null")
+            } else {
+                writer.assign("coverageUnits", MetricType::class.qualifiedName + "." + value)
+            }
+            field = value
+        }
+    override var aggregationForGroup: AggregationType? = null
+        set(value) {
+            if (value == null) {
+                writer.assign("aggregationForGroup", "null")
+            } else {
+                writer.assign("aggregationForGroup", AggregationType::class.qualifiedName + "." + value)
+            }
+            field = value
+        }
 }
 
 internal class KoverVerifyRuleWriter(private val writer: FormattedWriter): KoverVerifyRule {

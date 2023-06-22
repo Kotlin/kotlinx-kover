@@ -66,7 +66,7 @@ import java.io.*
  */
 public interface KoverReportExtension {
     /**
-     * Specify common filters for the current report context, these filters will be inherited in HTML/XML/verification reports.
+     * Specify common filters for the current report variant, these filters will be inherited in HTML/XML/verification reports.
      * They can be redefined in the settings of a specific report.
      * ```
      *  filters {
@@ -157,7 +157,7 @@ public interface KoverDefaultReportsConfig: KoverReportsConfig {
 
 public interface KoverReportsConfig {
     /**
-     * Specify common filters for the current report context, these filters will be inherited in HTML/XML/verification reports.
+     * Specify common filters for the current report variant, these filters will be inherited in HTML/XML/verification reports.
      * They can be redefined in the settings of a specific report.
      * ```
      *  filters {
@@ -174,7 +174,7 @@ public interface KoverReportsConfig {
     public fun filters(config: Action<KoverReportFilters>)
 
     /**
-     * Configure HTML report for current report context.
+     * Configure HTML report for current report variant.
      * ```
      *  html {
      *      filters {
@@ -190,7 +190,7 @@ public interface KoverReportsConfig {
     public fun html(config: Action<KoverHtmlReportConfig>)
 
     /**
-     * Configure HTML report for current report context.
+     * Configure HTML report for current report variant.
      * ```
      *  xml {
      *      filters {
@@ -205,7 +205,7 @@ public interface KoverReportsConfig {
     public fun xml(config: Action<KoverXmlReportConfig>)
 
     /**
-     * Configure coverage verification for current report context.
+     * Configure coverage verification for current report variant.
      * ```
      *  verify {
      *      onCheck = true
@@ -221,6 +221,91 @@ public interface KoverReportsConfig {
      * ```
      */
     public fun verify(config: Action<KoverVerifyReportConfig>)
+
+    /**
+     * Configure coverage printing to the log for current report variant.
+     * ```
+     *  log {
+     *      onCheck = true
+     *
+     *      filters {
+     *          // ...
+     *      }
+     *      header = null
+     *      format = "<entity> line coverage: <value>%"
+     *      groupBy = GroupingEntityType.APPLICATION
+     *      coverageUnits = MetricType.LINE
+     *      aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+     *  }
+     * ```
+     */
+    public fun log(config: Action<KoverLogReportConfig>)
+}
+
+/**
+ * Configuration of coverage printing to the log task for current report variant.
+ * ```
+ *  log {
+ *      onCheck = true
+ *
+ *      filters {
+ *          // ...
+ *      }
+ *      header = null
+ *      format = "<entity> line coverage: <value>%"
+ *      groupBy = GroupingEntityType.APPLICATION
+ *      coverageUnits = MetricType.LINE
+ *      aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+ *  }
+ * ```
+ */
+public interface KoverLogReportConfig {
+    /**
+     * Override common filters only for logging report.
+     */
+    public fun filters(config: Action<KoverReportFilters>)
+
+    /**
+     * Print coverage when running the `check` task.
+     * `null` by default, for Kotlin JVM and Kotlin MPP triggered on `check` task, but not for Android.
+     */
+    public var onCheck: Boolean
+
+    /**
+     * Add a header line to be output before the lines with coverage.
+     *
+     * By default, the header is missing.
+     */
+    public var header: String?
+
+    /**
+     * Format of the string to output coverage for the specified in [groupBy] group.
+     *
+     * Placeholders used:
+     *  - `<value>` - coverage value
+     *  - `<entity>` - name of the entity by which the grouping took place. `application` if [groupBy] is [GroupingEntityType.APPLICATION].
+     *
+     * Default value is `<entity> line coverage: <value>%`.
+     */
+    public var format: String?
+
+    /**
+     * Specifies by which entity the code for separate coverage evaluation will be grouped.
+     * Default is [GroupingEntityType.APPLICATION]
+     */
+    public var groupBy: GroupingEntityType?
+
+    /**
+     * Specifies which metric is used for code coverage verification.
+     * Default is [MetricType.LINE]
+     */
+    public var coverageUnits: MetricType?
+
+    /**
+     * Specifies type of lines counter value to compare with minimal and maximal values if them defined.
+     * Default is [AggregationType.COVERED_PERCENTAGE]
+     */
+    public var aggregationForGroup: AggregationType?
 }
 
 /**

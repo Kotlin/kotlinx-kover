@@ -35,6 +35,7 @@ internal class AccessorsTests {
                     dependsOn(tasks.koverHtmlReport)
                     dependsOn(tasks.koverXmlReport)
                     dependsOn(tasks.koverVerify)
+                    dependsOn(tasks.koverLog)
                 }
             """.trimIndent()
             )
@@ -46,6 +47,7 @@ internal class AccessorsTests {
         assertEquals("SUCCESS", result.taskOutcome(":koverXmlReport"))
         assertEquals("SUCCESS", result.taskOutcome(":koverHtmlReport"))
         assertEquals("SUCCESS", result.taskOutcome(":koverVerify"))
+        assertEquals("SUCCESS", result.taskOutcome(":koverLog"))
     }
 
     @Test
@@ -71,6 +73,9 @@ internal class AccessorsTests {
 
                 tasks.koverVerifyName mustBe "koverVerify"
                 tasks.koverVerifyName mustBe KoverNames.DEFAULT_VERIFY_REPORT_NAME
+                
+                tasks.koverLogName mustBe "koverLog"
+                tasks.koverLogName mustBe KoverNames.DEFAULT_LOG_REPORT_NAME
 
 
 
@@ -82,6 +87,9 @@ internal class AccessorsTests {
 
                 tasks.koverAndroidVerifyName("variant") mustBe "koverVerifyVariant"
                 tasks.koverAndroidVerifyName("variant") mustBe KoverNames.androidVerify("variant")
+                
+                tasks.koverAndroidLogName("variant") mustBe "koverLogVariant"
+                tasks.koverAndroidLogName("variant") mustBe KoverNames.androidLog("variant")
 
 
 

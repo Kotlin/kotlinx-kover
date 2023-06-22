@@ -1,6 +1,7 @@
 package kotlinx.kover.gradle.plugin.dsl
 
 import kotlinx.kover.gradle.plugin.commons.htmlReportTaskName
+import kotlinx.kover.gradle.plugin.commons.logTaskName
 import kotlinx.kover.gradle.plugin.commons.verifyTaskName
 import kotlinx.kover.gradle.plugin.commons.xmlReportTaskName
 import org.gradle.api.plugins.ExtensionContainer
@@ -41,6 +42,11 @@ public object KoverNames {
     public const val DEFAULT_VERIFY_REPORT_NAME = "koverVerify"
 
     /**
+     * Name of the coverage logging task for Kotlin JVM and Kotlin multiplatform projects.
+     */
+    public const val DEFAULT_LOG_REPORT_NAME = "koverLog"
+
+    /**
      * Name of the XML report generation task for [buildVariant] Android build variant for Android projects.
      */
     public fun androidXmlReport(buildVariant: String): String {
@@ -59,6 +65,13 @@ public object KoverNames {
      */
     public fun androidVerify(buildVariant: String): String {
         return verifyTaskName(buildVariant)
+    }
+
+    /**
+     * Name of the coverage logging task for [buildVariant] Android build variant for Android projects.
+     */
+    public fun androidLog(buildVariant: String): String {
+        return logTaskName(buildVariant)
     }
 }
 
@@ -86,6 +99,14 @@ public val TaskContainer.koverHtmlReportName
 public val TaskContainer.koverVerifyName
     get() = KoverNames.DEFAULT_VERIFY_REPORT_NAME
 
+/**
+ * Name of the coverage logging task for Kotlin JVM and Kotlin multiplatform projects.
+ *
+ * Has the same value as [KoverNames.DEFAULT_LOG_REPORT_NAME].
+ */
+public val TaskContainer.koverLogName
+    get() = KoverNames.DEFAULT_LOG_REPORT_NAME
+
 
 /**
  * Name of the XML report generation task for [buildVariantName] Android build variant for Android projects.
@@ -112,6 +133,15 @@ public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): S
  */
 public fun TaskContainer.koverAndroidVerifyName(buildVariantName: String): String {
     return KoverNames.androidVerify(buildVariantName)
+}
+
+/**
+ * Name of the coverage logging task for [buildVariantName] Android build variant for Android projects.
+ *
+ * Returns the same value as [KoverNames.androidLog].
+ */
+public fun TaskContainer.koverAndroidLogName(buildVariantName: String): String {
+    return KoverNames.androidLog(buildVariantName)
 }
 
 /**
