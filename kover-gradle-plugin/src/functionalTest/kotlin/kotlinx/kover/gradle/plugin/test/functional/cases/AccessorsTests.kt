@@ -38,7 +38,7 @@ internal class AccessorsTests {
                 }
             """.trimIndent()
             )
-        }.generate("Test accessors", "custom")
+        }.generate()
 
         val result = build.runWithParams("custom")
 
@@ -96,7 +96,7 @@ internal class AccessorsTests {
                 }
             """.trimIndent()
             )
-        }.generate("Test names accessors", "custom")
+        }.generate()
 
         val result = build.runWithParams("tasks")
 

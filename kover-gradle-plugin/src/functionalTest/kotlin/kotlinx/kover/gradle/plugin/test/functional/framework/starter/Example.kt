@@ -37,11 +37,12 @@ private class ExampleGradleTest : DirectoryBasedGradleTest() {
 
         val exampleName = annotation.exampleDir
         val buildSource = buildFromExample(exampleName)
+        buildSource.buildType = "example test"
+        buildSource.buildName = exampleName
         val commands = annotation.commands.toList()
-        return RunCommand(exampleName, buildSource, commands)
+        return RunCommand(buildSource, commands)
     }
 
-    override val testType: String = "Example"
 }
 
 

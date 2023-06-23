@@ -29,9 +29,9 @@ private class TemplateGradleTest : DirectoryBasedGradleTest() {
         val templateName = annotation.templateName
 
         val sources = buildFromTemplate(templateName)
+        sources.buildType = "template test"
+        sources.buildName = templateName
         val commands = annotation.commands.toList()
-        return RunCommand(templateName, sources, commands)
+        return RunCommand(sources, commands)
     }
-
-    override val testType: String = "Template"
 }

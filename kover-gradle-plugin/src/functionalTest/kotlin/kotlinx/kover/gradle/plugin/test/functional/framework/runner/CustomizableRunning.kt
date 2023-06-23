@@ -25,6 +25,8 @@ internal fun buildFromTemplate(templateName: String): BuildSource {
         throw Exception("Template not found: '$templateName'")
     }
     source.copyFrom(dir)
+    source.buildType = "template"
+    source.buildName = templateName
 
     return source
 }
@@ -48,6 +50,7 @@ internal fun generateBuild(generator: (File) -> Unit): BuildSource {
     generator(dir)
     val source = createBuildSource(localRepositoryPath, koverVersionCurrent)
     source.overriddenKotlinVersion = overriddenKotlinVersion
+    source.buildType = "generated"
     source.from(dir)
 
     return source

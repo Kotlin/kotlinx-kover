@@ -21,8 +21,9 @@ import javax.inject.*
  */
 @CacheableTask
 internal abstract class KoverAgentJarTask : DefaultTask() {
+    // relative sensitivity for file collections which are not FileTree is a comparison by file name and its contents
     @get:InputFiles
-    @get:PathSensitive(PathSensitivity.ABSOLUTE)
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val agentClasspath: ConfigurableFileCollection
 
     @get:OutputFile

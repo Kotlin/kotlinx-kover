@@ -72,8 +72,10 @@ private class SingleTestInterceptor : InvocationInterceptor {
             dir.writeBuild(config, slice)
             logInfo("Build was created for slice ($slice) in directory ${dir.uri}")
         }
+        buildSource.buildType = "single generated"
+        buildSource.buildName = slice.toString()
 
-        val build = buildSource.generate(slice.toString(), "single generated")
+        val build = buildSource.generate()
         build.runAndCheck(config.steps)
         // clear directory if where are no errors
         build.clear()

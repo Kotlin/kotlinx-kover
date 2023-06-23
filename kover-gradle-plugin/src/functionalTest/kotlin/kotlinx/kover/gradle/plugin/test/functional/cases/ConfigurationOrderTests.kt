@@ -45,7 +45,7 @@ internal class ConfigurationOrderTests {
     @Test
     fun testIllegalVariantNameInConfig() {
         val buildSource = buildFromTemplate("android-no-variant-for-config")
-        val build = buildSource.generate("No variant config", "template")
+        val build = buildSource.generate()
         val buildResult = build.runWithParams("clean")
 
         buildResult.checkNoAndroidSdk()
@@ -56,7 +56,7 @@ internal class ConfigurationOrderTests {
     @Test
     fun testIllegalVariantNameInMerge() {
         val buildSource = buildFromTemplate("android-no-variant-for-merge")
-        val build = buildSource.generate("No variant merge", "template")
+        val build = buildSource.generate()
         val buildResult = build.runWithParams("clean")
 
         buildResult.checkNoAndroidSdk()

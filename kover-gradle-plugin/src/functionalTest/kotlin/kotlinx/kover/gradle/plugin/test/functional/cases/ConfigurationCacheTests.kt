@@ -3,7 +3,6 @@
  */
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 import java.io.*
