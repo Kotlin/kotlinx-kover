@@ -243,7 +243,7 @@ public interface KoverReportsConfig {
 }
 
 /**
- * Configuration of coverage printing to the log task for current report variant.
+ * Configuration of coverage printing to the log for current report variant.
  * ```
  *  log {
  *      onCheck = true
@@ -273,7 +273,7 @@ public interface KoverLogReportConfig {
     public var onCheck: Boolean
 
     /**
-     * Add a header line to be output before the lines with coverage.
+     * Add a header line to the output before the lines with coverage.
      *
      * If value is `null` then the header is absent.
      *
@@ -282,9 +282,9 @@ public interface KoverLogReportConfig {
     public var header: String?
 
     /**
-     * Format of the string to output coverage for the specified in [groupBy] group.
+     * Format of the strings to print coverage for the specified in [groupBy] group.
      *
-     * Placeholders used:
+     * The following placeholders can be used:
      *  - `<value>` - coverage value
      *  - `<entity>` - name of the entity by which the grouping took place. `application` if [groupBy] is [GroupingEntityType.APPLICATION].
      *

@@ -23,7 +23,7 @@ internal fun ReportContext.printJacocoCoverage(request: CoverageRequest, outputF
     val violations = doJacocoVerify(listOf(failRule))
     val values = violations.flatMap { rule ->
         if (rule.bounds.isEmpty()) {
-            throw KoverCriticalException("Expected only one bound violation for JaCoCo")
+            throw KoverCriticalException("Expected at least one bound violation for JaCoCo")
         }
         rule.bounds.map {
             CoverageValue(it.actualValue, it.entityName)

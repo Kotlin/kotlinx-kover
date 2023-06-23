@@ -54,7 +54,7 @@ internal abstract class CollectCoverageAction : WorkAction<CollectCoverageParame
 
         val violation = violations.singleOrNull() ?: throw KoverCriticalException("Expected only one rule violation for Kover")
         if (violation.bounds.isEmpty()) {
-            throw KoverCriticalException("Expected only one bound violation for Kover")
+            throw KoverCriticalException("Expected at least one bound violation for Kover")
         }
 
         val values = violation.bounds.map {
