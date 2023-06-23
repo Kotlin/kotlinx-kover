@@ -2,27 +2,42 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.createCheckerContext
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultXmlReport
-import kotlinx.kover.gradle.plugin.test.functional.framework.runner.GradleBuild
+import kotlinx.kover.gradle.plugin.test.functional.framework.runner.BuildSource
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.buildFromTemplate
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
 import org.junit.jupiter.api.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class NoTestReportsTests {
     @Test
     fun testNoTestsJvm() {
-        val build = buildFromTemplate("no-tests-jvm").generate("no-tests-jvm", "templates")
-        checkReportsGenerated(build)
+        val build = buildFromTemplate("no-tests-jvm")
+        check(build)
+        checkWithVerify(build)
     }
 
     @Test
     fun testNoTestsMpp() {
-        val build = buildFromTemplate("no-tests-mpp").generate("no-tests-mpp", "templates")
-        checkReportsGenerated(build)
+        val build = buildFromTemplate("no-tests-mpp")
+        check(build)
+        checkWithVerify(build)
     }
 
-    private fun checkReportsGenerated(build: GradleBuild) {
+    private fun check(buildSource: BuildSource) {
+        val build = buildSource.generate("a", "templates")
+        val buildResult = build.runWithParams("koverXmlReport", "koverHtmlReport")
+        val checkerContext = build.createCheckerContext(buildResult)
+
+        checkerContext.xml(defaultXmlReport()) {
+            classCounter("kotlinx.kover.templates.ExampleClass").assertFullyMissed()
+        }
+        assertTrue(buildResult.isSuccessful)
+    }
+
+    private fun checkWithVerify(buildSource: BuildSource) {
+        val build = buildSource.generate("a", "templates")
         val buildResult = build.runWithParams("koverXmlReport", "koverHtmlReport", "koverVerify")
         val checkerContext = build.createCheckerContext(buildResult)
 

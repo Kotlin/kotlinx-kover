@@ -114,6 +114,9 @@ internal class MultiProjectTests {
             subproject(subprojectPath) {
                 checkDefaultBinReport(false)
                 taskNotCalled(defaultTestTaskName(slice.type))
+                checkOutcome("koverXmlReport", "SUCCESS")
+                checkOutcome("koverHtmlReport", "SUCCESS")
+                checkOutcome("koverVerify", "SUCCESS")
             }
         }
     }
