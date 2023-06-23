@@ -59,7 +59,7 @@ private class JvmTestTaskArgumentProvider(
     private val tempDir: File,
     private val toolProvider: Provider<CoverageTool>,
 
-    // relative sensitive for file - this is a comparison by file name and its contents
+    // relative sensitivity for file is a comparison by file name and its contents
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val agentJar: Provider<File>,
