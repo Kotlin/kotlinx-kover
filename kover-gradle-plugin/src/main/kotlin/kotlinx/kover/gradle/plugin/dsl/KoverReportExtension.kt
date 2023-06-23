@@ -267,14 +267,17 @@ public interface KoverLogReportConfig {
 
     /**
      * Print coverage when running the `check` task.
-     * `null` by default, for Kotlin JVM and Kotlin MPP triggered on `check` task, but not for Android.
+     *
+     * `false` by default.
      */
     public var onCheck: Boolean
 
     /**
      * Add a header line to be output before the lines with coverage.
      *
-     * By default, the header is missing.
+     * If value is `null` then the header is absent.
+     *
+     * `null` by default.
      */
     public var header: String?
 
@@ -285,25 +288,37 @@ public interface KoverLogReportConfig {
      *  - `<value>` - coverage value
      *  - `<entity>` - name of the entity by which the grouping took place. `application` if [groupBy] is [GroupingEntityType.APPLICATION].
      *
-     * Default value is `<entity> line coverage: <value>%`.
+     * `"<entity> line coverage: <value>%"` if value is `null`.
+     *
+     * `null` by default.
      */
     public var format: String?
 
     /**
      * Specifies by which entity the code for separate coverage evaluation will be grouped.
-     * Default is [GroupingEntityType.APPLICATION]
+     *
+     *
+     * [GroupingEntityType.APPLICATION] if value is `null`.
+     *
+     * `null` by default.
      */
     public var groupBy: GroupingEntityType?
 
     /**
-     * Specifies which metric is used for code coverage verification.
-     * Default is [MetricType.LINE]
+     * Specifies which metric is used for coverage evaluation.
+     *
+     * [MetricType.LINE] if value is `null`.
+     *
+     * `null` by default.
      */
     public var coverageUnits: MetricType?
 
     /**
-     * Specifies type of lines counter value to compare with minimal and maximal values if them defined.
-     * Default is [AggregationType.COVERED_PERCENTAGE]
+     * Specifies aggregation function that will be calculated over all the elements of the same group, which will return the printed value.
+     *
+     * [AggregationType.COVERED_PERCENTAGE] if value is `null`.
+     *
+     * `null` by default.
      */
     public var aggregationForGroup: AggregationType?
 }
