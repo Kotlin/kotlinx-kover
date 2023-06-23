@@ -44,7 +44,7 @@ internal abstract class CollectCoverageAction : WorkAction<CollectCoverageParame
         val bound = VerificationBound(ONE_HUNDRED, BigDecimal.ZERO, request.metric, request.aggregation)
         val failRule = VerificationRule(true, null, null, request.entity, listOf(bound))
 
-        // dirty hack, add this feature to reporter
+        // change API after https://youtrack.jetbrains.com/issue/IDEA-323463 will be implemented
         val violations = koverVerify(
             listOf(failRule),
             parameters.filters.get(),
