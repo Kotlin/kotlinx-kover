@@ -30,8 +30,8 @@ internal inline fun CheckerContext.check(
     }
 }
 
-internal fun File.createCheckerContext(result: BuildResult): CheckerContext {
-    return CheckerContextImpl(this.analyzeProject(), result)
+internal fun GradleBuild.createCheckerContext(result: BuildResult): CheckerContext {
+    return CheckerContextImpl(this.targetDir.analyzeProject(), result)
 }
 
 internal fun File.analyzeProject(): ProjectAnalysisData {

@@ -26,7 +26,7 @@ ${this.targetDir.buildScript()}
         when (step) {
             is TestGradleStep -> {
                 val runResult = this.runWithParams(step.args)
-                targetDir.createCheckerContext(runResult).check(description, step.errorExpected, step.checker)
+                createCheckerContext(runResult).check(description, step.errorExpected, step.checker)
             }
 
             is TestFileEditStep -> {

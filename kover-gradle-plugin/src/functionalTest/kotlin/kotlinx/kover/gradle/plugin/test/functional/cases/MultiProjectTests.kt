@@ -58,7 +58,7 @@ internal class MultiProjectTests {
     }
 
     @SlicedGeneratedTest(allTypes = true, allTools = true)
-    fun BuildConfigurator.testDisabledKover() {
+    fun SlicedBuildConfigurator.testDisabledKover() {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
@@ -76,16 +76,12 @@ internal class MultiProjectTests {
 
         run("koverXmlReport", "koverHtmlReport", "koverVerify") {
             checkDefaultBinReport(false)
+            taskNotCalled(defaultTestTaskName(slice.type))
 
-            checkOutcome("koverHtmlReport", "SKIPPED")
-            checkOutcome("koverXmlReport", "SKIPPED")
-            checkOutcome("koverVerify", "SKIPPED")
 
             subproject(subprojectPath) {
                 checkDefaultBinReport(false)
-                checkOutcome("koverHtmlReport", "SKIPPED")
-                checkOutcome("koverXmlReport", "SKIPPED")
-                checkOutcome("koverVerify", "SKIPPED")
+                taskNotCalled(defaultTestTaskName(slice.type))
             }
         }
     }
@@ -113,16 +109,14 @@ internal class MultiProjectTests {
 
         run("koverXmlReport", "koverHtmlReport", "koverVerify") {
             checkDefaultBinReport(false)
-
-            checkOutcome("koverHtmlReport", "SKIPPED")
-            checkOutcome("koverXmlReport", "SKIPPED")
-            checkOutcome("koverVerify", "SKIPPED")
+            taskNotCalled(defaultTestTaskName(slice.type))
 
             subproject(subprojectPath) {
                 checkDefaultBinReport(false)
-                checkOutcome("koverHtmlReport", "SKIPPED")
-                checkOutcome("koverXmlReport", "SKIPPED")
-                checkOutcome("koverVerify", "SKIPPED")
+                taskNotCalled(defaultTestTaskName(slice.type))
+                checkOutcome("koverXmlReport", "SUCCESS")
+                checkOutcome("koverHtmlReport", "SUCCESS")
+                checkOutcome("koverVerify", "SUCCESS")
             }
         }
     }

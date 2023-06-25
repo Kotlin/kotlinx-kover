@@ -43,9 +43,9 @@ internal class AccessorsTests {
         val result = build.runWithParams("custom")
 
         // skipped because there is no tests, but tasks are triggered
-        assertEquals("SKIPPED", result.taskOutcome(":koverXmlReport"))
-        assertEquals("SKIPPED", result.taskOutcome(":koverHtmlReport"))
-        assertEquals("SKIPPED", result.taskOutcome(":koverVerify"))
+        assertEquals("SUCCESS", result.taskOutcome(":koverXmlReport"))
+        assertEquals("SUCCESS", result.taskOutcome(":koverHtmlReport"))
+        assertEquals("SUCCESS", result.taskOutcome(":koverVerify"))
     }
 
     @Test
