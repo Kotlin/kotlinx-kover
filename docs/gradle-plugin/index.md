@@ -44,7 +44,7 @@ Add the following to your top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.1"
+     id("org.jetbrains.kotlinx.kover") version "0.7.2"
 }
 ```
 
@@ -62,7 +62,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.1")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.2")
     }
 }
 
@@ -78,7 +78,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.1'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.2'
     }
 }
   
@@ -104,6 +104,7 @@ koverReport {
         xml { /* default XML report config */ }
         html { /* default HTML report config */ }
         verify { /* default verification config */ }
+        log { /* default logging config */ }
     }
 }
 ```
@@ -132,6 +133,7 @@ koverReport {
         xml { /* XML report config for `release` build variant */ }
         html { /* HTML report config for `release` build variant */ }
         verify { /* verification config for `release` build variant */ }
+        log { /* logging config for `release` build variant */ }
     }
 }
 ```
@@ -222,6 +224,7 @@ Kover default task list:
 - `koverHtmlReport` - Generate HTML report for Kotlin/JVM or Java classes
 - `koverXmlReport` - Generate XML report for Kotlin/JVM or Java classes
 - `koverVerify` - Verifies code coverage metrics of Kotlin/JVM or Java classes based on configured rules
+- `koverLog` - Prints code coverage of Kotlin/JVM or Java classes to the log
 
 Example:
 ```
@@ -240,6 +243,7 @@ Kover Android task list:
 - `koverHtmlReport<Name>` - Generate HTML report for classes of `<Name>` build variant
 - `koverXmlReport<Name>` - Generate XML report for classes of `<Name>` build variant
 - `koverVerify<Name>` - Verifies code coverage metrics of classes of `<Name>` build variant based on configured rules
+- `koverLog<Name>` - Prints code coverage to the log for classes of `<Name>` build variant
 
 Example:
 ```
