@@ -1,15 +1,15 @@
 0.7.2 / 2023-06-26
 ===================
 ### Features
-* [#362](https://github.com/Kotlin/kotlinx-kover/issues/362) Removed the dependency on the order of applying of the plugin
-* [#229](https://github.com/Kotlin/kotlinx-kover/issues/229) Added task to print coverage to logs
-* [#394](https://github.com/Kotlin/kotlinx-kover/issues/394) Added DSL accessors for Kover Default report tasks
-* [#400](https://github.com/Kotlin/kotlinx-kover/issues/400) Added descriptions for Kover report tasks
-* [#409](https://github.com/Kotlin/kotlinx-kover/issues/409) Added ability to generate reports even if there are no tests in the project
+* [`#362`](https://github.com/Kotlin/kotlinx-kover/issues/362) Removed the dependency on the order of applying of the plugin
+* [`#229`](https://github.com/Kotlin/kotlinx-kover/issues/229) Added task to print coverage to logs
+* [`#394`](https://github.com/Kotlin/kotlinx-kover/issues/394) Added DSL accessors for Kover Default report tasks
+* [`#400`](https://github.com/Kotlin/kotlinx-kover/issues/400) Added descriptions for Kover report tasks
+* [`#409`](https://github.com/Kotlin/kotlinx-kover/issues/409) Added ability to generate reports even if there are no tests in the project
 * Upgraded default JaCoCo version to `0.8.10`
 
 ### Bugfixes
-* [#413](https://github.com/Kotlin/kotlinx-kover/issues/413) Fixed issues with cache miss of build cache at the time of project relocation
+* [`#413`](https://github.com/Kotlin/kotlinx-kover/issues/413) Fixed issues with cache miss of build cache at the time of project relocation
 
 ### Documentation
 * Fixed docs typo: `dependency {}` -> `dependencies {}`
