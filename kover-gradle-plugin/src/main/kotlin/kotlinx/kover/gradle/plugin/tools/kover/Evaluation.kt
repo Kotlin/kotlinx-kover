@@ -8,6 +8,7 @@ import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.VerificationBound
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
+import kotlinx.kover.gradle.plugin.tools.*
 import kotlinx.kover.gradle.plugin.tools.CoverageMeasures
 import kotlinx.kover.gradle.plugin.tools.CoverageRequest
 import kotlinx.kover.gradle.plugin.tools.CoverageValue
@@ -17,6 +18,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.workers.WorkAction
 import org.gradle.workers.WorkQueue
+import org.jetbrains.kotlin.gradle.utils.`is`
 import java.io.File
 import java.math.BigDecimal
 
@@ -51,6 +53,11 @@ internal abstract class CollectCoverageAction : WorkAction<CollectCoverageParame
             parameters.tempDir.get().asFile,
             parameters.files.get()
         )
+
+        if (violations.isEmpty()) {
+            parameters.outputFile.get().asFile.writeNoSources(parameters.request.get().header)
+            return
+        }
 
         val violation = violations.singleOrNull() ?: throw KoverCriticalException("Expected only one rule violation for Kover")
         if (violation.bounds.isEmpty()) {

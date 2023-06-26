@@ -24,6 +24,13 @@ internal fun CoverageMeasures.writeToFile(file: File, header: String?, lineForma
     }
 }
 
+internal fun File.writeNoSources(header: String?) {
+    this.bufferedWriter(Charset.forName("UTF-8")).use { writer ->
+        header?.let { h -> writer.appendLine(h) }
+        writer.appendLine("No sources")
+    }
+}
+
 
 internal data class CoverageRequest(
     val entity: GroupingEntityType,
