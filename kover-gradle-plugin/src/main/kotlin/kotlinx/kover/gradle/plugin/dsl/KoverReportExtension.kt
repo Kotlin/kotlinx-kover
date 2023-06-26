@@ -314,7 +314,7 @@ public interface KoverLogReportConfig {
     public var coverageUnits: MetricType?
 
     /**
-     * Specifies aggregation function that will be calculated over all the elements of the same group, which will return the printed value.
+     * Specifies aggregation function that will be calculated over all the elements of the same group. This function returns the printed value.
      *
      * [AggregationType.COVERED_PERCENTAGE] if value is `null`.
      *
