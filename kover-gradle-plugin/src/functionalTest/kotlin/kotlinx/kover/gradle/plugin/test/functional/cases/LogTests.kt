@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.BuildConfigurator
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTest
+import kotlin.test.assertTrue
 
 
 internal class LogTests {
@@ -20,14 +21,14 @@ internal class LogTests {
         run(":koverHtmlReport", "--build-cache") {
             checkOutcome("koverHtmlReport", "SUCCESS")
             taskOutput("koverHtmlReport") {
-                contains("Kover: HTML report for")
+                assertTrue { contains("Kover: HTML report for") }
             }
         }
 
         run(":koverHtmlReport", "--build-cache") {
             checkOutcome("koverHtmlReport", "UP-TO-DATE")
             taskOutput("koverHtmlReport") {
-                contains("Kover: HTML report for")
+                assertTrue { contains("Kover: HTML report for") }
             }
         }
 
@@ -36,7 +37,7 @@ internal class LogTests {
         run(":koverHtmlReport", "--build-cache") {
             checkOutcome("koverHtmlReport", "FROM-CACHE")
             taskOutput("koverHtmlReport") {
-                contains("Kover: HTML report for")
+                assertTrue { contains("Kover: HTML report for") }
             }
         }
 

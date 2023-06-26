@@ -5,7 +5,49 @@
 package kotlinx.kover.gradle.plugin.tools
 
 import kotlinx.kover.gradle.plugin.dsl.*
+import java.io.File
+import java.io.Serializable
 import java.math.*
+import java.nio.charset.Charset
+
+internal fun CoverageMeasures.writeToFile(file: File, header: String?, lineFormat: String) {
+    file.bufferedWriter(Charset.forName("UTF-8")).use { writer ->
+        header?.let { h -> writer.appendLine(h) }
+
+        values.forEach { coverage ->
+            val entityName = coverage.entityName ?: "application"
+            writer.appendLine(
+                lineFormat.replace("<value>", coverage.value.stripTrailingZeros().toPlainString())
+                    .replace("<entity>", entityName)
+            )
+        }
+    }
+}
+
+internal fun File.writeNoSources(header: String?) {
+    this.bufferedWriter(Charset.forName("UTF-8")).use { writer ->
+        header?.let { h -> writer.appendLine(h) }
+        writer.appendLine("No sources")
+    }
+}
+
+
+internal data class CoverageRequest(
+    val entity: GroupingEntityType,
+    val metric: MetricType,
+    val aggregation: AggregationType,
+    val header: String?,
+    val lineFormat: String,
+): Serializable
+
+internal data class CoverageMeasures(
+    val values: List<CoverageValue>
+)
+
+internal data class CoverageValue(
+    val value: BigDecimal,
+    val entityName: String? = null,
+)
 
 internal data class RuleViolations(
     val entityType: GroupingEntityType,

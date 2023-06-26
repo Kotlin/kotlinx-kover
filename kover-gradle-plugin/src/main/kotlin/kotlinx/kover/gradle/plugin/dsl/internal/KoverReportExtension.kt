@@ -63,6 +63,8 @@ internal open class KoverReportsConfigImpl @Inject constructor(private val objec
     internal val html: KoverHtmlReportConfigImpl = objects.newInstance(objects)
     internal val xml: KoverXmlReportConfigImpl = objects.newInstance(objects)
     internal val verify: KoverVerifyReportConfigImpl = objects.newInstance(objects)
+    internal val log: KoverLogReportConfigImpl = objects.newInstance(objects)
+
     internal var filters: KoverReportFiltersImpl? = null
 
     override fun filters(config: Action<KoverReportFilters>) {
@@ -82,6 +84,10 @@ internal open class KoverReportsConfigImpl @Inject constructor(private val objec
 
     override fun verify(config: Action<KoverVerifyReportConfig>) {
         config(verify)
+    }
+
+    override fun log(config: Action<KoverLogReportConfig>) {
+        config(log)
     }
 }
 
@@ -231,6 +237,27 @@ internal open class KoverVerifyBoundImpl : KoverVerifyBound {
     override var maxValue: Int? = null
     override var metric: MetricType = MetricType.LINE
     override var aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE
+}
+
+internal open class KoverLogReportConfigImpl @Inject constructor(private val objects: ObjectFactory): KoverLogReportConfig {
+    internal var filters: KoverReportFiltersImpl? = null
+
+    override var onCheck: Boolean = false
+
+    override var header: String? = null
+
+    override var format: String? = null
+
+    override var groupBy: GroupingEntityType? = null
+
+    override var coverageUnits: MetricType? = null
+
+    override var aggregationForGroup: AggregationType? = null
+
+    override fun filters(config: Action<KoverReportFilters>) {
+        val filtersToConfigure = filters ?: (objects.newInstance<KoverReportFiltersImpl>(objects).also { filters = it })
+        config(filtersToConfigure)
+    }
 }
 
 internal open class KoverReportFiltersImpl @Inject constructor(

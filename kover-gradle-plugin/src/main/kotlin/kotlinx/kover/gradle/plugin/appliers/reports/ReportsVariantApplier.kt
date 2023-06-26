@@ -14,15 +14,20 @@ import kotlinx.kover.gradle.plugin.commons.asConsumer
 import kotlinx.kover.gradle.plugin.commons.externalArtifactConfigurationName
 import kotlinx.kover.gradle.plugin.commons.htmlReportTaskName
 import kotlinx.kover.gradle.plugin.commons.artifactConfigurationName
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
+import kotlinx.kover.gradle.plugin.dsl.MetricType
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportFiltersImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportsConfigImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVerifyBoundImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVerifyRuleImpl
+import kotlinx.kover.gradle.plugin.tasks.reports.*
 import kotlinx.kover.gradle.plugin.tasks.reports.AbstractKoverReportTask
 import kotlinx.kover.gradle.plugin.tasks.reports.KoverHtmlTask
 import kotlinx.kover.gradle.plugin.tasks.reports.KoverVerifyTask
 import kotlinx.kover.gradle.plugin.tasks.reports.KoverXmlTask
 import kotlinx.kover.gradle.plugin.tasks.services.KoverArtifactGenerationTask
+import kotlinx.kover.gradle.plugin.tasks.services.KoverPrintLogTask
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
@@ -45,6 +50,7 @@ internal sealed class ReportsVariantApplier(
     private val htmlTask: TaskProvider<KoverHtmlTask>
     private val xmlTask: TaskProvider<KoverXmlTask>
     private val verifyTask: TaskProvider<KoverVerifyTask>
+    private val logTask: TaskProvider<KoverFormatCoverageTask>
 
     private val artifactGenTask: TaskProvider<KoverArtifactGenerationTask>
     protected val config: NamedDomainObjectProvider<Configuration>
@@ -79,19 +85,30 @@ internal sealed class ReportsVariantApplier(
 
         htmlTask = project.tasks.createReportTask<KoverHtmlTask>(
             htmlReportTaskName(variantName),
-            htmlTaskDescription(),
-            toolProvider
+            htmlTaskDescription()
         )
         xmlTask = project.tasks.createReportTask<KoverXmlTask>(
             xmlReportTaskName(variantName),
-            xmlTaskDescription(),
-            toolProvider
+            xmlTaskDescription()
         )
         verifyTask = project.tasks.createReportTask<KoverVerifyTask>(
             verifyTaskName(variantName),
-            verifyTaskDescription(),
-            toolProvider
+            verifyTaskDescription()
         )
+        logTask = project.tasks.createReportTask<KoverFormatCoverageTask>(
+            logTaskName(variantName),
+            logTaskDescription()
+        )
+        val printCoverageTask = project.tasks.register<KoverPrintLogTask>(printLogTaskName(variantName))
+        printCoverageTask.configure {
+            fileWithMessage.convention(logTask.flatMap { it.outputFile })
+            onlyIf {
+                fileWithMessage.asFile.get().exists()
+            }
+        }
+        logTask.configure {
+            finalizedBy(printCoverageTask)
+        }
     }
 
 
@@ -133,6 +150,20 @@ internal sealed class ReportsVariantApplier(
             runOnCheck += verifyTask
         }
 
+        logTask.configure {
+            header.convention(reportConfig.log.header)
+            lineFormat.convention(reportConfig.log.format ?: "<entity> line coverage: <value>%")
+            groupBy.convention(reportConfig.log.groupBy ?: GroupingEntityType.APPLICATION)
+            coverageUnits.convention(reportConfig.log.coverageUnits ?: MetricType.LINE)
+            aggregationForGroup.convention(reportConfig.log.aggregationForGroup ?: AggregationType.COVERED_PERCENTAGE)
+            outputFile.convention(project.layout.buildDirectory.file(coverageLogPath(variantName)))
+
+            filters.set((reportConfig.log.filters ?: reportConfig.filters ?: commonFilters).convert())
+        }
+        if (reportConfig.log.onCheck) {
+            runOnCheck += logTask
+        }
+
         project.tasks
             .matching { it.name == LifecycleBasePlugin.CHECK_TASK_NAME }
             .configureEach { dependsOn(runOnCheck) }
@@ -172,8 +203,7 @@ internal sealed class ReportsVariantApplier(
 
     private inline fun <reified T : AbstractKoverReportTask> TaskContainer.createReportTask(
         name: String,
-        taskDescription: String,
-        toolProvider: Provider<CoverageTool>
+        taskDescription: String
     ): TaskProvider<T> {
         val task = register<T>(name)
         task.configure {
@@ -209,6 +239,13 @@ internal sealed class ReportsVariantApplier(
         return when (type) {
             ReportsVariantType.DEFAULT -> "Task to validate coverage bounding rules for JVM project or Kotlin/MPP JVM targets. Android measurements for specific build variant can be merged"
             ReportsVariantType.ANDROID -> "Task to validate coverage bounding rules for '$variantName' Android build variant"
+        }
+    }
+
+    private fun logTaskDescription(): String {
+        return when (type) {
+            ReportsVariantType.DEFAULT -> "Task to print coverage to log for JVM project or Kotlin/MPP JVM targets. Android measurements for specific build variant can be merged"
+            ReportsVariantType.ANDROID -> "Task to print coverage to log for '$variantName' Android build variant"
         }
     }
 }

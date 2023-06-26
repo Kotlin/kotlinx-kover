@@ -23,7 +23,7 @@ internal fun ReportContext.jacocoVerify(
     rules: List<VerificationRule>,
     outputFile: File
 ) {
-    val violations = doVerify(rules)
+    val violations = doJacocoVerify(rules)
 
     val errorMessage = generateErrorMessage(violations)
     outputFile.writeText(errorMessage)
@@ -34,7 +34,7 @@ internal fun ReportContext.jacocoVerify(
 }
 
 
-private fun ReportContext.doVerify(rules: List<VerificationRule>): List<RuleViolations> {
+internal fun ReportContext.doJacocoVerify(rules: List<VerificationRule>): List<RuleViolations> {
 
     callAntReport(projectPath) {
         invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
@@ -112,7 +112,7 @@ private fun GroovyObject.violations(): List<RuleViolations> {
             ?: throw KoverCriticalException("Can't parse JaCoCo verification error string:\n$it")
 
         val entityType = match.groupValues[1].asEntityType(it)
-        val entityName = match.groupValues[2]
+        val entityName = match.groupValues[2].run { if (this == ":") null else this }
         val metric = match.groupValues[3].asMetricType(it)
         val agg = match.groupValues[4].asAggType(it)
         val value = match.groupValues[5].asValue(it, agg)

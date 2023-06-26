@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.plugin.commons
 
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_HTML_REPORT_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_LOG_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_VERIFY_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_XML_REPORT_NAME
 import java.util.*
@@ -38,6 +39,16 @@ internal fun xmlReportTaskName(variant: String) = "$DEFAULT_XML_REPORT_NAME${var
  * Name for verifying task for specified report namespace.
  */
 internal fun verifyTaskName(variant: String) = "$DEFAULT_VERIFY_REPORT_NAME${variant.capitalized()}"
+
+/**
+ * Name for coverage logging task.
+ */
+internal fun logTaskName(variant: String) = "$DEFAULT_LOG_REPORT_NAME${variant.capitalized()}"
+
+/**
+ * Name for task to print coverage to the log.
+ */
+internal fun printLogTaskName(variant: String) = "koverPrintCoverage${variant.capitalized()}"
 
 /**
  * Name of binary report for specified test task name (without directory path).

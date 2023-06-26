@@ -41,7 +41,7 @@ internal class BuildResult(exitCode: Int, private val logFile: File) {
         while (index < lines.size) {
             val line = lines[index]
             index++
-            if (line.startsWith(prefix)) {
+            if (line.startsWith("> Task") || line.startsWith("BUILD SUCCESSFUL in")) {
                 break
             }
             result += line

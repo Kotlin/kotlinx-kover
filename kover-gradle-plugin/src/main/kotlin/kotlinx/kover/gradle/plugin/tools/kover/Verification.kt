@@ -179,7 +179,7 @@ private fun processViolations(
                     bound.minValue
                         ?: throw KoverCriticalException("Error occurred while parsing verification error: no minimal bound with ID $boundIndex and rule index $ruleIndex")
 
-                    val entityName = it.targetName.ifEmpty { null }
+                    val entityName = if (rule.entityType == GroupingEntityType.APPLICATION) null else it.targetName
                     val value = it.targetValue
                     val actual = if (bound.aggregation.isPercentage) value * ONE_HUNDRED else value
                     boundsResult += ViolationId(boundIndex, entityName) to BoundViolations(
@@ -196,7 +196,7 @@ private fun processViolations(
                     bound.maxValue
                         ?: throw KoverCriticalException("Error occurred while parsing verification error: no maximal bound with index $boundIndex and rule index $ruleIndex")
 
-                    val entityName = it.targetName.ifEmpty { null }
+                    val entityName = if (rule.entityType == GroupingEntityType.APPLICATION) null else it.targetName
                     val value = it.targetValue
                     val actual = if (bound.aggregation.isPercentage) value * ONE_HUNDRED else value
                     boundsResult += ViolationId(boundIndex, entityName) to BoundViolations(

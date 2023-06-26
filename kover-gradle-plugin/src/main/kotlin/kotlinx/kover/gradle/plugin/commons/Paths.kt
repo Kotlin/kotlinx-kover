@@ -34,6 +34,10 @@ internal fun verificationErrorsPath(variant: String): String {
     return "reports${separator}kover${separator}verify${variant.capitalized()}.err"
 }
 
+internal fun coverageLogPath(variant: String): String {
+    return "kover${separator}coverage${variant.capitalized()}.txt"
+}
+
 internal fun artifactFilePath(variant: String): String {
     return if (variant == DEFAULT_KOVER_VARIANT_NAME) {
         "kover${separator}default.artifact"
