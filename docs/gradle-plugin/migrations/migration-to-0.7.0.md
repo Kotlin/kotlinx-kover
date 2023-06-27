@@ -1,7 +1,7 @@
-# Kover migration guide from 0.6.x to 0.7.1
+# Kover migration guide from 0.6.x to 0.7.2
 
 ## Migration steps
-To migrate to version `0.7.1`, you must follow all steps below if they are applicable to your project.
+To migrate to version `0.7.2`, you must follow all steps below if they are applicable to your project.
 
 ### Merge reports config was removed
 Now all Kotlin report tasks (`koverHtmlReport`, `koverXmlReport`, `koverVerify`) are in single copy, they can be both single-project or merged cross-projects reports.  
@@ -236,6 +236,43 @@ koverReport {
                 maxBound(98)
             }
         }
+        
+        // configure coverage logging
+        log {
+            //  print coverage when running the `check` task
+            onCheck = true
+  
+            // overriding filters only for the logging report
+            filters {
+                // exclusions for logging reports
+                excludes {
+                  // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                  classes("com.example.*")
+                  // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                  packages("com.another.subpackage")
+                  // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                  annotatedBy("*Generated*")
+                }
+    
+                // inclusions for logging reports
+                includes {
+                  // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                  classes("com.example.*")
+                  // includes all classes located in specified package and it subpackages
+                  packages("com.another.subpackage")
+                }
+            }
+            // Add a header line to the output before the lines with coverage
+            header = null
+            // Format of the strings to print coverage for the specified in `groupBy` group
+            format = "<entity> line coverage: <value>%"
+            // Specifies by which entity the code for separate coverage evaluation will be grouped
+            groupBy = GroupingEntityType.APPLICATION
+            // Specifies which metric is used for coverage evaluation
+            coverageUnits = MetricType.LINE
+            // Specifies aggregation function that will be calculated over all the elements of the same group
+            aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+        }
     }
     
     // configure reports for 'release' build variant
@@ -271,7 +308,7 @@ kover {
 ### report filters now not affects instrumentation
 In version `0.6.1`, report filters also excluded classes from instrumentation.
 
-However, starting from version `0.7.1`, classes are excluded from instrumentation separately (see [this](#excluding-from-instrumentation))
+However, starting from version `0.7.0`, classes are excluded from instrumentation separately (see [this](#excluding-from-instrumentation))
 
 ### Kover extension for test tasks was removed
 The `kover` task extension has been removed from the JVM test tasks.
@@ -575,7 +612,7 @@ kover {
 
 ---
 
-### Could not find org.jetbrains.kotlinx:kover:0.7.1
+### Could not find org.jetbrains.kotlinx:kover:0.7.2
 _Solution_
 
 rename dependencies in _buildSrc_ from `org.jetbrains.kotlinx:kover:` to `org.jetbrains.kotlinx:kover-gradle-plugin:`

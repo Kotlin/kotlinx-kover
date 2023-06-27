@@ -11,7 +11,7 @@
 ## Configuring default reports
 
 The full configuration for default reports is given below.
-These reports are avialable by default when Kover is applied by tasks such as  `:koverHtmlReport` and `:koverXmlReport`.
+These reports are available by default when Kover is applied by tasks such as  `:koverHtmlReport`, `:koverXmlReport` and `:koverLog`.
 
 See also [verification explanations](#verification)
 
@@ -145,6 +145,43 @@ koverReport {
                 // add upper bound for percentage of covered lines
                 maxBound(98)
             }
+        }
+
+        // configure coverage logging
+        log {
+            //  print coverage when running the `check` task
+            onCheck = true
+  
+            // overriding filters only for the logging report
+            filters {
+                // exclusions for logging reports
+                excludes {
+                  // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                  classes("com.example.*")
+                  // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                  packages("com.another.subpackage")
+                  // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                  annotatedBy("*Generated*")
+                }
+    
+                // inclusions for logging reports
+                includes {
+                  // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                  classes("com.example.*")
+                  // includes all classes located in specified package and it subpackages
+                  packages("com.another.subpackage")
+                }
+            }
+            // Add a header line to the output before the lines with coverage
+            header = null
+            // Format of the strings to print coverage for the specified in `groupBy` group
+            format = "<entity> line coverage: <value>%"
+            // Specifies by which entity the code for separate coverage evaluation will be grouped
+            groupBy = GroupingEntityType.APPLICATION
+            // Specifies which metric is used for coverage evaluation
+            coverageUnits = MetricType.LINE
+            // Specifies aggregation function that will be calculated over all the elements of the same group
+            aggregationForGroup = AggregationType.COVERED_PERCENTAGE
         }
     }
 }
@@ -287,6 +324,43 @@ koverReport {
                 maxBound(98)
             }
         }
+
+        // configure coverage logging for `release` build variant (task `koverLogRelease`)
+        log {
+            //  print coverage when running the `check` task
+            onCheck = true
+    
+            // overriding filters only for the logging report
+            filters {
+              // exclusions for logging reports
+              excludes {
+                // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                classes("com.example.*")
+                // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                packages("com.another.subpackage")
+                // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                annotatedBy("*Generated*")
+              }
+    
+              // inclusions for logging reports
+              includes {
+                // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                classes("com.example.*")
+                // includes all classes located in specified package and it subpackages
+                packages("com.another.subpackage")
+              }
+            }
+            // Add a header line to the output before the lines with coverage
+            header = null
+            // Format of the strings to print coverage for the specified in `groupBy` group
+            format = "<entity> line coverage: <value>%"
+            // Specifies by which entity the code for separate coverage evaluation will be grouped
+            groupBy = GroupingEntityType.APPLICATION
+            // Specifies which metric is used for coverage evaluation
+            coverageUnits = MetricType.LINE
+            // Specifies aggregation function that will be calculated over all the elements of the same group
+            aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+        }
     }
 }
 ```
@@ -332,30 +406,46 @@ koverReport {
         }
       
         xml {
-            // overriding filters for default xml report 
+            // overriding filters for default xml report
             filters {
               excludes {  }
               includes {  }
             }
         }
+      
+        log {
+            // overriding filters for logging report
+            filters {
+              excludes {  }
+              includes {  }
+            }   
+        }
     }  
     androidReports("release") {
-        // overriding filters for reports for `release` build variant 
+        // overriding filters for reports for `release` build variant
         filters {
             excludes {
-                // exclusions for reports for `release` build variant 
+                // exclusions for reports for `release` build variant
             }
             includes {
-                // inclusions for default reports for `release` build variant 
+                // inclusions for default reports for `release` build variant
             }
         }
       
         xml {
-            // overriding filters for xml report for `release` build variant  
+            // overriding filters for xml report for `release` build variant
             filters {
               excludes {  }
               includes {  }
             }
+        }
+
+        log {
+          // overriding filters for logging report for `release` build variant
+          filters {
+            excludes {  }
+            includes {  }
+          }
         }
     }
 }
