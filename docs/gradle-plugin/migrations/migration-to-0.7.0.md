@@ -308,7 +308,7 @@ kover {
 ### report filters now not affects instrumentation
 In version `0.6.1`, report filters also excluded classes from instrumentation.
 
-However, starting from version `0.7.2`, classes are excluded from instrumentation separately (see [this](#excluding-from-instrumentation))
+However, starting from version `0.7.0`, classes are excluded from instrumentation separately (see [this](#excluding-from-instrumentation))
 
 ### Kover extension for test tasks was removed
 The `kover` task extension has been removed from the JVM test tasks.

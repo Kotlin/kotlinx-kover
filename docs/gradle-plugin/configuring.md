@@ -11,7 +11,7 @@
 ## Configuring default reports
 
 The full configuration for default reports is given below.
-These reports are available by default when Kover is applied by tasks such as  `:koverHtmlReport` and `:koverXmlReport`.
+These reports are available by default when Kover is applied by tasks such as  `:koverHtmlReport`, `:koverXmlReport` and `:koverLog`.
 
 See also [verification explanations](#verification)
 
@@ -406,30 +406,46 @@ koverReport {
         }
       
         xml {
-            // overriding filters for default xml report 
+            // overriding filters for default xml report
             filters {
               excludes {  }
               includes {  }
             }
         }
+      
+        log {
+            // overriding filters for logging report
+            filters {
+              excludes {  }
+              includes {  }
+            }   
+        }
     }  
     androidReports("release") {
-        // overriding filters for reports for `release` build variant 
+        // overriding filters for reports for `release` build variant
         filters {
             excludes {
-                // exclusions for reports for `release` build variant 
+                // exclusions for reports for `release` build variant
             }
             includes {
-                // inclusions for default reports for `release` build variant 
+                // inclusions for default reports for `release` build variant
             }
         }
       
         xml {
-            // overriding filters for xml report for `release` build variant  
+            // overriding filters for xml report for `release` build variant
             filters {
               excludes {  }
               includes {  }
             }
+        }
+
+        log {
+          // overriding filters for logging report for `release` build variant
+          filters {
+            excludes {  }
+            includes {  }
+          }
         }
     }
 }
