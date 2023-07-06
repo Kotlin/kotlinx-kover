@@ -39,6 +39,7 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.language.base.plugins.LifecycleBasePlugin
+import java.util.concurrent.Callable
 
 internal abstract class ReportsVariantApplier(
     private val project: Project,
@@ -50,6 +51,7 @@ internal abstract class ReportsVariantApplier(
 ) {
     private val htmlTask: TaskProvider<KoverHtmlTask>
     private val xmlTask: TaskProvider<KoverXmlTask>
+    private val icTask: TaskProvider<KoverIcTask>
     private val verifyTask: TaskProvider<KoverVerifyTask>
     private val logTask: TaskProvider<KoverFormatCoverageTask>
 
@@ -94,6 +96,10 @@ internal abstract class ReportsVariantApplier(
             xmlReportTaskName(variantName),
             xmlTaskDescription()
         )
+        icTask = project.tasks.createReportTask<KoverIcTask>(
+            icReportTaskName(variantName),
+            icTaskDescription()
+        )
         verifyTask = project.tasks.createReportTask<KoverVerifyTask>(
             verifyTaskName(variantName),
             verifyTaskDescription()
@@ -120,6 +126,9 @@ internal abstract class ReportsVariantApplier(
         commonFilters: KoverReportFiltersImpl? = null,
         commonVerify: KoverVerificationRulesConfigImpl? = null
     ) {
+        reportConfig.ic.onCheck.convention(false)
+        reportConfig.ic.icFile.convention(project.layout.buildDirectory.file(icReportPath(variantName)))
+
         val runOnCheck = mutableListOf<TaskProvider<*>>()
 
         htmlTask.configure {
@@ -142,6 +151,14 @@ internal abstract class ReportsVariantApplier(
             runOnCheck += xmlTask
         }
 
+        icTask.configure {
+            icFile.convention(reportConfig.ic.icFile)
+            filters.set((reportConfig.ic.filters ?: reportConfig.filters ?: commonFilters).convert())
+        }
+        runOnCheck += reportConfig.ic.onCheck.map { run ->
+            if (run) listOf(icTask) else emptyList()
+        }
+
         verifyTask.configure {
             val resultRules = reportConfig.verify?.rules ?: commonVerify?.rules ?: emptyList()
             val converted = resultRules.map { it.convert() }
@@ -153,6 +170,7 @@ internal abstract class ReportsVariantApplier(
 
             shouldRunAfter(htmlTask)
             shouldRunAfter(xmlTask)
+            shouldRunAfter(icTask)
         }
         if (reportConfig.verify?.onCheck == true || (reportConfig.verify == null && variantName == DEFAULT_KOVER_VARIANT_NAME)) {
             runOnCheck += verifyTask
@@ -233,6 +251,13 @@ internal abstract class ReportsVariantApplier(
         return when (type) {
             ReportsVariantType.DEFAULT -> "Task to generate XML coverage report for JVM project or Kotlin/MPP JVM targets. Android measurements for specific build variant can be merged"
             ReportsVariantType.ANDROID -> "Task to generate XML coverage report for '$variantName' Android build variant"
+        }
+    }
+
+    private fun icTaskDescription(): String {
+        return when (type) {
+            ReportsVariantType.DEFAULT -> "Task to generate binary coverage report in IntelliJ format for JVM project or Kotlin/MPP JVM targets. Android measurements for specific build variant can be merged"
+            ReportsVariantType.ANDROID -> "Task to generate binary coverage report in IntelliJ format for '$variantName' Android build variant"
         }
     }
 

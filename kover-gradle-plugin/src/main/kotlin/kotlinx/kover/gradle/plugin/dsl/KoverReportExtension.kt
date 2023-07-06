@@ -8,6 +8,8 @@ import kotlinx.kover.gradle.plugin.commons.KoverMigrations
 import org.gradle.api.*
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import java.io.*
 
@@ -224,6 +226,21 @@ public interface KoverReportsConfig {
      * ```
      */
     public fun xml(config: Action<KoverXmlReportConfig>)
+
+    /**
+     * Configure IC binary report for current report variant.
+     * ```
+     *  ic {
+     *      filters {
+     *          // ...
+     *      }
+     *
+     *      onCheck.set(false)
+     *      icFile.set(layout.buildDirectory.file("my-project-report/report.ic"))
+     *  }
+     * ```
+     */
+    public fun ic(config: Action<KoverIcReportConfig>)
 
     /**
      * Configure coverage verification for current report variant.
@@ -643,6 +660,45 @@ public interface KoverXmlReportConfig {
         level = DeprecationLevel.ERROR
     )
     public fun overrideFilters(block: () -> Unit) { }
+}
+
+/**
+ * Configure Kover IC binary Report.
+ *
+ * Example:
+ * ```
+ * ...
+ * ic {
+ *     // Filter the classes that will be included in the IC report.
+ *     // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
+ *     filters {
+ *         // ...
+ *     }
+ *
+ *     // Generate an IC report when running the `check` task
+ *     onCheck.set(false)
+ *
+ *     // Specify file to generate IC report
+ *     icFile.set(layout.buildDirectory.file("my-project-report/report.ic"))
+ * }
+ *  ...
+ * ```
+ */
+public interface KoverIcReportConfig {
+    /**
+     * Override common filters only for XML report.
+     */
+    public fun filters(config: Action<KoverReportFilters>)
+
+    /**
+     * Generate an IC report when running the `check` task.
+     */
+    public val onCheck: Property<Boolean>
+
+    /**
+     * Specify file to generate IC report
+     */
+    public val icFile: RegularFileProperty
 }
 
 /**

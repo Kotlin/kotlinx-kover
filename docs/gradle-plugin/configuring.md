@@ -344,6 +344,36 @@ koverReport {
             }
         }
 
+        // configure IC report for `release` build variant (task `koverIcReportRelease`)
+        ic {
+            //  generate an IC report when running the `check` task
+            onCheck.set(false)
+    
+            // IC report file
+            icFile.set(layout.buildDirectory.dir("my-project-report/report-release.ic"))
+    
+            // overriding filters only for the IC report
+            filters {
+                // exclusions for IC reports
+                excludes {
+                    // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                    classes("com.example.*")
+                    // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                    packages("com.another.subpackage")
+                    // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                    annotatedBy("*Generated*")
+                }
+      
+                // inclusions for IC report
+                includes {
+                    // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                    classes("com.example.*")
+                    // includes all classes located in specified package and it subpackages
+                    packages("com.another.subpackage")
+                }
+            }
+        }      
+      
         // configure verification for `release` build variant (task `koverVerifyRelease`)
         verify {
             //  verify coverage when running the `check` task
@@ -481,16 +511,32 @@ koverReport {
         xml {
             // overriding filters for default xml report
             filters {
-              excludes {  }
-              includes {  }
+                excludes {  }
+                includes {  }
+            }
+        }
+      
+        html {
+            // overriding filters for default HTML report
+            filters {
+                excludes {  }
+                includes {  }
+            }
+        }
+      
+        ic {
+            // overriding filters for default IC report
+            filters {
+                excludes {  }
+                includes {  }
             }
         }
       
         log {
             // overriding filters for logging report
             filters {
-              excludes {  }
-              includes {  }
+                excludes {  }
+                includes {  }
             }   
         }
     }  
@@ -508,17 +554,33 @@ koverReport {
         xml {
             // overriding filters for xml report for `release` build variant
             filters {
-              excludes {  }
-              includes {  }
+                excludes {  }
+                includes {  }
+            }
+        }
+      
+        html {
+            // overriding filters for HTML report for `release` build variant
+            filters {
+                excludes {  }
+                includes {  }
+            }
+        }
+      
+        ic {
+            // overriding filters for IC report for `release` build variant
+            filters {
+                excludes {  }
+                includes {  }
             }
         }
 
         log {
-          // overriding filters for logging report for `release` build variant
-          filters {
-            excludes {  }
-            includes {  }
-          }
+            // overriding filters for logging report for `release` build variant
+            filters {
+                excludes {  }
+                includes {  }
+            }
         }
     }
 }

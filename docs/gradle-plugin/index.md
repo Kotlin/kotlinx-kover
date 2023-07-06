@@ -91,7 +91,7 @@ Using JVM projects and Android projects differs, use the recommendations below a
 ### Kotlin JVM project
 These are projects that use Kotlin Gradle plugin.
 
-For such projects, only the [Kover default tasks](#kover-default-tasks) for generating reports are used: `koverHtmlReport`, `koverXmlReport`, `koverVerify`.
+For such projects, only the [Kover default tasks](#kover-default-tasks) for generating reports are used: `koverHtmlReport`, `koverXmlReport`, `koverIcReport`, `koverVerify`.
 
 To configure reports, the [default reports settings block](configuring#configuring-default-reports) is used:
 ```kotlin
@@ -107,6 +107,7 @@ koverReport {
     defaults {
         xml { /* default XML report config */ }
         html { /* default HTML report config */ }
+        ic { /* default IC report config */ } 
         verify { /* default verification config */ }
         log { /* default logging config */ }
     }
@@ -117,7 +118,7 @@ koverReport {
 These are projects that use Kotlin Android Gradle plugin.
 
 In such projects, a [variant of Kover tasks](#kover-android-tasks) is created for each Android build variant, 
-e.g. `koverHtmlReportRelease`, `koverXmlReportRelease`, `koverVerifyRelease` for `release` build variant.
+e.g. `koverHtmlReportRelease`, `koverXmlReportRelease`, `koverIcReportRelease`, `koverVerifyRelease` for `release` build variant.
 
 Calling default report tasks (like `koverHtmlReport`) will result in a message `Task 'koverHtmlReport' will be skipped because no tests were executed` in the build log, and the report will not be generated.
 
@@ -140,6 +141,7 @@ koverReport {
         
         xml { /* XML report config for `release` build variant */ }
         html { /* HTML report config for `release` build variant */ }
+        ic { /* IC report config for `release` build variant */ }
         verify { /* verification config for `release` build variant */ }
         log { /* logging config for `release` build variant */ }
     }
@@ -231,6 +233,7 @@ Running Kover default tasks cause compilation of all Kotlin JVM and Java classes
 Kover default task list:
 - `koverHtmlReport` - Generate HTML report for Kotlin/JVM or Java classes
 - `koverXmlReport` - Generate XML report for Kotlin/JVM or Java classes
+- `koverIcReport` - Generate IntelliJ binary coverage report for Kotlin/JVM or Java classes. Not applicable to JaCoCo
 - `koverVerify` - Verifies code coverage metrics of Kotlin/JVM or Java classes based on configured rules
 - `koverLog` - Prints code coverage of Kotlin/JVM or Java classes to the log
 
@@ -250,6 +253,7 @@ Running Kover Android tasks cause compilation of the code of the corresponding v
 Kover Android task list:
 - `koverHtmlReport<Name>` - Generate HTML report for classes of `<Name>` build variant
 - `koverXmlReport<Name>` - Generate XML report for classes of `<Name>` build variant
+- `koverIcReport<Name>` - Generate IntelliJ binary coverage report for classes of `<Name>` build variant. Not applicable to JaCoCo
 - `koverVerify<Name>` - Verifies code coverage metrics of classes of `<Name>` build variant based on configured rules
 - `koverLog<Name>` - Prints code coverage to the log for classes of `<Name>` build variant
 
