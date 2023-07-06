@@ -140,7 +140,7 @@ tasks.withType<KotlinCompile>().configureEach {
 
 tasks.dokkaHtml {
     moduleName.set("Kover Gradle Plugin")
-    outputDirectory.set(layout.projectDirectory.dir("docs/gradle-plugin/dokka").asFile)
+    outputDirectory.set(rootProject.layout.projectDirectory.dir("docs/gradle-plugin/dokka").asFile)
 
     if (project.hasProperty("releaseVersion")) {
         moduleVersion.set(project.property("releaseVersion") as String)
@@ -188,7 +188,6 @@ gradlePlugin {
 // Release preparation
 // ====================
 tasks.register("prepareRelease") {
-    dependsOn(tasks.named("dokkaHtml"))
 
     doLast {
         if (!project.hasProperty("releaseVersion")) {
