@@ -190,7 +190,7 @@ public interface KoverReportsConfig {
     public fun html(config: Action<KoverHtmlReportConfig>)
 
     /**
-     * Configure HTML report for current report variant.
+     * Configure XML report for current report variant.
      * ```
      *  xml {
      *      filters {
