@@ -1,7 +1,6 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.createCheckerContext
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultXmlReport
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.BuildSource
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.buildFromTemplate
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
@@ -30,7 +29,7 @@ class NoTestReportsTests {
         val buildResult = build.runWithParams("koverXmlReport", "koverHtmlReport")
         val checkerContext = build.createCheckerContext(buildResult)
 
-        checkerContext.xml(defaultXmlReport()) {
+        checkerContext.xmlReport {
             classCounter("kotlinx.kover.templates.ExampleClass").assertFullyMissed()
         }
         assertTrue(buildResult.isSuccessful)
@@ -41,7 +40,7 @@ class NoTestReportsTests {
         val buildResult = build.runWithParams("koverXmlReport", "koverHtmlReport", "koverVerify")
         val checkerContext = build.createCheckerContext(buildResult)
 
-        checkerContext.xml(defaultXmlReport()) {
+        checkerContext.xmlReport {
             classCounter("kotlinx.kover.templates.ExampleClass").assertFullyMissed()
         }
         checkerContext.checkHtmlReport()

@@ -20,18 +20,18 @@ internal inline fun DynamicBean.asJvmCompilationUnit(
     excludeJava: Boolean,
     isJavaOutput: (File) -> Boolean
 ): CompilationUnit {
-    val sources = propertyBeans("allKotlinSourceSets").flatMap {
-        it["kotlin"].propertyCollection<File>("srcDirs")
+    val sources = getCollection("allKotlinSourceSets").flatMap {
+        it["kotlin"].valueCollection<File>("srcDirs")
     }.toSet()
 
-    val outputs = get("output").property<ConfigurableFileCollection>("classesDirs").files.filterNot {
+    val outputs = get("output").value<ConfigurableFileCollection>("classesDirs").files.filterNot {
         excludeJava && isJavaOutput(it)
     }.toSet()
 
     val compileTasks = mutableListOf<Task>()
-    compileTasks += property<Task>("compileKotlinTask")
+    compileTasks += value<Task>("compileKotlinTask")
     if (!excludeJava) {
-        propertyOrNull<TaskProvider<Task>?>("compileJavaTaskProvider")?.orNull?.let { task -> compileTasks += task }
+        valueOrNull<TaskProvider<Task>?>("compileJavaTaskProvider")?.orNull?.let { task -> compileTasks += task }
     }
 
     return CompilationUnit(sources, outputs, compileTasks)
@@ -46,16 +46,16 @@ internal fun DynamicBean.extractJvmCompilations(
         return emptyMap()
     }
 
-    val compilations = this.propertyBeans("compilations").filter {
+    val compilations = this.getCollection("compilations").filter {
         // always ignore test source set by default
-        val name = it.property<String>("name")
+        val name = it.value<String>("name")
         name != SourceSet.TEST_SOURCE_SET_NAME
                 // ignore specified JVM source sets
                 && name !in koverExtension.sourceSets.sourceSets
     }
 
     return compilations.associate { compilation ->
-        val name = compilation.property<String>("name")
+        val name = compilation.value<String>("name")
         name to extractJvmCompilation(koverExtension, compilation, isJavaOutput)
     }
 }

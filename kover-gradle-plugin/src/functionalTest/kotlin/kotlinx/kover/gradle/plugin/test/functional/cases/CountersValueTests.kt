@@ -10,7 +10,7 @@ internal class CountersValueTests {
 
     @TemplateTest("counters", ["koverXmlReport"])
     fun CheckerContext.testBasicCounterCases() {
-        xml(defaultXmlReport()) {
+        xmlReport {
             // test on branch counter
             methodCounter("org.jetbrains.MyBranchedClass", "foo", type = "BRANCH").assertCovered(1, 3)
 

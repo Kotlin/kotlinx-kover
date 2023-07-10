@@ -29,7 +29,7 @@ internal interface CheckerContext {
 
     fun file(name: String, checker: File.() -> Unit)
 
-    fun xml(filename: String, checker: XmlReportChecker.() -> Unit)
+    fun xmlReport(variantName: String = "", checker: XmlReportChecker.() -> Unit)
 
     fun verification(checker: VerifyReportChecker.() -> Unit)
 
