@@ -8,11 +8,9 @@ repositories {
 }
 
 koverReport {
-    defaults {
-        verify {
-            rule {
-                minBound(50)
-            }
+    verify {
+        rule {
+            minBound(50)
         }
     }
 }

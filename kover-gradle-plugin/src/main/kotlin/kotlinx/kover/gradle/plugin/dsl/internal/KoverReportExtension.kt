@@ -22,6 +22,7 @@ internal open class KoverReportExtensionImpl @Inject constructor(
     private val layout: ProjectLayout
 ) : KoverReportExtension {
     internal var filters: KoverReportFiltersImpl? = null
+    internal var verify: KoverVerificationRulesConfigImpl? = null
     internal val default: KoverDefaultReportsConfigImpl = objects.defaultReports(layout)
     internal val namedReports: MutableMap<String, KoverReportsConfigImpl> = mutableMapOf()
 
@@ -30,6 +31,13 @@ internal open class KoverReportExtensionImpl @Inject constructor(
             filters = objects.newInstance<KoverReportFiltersImpl>(objects)
         }
         filters?.also { config(it) }
+    }
+
+    override fun verify(config: Action<KoverVerificationRulesConfig>) {
+        if (verify == null) {
+            verify = objects.newInstance<KoverVerificationRulesConfigImpl>(objects)
+        }
+        verify?.also { config(it) }
     }
 
     override fun defaults(config: Action<KoverDefaultReportsConfig>) {
@@ -50,7 +58,6 @@ internal open class KoverDefaultReportsConfigImpl @Inject constructor(objects: O
     init {
         html.onCheck = false
         xml.onCheck = false
-        verify.onCheck = true
     }
 
     override fun mergeWith(otherVariant: String) {
@@ -62,7 +69,7 @@ internal open class KoverReportsConfigImpl @Inject constructor(private val objec
     KoverReportsConfig {
     internal val html: KoverHtmlReportConfigImpl = objects.newInstance(objects)
     internal val xml: KoverXmlReportConfigImpl = objects.newInstance(objects)
-    internal val verify: KoverVerifyReportConfigImpl = objects.newInstance(objects)
+    internal var verify: KoverVerifyReportConfigImpl? = null
     internal val log: KoverLogReportConfigImpl = objects.newInstance(objects)
 
     internal var filters: KoverReportFiltersImpl? = null
@@ -83,7 +90,10 @@ internal open class KoverReportsConfigImpl @Inject constructor(private val objec
     }
 
     override fun verify(config: Action<KoverVerifyReportConfig>) {
-        config(verify)
+        if (verify == null) {
+            verify = objects.newInstance<KoverVerifyReportConfigImpl>(objects)
+        }
+        verify?.also { config(it) }
     }
 
     override fun log(config: Action<KoverLogReportConfig>) {
@@ -147,26 +157,12 @@ internal open class KoverXmlReportConfigImpl @Inject constructor(
 }
 
 internal open class KoverVerifyReportConfigImpl @Inject constructor(
-    private val objects: ObjectFactory,
-) : KoverVerifyReportConfig {
+    objects: ObjectFactory,
+) : KoverVerificationRulesConfigImpl(objects), KoverVerifyReportConfig {
+
     override var onCheck: Boolean = false
 
     internal var filters: KoverReportFiltersImpl? = null
-
-    internal val rules: MutableList<KoverVerifyRuleImpl> = mutableListOf()
-
-    override fun rule(config: Action<KoverVerifyRule>) {
-        val newRule = objects.newInstance<KoverVerifyRuleImpl>(objects)
-        config(newRule)
-        rules += newRule
-    }
-
-    override fun rule(name: String, config: Action<KoverVerifyRule>) {
-        val newRule = objects.newInstance<KoverVerifyRuleImpl>(objects)
-        newRule.internalName = name
-        config(newRule)
-        rules += newRule
-    }
 }
 
 internal open class KoverVerifyRuleImpl @Inject constructor(private val objects: ObjectFactory) : KoverVerifyRule {
@@ -273,6 +269,25 @@ internal open class KoverReportFiltersImpl @Inject constructor(
 
     internal val excludesIntern: KoverReportFilterImpl = objects.newInstance()
     internal val includesIntern: KoverReportFilterImpl = objects.newInstance()
+}
+
+internal open class KoverVerificationRulesConfigImpl @Inject constructor(
+    private val objects: ObjectFactory
+) : KoverVerificationRulesConfig {
+    internal val rules: MutableList<KoverVerifyRuleImpl> = mutableListOf()
+
+    override fun rule(config: Action<KoverVerifyRule>) {
+        val newRule = objects.newInstance<KoverVerifyRuleImpl>(objects)
+        config(newRule)
+        rules += newRule
+    }
+
+    override fun rule(name: String, config: Action<KoverVerifyRule>) {
+        val newRule = objects.newInstance<KoverVerifyRuleImpl>(objects)
+        newRule.internalName = name
+        config(newRule)
+        rules += newRule
+    }
 }
 
 internal open class KoverReportFilterImpl : KoverReportFilter {

@@ -97,7 +97,11 @@ To configure reports, the [default reports settings block](configuring#configuri
 ```kotlin
 koverReport {
     filters {
-        // filters for all reports
+        // filters for all report variants
+    }
+  
+    verify {
+        // verification rules for all report variants
     }
 
     defaults {
@@ -122,6 +126,10 @@ To configure reports, the [android reports settings block](configuring#configuri
 koverReport {
     filters {
         // filters for reports of all build variants
+    }
+
+    verify {
+        // verification rules for all report variants
     }
 
     androidReports("release") {

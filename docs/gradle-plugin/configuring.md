@@ -17,6 +17,66 @@ See also [verification explanations](#verification)
 
 ```kotlin
 koverReport {
+    // filters for all reports in all variants 
+    filters {
+        excludes {
+            // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+            classes("com.*")
+        }
+    }
+  
+    // verification rules for verification tasks in all variants
+    verify {
+        // add common verification rule
+        rule {
+            // check this rule during verification 
+            isEnabled = true
+  
+            // specify the code unit for which coverage will be aggregated 
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+  
+            // overriding filters only for current rule
+            filters {
+              excludes {
+                // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                classes("com.example.*")
+                // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                packages("com.another.subpackage")
+                // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                annotatedBy("*Generated*")
+              }
+              includes {
+                // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                classes("com.example.*")
+                // includes all classes located in specified package and it subpackages
+                packages("com.another.subpackage")
+              }
+            }
+  
+            // specify verification bound for this rule
+            bound {
+              // lower bound
+              minValue = 1
+  
+              // upper bound
+              maxValue = 99
+  
+              // specify which units to measure coverage for
+              metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+  
+              // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
+              aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+            }
+  
+            // add lower bound for percentage of covered lines
+            minBound(2)
+  
+            // add upper bound for percentage of covered lines
+            maxBound(98)
+        }
+    }
+    
+    
     // configure default reports - for Kotlin/JVM or Kotlin/MPP projects or merged android variants  
     defaults {
         // filters for all default reports 
@@ -195,6 +255,65 @@ See also [verification explanations](#verification)
 
 ```kotlin
 koverReport {
+    // filters for all reports in all variants 
+    filters {
+        excludes {
+            // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+            classes("com.*")
+        }
+    }
+
+    // verification rules for verification tasks in all variants
+    verify {
+        // add common verification rule
+        rule {
+            // check this rule during verification 
+            isEnabled = true
+
+            // specify the code unit for which coverage will be aggregated 
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+
+            // overriding filters only for current rule
+            filters {
+                excludes {
+                    // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                    classes("com.example.*")
+                    // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
+                    packages("com.another.subpackage")
+                    // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                    annotatedBy("*Generated*")
+                }
+                includes {
+                    // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
+                    classes("com.example.*")
+                    // includes all classes located in specified package and it subpackages
+                    packages("com.another.subpackage")
+                }
+            }
+
+            // specify verification bound for this rule
+            bound {
+                // lower bound
+                minValue = 1
+
+                // upper bound
+                maxValue = 99
+
+                // specify which units to measure coverage for
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+
+                // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+            }
+
+            // add lower bound for percentage of covered lines
+            minBound(2)
+
+            // add upper bound for percentage of covered lines
+            maxBound(98)
+        }
+    }
+    
     // configure report for `release` build variant (Build Type + Flavor) - generated by tasks `koverXmlReportRelease`, `koverHtmlReportRelease` etc
     androidReports("release") {
         // filters for all reports of `release` build variant 
