@@ -12,6 +12,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.runner.BuildSource
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.GradleBuild
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
 import kotlinx.kover.gradle.plugin.test.functional.framework.writer.*
+import kotlinx.kover.gradle.plugin.util.SemVer
 import org.junit.jupiter.api.extension.*
 import java.io.*
 import java.lang.reflect.AnnotatedElement
@@ -73,6 +74,40 @@ internal abstract class DirectoryBasedGradleTest : BeforeTestExecutionCallback, 
     }
 }
 
+internal val File.requirements: BuildRequirements
+    get() {
+        val file = resolve("requires")
+        if (!(file.exists() && file.isFile)) return BuildRequirements()
+
+        var minGradle: SemVer? = null
+        var maxGradle: SemVer? = null
+
+        file.readLines().forEach { line ->
+            when {
+                line.startsWith("MIN_GRADLE=") -> minGradle =
+                    SemVer.ofVariableOrNull(line.substringAfter("MIN_GRADLE="))
+                line.startsWith("MAX_GRADLE=") -> maxGradle =
+                    SemVer.ofVariableOrNull(line.substringAfter("MAX_GRADLE="))
+
+            }
+        }
+
+        return BuildRequirements(minGradle, maxGradle)
+    }
+
+internal data class BuildRequirements(val minGradle: SemVer? = null, val maxGradle: SemVer? = null)
+
+internal val File.buildSrc: File?
+    get() = listFiles()?.firstOrNull { it.isDirectory && it.name == "buildSrc" }
+
+internal val File.settings: File
+    get() = listFiles()?.firstOrNull { it.name == "settings.gradle" || it.name == "settings.gradle.kts" }
+        ?: throw Exception("No Gradle settings file in project ${this.uri}")
+internal val File.build: File
+    get() = listFiles()?.firstOrNull { it.name == "build.gradle" || it.name == "build.gradle.kts" }
+        ?: throw Exception("No Gradle build file in project ${this.uri}")
+
+
 
 /**
  * Override Kover version and add local repository to find artifact for current build.
@@ -84,13 +119,11 @@ internal fun File.patchSettingsFile(
     localRepositoryPath: String,
     overrideKotlinVersion: String?
 ) {
-    val settingsFile = (listFiles()?.firstOrNull { it.name == "settings.gradle" || it.name == "settings.gradle.kts" }
-        ?: throw Exception("No Gradle settings file in project ${this.uri}"))
-    val language = if (settingsFile.name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
+    val language = if (name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
 
-    val originLines = settingsFile.readLines()
+    val originLines = readLines()
 
-    settingsFile.bufferedWriter().use { writer ->
+    bufferedWriter().use { writer ->
         var firstStatement = true
         originLines.forEach { line ->
 
@@ -130,6 +163,35 @@ internal fun File.patchSettingsFile(
         }
 
     }
+}
+
+/**
+ * Override Kover version
+ */
+internal fun File.patchKoverDependency(koverVersion: String) {
+    val originLines = readLines()
+    bufferedWriter().use { writer ->
+        originLines.forEach { line ->
+            val lineToWrite = if (line.contains("org.jetbrains.kotlinx:kover-gradle-plugin:TEST")) {
+                line.replace("org.jetbrains.kotlinx:kover-gradle-plugin:TEST", "org.jetbrains.kotlinx:kover-gradle-plugin:$koverVersion")
+            } else {
+                line
+            }
+            writer.appendLine(lineToWrite)
+        }
+    }
+}
+
+/**
+ * Override Kover version
+ */
+internal fun File.addLocalRepository(path: String) {
+    this.appendText("""
+        
+        repositories {
+            maven("$path")
+        }
+    """.trimIndent())
 }
 
 

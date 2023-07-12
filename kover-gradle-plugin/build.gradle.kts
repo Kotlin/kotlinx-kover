@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -70,6 +72,7 @@ val functionalTest by tasks.registering(Test::class) {
         setSystemPropertyFromProject("kover.test.kotlin.version")
 
         systemProperties["kotlinVersion"] = embeddedKotlinVersion
+        systemProperties["gradleVersion"] = gradle.gradleVersion
         systemProperties["koverVersion"] = version
         systemProperties["localRepositoryPath"] = localRepositoryUri.path
 
@@ -125,18 +128,22 @@ fun Test.setBooleanSystemPropertyFromProject(
 
 tasks.check { dependsOn(functionalTest) }
 
-tasks.withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-        allWarningsAsErrors = true
-        jvmTarget = "1.8"
-
-        // Kover works with the stdlib of at least version `1.4.x`
-        languageVersion = "1.4"
-        apiVersion = "1.4"
-        // Kotlin compiler 1.7 issues a warning if `languageVersion` or `apiVersion` 1.4 is used - suppress it
-        freeCompilerArgs = freeCompilerArgs + "-Xsuppress-version-warnings"
+afterEvaluate {
+    // Workaround:
+    // `kotlin-dsl` itself specifies the language version to ensure compatibility of the Kotlin DSL API
+    // Since we ourselves guarantee and test compatibility with previous Gradle versions, we can override language version
+    // The easiest way to do this now is to specify the version in the `afterEvaluate` block
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            allWarningsAsErrors.set(true)
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            languageVersion.set(KotlinVersion.KOTLIN_1_5)
+            apiVersion.set(KotlinVersion.KOTLIN_1_5)
+            freeCompilerArgs.add("-Xsuppress-version-warnings")
+        }
     }
 }
+
 
 tasks.dokkaHtml {
     moduleName.set("Kover Gradle Plugin")

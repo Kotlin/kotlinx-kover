@@ -39,7 +39,7 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
-internal sealed class ReportsVariantApplier(
+internal abstract class ReportsVariantApplier(
     private val project: Project,
     private val variantName: String,
     private val type: ReportsVariantType,
@@ -58,14 +58,16 @@ internal sealed class ReportsVariantApplier(
 
     init {
         artifactGenTask = project.tasks.register<KoverArtifactGenerationTask>(artifactGenerationTaskName(variantName))
+
+        val artifactProperty = project.layout.buildDirectory.file(artifactFilePath(variantName))
         artifactGenTask.configure {
-            artifactFile.set(project.layout.buildDirectory.file(artifactFilePath(variantName)))
+            artifactFile.set(artifactProperty)
         }
 
         config = project.configurations.register(artifactConfigurationName(variantName)) {
             // disable generation of Kover artifacts on `assemble`, fix of https://github.com/Kotlin/kotlinx-kover/issues/353
             isVisible = false
-            outgoing.artifact(artifactGenTask.map { task -> task.artifactFile }) {
+            outgoing.artifact(artifactProperty) {
                 asProducer()
                 attributes {
                     // common Kover artifact attributes
