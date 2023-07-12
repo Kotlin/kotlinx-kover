@@ -240,6 +240,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportExten
 	public abstract fun androidReports (Ljava/lang/String;Lorg/gradle/api/Action;)V
 	public abstract fun defaults (Lorg/gradle/api/Action;)V
 	public abstract fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun verify (Lorg/gradle/api/Action;)V
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportFilter {
@@ -272,6 +273,11 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverTestsExclus
 	public abstract fun tasks ([Ljava/lang/String;)V
 }
 
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerificationRulesConfig {
+	public abstract fun rule (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public abstract fun rule (Lorg/gradle/api/Action;)V
+}
+
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyBound {
 	public abstract fun getAggregation ()Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
 	public fun getCounter ()Lkotlinx/kover/gradle/plugin/dsl/MetricType;
@@ -287,10 +293,8 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyBound
 	public fun setValueType (Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
 }
 
-public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyReportConfig {
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyReportConfig : kotlinx/kover/gradle/plugin/dsl/KoverVerificationRulesConfig {
 	public abstract fun getOnCheck ()Z
-	public abstract fun rule (Ljava/lang/String;Lorg/gradle/api/Action;)V
-	public abstract fun rule (Lorg/gradle/api/Action;)V
 	public abstract fun setOnCheck (Z)V
 }
 
