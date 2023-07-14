@@ -32,7 +32,7 @@ internal val overriddenKotlinVersion = System.getProperty("kover.test.kotlin.ver
 /**
  * Custom version of Gradle runner for functional tests.
  */
-internal val overriddenGradleWrapperVersion: String? = System.getProperty("kover.test.gradle.version")
+internal val overriddenGradleVersion: String? = System.getProperty("kover.test.gradle.version")
 
 /**
  * Result path to the Android SDK. `null` if not defined.
@@ -40,6 +40,11 @@ internal val overriddenGradleWrapperVersion: String? = System.getProperty("kover
 internal val androidSdkDir: String? = System.getProperty("kover.test.android.sdk")
 
 
+/**
+ * Version of gradle which functional tests are run by.
+ */
+internal val defaultGradleVersion: String = System.getProperty("gradleVersion")
+    ?: throw Exception("System property 'gradleVersion' not defined for functional tests")
 
 /**
  * Flag to run functional tests within debug agent.

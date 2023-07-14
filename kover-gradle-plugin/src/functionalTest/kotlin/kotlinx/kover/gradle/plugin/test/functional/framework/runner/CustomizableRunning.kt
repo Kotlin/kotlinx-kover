@@ -9,10 +9,12 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.common.androidSdkDi
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.koverVersionCurrent
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.defaultGradleWrapperDir
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.examplesDir
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenGradleWrapperVersion
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenGradleVersion
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.localRepositoryPath
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenKotlinVersion
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.templateBuildsDir
+import kotlinx.kover.gradle.plugin.util.SemVer
+import org.gradle.kotlin.dsl.provideDelegate
 import java.io.File
 import java.nio.file.Files
 
@@ -57,20 +59,27 @@ internal fun generateBuild(generator: (File) -> Unit): BuildSource {
 }
 
 
-internal fun GradleBuild.runWithParams(args: List<String>): BuildResult {
-    val wrapperDir =
-        if (overriddenGradleWrapperVersion == null) defaultGradleWrapperDir else getWrapper(overriddenGradleWrapperVersion)
-
-    val buildEnv = BuildEnv(wrapperDir, androidSdkDir)
-
-    return run(args, buildEnv)
-}
 internal fun GradleBuild.runWithParams(vararg args: String): BuildResult {
     return runWithParams(args.toList())
 }
 
-private fun getWrapper(version: String): File {
-    val wrapperDir = gradleWrappersRoot.resolve(version)
-    if (!wrapperDir.exists()) throw Exception("Wrapper for Gradle version '$version' is not supported by functional tests")
+internal fun GradleBuild.runWithParams(args: List<String>): BuildResult {
+    val buildEnv = BuildEnv(gradleVersion, wrapperDir, androidSdkDir)
+
+    return run(args, buildEnv)
+}
+
+private val gradleVersion: SemVer by lazy {
+    val version = overriddenGradleVersion ?: defaultGradleVersion
+    SemVer.ofVariableOrNull(version) ?: throw IllegalArgumentException("Can not parse Gradle version '$version'")
+}
+
+
+private val wrapperDir =
+    if (overriddenGradleVersion == null) defaultGradleWrapperDir else getWrapper(overriddenGradleVersion)
+
+private fun getWrapper(gradleVersion: String): File {
+    val wrapperDir = gradleWrappersRoot.resolve(gradleVersion)
+    if (!wrapperDir.exists()) throw Exception("Wrapper for Gradle version '$gradleVersion' is not supported by functional tests")
     return wrapperDir
 }

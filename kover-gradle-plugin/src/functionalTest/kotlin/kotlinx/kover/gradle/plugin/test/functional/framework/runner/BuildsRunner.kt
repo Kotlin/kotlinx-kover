@@ -7,7 +7,11 @@ package kotlinx.kover.gradle.plugin.test.functional.framework.runner
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.isDebugEnabled
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.logInfo
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.uri
+import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
+import kotlinx.kover.gradle.plugin.test.functional.framework.starter.buildSrc
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.patchSettingsFile
+import kotlinx.kover.gradle.plugin.util.SemVer
+import org.opentest4j.TestAbortedException
 import java.io.File
 import java.nio.file.Files
 
@@ -39,6 +43,7 @@ internal interface GradleBuild {
 }
 
 internal data class BuildEnv(
+    val gradleVersion: SemVer,
     val wrapperDir: File,
     val androidSdkDir: String? = null,
     val disableBuildCacheByDefault: Boolean = true
@@ -75,10 +80,14 @@ private class BuildSourceImpl(val localMavenDir: String, val koverVersion: Strin
             actualDir
         }
 
-        targetDir.patchSettingsFile(
+        targetDir.settings.patchSettingsFile(
             "$buildType '$buildName', project dir: ${targetDir.uri}",
             koverVersion, localMavenDir, overriddenKotlinVersion
         )
+
+        val buildSrcScript = targetDir.buildSrc?.build
+        buildSrcScript?.patchKoverDependency(koverVersion)
+        buildSrcScript?.addLocalRepository(localMavenDir)
 
         return GradleBuildImpl(targetDir, copy, buildName, buildType)
     }
@@ -94,6 +103,18 @@ private class GradleBuildImpl(
     private var runCount = 0
 
     override fun run(args: List<String>, env: BuildEnv): BuildResult {
+        val requirements = targetDir.requirements
+        requirements.minGradle?.let { minVersion ->
+            if (env.gradleVersion < minVersion) {
+                throw TestAbortedException("Used Gradle version '${env.gradleVersion}' lower than minimal required '$minVersion'")
+            }
+        }
+        requirements.maxGradle?.let { maxVersion ->
+            if (env.gradleVersion >= maxVersion) {
+                throw TestAbortedException("Used Gradle version '${env.gradleVersion}' higher or equals than maximal '$maxVersion'")
+            }
+        }
+
         logInfo("Starting build $buildType '$buildName' with commands '${args.joinToString(" ")}'")
 
         val gradleArgs: MutableList<String> = mutableListOf()
