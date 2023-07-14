@@ -5,6 +5,8 @@
 - [Class name with wildcards](#class-name-with-wildcards)
 - [Configuring measurements](#configuring-measurements)
 - [Verification](#verification)
+  - [Coverage value](#coverage-value) 
+  - [Verification rules](#verification-rules)
 - [Merging reports](#merging-reports)
 
 
@@ -25,7 +27,7 @@ koverReport {
         }
     }
   
-    // verification rules for verification tasks in all variants
+    // verification rules for verification task
     verify {
         // add common verification rule
         rule {
@@ -153,58 +155,10 @@ koverReport {
             }
         }
 
-        // configure verification
+        // configure verification task
         verify {
             //  verify coverage when running the `check` task
             onCheck = true
-
-            // add verification rule
-            rule {
-                // check this rule during verification 
-                isEnabled = true
-
-                // specify the code unit for which coverage will be aggregated 
-                entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
-
-                // overriding filters only for current rule
-                filters {
-                    excludes {
-                        // excludes class by fully-qualified JVM class name, wildcards '*' and '?' are available
-                        classes("com.example.*")
-                        // excludes all classes located in specified package and it subpackages, wildcards '*' and '?' are available
-                        packages("com.another.subpackage")
-                        // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
-                        annotatedBy("*Generated*")
-                    }
-                    includes {
-                        // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
-                        classes("com.example.*")
-                        // includes all classes located in specified package and it subpackages
-                        packages("com.another.subpackage")
-                    }
-                }
-
-                // specify verification bound for this rule
-                bound {
-                    // lower bound
-                    minValue = 1
-
-                    // upper bound
-                    maxValue = 99
-
-                    // specify which units to measure coverage for
-                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
-
-                    // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
-                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
-                }
-
-                // add lower bound for percentage of covered lines
-                minBound(2)
-
-                // add upper bound for percentage of covered lines
-                maxBound(98)
-            }
         }
 
         // configure coverage logging
@@ -615,13 +569,12 @@ kover {
 ```
 
 ## Verification
-When checking a certain verification rule, the entire code is divided into units of code for which it determines whether it was covered (executed) or skipped (not executed).
+### Coverage value
+During verification, the entire code is divided into units of code for which it determines whether it was covered (executed) or skipped (not executed).
 For example, an entire line from source code or a specific JVM instruction from compiled byte-code can be executed or not.
 
 All units are grouped into one or more groups. 
-Based on amount of the executed and non-executed code units, one number (current value) will be calculated for each group using the aggregation function.
-
-It is this current value of the group that will be compared with the minimum and maximum boundaries specified in the configuration.
+Based on amount of the executed and non-executed code units, one number (coverage value) will be calculated for each group using the aggregation function.
 
 Type `MetricType` determines for which types of units the coverage will be measured.
 It is:
@@ -636,14 +589,58 @@ For comparison with the specified boundaries, the number of covered (executed) o
 - `COVERED_PERCENTAGE` - is the number of covered units divided by the number of all units and multiplied by 100
 - `MISSED_PERCENTAGE` - is the number of uncovered units divided by the number of all units and multiplied by 100
 
-To calculate the current value, units are grouped by various entities.
-By default, all application units of code are grouped by a single application entity, so one current value is calculated for the entire application using the aggregating function.
+To calculate the coverage value, units are grouped by various entities.
+By default, all application units of code are grouped by a single application entity, so one coverage value is calculated for the entire application using the aggregating function.
 
 But you can group code units by other named entities.
 The `GroupingEntityType` type is used for this:
 - `APPLICATION` - one current coverage value for the entire application will be calculated
-- `CLASS` - the current value will be calculated individually for each class. So the bounds will be checked for each class
-- `PACKAGE` - the current value will be calculated individually for all classes in each package. So the bounds will be checked for each package
+- `CLASS` - the coverage value will be calculated individually for each class. So the bounds will be checked for each class
+- `PACKAGE` - the coverage value will be calculated individually for all classes in each package. So the bounds will be checked for each package
+
+### Verification rules
+Verification rule - is a set of restrictions on the coverage value for each group.
+Rules can have their own names - they are printed when restrictions are violated (does not work for JaCoCo).
+
+Each restriction represents a bound for valid coverage value, expressed in the minimum and/or maximum allowable values.
+
+Rules can be specified for all report variants:
+```kotlin
+koverReport {
+    verify {
+        rule {
+            minBound(50)
+        }
+    }
+}
+```
+
+or for specific report variant,
+e.g. only for default verification task
+```kotlin
+koverReport {
+    defaults {
+        verify {
+            rule {
+                minBound(50)
+            }
+        } 
+    }
+}
+```
+
+or for `release` Android build variant
+```kotlin
+koverReport {
+    androidReports("release") {
+        verify {
+            rule {
+                minBound(50)
+            }
+        }
+    }
+}
+```
 
 ## Merging reports
 If it is necessary to generate a report for a specific build variant using the Kover default report tasks, it is possible to combine the contents of the Android report and the default report.

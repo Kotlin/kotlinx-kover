@@ -97,11 +97,11 @@ To configure reports, the [default reports settings block](configuring#configuri
 ```kotlin
 koverReport {
     filters {
-        // filters for all report variants
+        // filters for all reports
     }
   
     verify {
-        // verification rules for all report variants
+        // verification rules for all reports
     }
 
     defaults {
