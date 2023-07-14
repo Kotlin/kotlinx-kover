@@ -34,7 +34,7 @@ internal fun Project.afterAndroidPluginApplied(afterAndroid: () -> Unit) {
         Assumption: `finalizeDsl` is called in the `afterEvaluate` action, in which build variants are created.
         Therefore,  if an action is added to the queue inside it, it will be executed only after variants are created
          */
-        androidComponents.call("finalizeDsl", callback)
+        androidComponents("finalizeDsl", callback)
     } else {
         // for old versions < 7.0 an action is added to the AAA queue.
         // Since this code is executed after the applying of AGP, there is a high probability that the action will fall into the `afterEvaluate` queue after the actions of the AGP
@@ -53,9 +53,9 @@ internal fun Project.androidCompilationKits(
     kotlinTarget: DynamicBean
 ): List<AndroidVariantCompilationKit> {
     val variants = if ("applicationVariants" in androidExtension) {
-        androidExtension.getCollection("applicationVariants")
+        androidExtension.beanCollection("applicationVariants")
     } else {
-        androidExtension.getCollection("libraryVariants")
+        androidExtension.beanCollection("libraryVariants")
     }
 
     val fallbacks = findFallbacks(androidExtension)
@@ -77,7 +77,7 @@ private fun Project.extractAndroidKit(
         mapOf("main" to extractCompilationOrEmpty(koverExtension, kotlinTarget, variantName))
     }
 
-    val unitTestVariantName = variant.find("unitTestVariant")?.value<String>("name")
+    val unitTestVariantName = variant.beanOrNull("unitTestVariant")?.value<String>("name")
     val tests = tasks.withType<Test>().matching { test ->
         // if `unitTestVariant` not specified for application/library variant then unit tests are disabled for it
         unitTestVariantName != null
@@ -92,7 +92,7 @@ private fun Project.extractAndroidKit(
     }
 
     val buildTypeName = variant["buildType"].value<String>("name")
-    val flavors = variant.getCollection("productFlavors").map { flavor ->
+    val flavors = variant.beanCollection("productFlavors").map { flavor ->
         val flavorName = flavor.value<String>("name")
         val dimension = flavor.valueOrNull<String>("dimension")
             ?: throw KoverIllegalConfigException("Product flavor '$flavorName' must have at least one flavor dimension. Android Gradle Plugin with version < 3.0.0 not supported")
@@ -111,7 +111,7 @@ private fun findMissingDimensions(androidExtension: DynamicBean, variant: Dynami
     missingDimensionsForVariant +=
         androidExtension["defaultConfig"].value<Map<String, Any>>("missingDimensionStrategies")
     // take flavour in reverse order - first defined in the highest priority (taken last)
-    variant.getCollection("productFlavors").reversed().forEach { flavor ->
+    variant.beanCollection("productFlavors").reversed().forEach { flavor ->
         missingDimensionsForVariant += flavor.value<Map<String, Any>>("missingDimensionStrategies")
     }
 
@@ -130,7 +130,7 @@ private fun extractCompilationOrEmpty(
         return CompilationUnit()
     }
 
-    val compilation = kotlinTarget.getCollection("compilations").first {
+    val compilation = kotlinTarget.beanCollection("compilations").first {
         it.value<String>("name") == variantName
     }
 
@@ -145,11 +145,11 @@ private fun extractCompilationOrEmpty(
 /// COPY FROM AGP
 
 private fun findFallbacks(androidExtension: DynamicBean): AndroidFallbacks {
-    val buildTypeFallbacks = androidExtension.getCollection("buildTypes").associate {
+    val buildTypeFallbacks = androidExtension.beanCollection("buildTypes").associate {
         it.value<String>("name") to it.value<List<String>>("matchingFallbacks")
     }
 
-    val flavors = androidExtension.getCollection("productFlavors")
+    val flavors = androidExtension.beanCollection("productFlavors")
 
     // first loop through all the flavors and collect for each dimension, and each value, its
     // fallbacks

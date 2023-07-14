@@ -54,7 +54,7 @@ private fun LocatorContext.processJvmTarget() {
 
 private fun LocatorContext.locateAndroidCompilations(kotlinExtension: DynamicBean) {
     // only one Android target is allowed, so we can take the first one
-    val androidTarget = kotlinExtension.getCollection("targets").firstOrNull {
+    val androidTarget = kotlinExtension.beanCollection("targets").firstOrNull {
         it["platformType"].value<String>("name") == "androidJvm"
     }
 
@@ -70,7 +70,7 @@ private fun LocatorContext.locateAndroidCompilations(kotlinExtension: DynamicBea
 
 private fun LocatorContext.locateJvmCompilations(kotlinExtension: DynamicBean) {
     // only one JVM target is allowed, so we can take the first one
-    val jvmTarget = kotlinExtension.getCollection("targets").firstOrNull {
+    val jvmTarget = kotlinExtension.beanCollection("targets").firstOrNull {
         it["platformType"].value<String>("name") == "jvm"
     }
 

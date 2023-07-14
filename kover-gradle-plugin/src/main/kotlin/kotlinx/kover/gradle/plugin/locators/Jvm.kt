@@ -20,7 +20,7 @@ internal inline fun DynamicBean.asJvmCompilationUnit(
     excludeJava: Boolean,
     isJavaOutput: (File) -> Boolean
 ): CompilationUnit {
-    val sources = getCollection("allKotlinSourceSets").flatMap {
+    val sources = beanCollection("allKotlinSourceSets").flatMap {
         it["kotlin"].valueCollection<File>("srcDirs")
     }.toSet()
 
@@ -46,7 +46,7 @@ internal fun DynamicBean.extractJvmCompilations(
         return emptyMap()
     }
 
-    val compilations = this.getCollection("compilations").filter {
+    val compilations = this.beanCollection("compilations").filter {
         // always ignore test source set by default
         val name = it.value<String>("name")
         name != SourceSet.TEST_SOURCE_SET_NAME
