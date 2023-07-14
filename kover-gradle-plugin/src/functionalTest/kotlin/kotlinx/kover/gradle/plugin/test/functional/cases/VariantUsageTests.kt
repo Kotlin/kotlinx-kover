@@ -10,16 +10,16 @@ internal class VariantUsageTests {
     @ExamplesTest("android/variantUsage", [":app:koverXmlReport"])
     fun CheckerContext.testAndroidVariantUsage() {
         subproject(":app") {
+            // check test tasks
+            checkOutcome(":app:testDebugUnitTest", "SUCCESS")
+            checkOutcome(":lib:testDebugUnitTest", "SUCCESS")
+
+            // check artifact generation tasks
+            checkOutcome(":app:koverGenerateArtifactDebug", "SUCCESS")
+            checkOutcome(":lib:koverGenerateArtifactDebug", "SUCCESS")
+            checkOutcome(":app:koverGenerateArtifact", "SUCCESS")
+
             xmlReport {
-                // check test tasks
-                checkOutcome(":app:testDebugUnitTest", "SUCCESS")
-                checkOutcome(":lib:testDebugUnitTest", "SUCCESS")
-
-                // check artifact generation tasks
-                checkOutcome(":app:koverGenerateArtifactDebug", "SUCCESS")
-                checkOutcome(":lib:koverGenerateArtifactDebug", "SUCCESS")
-                checkOutcome(":app:koverGenerateArtifact", "SUCCESS")
-
                 classCounter("kotlinx.kover.test.android.DebugUtil").assertFullyCovered()
                 classCounter("kotlinx.kover.test.android.lib.DebugUtil").assertFullyCovered()
                 classCounter("kotlinx.kover.test.android.lib.DebugLibClass").assertFullyMissed()
@@ -28,18 +28,40 @@ internal class VariantUsageTests {
         }
     }
 
-    @ExamplesTest("android/multiplatform", [":koverXmlReport"])
-    fun CheckerContext.testMultiplatformVariantUsage() {
-        xmlReport {
+    @ExamplesTest("android/all-variants-usage", [":app:koverXmlReport"])
+    fun CheckerContext.testMergeAllVariants() {
+        subproject(":app") {
             // check test tasks
             checkOutcome(":app:testDebugUnitTest", "SUCCESS")
-            checkOutcome(":lib:testDebugUnitTest", "SUCCESS")
-
-            // check artifact generation tasks
-            checkOutcome(":lib:koverGenerateArtifactDebug", "SUCCESS")
+            checkOutcome(":app:testReleaseUnitTest", "SUCCESS")
             checkOutcome(":app:koverGenerateArtifactDebug", "SUCCESS")
-            checkOutcome(":app:koverGenerateArtifact", "SUCCESS")
+            checkOutcome(":app:koverGenerateArtifactRelease", "SUCCESS")
+        }
+    }
 
+    @ExamplesTest("android/variants-by-template-usage", [":app:koverXmlReport"])
+    fun CheckerContext.testMergeVariantsByTemplate() {
+        subproject(":app") {
+            // check test tasks
+            checkOutcome(":app:testFirstReleaseUnitTest", "SUCCESS")
+            checkOutcome(":app:testSecondReleaseUnitTest", "SUCCESS")
+            checkOutcome(":app:koverGenerateArtifactFirstRelease", "SUCCESS")
+            checkOutcome(":app:koverGenerateArtifactSecondRelease", "SUCCESS")
+        }
+    }
+
+    @ExamplesTest("android/multiplatform", [":koverXmlReport"])
+    fun CheckerContext.testMultiplatformVariantUsage() {
+        // check test tasks
+        checkOutcome(":app:testDebugUnitTest", "SUCCESS")
+        checkOutcome(":lib:testDebugUnitTest", "SUCCESS")
+
+        // check artifact generation tasks
+        checkOutcome(":lib:koverGenerateArtifactDebug", "SUCCESS")
+        checkOutcome(":app:koverGenerateArtifactDebug", "SUCCESS")
+        checkOutcome(":app:koverGenerateArtifact", "SUCCESS")
+
+        xmlReport {
             // check android classes from :lib
             classCounter("kotlinx.kover.test.android.lib.DebugUtil").assertFullyCovered()
             classCounter("kotlinx.kover.test.android.lib.DebugLibClass").assertFullyMissed()

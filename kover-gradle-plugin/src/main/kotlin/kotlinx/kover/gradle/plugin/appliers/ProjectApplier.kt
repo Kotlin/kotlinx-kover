@@ -18,6 +18,7 @@ import kotlinx.kover.gradle.plugin.locators.CompilationsListenerManager
 import kotlinx.kover.gradle.plugin.tasks.services.KoverAgentJarTask
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import kotlinx.kover.gradle.plugin.tools.CoverageToolFactory
+import kotlinx.kover.gradle.plugin.util.wildcardsToRegex
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.provider.Provider
@@ -101,9 +102,20 @@ internal class ProjectApplier(private val project: Project) {
                     }
                 }
 
-                reportExtension.default.merged.forEach { variantName ->
-                    val applier = androidAppliers[variantName] ?: throw KoverIllegalConfigException("Build variant '$variantName' not found in project '${project.path}' - impossible to merge default reports with its measurements.\n" +
-                            "Available variations: ${androidAppliers.keys}")
+                val androidVariants = androidAppliers.keys
+                val mergedVariants = reportExtension.default.merged
+                    .flatMap { pattern ->
+                        val regex = pattern.wildcardsToRegex().toRegex(RegexOption.IGNORE_CASE)
+                        val matched = androidVariants.filter { variantName -> variantName.matches(regex) }
+                        if (matched.isEmpty()) throw KoverIllegalConfigException(
+                            "No Android build variants matching the specified '$pattern' pattern were found in project '${project.path}' - impossible to merge default reports with its measurements.\n" +
+                                    "Available variations: $androidVariants"
+                        )
+                        matched
+                    }.toSet()
+
+                mergedVariants.forEach { variantName ->
+                    val applier = androidAppliers.getValue(variantName)
                     defaultApplier.mergeWith(applier)
                 }
 

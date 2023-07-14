@@ -530,7 +530,7 @@ The `GroupingEntityType` type is used for this:
 If it is necessary to generate a report for a specific build variant using the Kover default report tasks, it is possible to combine the contents of the Android report and the default report.
 
 This is done by configuring default reports
-```
+```kotlin
 koverReport {
     defaults {
         mergeWith("release")
@@ -538,6 +538,24 @@ koverReport {
 }
 ```
 This will add the reports contents of `release` Android build variant to default reports.
+
+Is it acceptable to use wildcards `*` (zero or several arbitrary characters) and `?` (strictly one arbitrary character).
+The pattern is case-insensitive: `release` and `RelEase` processed the same way.
+
+Examples:
+- add coverage only of release build variant
+```kotlin
+  mergeWith("Release")
+```
+- add coverage of all build variants in the project
+```kotlin
+  mergeWith("*")
+```
+- add coverage of all build variants with build type `release` when there are different flavors
+```kotlin
+  mergeWith("*release")
+```
+
 
 This can be useful if only one command is run in a multimodule project for uniformity, instead of many different ones for each module.
 Or if in a multiplatform project it is necessary to generate a single report for JVM and Android targets.
