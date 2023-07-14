@@ -11,30 +11,29 @@ import org.gradle.workers.WorkQueue
 import java.io.File
 
 
-internal fun ReportContext.koverIcReport(ic: File) {
+internal fun ReportContext.koverBinaryReport(binary: File) {
     val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
-        this.classpath.from(this@koverIcReport.classpath)
+        this.classpath.from(this@koverBinaryReport.classpath)
     }
 
-    workQueue.submit(IcReportAction::class.java) {
-        icFile.set(ic)
-        filters.convention(this@koverIcReport.filters)
+    workQueue.submit(BinaryReportAction::class.java) {
+        binaryFile.set(binary)
+        filters.convention(this@koverBinaryReport.filters)
 
-        files.convention(this@koverIcReport.files)
-        tempDir.set(this@koverIcReport.tempDir)
-        projectPath.convention(this@koverIcReport.projectPath)
+        files.convention(this@koverBinaryReport.files)
+        tempDir.set(this@koverBinaryReport.tempDir)
+        projectPath.convention(this@koverBinaryReport.projectPath)
     }
 }
 
-internal interface IcReportParameters : ReportParameters {
-    val icFile: Property<File>
+internal interface BinaryReportParameters : ReportParameters {
+    val binaryFile: Property<File>
 }
 
-internal abstract class IcReportAction : WorkAction<IcReportParameters> {
+internal abstract class BinaryReportAction : WorkAction<BinaryReportParameters> {
     override fun execute() {
-        val icFile = parameters.icFile.get()
-        val smapFile = icFile.parentFile.resolve(icFile.nameWithoutExtension + ".smap")
-
+        val binary = parameters.binaryFile.get()
+        val smapFile = parameters.tempDir.file("report.smap").get().asFile
 
         val files = parameters.files.get()
         val filtersIntern = parameters.filters.get()
@@ -43,7 +42,7 @@ internal abstract class IcReportAction : WorkAction<IcReportParameters> {
             filtersIntern.excludesClasses.toList().asPatterns(),
             filtersIntern.excludesAnnotations.toList().asPatterns()
         )
-        val request = Request(filters, icFile, smapFile)
+        val request = Request(filters, binary, smapFile)
 
         AggregatorApi.aggregate(listOf(request), files.reports.toList(), files.outputs.toList())
     }

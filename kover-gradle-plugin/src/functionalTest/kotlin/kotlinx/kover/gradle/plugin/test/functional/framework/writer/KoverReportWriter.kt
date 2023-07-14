@@ -50,8 +50,8 @@ internal open class KoverReportsWriter(private val writer: FormattedWriter): Kov
         writer.call("xml", config) { KoverXmlReportConfigWriter(it) }
     }
 
-    override fun ic(config: Action<KoverIcReportConfig>) {
-        writer.call("ic", config) { KoverIcReportConfigWriter(it) }
+    override fun binary(config: Action<KoverBinaryReportConfig>) {
+        writer.call("binary", config) { KoverBinaryReportConfigWriter(it) }
     }
 
     override fun verify(config: Action<KoverVerifyReportConfig>) {
@@ -149,10 +149,10 @@ internal class KoverXmlReportConfigWriter(private val writer: FormattedWriter) :
 
 }
 
-internal class KoverIcReportConfigWriter(private val writer: FormattedWriter) : KoverIcReportConfig {
+internal class KoverBinaryReportConfigWriter(private val writer: FormattedWriter) : KoverBinaryReportConfig {
     override val onCheck: Property<Boolean> = PropertyWriter("onCheck", writer)
 
-    override val icFile: RegularFileProperty = FilePropertyWriter("icFile", writer)
+    override val file: RegularFileProperty = FilePropertyWriter("file", writer)
 
     override fun filters(config: Action<KoverReportFilters>) {
         writer.call("filters", config) { KoverReportFiltersWriter(it) }

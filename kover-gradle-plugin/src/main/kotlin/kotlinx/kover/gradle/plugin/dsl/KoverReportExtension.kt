@@ -228,19 +228,21 @@ public interface KoverReportsConfig {
     public fun xml(config: Action<KoverXmlReportConfig>)
 
     /**
-     * Configure IC binary report for current report variant.
+     * Configure Kover binary report for current report variant.
      * ```
-     *  ic {
+     *  binary {
      *      filters {
      *          // ...
      *      }
      *
      *      onCheck.set(false)
-     *      icFile.set(layout.buildDirectory.file("my-project-report/report.ic"))
+     *      file.set(layout.buildDirectory.file("my-project-report/report.ic"))
      *  }
      * ```
+     *
+     * Kover binary report is compatible with IntelliJ Coverage report (ic)
      */
-    public fun ic(config: Action<KoverIcReportConfig>)
+    public fun binary(config: Action<KoverBinaryReportConfig>)
 
     /**
      * Configure coverage verification for current report variant.
@@ -663,42 +665,42 @@ public interface KoverXmlReportConfig {
 }
 
 /**
- * Configure Kover IC binary Report.
+ * Configure Kover binary Report.
  *
  * Example:
  * ```
  * ...
- * ic {
- *     // Filter the classes that will be included in the IC report.
+ * binary {
+ *     // Filter the classes that will be included in the binary report.
  *     // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
  *     filters {
  *         // ...
  *     }
  *
- *     // Generate an IC report when running the `check` task
+ *     // Generate binary report when running the `check` task
  *     onCheck.set(false)
  *
- *     // Specify file to generate IC report
- *     icFile.set(layout.buildDirectory.file("my-project-report/report.ic"))
+ *     // Specify file to generate binary report
+ *     file.set(layout.buildDirectory.file("my-project-report/report.bin"))
  * }
  *  ...
  * ```
  */
-public interface KoverIcReportConfig {
+public interface KoverBinaryReportConfig {
     /**
-     * Override common filters only for XML report.
+     * Override common filters only for binary report.
      */
     public fun filters(config: Action<KoverReportFilters>)
 
     /**
-     * Generate an IC report when running the `check` task.
+     * Generate binary report when running the `check` task.
      */
     public val onCheck: Property<Boolean>
 
     /**
-     * Specify file to generate IC report
+     * Specify file to generate binary report
      */
-    public val icFile: RegularFileProperty
+    public val file: RegularFileProperty
 }
 
 /**

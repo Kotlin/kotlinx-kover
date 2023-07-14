@@ -5,7 +5,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.fileIn
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTest
 import kotlin.test.assertTrue
 
-internal class IcReportTests {
+internal class BinaryReportTests {
 
     @GeneratedTest
     fun BuildConfigurator.testGenerateReport() {
@@ -13,11 +13,11 @@ internal class IcReportTests {
             sourcesFrom("simple")
         }
 
-        run(":koverIcReport") {
-            checkOutcome("koverIcReport", "SUCCESS")
-            file("reports/kover/report.ic") {
-                assertTrue(exists(), "IC report should exists")
-                assertTrue(this.length() > 0, "IC report should contains data")
+        run(":koverBinaryReport") {
+            checkOutcome("koverBinaryReport", "SUCCESS")
+            file("reports/kover/report.bin") {
+                assertTrue(exists(), "Binary report should exists")
+                assertTrue(this.length() > 0, "Binary report should contains data")
             }
         }
     }
@@ -27,7 +27,7 @@ internal class IcReportTests {
         addProjectWithKover {}
 
         run(":check") {
-            taskNotCalled("koverIcReport")
+            taskNotCalled("koverBinaryReport")
         }
     }
 
@@ -36,7 +36,7 @@ internal class IcReportTests {
         addProjectWithKover {
             koverReport {
                 defaults {
-                    ic {
+                    binary {
                         onCheck.set(true)
                     }
                 }
@@ -44,7 +44,7 @@ internal class IcReportTests {
         }
 
         run(":check") {
-            checkOutcome("koverIcReport", "SUCCESS")
+            checkOutcome("koverBinaryReport", "SUCCESS")
         }
     }
 
@@ -55,18 +55,18 @@ internal class IcReportTests {
 
             koverReport {
                 defaults {
-                    ic {
-                        icFile.set(fileInBuildDir("custom/fileName"))
+                    binary {
+                        file.set(fileInBuildDir("custom/fileName"))
                     }
                 }
             }
         }
 
-        run(":koverIcReport") {
-            checkOutcome(":koverIcReport", "SUCCESS")
+        run(":koverBinaryReport") {
+            checkOutcome(":koverBinaryReport", "SUCCESS")
             file("custom/fileName") {
-                assertTrue(exists(), "IC report should exists")
-                assertTrue(this.length() > 0, "IC report should contains data")
+                assertTrue(exists(), "Binary report should exists")
+                assertTrue(this.length() > 0, "Binary report should contains data")
             }
         }
     }

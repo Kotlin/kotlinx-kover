@@ -103,7 +103,7 @@ internal interface CoverageTool {
     /**
      * Generate binary report in IntelliJ format (Kover-only).
      */
-    fun icReport(icFile: File, context: ReportContext)
+    fun binaryReport(binary: File, context: ReportContext)
 
     /**
      * Generate HTML report.

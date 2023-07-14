@@ -43,8 +43,8 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
         context.jacocoHtmlReport(htmlDir, title, charset)
     }
 
-    override fun icReport(icFile: File, context: ReportContext) {
-        throw GradleException("It is not possible to generate an IC binary report for JaCoCo. Please use Kover toolset")
+    override fun binaryReport(binary: File, context: ReportContext) {
+        throw GradleException("It is not possible to generate an Kover binary report for JaCoCo. Please use Kover toolset")
     }
 
     override fun verify(rules: List<VerificationRule>, outputFile: File, context: ReportContext) {

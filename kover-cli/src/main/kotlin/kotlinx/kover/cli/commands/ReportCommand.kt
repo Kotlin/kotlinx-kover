@@ -73,7 +73,7 @@ internal class ReportCommand : Command {
 
     override val name: String = "report"
 
-    override val description: String = "Generates human-readable reports in various formats from binary report files (*.ic)"
+    override val description: String = "Generates human-readable reports in various formats from binary report files"
 
 
     override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {

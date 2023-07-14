@@ -39,7 +39,6 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.language.base.plugins.LifecycleBasePlugin
-import java.util.concurrent.Callable
 
 internal abstract class ReportsVariantApplier(
     private val project: Project,
@@ -51,7 +50,7 @@ internal abstract class ReportsVariantApplier(
 ) {
     private val htmlTask: TaskProvider<KoverHtmlTask>
     private val xmlTask: TaskProvider<KoverXmlTask>
-    private val icTask: TaskProvider<KoverIcTask>
+    private val binTask: TaskProvider<KoverBinaryTask>
     private val verifyTask: TaskProvider<KoverVerifyTask>
     private val logTask: TaskProvider<KoverFormatCoverageTask>
 
@@ -96,8 +95,8 @@ internal abstract class ReportsVariantApplier(
             xmlReportTaskName(variantName),
             xmlTaskDescription()
         )
-        icTask = project.tasks.createReportTask<KoverIcTask>(
-            icReportTaskName(variantName),
+        binTask = project.tasks.createReportTask<KoverBinaryTask>(
+            binaryReportTaskName(variantName),
             icTaskDescription()
         )
         verifyTask = project.tasks.createReportTask<KoverVerifyTask>(
@@ -126,8 +125,8 @@ internal abstract class ReportsVariantApplier(
         commonFilters: KoverReportFiltersImpl? = null,
         commonVerify: KoverVerificationRulesConfigImpl? = null
     ) {
-        reportConfig.ic.onCheck.convention(false)
-        reportConfig.ic.icFile.convention(project.layout.buildDirectory.file(icReportPath(variantName)))
+        reportConfig.binary.onCheck.convention(false)
+        reportConfig.binary.file.convention(project.layout.buildDirectory.file(binaryReportPath(variantName)))
 
         val runOnCheck = mutableListOf<TaskProvider<*>>()
 
@@ -151,12 +150,12 @@ internal abstract class ReportsVariantApplier(
             runOnCheck += xmlTask
         }
 
-        icTask.configure {
-            icFile.convention(reportConfig.ic.icFile)
-            filters.set((reportConfig.ic.filters ?: reportConfig.filters ?: commonFilters).convert())
+        binTask.configure {
+            file.convention(reportConfig.binary.file)
+            filters.set((reportConfig.binary.filters ?: reportConfig.filters ?: commonFilters).convert())
         }
-        runOnCheck += reportConfig.ic.onCheck.map { run ->
-            if (run) listOf(icTask) else emptyList()
+        runOnCheck += reportConfig.binary.onCheck.map { run ->
+            if (run) listOf(binTask) else emptyList()
         }
 
         verifyTask.configure {
@@ -170,7 +169,7 @@ internal abstract class ReportsVariantApplier(
 
             shouldRunAfter(htmlTask)
             shouldRunAfter(xmlTask)
-            shouldRunAfter(icTask)
+            shouldRunAfter(binTask)
         }
         if (reportConfig.verify?.onCheck == true || (reportConfig.verify == null && variantName == DEFAULT_KOVER_VARIANT_NAME)) {
             runOnCheck += verifyTask

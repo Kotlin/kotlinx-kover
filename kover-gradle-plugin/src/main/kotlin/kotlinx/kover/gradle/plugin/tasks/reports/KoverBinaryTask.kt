@@ -8,14 +8,14 @@ import org.gradle.api.file.*
 import org.gradle.api.tasks.*
 
 @CacheableTask
-internal abstract class KoverIcTask : AbstractKoverReportTask() {
+internal abstract class KoverBinaryTask : AbstractKoverReportTask() {
     @get:OutputFile
-    internal abstract val icFile: RegularFileProperty
+    internal abstract val file: RegularFileProperty
 
     @TaskAction
     fun generate() {
-        val ic = icFile.get().asFile
-        ic.parentFile.mkdirs()
-        tool.get().icReport(ic, context())
+        val binary = file.get().asFile
+        binary.parentFile.mkdirs()
+        tool.get().binaryReport(binary, context())
     }
 }

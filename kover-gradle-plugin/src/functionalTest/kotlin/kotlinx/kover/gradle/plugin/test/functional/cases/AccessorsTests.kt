@@ -30,7 +30,7 @@ internal class AccessorsTests {
                 tasks.register("custom") {
                     dependsOn(tasks.koverHtmlReport)
                     dependsOn(tasks.koverXmlReport)
-                    dependsOn(tasks.koverIcReport)
+                    dependsOn(tasks.koverBinaryReport)
                     dependsOn(tasks.koverVerify)
                     dependsOn(tasks.koverLog)
                 }
@@ -43,7 +43,7 @@ internal class AccessorsTests {
         // skipped because there is no tests, but tasks are triggered
         assertEquals("SUCCESS", result.taskOutcome(":koverXmlReport"))
         assertEquals("SUCCESS", result.taskOutcome(":koverHtmlReport"))
-        assertEquals("SUCCESS", result.taskOutcome(":koverIcReport"))
+        assertEquals("SUCCESS", result.taskOutcome(":koverBinaryReport"))
         assertEquals("SUCCESS", result.taskOutcome(":koverVerify"))
         assertEquals("SUCCESS", result.taskOutcome(":koverLog"))
     }
@@ -69,8 +69,8 @@ internal class AccessorsTests {
                 tasks.koverHtmlReportName mustBe "koverHtmlReport"
                 tasks.koverHtmlReportName mustBe KoverNames.DEFAULT_HTML_REPORT_NAME
                 
-                tasks.koverIcReportName mustBe "koverIcReport"
-                tasks.koverIcReportName mustBe KoverNames.DEFAULT_IC_REPORT_NAME
+                tasks.koverBinaryReportName mustBe "koverBinaryReport"
+                tasks.koverBinaryReportName mustBe KoverNames.DEFAULT_BINARY_REPORT_NAME
 
                 tasks.koverVerifyName mustBe "koverVerify"
                 tasks.koverVerifyName mustBe KoverNames.DEFAULT_VERIFY_REPORT_NAME
@@ -86,7 +86,7 @@ internal class AccessorsTests {
                 tasks.koverAndroidHtmlReportName("variant") mustBe "koverHtmlReportVariant"
                 tasks.koverAndroidHtmlReportName("variant") mustBe KoverNames.androidHtmlReport("variant")
 
-                tasks.koverAndroidIcReportName("variant") mustBe "koverIcReportVariant"
+                tasks.koverAndroidIcReportName("variant") mustBe "koverBinaryReportVariant"
                 tasks.koverAndroidIcReportName("variant") mustBe KoverNames.androidIcReport("variant")
 
                 tasks.koverAndroidVerifyName("variant") mustBe "koverVerifyVariant"
