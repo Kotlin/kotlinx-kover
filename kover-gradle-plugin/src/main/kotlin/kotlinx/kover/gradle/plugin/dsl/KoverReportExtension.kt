@@ -69,7 +69,7 @@ import java.io.*
  */
 public interface KoverReportExtension {
     /**
-     * Specify common filters for all report variant, these filters will be inherited in HTML/XML/verification reports.
+     * Specify common filters for all report variants, these filters will be inherited in HTML/XML/verification reports.
      * They can be redefined in the settings of a specific report.
      * ```
      *  filters {
