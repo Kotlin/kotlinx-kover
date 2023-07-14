@@ -106,12 +106,12 @@ private class GradleBuildImpl(
         val requirements = targetDir.requirements
         requirements.minGradle?.let { minVersion ->
             if (env.gradleVersion < minVersion) {
-                throw TestAbortedException("Used Gradle version '${env.gradleVersion}' lower then minimal required '$minVersion'")
+                throw TestAbortedException("Used Gradle version '${env.gradleVersion}' lower than minimal required '$minVersion'")
             }
         }
         requirements.maxGradle?.let { maxVersion ->
             if (env.gradleVersion >= maxVersion) {
-                throw TestAbortedException("Used Gradle version '${env.gradleVersion}' higher or equals then maximal exclusive '$maxVersion'")
+                throw TestAbortedException("Used Gradle version '${env.gradleVersion}' higher or equals than maximal '$maxVersion'")
             }
         }
 

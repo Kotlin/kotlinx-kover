@@ -70,7 +70,7 @@ internal fun GradleBuild.runWithParams(args: List<String>): BuildResult {
 }
 
 private val gradleVersion: SemVer by lazy {
-    val version = overriddenGradleVersion?: defaultGradleVersion
+    val version = overriddenGradleVersion ?: defaultGradleVersion
     SemVer.ofVariableOrNull(version) ?: throw IllegalArgumentException("Can not parse Gradle version '$version'")
 }
 
