@@ -539,7 +539,7 @@ koverReport {
 ```
 This will add the reports contents of `release` Android build variant to default reports.
 
-Is it acceptable to use wildcards `*` (zero or several arbitrary characters) and `?` (strictly one arbitrary character).
+Is it acceptable to use wildcards `*` (zero or several arbitrary characters) and `?` (exactly one arbitrary character).
 The pattern is case-insensitive: `release` and `RelEase` processed the same way.
 
 Examples:
