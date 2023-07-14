@@ -104,9 +104,10 @@ private class CheckerContextImpl(
         project.buildDir.resolve(name).checker()
     }
 
-    override fun xml(filename: String, checker: XmlReportChecker.() -> Unit) {
-        val xmlFile = project.buildDir.resolve(filename)
-        if (!xmlFile.exists()) throw IllegalStateException("XML file '$filename' not found")
+    override fun xmlReport(variantName: String, checker: XmlReportChecker.() -> Unit) {
+        val xmlFilePath = "$defaultReportsDir/report${variantName.capitalized()}.xml"
+        val xmlFile = project.buildDir.resolve(xmlFilePath)
+        if (!xmlFile.exists()) throw IllegalStateException("XML file '$xmlFilePath' not found")
         XmlReportCheckerImpl(this, xmlFile).checker()
     }
 

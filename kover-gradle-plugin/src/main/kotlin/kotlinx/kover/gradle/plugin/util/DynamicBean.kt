@@ -4,46 +4,51 @@
 
 package kotlinx.kover.gradle.plugin.util
 
+import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import org.gradle.internal.metaobject.*
 
 internal fun Any.bean(): DynamicBean = DynamicBean(this)
 
-internal class DynamicBean(val origin: Any) {
-    private val gradleWrapper = BeanDynamicObject(origin)
+internal class DynamicBean(origin: Any) {
+    private val wrappedOrigin = BeanDynamicObject(origin)
 
-    operator fun get(name: String): DynamicBean {
-        return gradleWrapper.getProperty(name).bean()
+    operator fun get(name: String): DynamicBean = bean(name)
+
+    operator fun invoke(functionName: String, vararg args: Any?): Any? {
+        return wrappedOrigin.invokeMethod(functionName, *args)
+    }
+
+    operator fun contains(name: String): Boolean = wrappedOrigin.hasProperty(name)
+
+    fun bean(name: String): DynamicBean {
+        return value<Any>(name).bean()
+    }
+
+    fun beanOrNull(name: String): DynamicBean? {
+        return valueOrNull<Any>(name)?.bean()
     }
 
     fun hasFunction(functionName: String, vararg args: Any?): Boolean {
-        return gradleWrapper.hasMethod(functionName, *args)
-    }
-
-    fun call(functionName: String, vararg args: Any?): Any? {
-        return gradleWrapper.invokeMethod(functionName, *args)
+        return wrappedOrigin.hasMethod(functionName, *args)
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> property(name: String): T {
-        return gradleWrapper.getProperty(name) as T
+    fun <T> value(name: String): T {
+        return wrappedOrigin.getProperty(name) as? T
+            ?: throw KoverCriticalException("Non-nullable '$name' property has `null` value in dynamic bean over '${wrappedOrigin.displayName}'")
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> propertyOrNull(name: String): T? {
-        if (!gradleWrapper.hasProperty(name)) return null
-
-        return gradleWrapper.getProperty(name) as T
+    fun <T> valueOrNull(name: String): T? {
+        return wrappedOrigin.getProperty(name) as T?
     }
 
-    operator fun contains(name: String): Boolean = gradleWrapper.hasProperty(name)
-
-    @Suppress("UNCHECKED_CAST")
-    fun propertyBeans(name: String): Collection<DynamicBean> {
-        return (gradleWrapper.getProperty(name) as Collection<Any>).map { it.bean() }
+    fun beanCollection(name: String): Collection<DynamicBean> {
+        return value<Collection<Any>>(name).map { it.bean() }
     }
-    @Suppress("UNCHECKED_CAST")
-    fun <T> propertyCollection(name: String): Collection<T> {
-        return gradleWrapper.getProperty(name) as Collection<T>
+
+    fun <T> valueCollection(name: String): Collection<T> {
+        return value(name)
     }
 }
 

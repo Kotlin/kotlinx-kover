@@ -6,7 +6,6 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultXmlReport
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
@@ -40,7 +39,7 @@ internal class ReportAnnotationFilterTests {
         }
 
         run("koverXmlReport", "check") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 methodCounter("org.jetbrains.NotExcludedClass", "function").assertFullyCovered()
                 classCounter("org.jetbrains.ExcludedClass").assertAbsent()
                 methodCounter("org.jetbrains.PartiallyExcludedClass", "function1").assertFullyCovered()
@@ -93,7 +92,7 @@ internal class ReportAnnotationFilterTests {
         }
 
         run("koverXmlReport", "check") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 methodCounter("org.jetbrains.PartiallyExcludedClass", "function1").assertAbsent()
                 methodCounter("org.jetbrains.PartiallyExcludedClass", "function2").assertFullyCovered()
             }

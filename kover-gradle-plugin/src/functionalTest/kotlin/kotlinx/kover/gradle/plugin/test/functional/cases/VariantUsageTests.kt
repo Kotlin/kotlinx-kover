@@ -10,7 +10,7 @@ internal class VariantUsageTests {
     @ExamplesTest("android/variantUsage", [":app:koverXmlReport"])
     fun CheckerContext.testAndroidVariantUsage() {
         subproject(":app") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 // check test tasks
                 checkOutcome(":app:testDebugUnitTest", "SUCCESS")
                 checkOutcome(":lib:testDebugUnitTest", "SUCCESS")
@@ -30,7 +30,7 @@ internal class VariantUsageTests {
 
     @ExamplesTest("android/multiplatform", [":koverXmlReport"])
     fun CheckerContext.testMultiplatformVariantUsage() {
-        xml(defaultXmlReport()) {
+        xmlReport {
             // check test tasks
             checkOutcome(":app:testDebugUnitTest", "SUCCESS")
             checkOutcome(":lib:testDebugUnitTest", "SUCCESS")

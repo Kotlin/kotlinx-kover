@@ -4,7 +4,6 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultXmlReport
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
@@ -33,7 +32,7 @@ internal class ReportsFilteringTests {
             }
         }
         run("koverXmlReport", "koverVerify") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 classCounter("org.jetbrains.ExampleClass").assertAbsent()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
             }
@@ -69,7 +68,7 @@ internal class ReportsFilteringTests {
             }
         }
         run("koverXmlReport", "koverVerify") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 classCounter("org.jetbrains.ExampleClass").assertAbsent()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
             }
@@ -118,7 +117,7 @@ internal class ReportsFilteringTests {
             }
         }
         run("koverXmlReport", "koverVerify") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 classCounter("org.jetbrains.ExampleClass").assertAbsent()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
             }
@@ -144,7 +143,7 @@ internal class ReportsFilteringTests {
             }
         }
         run("koverXmlReport") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 classCounter("org.jetbrains.ExampleClass").assertAbsent()
                 classCounter("org.jetbrains.Unused").assertAbsent()
                 classCounter("org.jetbrains.SecondClass").assertFullyCovered()

@@ -14,7 +14,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 internal class AdaptersTests {
     @TemplateTest("different-plugins", [":koverXmlReport"])
     fun CheckerContext.testMultiplatformReportRoot() {
-        xml(defaultXmlReport()) {
+        xmlReport {
             classCounter("org.jetbrains.CommonClass").assertFullyCovered()
             classCounter("org.jetbrains.JvmClass").assertFullyCovered()
         }
@@ -28,7 +28,7 @@ internal class AdaptersTests {
         checkDefaultReports(false)
 
         subproject(":subproject-multiplatform") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 classCounter("org.jetbrains.CommonClass").assertFullyCovered()
                 classCounter("org.jetbrains.JvmClass").assertFullyCovered()
             }

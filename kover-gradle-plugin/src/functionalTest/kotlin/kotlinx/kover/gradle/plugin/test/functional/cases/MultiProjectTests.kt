@@ -24,7 +24,7 @@ internal class MultiProjectTests {
         }
 
         run(":koverXmlReport", ":koverHtmlReport") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 classCounter("org.jetbrains.CommonClass").assertFullyCovered()
                 classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()
                 classCounter("org.jetbrains.UserClass").assertFullyCovered()
@@ -45,7 +45,7 @@ internal class MultiProjectTests {
 
         run("koverXmlReport") {
             subproject(subprojectPath) {
-                xml(defaultXmlReport()) {
+                xmlReport {
                     classCounter("org.jetbrains.UserClass").assertAbsent()
 
                     classCounter("org.jetbrains.CommonInternalClass").assertFullyCovered()

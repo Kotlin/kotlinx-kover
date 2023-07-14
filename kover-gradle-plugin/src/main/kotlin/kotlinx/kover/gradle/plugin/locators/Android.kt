@@ -34,7 +34,7 @@ internal fun Project.afterAndroidPluginApplied(afterAndroid: () -> Unit) {
         Assumption: `finalizeDsl` is called in the `afterEvaluate` action, in which build variants are created.
         Therefore,  if an action is added to the queue inside it, it will be executed only after variants are created
          */
-        androidComponents.call("finalizeDsl", callback)
+        androidComponents("finalizeDsl", callback)
     } else {
         // for old versions < 7.0 an action is added to the AAA queue.
         // Since this code is executed after the applying of AGP, there is a high probability that the action will fall into the `afterEvaluate` queue after the actions of the AGP
@@ -53,9 +53,9 @@ internal fun Project.androidCompilationKits(
     kotlinTarget: DynamicBean
 ): List<AndroidVariantCompilationKit> {
     val variants = if ("applicationVariants" in androidExtension) {
-        androidExtension.propertyBeans("applicationVariants")
+        androidExtension.beanCollection("applicationVariants")
     } else {
-        androidExtension.propertyBeans("libraryVariants")
+        androidExtension.beanCollection("libraryVariants")
     }
 
     val fallbacks = findFallbacks(androidExtension)
@@ -72,26 +72,29 @@ private fun Project.extractAndroidKit(
     fallbacks: AndroidFallbacks,
     variant: DynamicBean
 ): AndroidVariantCompilationKit {
-    val variantName = variant.property<String>("name")
+    val variantName = variant.value<String>("name")
     val compilations = provider {
         mapOf("main" to extractCompilationOrEmpty(koverExtension, kotlinTarget, variantName))
     }
 
-    val tests = tasks.withType<Test>().matching {
-        // use only Android unit tests (local tests)
-        it.hasSuperclass("AndroidUnitTest")
+    val unitTestVariantName = variant.beanOrNull("unitTestVariant")?.value<String>("name")
+    val tests = tasks.withType<Test>().matching { test ->
+        // if `unitTestVariant` not specified for application/library variant then unit tests are disabled for it
+        unitTestVariantName != null
                 // skip all tests from instrumentation if Kover Plugin is disabled for the project
                 && !koverExtension.disabled
                 // skip this test if it disabled by name
-                && it.name !in koverExtension.tests.tasksNames
+                && test.name !in koverExtension.tests.tasksNames
+                // use only Android unit tests (local tests)
+                && test.hasSuperclass("AndroidUnitTest")
                 // only tests of current application build variant
-                && it.bean().property<String>("variantName") == variant["unitTestVariant"].property<String>("name")
+                && test.bean().value<String>("variantName") == unitTestVariantName
     }
 
-    val buildTypeName = variant["buildType"].property<String>("name")
-    val flavors = variant.propertyBeans("productFlavors").map { flavor ->
-        val flavorName = flavor.property<String>("name")
-        val dimension = flavor.propertyOrNull<String>("dimension")
+    val buildTypeName = variant["buildType"].value<String>("name")
+    val flavors = variant.beanCollection("productFlavors").map { flavor ->
+        val flavorName = flavor.value<String>("name")
+        val dimension = flavor.valueOrNull<String>("dimension")
             ?: throw KoverIllegalConfigException("Product flavor '$flavorName' must have at least one flavor dimension. Android Gradle Plugin with version < 3.0.0 not supported")
         AndroidFlavor(dimension, flavorName)
     }
@@ -106,14 +109,14 @@ private fun findMissingDimensions(androidExtension: DynamicBean, variant: Dynami
     val missingDimensionsForVariant = mutableMapOf<String, Any>()
     // default config has the lowest priority
     missingDimensionsForVariant +=
-        androidExtension["defaultConfig"].property<Map<String, Any>>("missingDimensionStrategies")
+        androidExtension["defaultConfig"].value<Map<String, Any>>("missingDimensionStrategies")
     // take flavour in reverse order - first defined in the highest priority (taken last)
-    variant.propertyBeans("productFlavors").reversed().forEach { flavor ->
-        missingDimensionsForVariant += flavor.property<Map<String, Any>>("missingDimensionStrategies")
+    variant.beanCollection("productFlavors").reversed().forEach { flavor ->
+        missingDimensionsForVariant += flavor.value<Map<String, Any>>("missingDimensionStrategies")
     }
 
     return missingDimensionsForVariant.entries.associate { (dimension, request) ->
-        dimension to request.bean().property<String>("requested")
+        dimension to request.bean().value("requested")
     }
 }
 
@@ -127,8 +130,8 @@ private fun extractCompilationOrEmpty(
         return CompilationUnit()
     }
 
-    val compilation = kotlinTarget.propertyBeans("compilations").first {
-        it.property<String>("name") == variantName
+    val compilation = kotlinTarget.beanCollection("compilations").first {
+        it.value<String>("name") == variantName
     }
 
     return compilation.asJvmCompilationUnit(koverExtension.excludeJava) {
@@ -142,22 +145,22 @@ private fun extractCompilationOrEmpty(
 /// COPY FROM AGP
 
 private fun findFallbacks(androidExtension: DynamicBean): AndroidFallbacks {
-    val buildTypeFallbacks = androidExtension.propertyBeans("buildTypes").associate {
-        it.property<String>("name") to it.property<List<String>>("matchingFallbacks")
+    val buildTypeFallbacks = androidExtension.beanCollection("buildTypes").associate {
+        it.value<String>("name") to it.value<List<String>>("matchingFallbacks")
     }
 
-    val flavors = androidExtension.propertyBeans("productFlavors")
+    val flavors = androidExtension.beanCollection("productFlavors")
 
     // first loop through all the flavors and collect for each dimension, and each value, its
     // fallbacks
     // map of (dimension > (requested > fallbacks))
     val flavorAlternateMap: MutableMap<String, MutableMap<String, List<String>>> = mutableMapOf()
     for (flavor in flavors) {
-        val matchingFallbacks = flavor.property<List<String>>("matchingFallbacks")
+        val matchingFallbacks = flavor.value<List<String>>("matchingFallbacks")
 
         if (matchingFallbacks.isNotEmpty()) {
-            val name = flavor.property<String>("name")
-            val dimension = flavor.property<String>("dimension")
+            val name = flavor.value<String>("name")
+            val dimension = flavor.value<String>("dimension")
             val dimensionMap = flavorAlternateMap.computeIfAbsent(dimension) { mutableMapOf() }
             dimensionMap[name] = matchingFallbacks.toList()
         }
@@ -173,12 +176,12 @@ private fun handleMissingDimensions(
     alternateMap: MutableMap<String, MutableMap<String, List<String>>>,
     flavor: DynamicBean
 ) {
-    val missingStrategies = flavor.property<Map<String, Any>>("missingDimensionStrategies")
+    val missingStrategies = flavor.value<Map<String, Any>>("missingDimensionStrategies")
     if (missingStrategies.isNotEmpty()) {
         for ((dimension, dimensionRequest) in missingStrategies) {
             val requestBean = dimensionRequest.bean()
             val dimensionMap = alternateMap.computeIfAbsent(dimension) { mutableMapOf() }
-            dimensionMap[requestBean.property("requested")] = requestBean.property("fallbacks")
+            dimensionMap[requestBean.value("requested")] = requestBean.value("fallbacks")
         }
     }
 }

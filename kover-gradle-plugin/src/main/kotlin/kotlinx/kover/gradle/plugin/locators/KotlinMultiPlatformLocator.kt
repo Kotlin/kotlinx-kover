@@ -7,7 +7,6 @@ package kotlinx.kover.gradle.plugin.locators
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.util.*
-import org.gradle.api.*
 import org.gradle.api.tasks.testing.*
 import org.gradle.kotlin.dsl.*
 
@@ -55,8 +54,8 @@ private fun LocatorContext.processJvmTarget() {
 
 private fun LocatorContext.locateAndroidCompilations(kotlinExtension: DynamicBean) {
     // only one Android target is allowed, so we can take the first one
-    val androidTarget = kotlinExtension.propertyBeans("targets").firstOrNull {
-        it["platformType"].property<String>("name") == "androidJvm"
+    val androidTarget = kotlinExtension.beanCollection("targets").firstOrNull {
+        it["platformType"].value<String>("name") == "androidJvm"
     }
 
     if (androidTarget != null) {
@@ -71,8 +70,8 @@ private fun LocatorContext.locateAndroidCompilations(kotlinExtension: DynamicBea
 
 private fun LocatorContext.locateJvmCompilations(kotlinExtension: DynamicBean) {
     // only one JVM target is allowed, so we can take the first one
-    val jvmTarget = kotlinExtension.propertyBeans("targets").firstOrNull {
-        it["platformType"].property<String>("name") == "jvm"
+    val jvmTarget = kotlinExtension.beanCollection("targets").firstOrNull {
+        it["platformType"].value<String>("name") == "jvm"
     }
 
     if (jvmTarget != null) {
@@ -86,7 +85,7 @@ private fun LocatorContext.extractJvmCompilations(
     koverExtension: KoverProjectExtensionImpl,
     target: DynamicBean
 ): JvmCompilationKit {
-    val targetName = target.property<String>("targetName")
+    val targetName = target.value<String>("targetName")
 
     // TODO check android tests are not triggered
     val tests = project.tasks.withType<Test>().matching {
@@ -96,7 +95,7 @@ private fun LocatorContext.extractJvmCompilations(
                 // skip this test if it disabled by name
                 && it.name !in koverExtension.tests.tasksNames
                 // skip this test if it disabled by its JVM target name
-                && it.bean().property<String>("targetName") == targetName
+                && it.bean().value<String>("targetName") == targetName
     }
 
     val compilations = project.provider {

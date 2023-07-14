@@ -22,7 +22,7 @@ internal class InstrumentationFilteringTests {
         }
 
         run("build", "koverXmlReport") {
-            xml(defaultXmlReport()) {
+            xmlReport {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
             }
