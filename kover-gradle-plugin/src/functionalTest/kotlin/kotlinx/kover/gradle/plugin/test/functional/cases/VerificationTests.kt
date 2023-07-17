@@ -15,18 +15,16 @@ internal class VerificationTests {
             sourcesFrom("simple")
 
             koverReport {
-                defaults {
-                    verify {
-                        rule("test rule") {
-                            bound {
-                                minValue = 50
-                                maxValue = 60
-                            }
-                            bound {
-                                aggregation = AggregationType.COVERED_COUNT
-                                minValue = 2
-                                maxValue = 10
-                            }
+                verify {
+                    rule("test rule") {
+                        bound {
+                            minValue = 50
+                            maxValue = 60
+                        }
+                        bound {
+                            aggregation = AggregationType.COVERED_COUNT
+                            minValue = 2
+                            maxValue = 10
                         }
                     }
                 }
@@ -42,49 +40,47 @@ internal class VerificationTests {
             sourcesFrom("verification")
 
             koverReport {
-                defaults {
-                    verify {
-                        rule("counts rule") {
-                            bound {
-                                minValue = 58
-                                maxValue = 60
-                            }
-                            bound {
-                                aggregation = AggregationType.COVERED_COUNT
-                                minValue = 2
-                                maxValue = 3
-                            }
+                verify {
+                    rule("counts rule") {
+                        bound {
+                            minValue = 58
+                            maxValue = 60
                         }
-                        rule("fully uncovered instructions by classes") {
-                            entity = GroupingEntityType.CLASS
-                            bound {
-                                metric = MetricType.INSTRUCTION
-                                aggregation = AggregationType.MISSED_PERCENTAGE
-                                minValue = 100
-                            }
+                        bound {
+                            aggregation = AggregationType.COVERED_COUNT
+                            minValue = 2
+                            maxValue = 3
                         }
-                        rule("fully covered instructions by packages") {
-                            entity = GroupingEntityType.PACKAGE
-                            bound {
-                                metric = MetricType.INSTRUCTION
-                                aggregation = AggregationType.COVERED_PERCENTAGE
-                                minValue = 100
-                            }
+                    }
+                    rule("fully uncovered instructions by classes") {
+                        entity = GroupingEntityType.CLASS
+                        bound {
+                            metric = MetricType.INSTRUCTION
+                            aggregation = AggregationType.MISSED_PERCENTAGE
+                            minValue = 100
                         }
-                        rule("branches by classes") {
-                            entity = GroupingEntityType.CLASS
-                            bound {
-                                metric = MetricType.BRANCH
-                                aggregation = AggregationType.COVERED_COUNT
-                                minValue = 1000
-                            }
+                    }
+                    rule("fully covered instructions by packages") {
+                        entity = GroupingEntityType.PACKAGE
+                        bound {
+                            metric = MetricType.INSTRUCTION
+                            aggregation = AggregationType.COVERED_PERCENTAGE
+                            minValue = 100
                         }
-                        rule("missed packages") {
-                            entity = GroupingEntityType.PACKAGE
-                            bound {
-                                aggregation = AggregationType.MISSED_COUNT
-                                maxValue = 1
-                            }
+                    }
+                    rule("branches by classes") {
+                        entity = GroupingEntityType.CLASS
+                        bound {
+                            metric = MetricType.BRANCH
+                            aggregation = AggregationType.COVERED_COUNT
+                            minValue = 1000
+                        }
+                    }
+                    rule("missed packages") {
+                        entity = GroupingEntityType.PACKAGE
+                        bound {
+                            aggregation = AggregationType.MISSED_COUNT
+                            maxValue = 1
                         }
                     }
                 }
@@ -141,11 +137,61 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
 Rule violated: instructions covered percentage for package 'org.jetbrains.kover.test.functional.verification' is *, but expected minimum is 100.0000
 Rule violated: lines missed count for package 'org.jetbrains.kover.test.functional.verification' is 23, but expected maximum is 1
 """)
-
-
             }
         }
     }
 
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
+    fun BuildConfigurator.testRootRules() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            koverReport {
+                verify {
+                    rule("root rule") {
+                        bound {
+                            minValue = 99
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverVerify", errorExpected = true) {
+            verification {
+                assertKoverResult("Rule 'root rule' violated: lines covered percentage is *, but expected minimum is 99\n")
+                assertJaCoCoResult("Rule violated: lines covered percentage is *, but expected minimum is 99.0000\n")
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
+    fun BuildConfigurator.testRootRulesOverride() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            koverReport {
+                verify {
+                    rule("root rule") {
+                        bound {
+                            minValue = 99
+                        }
+                    }
+
+                    defaults {
+                        verify {
+                            rule("root rule") {
+                                bound {
+                                    minValue = 10
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverVerify")
+    }
 
 }

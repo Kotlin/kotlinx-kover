@@ -23,15 +23,13 @@ internal class ReportAnnotationFilterTests {
                     }
                 }
 
-                defaults {
-                    verify {
-                        rule {
-                            bound {
-                                metric = LINE
-                                aggregation = AggregationType.COVERED_COUNT
-                                minValue = 9
-                                maxValue = 9
-                            }
+                verify {
+                    rule {
+                        bound {
+                            metric = LINE
+                            aggregation = AggregationType.COVERED_COUNT
+                            minValue = 9
+                            maxValue = 9
                         }
                     }
                 }
@@ -63,27 +61,26 @@ internal class ReportAnnotationFilterTests {
                         annotatedBy("org.jetbrains.Exclude", "*ByMask")
                     }
                 }
+                verify {
+                    rule {
+                        filters {
+                            // clear all filters
+                        }
+
+                        bound {
+                            metric = LINE
+                            aggregation = AggregationType.COVERED_COUNT
+                            minValue = 16
+                            maxValue = 16
+                        }
+                    }
+                }
 
                 defaults {
                     xml {
                         filters {
                             excludes {
                                 annotatedBy("org.jetbrains.OverriddenExclude")
-                            }
-                        }
-                    }
-
-                    verify {
-                        rule {
-                            filters {
-                                // clear all filters
-                            }
-
-                            bound {
-                                metric = LINE
-                                aggregation = AggregationType.COVERED_COUNT
-                                minValue = 16
-                                maxValue = 16
                             }
                         }
                     }

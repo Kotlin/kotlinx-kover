@@ -20,6 +20,9 @@ import java.io.*
  *      filters {
  *          // common filters for all reports of all variants
  *      }
+ *      verify {
+ *          // common verification rules for all variants
+ *      }
  *
  *      // default reports - special reports that are filled in by default with class measurements from Kotlin/JVM or Kotlin/MPP projects
  *      defaults {
@@ -66,7 +69,7 @@ import java.io.*
  */
 public interface KoverReportExtension {
     /**
-     * Specify common filters for the current report variant, these filters will be inherited in HTML/XML/verification reports.
+     * Specify common filters for all report variants, these filters will be inherited in HTML/XML/verification reports.
      * They can be redefined in the settings of a specific report.
      * ```
      *  filters {
@@ -81,6 +84,24 @@ public interface KoverReportExtension {
      * ```
      */
     public fun filters(config: Action<KoverReportFilters>)
+
+
+    /**
+     * Specify common verification rules for all report variants: JVM and Android build variants.
+     * They can be overridden in the settings for a specific report variant or a specific report in a particular variant.
+     * ```
+     *  verify {
+     *      rule {
+     *          // verification rule
+     *      }
+     *
+     *      rule("custom rule name") {
+     *          // named verification rule
+     *      }
+     *  }
+     * ```
+     */
+    public fun verify(config: Action<KoverVerificationRulesConfig>)
 
     /**
      * Configure reports for classes from Kotlin/JVM or Kotlin/MPP projects.
@@ -637,13 +658,31 @@ public interface KoverXmlReportConfig {
  *  }
  * ```
  */
-public interface KoverVerifyReportConfig {
+public interface KoverVerifyReportConfig: KoverVerificationRulesConfig {
     /**
      * Verify coverage when running the `check` task.
      * `null` by default, for Kotlin JVM and Kotlin MPP triggered on `check` task, but not for Android.
      */
     public var onCheck: Boolean
+}
 
+/**
+ * Configuration to specify verification rules.
+ *
+ * Example:
+ * ```
+ *  verify {
+ *      rule {
+ *          // verification rule
+ *      }
+ *
+ *      rule("custom rule name") {
+ *          // named verification rule
+ *      }
+ *  }
+ * ```
+ */
+public interface KoverVerificationRulesConfig {
     /**
      * Add new coverage verification rule to check after test task execution.
      */

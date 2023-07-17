@@ -32,6 +32,29 @@ koverReport {
         }
     }
 
+    verify {
+        rule {
+            isEnabled = true
+            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+
+            filters {
+                excludes {
+                    classes("com.example.verify.subpackage.*")
+                }
+                includes {
+                    classes("com.example.verify.*")
+                }
+            }
+
+            bound {
+                minValue = 1
+                maxValue = 99
+                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+            }
+        }
+    }
+
     defaults {
         filters {
             excludes {
@@ -73,7 +96,6 @@ koverReport {
         verify {
             onCheck = true
             rule {
-                isEnabled = true
                 entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
 
                 filters {
@@ -86,8 +108,8 @@ koverReport {
                 }
 
                 bound {
-                    minValue = 1
-                    maxValue = 99
+                    minValue = 2
+                    maxValue = 98
                     metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
                     aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
                 }

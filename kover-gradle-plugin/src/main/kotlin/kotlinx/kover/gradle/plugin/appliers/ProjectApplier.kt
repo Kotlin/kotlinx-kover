@@ -87,7 +87,7 @@ internal class ProjectApplier(private val project: Project) {
                     val configs =
                         reportExtension.namedReports[kit.buildVariant] ?: project.androidReports(kit.buildVariant)
 
-                    applier.applyConfig(configs, reportExtension.filters)
+                    applier.applyConfig(configs, reportExtension.filters, reportExtension.verify)
                     applier.applyCompilationKit(kit)
 
                     androidAppliers[kit.buildVariant] = applier
@@ -107,7 +107,7 @@ internal class ProjectApplier(private val project: Project) {
                     defaultApplier.mergeWith(applier)
                 }
 
-                defaultApplier.applyConfig(reportExtension.default, reportExtension.filters)
+                defaultApplier.applyConfig(reportExtension.default, reportExtension.filters, reportExtension.verify)
             }
         }
 

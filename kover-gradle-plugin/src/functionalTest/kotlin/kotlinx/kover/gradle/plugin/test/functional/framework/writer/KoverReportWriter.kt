@@ -15,6 +15,10 @@ internal class KoverReportExtensionWriter(private val writer: FormattedWriter) :
         writer.call("filters", config) { KoverReportFiltersWriter(it) }
     }
 
+    override fun verify(config: Action<KoverVerificationRulesConfig>) {
+        writer.call("verify", config) { KoverVerificationRulesConfigWriter(it) }
+    }
+
     override fun defaults(config: Action<KoverDefaultReportsConfig>) {
         writer.call("defaults", config) { KoverDefaultReportsWriter(it) }
     }
@@ -141,12 +145,18 @@ internal class KoverXmlReportConfigWriter(private val writer: FormattedWriter) :
 
 }
 
-internal class KoverVerifyReportConfigWriter(private val writer: FormattedWriter) : KoverVerifyReportConfig {
+internal class KoverVerifyReportConfigWriter(private val writer: FormattedWriter) :
+    KoverVerificationRulesConfigWriter(writer), KoverVerifyReportConfig {
+
     override var onCheck: Boolean = true
         set(value) {
             writer.assign("onCheck", value.toString())
             field = value
         }
+}
+
+internal open class KoverVerificationRulesConfigWriter(private val writer: FormattedWriter) :
+    KoverVerificationRulesConfig {
 
     override fun rule(config: Action<KoverVerifyRule>) {
         writer.call("rule", config) { KoverVerifyRuleWriter(it) }

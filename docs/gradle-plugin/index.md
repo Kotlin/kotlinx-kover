@@ -99,6 +99,10 @@ koverReport {
     filters {
         // filters for all reports
     }
+  
+    verify {
+        // verification rules for all reports
+    }
 
     defaults {
         xml { /* default XML report config */ }
@@ -122,6 +126,10 @@ To configure reports, the [android reports settings block](configuring#configuri
 koverReport {
     filters {
         // filters for reports of all build variants
+    }
+
+    verify {
+        // verification rules for all report variants
     }
 
     androidReports("release") {

@@ -17,6 +17,7 @@ import kotlinx.kover.gradle.plugin.commons.artifactConfigurationName
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.internal.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportFiltersImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportsConfigImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVerifyBoundImpl
@@ -114,7 +115,11 @@ internal abstract class ReportsVariantApplier(
     }
 
 
-    fun applyConfig(reportConfig: KoverReportsConfigImpl, commonFilters: KoverReportFiltersImpl? = null) {
+    fun applyConfig(
+        reportConfig: KoverReportsConfigImpl,
+        commonFilters: KoverReportFiltersImpl? = null,
+        commonVerify: KoverVerificationRulesConfigImpl? = null
+    ) {
         val runOnCheck = mutableListOf<TaskProvider<*>>()
 
         htmlTask.configure {
@@ -138,17 +143,18 @@ internal abstract class ReportsVariantApplier(
         }
 
         verifyTask.configure {
-            val converted = reportConfig.verify.rules.map { it.convert() }
+            val resultRules = reportConfig.verify?.rules ?: commonVerify?.rules ?: emptyList()
+            val converted = resultRules.map { it.convert() }
 
             // path can't be changed
             resultFile.convention(project.layout.buildDirectory.file(verificationErrorsPath(variantName)))
-            filters.set((reportConfig.verify.filters ?: reportConfig.filters ?: commonFilters).convert())
+            filters.set((reportConfig.verify?.filters ?: reportConfig.filters ?: commonFilters).convert())
             rules.addAll(converted)
 
             shouldRunAfter(htmlTask)
             shouldRunAfter(xmlTask)
         }
-        if (reportConfig.verify.onCheck) {
+        if (reportConfig.verify?.onCheck == true || (reportConfig.verify == null && variantName == DEFAULT_KOVER_VARIANT_NAME)) {
             runOnCheck += verifyTask
         }
 

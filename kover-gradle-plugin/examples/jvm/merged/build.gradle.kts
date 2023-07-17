@@ -25,13 +25,11 @@ koverReport {
         }
     }
 
-    defaults {
-        verify {
-            rule {
-                bound {
-                    minValue = 50
-                    maxValue = 75
-                }
+    verify {
+        rule {
+            bound {
+                minValue = 50
+                maxValue = 75
             }
         }
     }

@@ -20,13 +20,10 @@ internal class ReportsFilteringTests {
                         classes("org.jetbrains.*Exa?ple*")
                     }
                 }
-
-                defaults {
-                    verify {
-                        rule {
-                            // without ExampleClass covered lines count = 2, but 4 with it
-                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
-                        }
+                verify {
+                    rule {
+                        // without ExampleClass covered lines count = 2, but 4 with it
+                        maxBound(2, aggregation = AggregationType.COVERED_COUNT)
                     }
                 }
             }
@@ -50,18 +47,17 @@ internal class ReportsFilteringTests {
                         classes("org.*")
                     }
                 }
+                verify {
+                    rule {
+                        // without ExampleClass covered lines count = 2, but 4 with it
+                        maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                    }
+                }
 
                 defaults {
                     filters {
                         excludes {
                             classes("org.jetbrains.*Exa?ple*")
-                        }
-                    }
-
-                    verify {
-                        rule {
-                            // without ExampleClass covered lines count = 2, but 4 with it
-                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
                         }
                     }
                 }

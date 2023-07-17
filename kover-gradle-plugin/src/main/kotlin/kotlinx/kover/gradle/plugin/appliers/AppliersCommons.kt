@@ -27,10 +27,6 @@ internal fun ObjectFactory.defaultReports(layout: ProjectLayout): KoverDefaultRe
         onCheck = false
     }
 
-    reports.verify {
-        onCheck = true
-    }
-
     return reports
 }
 
