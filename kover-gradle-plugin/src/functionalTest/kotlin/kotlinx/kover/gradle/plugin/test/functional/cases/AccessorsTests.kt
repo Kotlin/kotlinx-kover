@@ -86,8 +86,8 @@ internal class AccessorsTests {
                 tasks.koverAndroidHtmlReportName("variant") mustBe "koverHtmlReportVariant"
                 tasks.koverAndroidHtmlReportName("variant") mustBe KoverNames.androidHtmlReport("variant")
 
-                tasks.koverAndroidIcReportName("variant") mustBe "koverBinaryReportVariant"
-                tasks.koverAndroidIcReportName("variant") mustBe KoverNames.androidIcReport("variant")
+                tasks.koverAndroidBinaryReportName("variant") mustBe "koverBinaryReportVariant"
+                tasks.koverAndroidBinaryReportName("variant") mustBe KoverNames.androidBinaryReport("variant")
 
                 tasks.koverAndroidVerifyName("variant") mustBe "koverVerifyVariant"
                 tasks.koverAndroidVerifyName("variant") mustBe KoverNames.androidVerify("variant")

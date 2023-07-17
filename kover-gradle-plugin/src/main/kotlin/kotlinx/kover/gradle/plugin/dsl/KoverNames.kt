@@ -69,7 +69,7 @@ public object KoverNames {
     /**
      * Name of the binary report generation task for [buildVariant] Android build variant for Android projects.
      */
-    public fun androidIcReport(buildVariant: String): String {
+    public fun androidBinaryReport(buildVariant: String): String {
         return binaryReportTaskName(buildVariant)
     }
 
@@ -150,10 +150,10 @@ public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): S
 /**
  * Name of the binary report generation task for [buildVariantName] Android build variant for Android projects.
  *
- * Returns the same value as [KoverNames.androidIcReport].
+ * Returns the same value as [KoverNames.androidBinaryReport].
  */
-public fun TaskContainer.koverAndroidIcReportName(buildVariantName: String): String {
-    return KoverNames.androidIcReport(buildVariantName)
+public fun TaskContainer.koverAndroidBinaryReportName(buildVariantName: String): String {
+    return KoverNames.androidBinaryReport(buildVariantName)
 }
 
 /**

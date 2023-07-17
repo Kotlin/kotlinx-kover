@@ -128,7 +128,7 @@ internal abstract class ReportsVariantApplier(
         reportConfig.binary.onCheck.convention(false)
         reportConfig.binary.file.convention(project.layout.buildDirectory.file(binaryReportPath(variantName)))
 
-        val runOnCheck = mutableListOf<TaskProvider<*>>()
+        val runOnCheck = mutableListOf<Any>()
 
         htmlTask.configure {
             onlyIf { printPath() }

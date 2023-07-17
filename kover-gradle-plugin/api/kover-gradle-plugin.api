@@ -206,8 +206,8 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
 	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/KoverNames;
 	public static final field PROJECT_EXTENSION_NAME Ljava/lang/String;
 	public static final field REPORT_EXTENSION_NAME Ljava/lang/String;
+	public final fun androidBinaryReport (Ljava/lang/String;)Ljava/lang/String;
 	public final fun androidHtmlReport (Ljava/lang/String;)Ljava/lang/String;
-	public final fun androidIcReport (Ljava/lang/String;)Ljava/lang/String;
 	public final fun androidLog (Ljava/lang/String;)Ljava/lang/String;
 	public final fun androidVerify (Ljava/lang/String;)Ljava/lang/String;
 	public final fun androidXmlReport (Ljava/lang/String;)Ljava/lang/String;
@@ -221,8 +221,8 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNamesKt {
 	public static final fun getKoverReportExtensionName (Lorg/gradle/api/plugins/ExtensionContainer;)Ljava/lang/String;
 	public static final fun getKoverVerifyName (Lorg/gradle/api/tasks/TaskContainer;)Ljava/lang/String;
 	public static final fun getKoverXmlReportName (Lorg/gradle/api/tasks/TaskContainer;)Ljava/lang/String;
+	public static final fun koverAndroidBinaryReportName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidHtmlReportName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
-	public static final fun koverAndroidIcReportName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidLogName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidVerifyName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidXmlReportName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
