@@ -30,6 +30,10 @@ internal fun xmlReportPath(variant: String): String {
     return "reports${separator}kover${separator}report${variant.capitalized()}.xml"
 }
 
+internal fun binaryReportPath(variant: String): String {
+    return "reports${separator}kover${separator}report${variant.capitalized()}.bin"
+}
+
 internal fun verificationErrorsPath(variant: String): String {
     return "reports${separator}kover${separator}verify${variant.capitalized()}.err"
 }

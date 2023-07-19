@@ -9,6 +9,7 @@ import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.tools.CoverageRequest
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
+import org.gradle.api.GradleException
 import org.gradle.api.file.ArchiveOperations
 import org.gradle.api.file.FileCollection
 import java.io.File
@@ -40,6 +41,10 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
 
     override fun htmlReport(htmlDir: File, title: String, charset: String?, context: ReportContext) {
         context.jacocoHtmlReport(htmlDir, title, charset)
+    }
+
+    override fun binaryReport(binary: File, context: ReportContext) {
+        throw GradleException("It is not possible to generate an Kover binary report for JaCoCo. Please use Kover toolset")
     }
 
     override fun verify(rules: List<VerificationRule>, outputFile: File, context: ReportContext) {

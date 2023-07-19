@@ -149,6 +149,12 @@ public final class kotlinx/kover/gradle/plugin/dsl/GroupingEntityType$ALL {
 	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType$ALL;
 }
 
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverBinaryReportConfig {
+	public abstract fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun getFile ()Lorg/gradle/api/file/RegularFileProperty;
+	public abstract fun getOnCheck ()Lorg/gradle/api/provider/Property;
+}
+
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverDefaultReportsConfig : kotlinx/kover/gradle/plugin/dsl/KoverReportsConfig {
 	public abstract fun mergeWith (Ljava/lang/String;)V
 }
@@ -191,6 +197,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverLogReportCo
 }
 
 public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
+	public static final field DEFAULT_BINARY_REPORT_NAME Ljava/lang/String;
 	public static final field DEFAULT_HTML_REPORT_NAME Ljava/lang/String;
 	public static final field DEFAULT_LOG_REPORT_NAME Ljava/lang/String;
 	public static final field DEFAULT_VERIFY_REPORT_NAME Ljava/lang/String;
@@ -199,6 +206,7 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
 	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/KoverNames;
 	public static final field PROJECT_EXTENSION_NAME Ljava/lang/String;
 	public static final field REPORT_EXTENSION_NAME Ljava/lang/String;
+	public final fun androidBinaryReport (Ljava/lang/String;)Ljava/lang/String;
 	public final fun androidHtmlReport (Ljava/lang/String;)Ljava/lang/String;
 	public final fun androidLog (Ljava/lang/String;)Ljava/lang/String;
 	public final fun androidVerify (Ljava/lang/String;)Ljava/lang/String;
@@ -206,12 +214,14 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
 }
 
 public final class kotlinx/kover/gradle/plugin/dsl/KoverNamesKt {
+	public static final fun getKoverBinaryReportName (Lorg/gradle/api/tasks/TaskContainer;)Ljava/lang/String;
 	public static final fun getKoverExtensionName (Lorg/gradle/api/plugins/ExtensionContainer;)Ljava/lang/String;
 	public static final fun getKoverHtmlReportName (Lorg/gradle/api/tasks/TaskContainer;)Ljava/lang/String;
 	public static final fun getKoverLogName (Lorg/gradle/api/tasks/TaskContainer;)Ljava/lang/String;
 	public static final fun getKoverReportExtensionName (Lorg/gradle/api/plugins/ExtensionContainer;)Ljava/lang/String;
 	public static final fun getKoverVerifyName (Lorg/gradle/api/tasks/TaskContainer;)Ljava/lang/String;
 	public static final fun getKoverXmlReportName (Lorg/gradle/api/tasks/TaskContainer;)Ljava/lang/String;
+	public static final fun koverAndroidBinaryReportName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidHtmlReportName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidLogName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidVerifyName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
@@ -260,6 +270,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportFilte
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportsConfig {
+	public abstract fun binary (Lorg/gradle/api/Action;)V
 	public abstract fun filters (Lorg/gradle/api/Action;)V
 	public abstract fun html (Lorg/gradle/api/Action;)V
 	public abstract fun log (Lorg/gradle/api/Action;)V

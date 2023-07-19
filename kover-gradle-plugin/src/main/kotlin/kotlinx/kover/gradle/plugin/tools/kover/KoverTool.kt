@@ -46,6 +46,10 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
         context.koverHtmlReport(htmlDir, title, charset)
     }
 
+    override fun binaryReport(binary: File, context: ReportContext) {
+        context.koverBinaryReport(binary)
+    }
+
     override fun verify(
         rules: List<VerificationRule>,
         outputFile: File,

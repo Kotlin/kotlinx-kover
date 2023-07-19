@@ -1,6 +1,7 @@
 package kotlinx.kover.gradle.plugin.dsl
 
 import kotlinx.kover.gradle.plugin.commons.htmlReportTaskName
+import kotlinx.kover.gradle.plugin.commons.binaryReportTaskName
 import kotlinx.kover.gradle.plugin.commons.logTaskName
 import kotlinx.kover.gradle.plugin.commons.verifyTaskName
 import kotlinx.kover.gradle.plugin.commons.xmlReportTaskName
@@ -32,6 +33,11 @@ public object KoverNames {
     public const val DEFAULT_XML_REPORT_NAME = "koverXmlReport"
 
     /**
+     * Name of the binary report generation task for Kotlin JVM and Kotlin multiplatform projects.
+     */
+    public const val DEFAULT_BINARY_REPORT_NAME = "koverBinaryReport"
+
+    /**
      * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
      */
     public const val DEFAULT_HTML_REPORT_NAME = "koverHtmlReport"
@@ -58,6 +64,13 @@ public object KoverNames {
      */
     public fun androidHtmlReport(buildVariant: String): String {
         return htmlReportTaskName(buildVariant)
+    }
+
+    /**
+     * Name of the binary report generation task for [buildVariant] Android build variant for Android projects.
+     */
+    public fun androidBinaryReport(buildVariant: String): String {
+        return binaryReportTaskName(buildVariant)
     }
 
     /**
@@ -92,6 +105,14 @@ public val TaskContainer.koverHtmlReportName
     get() = KoverNames.DEFAULT_HTML_REPORT_NAME
 
 /**
+ * Name of the binary report generation task for Kotlin JVM and Kotlin multiplatform projects.
+ *
+ * Has the same value as [KoverNames.DEFAULT_BINARY_REPORT_NAME].
+ */
+public val TaskContainer.koverBinaryReportName
+    get() = KoverNames.DEFAULT_BINARY_REPORT_NAME
+
+/**
  * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
  *
  * Has the same value as [KoverNames.DEFAULT_VERIFY_REPORT_NAME].
@@ -124,6 +145,15 @@ public fun TaskContainer.koverAndroidXmlReportName(buildVariantName: String): St
  */
 public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): String {
     return KoverNames.androidHtmlReport(buildVariantName)
+}
+
+/**
+ * Name of the binary report generation task for [buildVariantName] Android build variant for Android projects.
+ *
+ * Returns the same value as [KoverNames.androidBinaryReport].
+ */
+public fun TaskContainer.koverAndroidBinaryReportName(buildVariantName: String): String {
+    return KoverNames.androidBinaryReport(buildVariantName)
 }
 
 /**

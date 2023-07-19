@@ -101,6 +101,11 @@ internal interface CoverageTool {
     fun xmlReport(xmlFile: File, context: ReportContext)
 
     /**
+     * Generate binary report in IntelliJ format (Kover-only).
+     */
+    fun binaryReport(binary: File, context: ReportContext)
+
+    /**
      * Generate HTML report.
      */
     fun htmlReport(htmlDir: File, title: String, charset: String?, context: ReportContext)

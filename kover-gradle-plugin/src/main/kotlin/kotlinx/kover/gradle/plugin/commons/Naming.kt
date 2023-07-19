@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.plugin.commons
 
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_HTML_REPORT_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_BINARY_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_LOG_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_VERIFY_REPORT_NAME
 import kotlinx.kover.gradle.plugin.dsl.KoverNames.DEFAULT_XML_REPORT_NAME
@@ -34,6 +35,11 @@ internal fun htmlReportTaskName(variant: String) = "$DEFAULT_HTML_REPORT_NAME${v
  * Name for XML reporting task for specified report namespace.
  */
 internal fun xmlReportTaskName(variant: String) = "$DEFAULT_XML_REPORT_NAME${variant.capitalized()}"
+
+/**
+ * Name for binary reporting task for specified report namespace.
+ */
+internal fun binaryReportTaskName(variant: String) = "$DEFAULT_BINARY_REPORT_NAME${variant.capitalized()}"
 
 /**
  * Name for verifying task for specified report namespace.

@@ -343,7 +343,7 @@ koverReport {
                 }
             }
         }
-
+      
         // configure verification for `release` build variant (task `koverVerifyRelease`)
         verify {
             //  verify coverage when running the `check` task
@@ -481,16 +481,24 @@ koverReport {
         xml {
             // overriding filters for default xml report
             filters {
-              excludes {  }
-              includes {  }
+                excludes {  }
+                includes {  }
+            }
+        }
+      
+        html {
+            // overriding filters for default HTML report
+            filters {
+                excludes {  }
+                includes {  }
             }
         }
       
         log {
             // overriding filters for logging report
             filters {
-              excludes {  }
-              includes {  }
+                excludes {  }
+                includes {  }
             }   
         }
     }  
@@ -508,17 +516,25 @@ koverReport {
         xml {
             // overriding filters for xml report for `release` build variant
             filters {
-              excludes {  }
-              includes {  }
+                excludes {  }
+                includes {  }
+            }
+        }
+      
+        html {
+            // overriding filters for HTML report for `release` build variant
+            filters {
+                excludes {  }
+                includes {  }
             }
         }
 
         log {
-          // overriding filters for logging report for `release` build variant
-          filters {
-            excludes {  }
-            includes {  }
-          }
+            // overriding filters for logging report for `release` build variant
+            filters {
+                excludes {  }
+                includes {  }
+            }
         }
     }
 }

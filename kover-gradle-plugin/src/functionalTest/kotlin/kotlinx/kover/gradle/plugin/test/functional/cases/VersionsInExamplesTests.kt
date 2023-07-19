@@ -16,7 +16,13 @@ import kotlin.test.assertTrue
 internal class VersionsInExamplesTests {
     @Test
     fun testVersions() {
-        val examplesWithWrongVersions = allExamples().filterNot { it.analyzeProject().checkVersionsInBuild() }
+        val examplesWithWrongVersions = allExamples().filterNot {
+            try {
+                it.analyzeProject().checkVersionsInBuild()
+            } catch (e: Exception) {
+                throw IllegalStateException("Error in example ${it.name}", e)
+            }
+        }
         assertTrue(examplesWithWrongVersions.isEmpty(), "Incorrect Kover versions in projects: $examplesWithWrongVersions")
     }
 

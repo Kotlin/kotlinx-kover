@@ -30,7 +30,8 @@ internal fun ReportContext.koverHtmlReport(htmlReportDir: File, htmlTitle: Strin
         files.convention(this@koverHtmlReport.files)
         tempDir.set(this@koverHtmlReport.tempDir)
         projectPath.convention(this@koverHtmlReport.projectPath)
-    }}
+    }
+}
 
 internal fun ReportContext.koverXmlReport(xmlReportFile: File) {
     val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
@@ -48,11 +49,11 @@ internal fun ReportContext.koverXmlReport(xmlReportFile: File) {
     }
 }
 
-internal interface XmlReportParameters: ReportParameters {
+internal interface XmlReportParameters : ReportParameters {
     val xmlFile: RegularFileProperty
 }
 
-internal interface HtmlReportParameters: ReportParameters {
+internal interface HtmlReportParameters : ReportParameters {
     val htmlDir: DirectoryProperty
     val title: Property<String>
 }

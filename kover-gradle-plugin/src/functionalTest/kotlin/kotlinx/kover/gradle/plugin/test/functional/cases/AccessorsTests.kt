@@ -20,12 +20,8 @@ internal class AccessorsTests {
                 """
                 plugins {
                     kotlin("jvm") version "1.8.0"
-                    id("org.jetbrains.kotlinx.kover") version "DEV"
+                    id("org.jetbrains.kotlinx.kover")
                 }
-
-
-                group = "org.jetbrains"
-                version = "1.0-SNAPSHOT"
 
                 repositories {
                     mavenCentral()
@@ -34,6 +30,7 @@ internal class AccessorsTests {
                 tasks.register("custom") {
                     dependsOn(tasks.koverHtmlReport)
                     dependsOn(tasks.koverXmlReport)
+                    dependsOn(tasks.koverBinaryReport)
                     dependsOn(tasks.koverVerify)
                     dependsOn(tasks.koverLog)
                 }
@@ -46,6 +43,7 @@ internal class AccessorsTests {
         // skipped because there is no tests, but tasks are triggered
         assertEquals("SUCCESS", result.taskOutcome(":koverXmlReport"))
         assertEquals("SUCCESS", result.taskOutcome(":koverHtmlReport"))
+        assertEquals("SUCCESS", result.taskOutcome(":koverBinaryReport"))
         assertEquals("SUCCESS", result.taskOutcome(":koverVerify"))
         assertEquals("SUCCESS", result.taskOutcome(":koverLog"))
     }
@@ -70,6 +68,9 @@ internal class AccessorsTests {
 
                 tasks.koverHtmlReportName mustBe "koverHtmlReport"
                 tasks.koverHtmlReportName mustBe KoverNames.DEFAULT_HTML_REPORT_NAME
+                
+                tasks.koverBinaryReportName mustBe "koverBinaryReport"
+                tasks.koverBinaryReportName mustBe KoverNames.DEFAULT_BINARY_REPORT_NAME
 
                 tasks.koverVerifyName mustBe "koverVerify"
                 tasks.koverVerifyName mustBe KoverNames.DEFAULT_VERIFY_REPORT_NAME
@@ -84,6 +85,9 @@ internal class AccessorsTests {
 
                 tasks.koverAndroidHtmlReportName("variant") mustBe "koverHtmlReportVariant"
                 tasks.koverAndroidHtmlReportName("variant") mustBe KoverNames.androidHtmlReport("variant")
+
+                tasks.koverAndroidBinaryReportName("variant") mustBe "koverBinaryReportVariant"
+                tasks.koverAndroidBinaryReportName("variant") mustBe KoverNames.androidBinaryReport("variant")
 
                 tasks.koverAndroidVerifyName("variant") mustBe "koverVerifyVariant"
                 tasks.koverAndroidVerifyName("variant") mustBe KoverNames.androidVerify("variant")

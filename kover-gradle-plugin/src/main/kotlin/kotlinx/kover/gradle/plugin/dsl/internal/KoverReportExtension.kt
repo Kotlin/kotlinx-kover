@@ -69,6 +69,7 @@ internal open class KoverReportsConfigImpl @Inject constructor(private val objec
     KoverReportsConfig {
     internal val html: KoverHtmlReportConfigImpl = objects.newInstance(objects)
     internal val xml: KoverXmlReportConfigImpl = objects.newInstance(objects)
+    internal val binary: KoverBinaryReportConfigImpl = objects.newInstance(objects)
     internal var verify: KoverVerifyReportConfigImpl? = null
     internal val log: KoverLogReportConfigImpl = objects.newInstance(objects)
 
@@ -87,6 +88,10 @@ internal open class KoverReportsConfigImpl @Inject constructor(private val objec
 
     override fun xml(config: Action<KoverXmlReportConfig>) {
         config(xml)
+    }
+
+    override fun binary(config: Action<KoverBinaryReportConfig>) {
+        config(binary)
     }
 
     override fun verify(config: Action<KoverVerifyReportConfig>) {
@@ -154,6 +159,24 @@ internal open class KoverXmlReportConfigImpl @Inject constructor(
     }
 
     internal val reportFileProperty: Property<File> = objects.property()
+}
+
+internal open class KoverBinaryReportConfigImpl @Inject constructor(
+    private val objects: ObjectFactory
+) : KoverBinaryReportConfig {
+
+    internal var filters: KoverReportFiltersImpl? = null
+
+    override val onCheck: Property<Boolean> = objects.property()
+
+    override val file: RegularFileProperty = objects.fileProperty()
+
+    override fun filters(config: Action<KoverReportFilters>) {
+        if (filters == null) {
+            filters = objects.newInstance<KoverReportFiltersImpl>(objects)
+        }
+        filters?.also { config(it) }
+    }
 }
 
 internal open class KoverVerifyReportConfigImpl @Inject constructor(

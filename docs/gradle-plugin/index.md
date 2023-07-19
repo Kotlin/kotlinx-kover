@@ -231,6 +231,7 @@ Running Kover default tasks cause compilation of all Kotlin JVM and Java classes
 Kover default task list:
 - `koverHtmlReport` - Generate HTML report for Kotlin/JVM or Java classes
 - `koverXmlReport` - Generate XML report for Kotlin/JVM or Java classes
+- `koverBinaryReport` - Generate binary coverage report for Kotlin/JVM or Java classes. Not applicable to JaCoCo
 - `koverVerify` - Verifies code coverage metrics of Kotlin/JVM or Java classes based on configured rules
 - `koverLog` - Prints code coverage of Kotlin/JVM or Java classes to the log
 
@@ -250,6 +251,7 @@ Running Kover Android tasks cause compilation of the code of the corresponding v
 Kover Android task list:
 - `koverHtmlReport<Name>` - Generate HTML report for classes of `<Name>` build variant
 - `koverXmlReport<Name>` - Generate XML report for classes of `<Name>` build variant
+- `koverBinaryReport<Name>` - Generate binary coverage report for classes of `<Name>` build variant. Not applicable to JaCoCo
 - `koverVerify<Name>` - Verifies code coverage metrics of classes of `<Name>` build variant based on configured rules
 - `koverLog<Name>` - Prints code coverage to the log for classes of `<Name>` build variant
 

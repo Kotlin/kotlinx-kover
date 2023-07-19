@@ -8,6 +8,8 @@ import kotlinx.kover.gradle.plugin.commons.KoverMigrations
 import org.gradle.api.*
 import org.gradle.api.file.Directory
 import org.gradle.api.file.RegularFile
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import java.io.*
 
@@ -224,6 +226,23 @@ public interface KoverReportsConfig {
      * ```
      */
     public fun xml(config: Action<KoverXmlReportConfig>)
+
+    /**
+     * Configure Kover binary report for current report variant.
+     * ```
+     *  binary {
+     *      filters {
+     *          // ...
+     *      }
+     *
+     *      onCheck.set(false)
+     *      file.set(layout.buildDirectory.file("my-project-report/report.ic"))
+     *  }
+     * ```
+     *
+     * Kover binary report is compatible with IntelliJ Coverage report (ic)
+     */
+    public fun binary(config: Action<KoverBinaryReportConfig>)
 
     /**
      * Configure coverage verification for current report variant.
@@ -643,6 +662,45 @@ public interface KoverXmlReportConfig {
         level = DeprecationLevel.ERROR
     )
     public fun overrideFilters(block: () -> Unit) { }
+}
+
+/**
+ * Configure Kover binary Report.
+ *
+ * Example:
+ * ```
+ * ...
+ * binary {
+ *     // Filter the classes that will be included in the binary report.
+ *     // This filter does not affect the list of classes that will be instrumented and it is applied only to the report of the current project.
+ *     filters {
+ *         // ...
+ *     }
+ *
+ *     // Generate binary report when running the `check` task
+ *     onCheck.set(false)
+ *
+ *     // Specify file to generate binary report
+ *     file.set(layout.buildDirectory.file("my-project-report/report.bin"))
+ * }
+ *  ...
+ * ```
+ */
+public interface KoverBinaryReportConfig {
+    /**
+     * Override common filters only for binary report.
+     */
+    public fun filters(config: Action<KoverReportFilters>)
+
+    /**
+     * Generate binary report when running the `check` task.
+     */
+    public val onCheck: Property<Boolean>
+
+    /**
+     * Specify file to generate binary report
+     */
+    public val file: RegularFileProperty
 }
 
 /**
