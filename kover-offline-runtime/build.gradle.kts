@@ -39,5 +39,6 @@ tasks.jar {
         exclude("OSGI-OPT/**")
         exclude("META-INF/**")
         exclude("LICENSE")
+        exclude("classpath.index")
     }
 }
