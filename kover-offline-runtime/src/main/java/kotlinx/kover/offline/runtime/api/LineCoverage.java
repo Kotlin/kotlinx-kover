@@ -25,9 +25,9 @@ public class LineCoverage {
 	/**
 	 * If there is a conditional expression and several code branches on one line, the coverage is measured for each of them individually.
 	 * <p/>
-	 * If there is no branching in the line, then empty list
+	 * If there is no branching in the line, then this list is empty
 	 * <p/>
-	 * Ordered by branch number in ascending order.
+	 * Ordered by a branch number in ascending order.
 	 */
 	//
 	public List<BranchCoverage> branches;

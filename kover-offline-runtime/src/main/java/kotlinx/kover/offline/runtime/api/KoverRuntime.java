@@ -17,7 +17,7 @@ import java.util.List;
 public class KoverRuntime {
 
     /**
-     * Get classes coverage. For the correct collecting of coverage, an analysis of the class-files is required.
+     * Get classes coverage. For the correct collection of coverage, an analysis of the class-files is required.
      * <p/>
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
      *
@@ -35,7 +35,7 @@ public class KoverRuntime {
      * <p/>
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
      *
-     * @param classFiles are a bytecode of non-instrumented application classes the coverage of which needs to be measured,
+     * @param classFiles a bytecode of non-instrumented application classes the coverage of which needs to be measured,
      *                   or inline functions of the measured classes are called in them
      * @return Coverage of classes that were present in the <code>classFiles</code> parameter.
      */

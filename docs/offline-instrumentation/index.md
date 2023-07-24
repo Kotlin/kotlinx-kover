@@ -27,7 +27,7 @@ This binary file can be used to generate human-readable reports using [Kover CLI
 
 Inside the same JVM process in which the tests were run, call Java static method `kotlinx.kover.offline.runtime.api.KoverRuntime.collectByDirs` or `kotlinx.kover.offline.runtime.api.KoverRuntime.collect`.
 
-For correct generation, it is necessary to pass the bytecode of the non-instrumented classes.
+For correct generation of the report, it is necessary to pass the bytecode of the non-instrumented classes.
 This can be done by specifying the directories where the class-files are stored, or a byte array with the bytecode of the application non-instrumented classes.
 
 ## Examples
