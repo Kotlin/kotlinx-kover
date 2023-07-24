@@ -22,7 +22,7 @@ public class KoverRuntime {
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
      *
      * @param classFileRoots root directories containing non-instrumented class-files the coverage of which
-     *                       needs to be measured, or inline functions of the measured classes are called in them.
+     *                       needs to be measured.
      *                       The search for class-files is recursive.
      * @return Coverage of classes that were present in the directories passed in the <code>classFileRoots</code> parameter.
      */
@@ -35,8 +35,7 @@ public class KoverRuntime {
      * <p/>
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
      *
-     * @param classFiles a bytecode of non-instrumented application classes the coverage of which needs to be measured,
-     *                   or inline functions of the measured classes are called in them
+     * @param classFiles a bytecode of non-instrumented application classes the coverage of which needs to be measured.
      * @return Coverage of classes that were present in the <code>classFiles</code> parameter.
      */
     public static List<ClassCoverage> collect(List<byte[]> classFiles) {

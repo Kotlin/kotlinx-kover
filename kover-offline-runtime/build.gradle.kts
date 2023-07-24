@@ -24,6 +24,11 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
     fatJar.set(true)
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
 repositories {
     mavenCentral()
 }

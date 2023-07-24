@@ -30,6 +30,8 @@ Inside the same JVM process in which the tests were run, call Java static method
 For correct generation of the report, it is necessary to pass the bytecode of the non-instrumented classes.
 This can be done by specifying the directories where the class-files are stored, or a byte array with the bytecode of the application non-instrumented classes.
 
+See [example](#example-of-using-the-api).
+
 ## Examples
 
 ### Gradle example for binary report
@@ -128,3 +130,29 @@ tasks.register("koverReport") {
 }
 
 ```
+
+### Example of using the API
+```kotlin
+    // the directory with class files can be transferred using the system property, any other methods are possible
+    val outputDir = File(System.getProperty("output.dir"))
+    val coverage = KoverRuntime.collectByDirs(listOf(outputDir))
+
+    // check coverage of `readState` method
+    assertEquals(3, coverage.size)
+    val coverageByClass = coverage.associateBy { cov -> cov.className }
+
+    val mainClassCoverage = coverageByClass.getValue("org.jetbrains.kotlinx.kover.MainClass")
+    assertEquals("Main.kt", mainClassCoverage.fileName)
+    assertEquals(4, mainClassCoverage.methods.size)
+
+    val coverageBySignature = mainClassCoverage.methods.associateBy { meth -> meth.signature }
+    val readStateCoverage = coverageBySignature.getValue("readState()Lorg/jetbrains/kotlinx/kover/DataClass;")
+
+    assertEquals(1, readStateCoverage.hit)
+    assertEquals(1, readStateCoverage.lines.size)
+    assertEquals(6, readStateCoverage.lines[0].lineNumber)
+    assertEquals(1, readStateCoverage.lines[0].hit)
+    assertEquals(0, readStateCoverage.lines[0].branches.size)
+```
+
+see [full example](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-offline-runtime/examples/runtime-api)
