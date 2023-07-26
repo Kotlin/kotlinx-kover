@@ -18,6 +18,13 @@ must be passed to Kover CLI as arguments, see [Kover CLI](../cli#offline-instrum
 
 To run classes instrumented offline, you'll need to add `org.jetbrains.kotlinx:kover-offline` artifact to the application's classpath.
 
+There are two ways to get coverage:
+
+- Run tests to get a binary report file, then run [Kover CLI](../cli#generating-reports) to get HTML or XML report from binary report
+- Call `KoverRuntime.collectByDirs` or `KoverRuntime.collect` in the same process after the tests are finished
+
+Only one or both of these ways can be used at the same time.
+
 #### Binary report file
 
 You'll also need to pass the system property `kover.offline.report.path` to the application with the path where you want a binary report to be saved.
