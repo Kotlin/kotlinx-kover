@@ -1,7 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -188,90 +186,4 @@ gradlePlugin {
             description = "Evaluate code coverage for projects written in Kotlin"
         }
     }
-}
-
-
-// ====================
-// Release preparation
-// ====================
-tasks.register("prepareRelease") {
-
-    doLast {
-        if (!project.hasProperty("releaseVersion")) {
-            throw GradleException("Property 'releaseVersion' is required to run this task")
-        }
-        val releaseVersion = project.property("releaseVersion") as String
-        val prevReleaseVersion = project.property("kover.release.version") as String
-
-        val dir = layout.projectDirectory
-        val rootDir = rootProject.layout.projectDirectory
-
-        rootDir.file("gradle.properties").asFile.patchProperties(releaseVersion)
-        rootDir.file("CHANGELOG.md").asFile.patchChangeLog(releaseVersion)
-
-        rootDir.file("README.md").asFile.replaceInFile(prevReleaseVersion, releaseVersion)
-
-        // replace versions in examples
-        dir.dir("examples").asFileTree.matching {
-            include("**/*gradle")
-            include("**/*gradle.kts")
-        }.files.forEach {
-            it.replaceInFile(prevReleaseVersion, releaseVersion)
-        }
-
-        // replace versions in docs
-        rootDir.dir("docs").asFileTree.files.forEach {
-            it.replaceInFile(prevReleaseVersion, releaseVersion)
-        }
-    }
-}
-
-fun File.patchChangeLog(releaseVersion: String) {
-    val oldContent = readText()
-    writer().use {
-        it.appendLine("$releaseVersion / ${LocalDate.now().format(DateTimeFormatter.ISO_DATE)}")
-        it.appendLine("===================")
-        it.appendLine("TODO add changelog!")
-        it.appendLine()
-        it.append(oldContent)
-    }
-}
-
-fun File.patchProperties(releaseVersion: String) {
-    val oldLines = readLines()
-    writer().use { writer ->
-        oldLines.forEach { line ->
-            when {
-                line.startsWith("version=") -> writer.append("version=").appendLine(increaseSnapshotVersion(releaseVersion))
-                line.startsWith("kover.release.version=") -> writer.append("kover.release.version=").appendLine(releaseVersion)
-                else -> writer.appendLine(line)
-            }
-        }
-    }
-}
-
-// modify version '1.2.3' to '1.2.4' and '1.2.3-Beta' to '1.2.3-SNAPSHOT'
-fun increaseSnapshotVersion(releaseVersion: String): String {
-    // remove postfix like '-Alpha'
-    val correctedVersion = releaseVersion.substringBefore('-')
-    if (correctedVersion != releaseVersion) {
-        return "$correctedVersion-SNAPSHOT"
-    }
-
-    // split version 0.0.0 to int parts
-    val parts = correctedVersion.split('.')
-    val newVersion = parts.mapIndexed { index, value ->
-        if (index == parts.size - 1) {
-            (value.toInt() + 1).toString()
-        } else {
-            value
-        }
-    }.joinToString(".")
-
-    return "$newVersion-SNAPSHOT"
-}
-
-fun File.replaceInFile(old: String, new: String) {
-    val newContent = readText().replace(old, new)
-    writeText(newContent)
 }
