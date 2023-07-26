@@ -23,14 +23,14 @@ There are two ways to get coverage:
 - Run tests to get a binary report file, then run [Kover CLI](../cli#generating-reports) to get HTML or XML report from binary report
 - Call `KoverRuntime.collectByDirs` or `KoverRuntime.collect` in the same process after the tests are finished
 
-Only one or both of these ways can be used at the same time.
+One or both of these ways can be used at the same time.
 
 #### Binary report file
 
 You'll also need to pass the system property `kover.offline.report.path` to the application with the path where you want a binary report to be saved.
 This binary file can be used to generate human-readable reports using [Kover CLI](../cli#generating-reports).
 
-#### Application classes
+#### In-process reporting
 
 Inside the same JVM process in which the tests were run, call Java static method `kotlinx.kover.offline.runtime.api.KoverRuntime.collectByDirs` or `kotlinx.kover.offline.runtime.api.KoverRuntime.collect`.
 
