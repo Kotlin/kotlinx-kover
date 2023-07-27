@@ -1,3 +1,19 @@
+0.7.3 / 2023-07-26
+===================
+## Kover Gradle Plugin
+### Features
+* Added ability to specify verification rules in the root of reports config
+* [`#423`](https://github.com/Kotlin/kotlinx-kover/issues/423)  Implemented task of generating binary report
+
+### Bugfixes
+* [`#405`](https://github.com/Kotlin/kotlinx-kover/issues/405) Fixed lookup for tests if unit tests are disabled in Android config
+* [`#415`](https://github.com/Kotlin/kotlinx-kover/issues/415) Fixed usage of Kover Gradle Plugin in buildSrc directory
+* [`#431`](https://github.com/Kotlin/kotlinx-kover/issues/431) Fixed excluding of companion object by annotation from report 
+
+## Kover Offline
+### Features
+* Added API for getting coverage inside a running application, instrumented offline
+
 0.7.2 / 2023-06-26
 ===================
 ### Features
