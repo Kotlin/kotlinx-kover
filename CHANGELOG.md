@@ -7,7 +7,7 @@
 
 ### Bugfixes
 * [`#405`](https://github.com/Kotlin/kotlinx-kover/issues/405) Fixed lookup for tests if unit tests are disabled in Android config
-* [`#415`](https://github.com/Kotlin/kotlinx-kover/issues/415) Fixed usage Kover Gradle Plugin in buildSrc directory
+* [`#415`](https://github.com/Kotlin/kotlinx-kover/issues/415) Fixed usage of Kover Gradle Plugin in buildSrc directory
 * [`#431`](https://github.com/Kotlin/kotlinx-kover/issues/431) Fixed excluding of companion object by annotation from report 
 
 ## Kover Offline
