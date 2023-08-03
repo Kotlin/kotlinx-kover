@@ -4,19 +4,14 @@
 
 package kotlinx.kover.gradle.plugin.tasks.reports
 
-import kotlinx.kover.api.*
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.tools.*
-import kotlinx.kover.gradle.plugin.tools.kover.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
-import org.gradle.configurationcache.extensions.*
 import org.gradle.kotlin.dsl.*
-import org.gradle.process.*
 import org.gradle.workers.WorkerExecutor
 import java.io.File
 import javax.inject.Inject
@@ -42,7 +37,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val externalSources: Provider<Set<File>> = externalArtifacts.elements.map {
         val content = ArtifactContent(emptySet(), emptySet(), emptySet())
-        content.joinWith(it.map { file -> file.asFile.parseArtifactFile() }).sources
+        content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir) }).sources
     }
 
     /**
@@ -52,7 +47,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val externalReports: Provider<Set<File>> = externalArtifacts.elements.map {
         val content = ArtifactContent(emptySet(), emptySet(), emptySet())
-        content.joinWith(it.map { file -> file.asFile.parseArtifactFile() }).reports
+        content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir) }).reports
     }
 
     /**
@@ -61,7 +56,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val localSources: Provider<Set<File>> = localArtifact.map {
-        it.asFile.parseArtifactFile().sources
+        it.asFile.parseArtifactFile(rootDir).sources
     }
 
     /**
@@ -70,7 +65,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val localReports: Provider<Set<File>> = localArtifact.map {
-        it.asFile.parseArtifactFile().reports
+        it.asFile.parseArtifactFile(rootDir).reports
     }
 
     @get:Nested
@@ -92,14 +87,16 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:Inject
     protected abstract val workerExecutor: WorkerExecutor
 
+    private val rootDir: File = project.rootDir
+
     protected fun context(): ReportContext {
         val services = GradleReportServices(workerExecutor, ant, obj)
         return ReportContext(collectAllFiles(), filters.get(), reportClasspath, temporaryDir, projectPath, services)
     }
 
     private fun collectAllFiles(): ArtifactContent {
-        val local = localArtifact.get().asFile.parseArtifactFile()
-        return local.joinWith(externalArtifacts.files.map { it.parseArtifactFile() })
+        val local = localArtifact.get().asFile.parseArtifactFile(rootDir)
+        return local.joinWith(externalArtifacts.files.map { it.parseArtifactFile(rootDir) }).existing()
     }
 }
 

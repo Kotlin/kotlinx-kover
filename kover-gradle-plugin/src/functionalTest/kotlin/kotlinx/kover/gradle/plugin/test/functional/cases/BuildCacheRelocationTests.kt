@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 
 class BuildCacheRelocationTests {
     @Test
-    fun testDefaultTasks() {
+    fun test() {
         val cachePath = Files.createTempDirectory("test-gradle-cache-").toFile().canonicalPath
 
         val cachePatch = """
@@ -33,6 +33,9 @@ class BuildCacheRelocationTests {
         assertEquals("SUCCESS", result1.taskOutcome(":koverHtmlReport"))
         assertEquals("SUCCESS", result1.taskOutcome(":koverBinaryReport"))
         assertEquals("SUCCESS", result1.taskOutcome(":koverVerify"))
+
+        // delete the previous build to simulate project relocation
+        gradleBuild1.targetDir.deleteRecursively()
 
         /*
         since the build is created from a template,
