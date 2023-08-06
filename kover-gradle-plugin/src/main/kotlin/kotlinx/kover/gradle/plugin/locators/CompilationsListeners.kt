@@ -130,3 +130,4 @@ internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
 
 internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
 
+internal const val ANDROID_DYNAMIC_PLUGIN_ID = "com.android.dynamic-feature"
