@@ -33,6 +33,7 @@ android {
     buildFeatures {
         viewBinding = true
     }
+     dynamicFeatures = [":dyn"]
 }
 
 dependencies {
