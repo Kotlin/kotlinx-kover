@@ -24,6 +24,9 @@ internal fun LocatorContext.initKotlinAndroidPluginLocator() {
     project.pluginManager.withPlugin(ANDROID_LIB_PLUGIN_ID) {
         project.afterAndroidPluginApplied { processAndroidTarget() }
     }
+    project.pluginManager.withPlugin(ANDROID_DYNAMIC_PLUGIN_ID) {
+        project.afterAndroidPluginApplied { processAndroidTarget() }
+    }
 }
 
 private fun LocatorContext.processAndroidTarget() {
