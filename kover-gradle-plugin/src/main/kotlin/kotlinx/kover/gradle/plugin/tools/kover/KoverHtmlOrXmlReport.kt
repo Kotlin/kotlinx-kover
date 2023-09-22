@@ -78,6 +78,8 @@ internal abstract class XmlReportAction : WorkAction<XmlReportParameters> {
     }
 }
 
+private const val FREE_MARKER_LOGGER_PROPERTY_NAME = "org.freemarker.loggerLibrary"
+
 internal abstract class HtmlReportAction : WorkAction<HtmlReportParameters> {
     override fun execute() {
         val htmlDir = parameters.htmlDir.get().asFile
@@ -91,14 +93,24 @@ internal abstract class HtmlReportAction : WorkAction<HtmlReportParameters> {
             filtersIntern.excludesAnnotations.toList().asPatterns()
         )
 
-        ReportApi.htmlReport(
-            parameters.htmlDir.get().asFile,
-            parameters.title.get(),
-            parameters.charset.orNull,
-            files.reports.toList(),
-            files.outputs.toList(),
-            files.sources.toList(),
-            filters
-        )
+        val oldFreemarkerLogger = System.setProperty(FREE_MARKER_LOGGER_PROPERTY_NAME, "none")
+        try {
+            ReportApi.htmlReport(
+                parameters.htmlDir.get().asFile,
+                parameters.title.get(),
+                parameters.charset.orNull,
+                files.reports.toList(),
+                files.outputs.toList(),
+                files.sources.toList(),
+                filters
+            )
+        } finally {
+            if (oldFreemarkerLogger == null) {
+                System.clearProperty(FREE_MARKER_LOGGER_PROPERTY_NAME)
+            } else {
+                System.setProperty(FREE_MARKER_LOGGER_PROPERTY_NAME, oldFreemarkerLogger)
+            }
+        }
+
     }
 }
