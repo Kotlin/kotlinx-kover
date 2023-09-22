@@ -59,7 +59,7 @@ class BuildCacheRelocationTests {
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverBinaryReport"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverVerify"))
         } catch (e: Exception) {
-            throw AssertionError("Build log \n${result1.output}",e)
+            throw AssertionError("Build log \n${result2.output}",e)
         }
 
     }
