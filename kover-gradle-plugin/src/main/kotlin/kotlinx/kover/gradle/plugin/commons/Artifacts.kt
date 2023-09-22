@@ -28,16 +28,24 @@ internal class ArtifactContent(
 
         return ArtifactContent(sources, outputs, reports)
     }
+
+    fun existing(): ArtifactContent {
+        return ArtifactContent(
+            sources.filter { it.exists() }.toSet(),
+            outputs.filter { it.exists() }.toSet(),
+            reports.filter { it.exists() }.toSet()
+        )
+    }
 }
 
 
 /**
  * Write Kover artifact content to the file.
  */
-internal fun ArtifactContent.write(artifactFile: File) {
-    val sources = sources.joinToString("\n") { it.canonicalPath }
-    val outputs = outputs.joinToString("\n") { it.canonicalPath }
-    val reports = reports.joinToString("\n") { it.canonicalPath }
+internal fun ArtifactContent.write(artifactFile: File, rootDir: File) {
+    val sources = sources.joinToString("\n") { it.toRelativeString(rootDir) }
+    val outputs = outputs.joinToString("\n") { it.toRelativeString(rootDir) }
+    val reports = reports.joinToString("\n") { it.toRelativeString(rootDir) }
 
     artifactFile.writeText("$sources\n\n$outputs\n\n$reports")
 }
@@ -45,14 +53,14 @@ internal fun ArtifactContent.write(artifactFile: File) {
 /**
  * Read Kover artifact content from the file.
  */
-internal fun File.parseArtifactFile(): ArtifactContent {
+internal fun File.parseArtifactFile(rootDir: File): ArtifactContent {
     if (!exists()) return ArtifactContent(emptySet(), emptySet(), emptySet())
 
     val iterator = readLines().iterator()
 
-    val sources = iterator.groupUntil { it.isEmpty() }.map { File(it) }.filter { it.exists() }.toSet()
-    val outputs = iterator.groupUntil { it.isEmpty() }.map { File(it) }.filter { it.exists() }.toSet()
-    val reports = iterator.groupUntil { it.isEmpty() }.map { File(it) }.filter { it.exists() }.toSet()
+    val sources = iterator.groupUntil { it.isEmpty() }.map { rootDir.resolve(it) }.toSet()
+    val outputs = iterator.groupUntil { it.isEmpty() }.map { rootDir.resolve(it) }.toSet()
+    val reports = iterator.groupUntil { it.isEmpty() }.map { rootDir.resolve(it) }.toSet()
 
     return ArtifactContent(sources, outputs, reports)
 }

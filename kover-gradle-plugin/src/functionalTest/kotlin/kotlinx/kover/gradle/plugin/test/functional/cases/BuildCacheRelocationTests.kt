@@ -12,7 +12,7 @@ import kotlin.test.assertEquals
 
 class BuildCacheRelocationTests {
     @Test
-    fun testDefaultTasks() {
+    fun test() {
         val cachePath = Files.createTempDirectory("test-gradle-cache-").toFile().canonicalPath
 
         val cachePatch = """
@@ -26,13 +26,21 @@ class BuildCacheRelocationTests {
 
         val gradleBuild1 = buildSource.generate()
         gradleBuild1.targetDir.resolve("settings.gradle.kts").appendText(cachePatch)
-        val result1 = gradleBuild1.runWithParams("koverXmlReport", "koverHtmlReport", "koverBinaryReport", "koverVerify", "--build-cache")
-        assertEquals("SUCCESS", result1.taskOutcome(":test"))
-        assertEquals("SUCCESS", result1.taskOutcome(":koverGenerateArtifact"))
-        assertEquals("SUCCESS", result1.taskOutcome(":koverXmlReport"))
-        assertEquals("SUCCESS", result1.taskOutcome(":koverHtmlReport"))
-        assertEquals("SUCCESS", result1.taskOutcome(":koverBinaryReport"))
-        assertEquals("SUCCESS", result1.taskOutcome(":koverVerify"))
+        val result1 = gradleBuild1.runWithParams("koverXmlReport", "koverHtmlReport", "koverBinaryReport", "koverVerify", "--build-cache", "--info")
+        try {
+            assertEquals("SUCCESS", result1.taskOutcome(":test"))
+            assertEquals("SUCCESS", result1.taskOutcome(":koverGenerateArtifact"))
+            assertEquals("SUCCESS", result1.taskOutcome(":koverXmlReport"))
+            assertEquals("SUCCESS", result1.taskOutcome(":koverHtmlReport"))
+            assertEquals("SUCCESS", result1.taskOutcome(":koverBinaryReport"))
+            assertEquals("SUCCESS", result1.taskOutcome(":koverVerify"))
+        } catch (e: Exception) {
+            throw AssertionError("Build log \n${result1.output}",e)
+        }
+
+
+        // delete the previous build to simulate project relocation
+        gradleBuild1.targetDir.deleteRecursively()
 
         /*
         since the build is created from a template,
@@ -42,12 +50,17 @@ class BuildCacheRelocationTests {
          */
         val gradleBuild2 = buildSource.generate()
         gradleBuild2.targetDir.resolve("settings.gradle.kts").appendText(cachePatch)
-        val result2 = gradleBuild2.runWithParams("koverXmlReport", "koverHtmlReport", "koverBinaryReport", "koverVerify", "--build-cache")
-        assertEquals("FROM-CACHE", result2.taskOutcome(":test"))
-        assertEquals("FROM-CACHE", result2.taskOutcome(":koverGenerateArtifact"))
-        assertEquals("FROM-CACHE", result2.taskOutcome(":koverXmlReport"))
-        assertEquals("FROM-CACHE", result2.taskOutcome(":koverHtmlReport"))
-        assertEquals("FROM-CACHE", result2.taskOutcome(":koverBinaryReport"))
-        assertEquals("FROM-CACHE", result2.taskOutcome(":koverVerify"))
+        val result2 = gradleBuild2.runWithParams("koverXmlReport", "koverHtmlReport", "koverBinaryReport", "koverVerify", "--build-cache", "--info")
+        try {
+            assertEquals("FROM-CACHE", result2.taskOutcome(":test"))
+            assertEquals("FROM-CACHE", result2.taskOutcome(":koverGenerateArtifact"))
+            assertEquals("FROM-CACHE", result2.taskOutcome(":koverXmlReport"))
+            assertEquals("FROM-CACHE", result2.taskOutcome(":koverHtmlReport"))
+            assertEquals("FROM-CACHE", result2.taskOutcome(":koverBinaryReport"))
+            assertEquals("FROM-CACHE", result2.taskOutcome(":koverVerify"))
+        } catch (e: Exception) {
+            throw AssertionError("Build log \n${result2.output}",e)
+        }
+
     }
 }
