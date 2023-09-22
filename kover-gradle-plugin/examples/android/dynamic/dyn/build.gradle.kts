@@ -1,5 +1,5 @@
 plugins {
-    id ("com.android.library")
+    id ("com.android.dynamic-feature")
     id ("org.jetbrains.kotlin.android")
     id ("org.jetbrains.kotlinx.kover")
 }
@@ -15,11 +15,6 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-        }
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
