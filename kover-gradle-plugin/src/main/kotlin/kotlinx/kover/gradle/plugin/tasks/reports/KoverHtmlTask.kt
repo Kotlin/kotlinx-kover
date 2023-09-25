@@ -4,10 +4,11 @@
 
 package kotlinx.kover.gradle.plugin.tasks.reports
 
-import java.io.File
 import org.gradle.api.file.*
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import java.io.File
+import java.net.URI
 
 @CacheableTask
 internal abstract class KoverHtmlTask : AbstractKoverReportTask() {
@@ -29,7 +30,14 @@ internal abstract class KoverHtmlTask : AbstractKoverReportTask() {
     }
 
     fun printPath(): Boolean {
-        logger.lifecycle("Kover: HTML report for '$projectPath' file://${reportDir.get().asFile.canonicalPath}${File.separator}index.html")
+        val clickablePath = URI(
+            "file",
+            "",
+            File(reportDir.get().asFile.canonicalPath, "index.html").toURI().path,
+            null,
+            null,
+        ).toASCIIString()
+        logger.lifecycle("Kover: HTML report for '$projectPath' $clickablePath")
         return true
     }
 }
