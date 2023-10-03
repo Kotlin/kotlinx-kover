@@ -16,19 +16,12 @@ import kotlinx.kover.gradle.plugin.tools.writeToFile
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.workers.WorkAction
-import org.gradle.workers.WorkQueue
-import org.jetbrains.kotlin.gradle.utils.`is`
 import java.io.File
 import java.math.BigDecimal
 
 
 internal fun ReportContext.printCoverage(request: CoverageRequest, outputFile: File) {
-    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
-        this.classpath.from(this@printCoverage.classpath)
-    }
-
-    workQueue.submit(CollectCoverageAction::class.java) {
+    submitAction<CollectCoverageAction, CollectCoverageParameters> {
         this.outputFile.set(outputFile)
         this.request.convention(request)
 
@@ -40,8 +33,8 @@ internal fun ReportContext.printCoverage(request: CoverageRequest, outputFile: F
 }
 
 
-internal abstract class CollectCoverageAction : WorkAction<CollectCoverageParameters> {
-    override fun execute() {
+internal abstract class CollectCoverageAction : AbstractReportAction<CollectCoverageParameters>() {
+    override fun generate() {
         val request = parameters.request.get()
         val bound = VerificationBound(ONE_HUNDRED, BigDecimal.ZERO, request.metric, request.aggregation)
         val failRule = VerificationRule(true, null, null, request.entity, listOf(bound))

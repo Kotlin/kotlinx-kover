@@ -62,19 +62,3 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
         context.printCoverage(request, outputFile)
     }
 }
-
-
-internal interface ReportParameters: WorkParameters {
-    val filters: Property<ReportFilters>
-
-    val files: Property<ArtifactContent>
-    val tempDir: DirectoryProperty
-    val projectPath: Property<String>
-    val charset: Property<String>
-}
-
-
-internal interface VerifyReportParameters: ReportParameters {
-    val outputFile: RegularFileProperty
-    val rules: ListProperty<VerificationRule>
-}

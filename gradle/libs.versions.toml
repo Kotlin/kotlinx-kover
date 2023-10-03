@@ -1,6 +1,6 @@
 [versions]
 
-intellij-coverage = "1.0.729"
+intellij-coverage = "1.0.738"
 junit = "5.9.0"
 kotlinx-bcv = "0.13.2"
 kotlinx-dokka = "1.8.10"

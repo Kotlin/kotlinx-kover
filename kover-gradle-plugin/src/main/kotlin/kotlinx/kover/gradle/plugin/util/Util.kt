@@ -7,7 +7,7 @@ package kotlinx.kover.gradle.plugin.util
 import java.io.File
 import java.util.regex.Pattern
 
-internal fun List<String>.asPatterns(): List<Pattern> = map { Pattern.compile(it.wildcardsToRegex()) }
+internal fun Iterable<String>.asPatterns(): List<Pattern> = map { Pattern.compile(it.wildcardsToRegex()) }
 
 /**
  * Executes `block` of code only if boolean value is `true`.
