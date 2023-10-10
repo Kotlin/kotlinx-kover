@@ -10,7 +10,7 @@
 * [`#470`](https://github.com/Kotlin/kotlinx-kover/issues/470) Update HTML report path to be clickable
 * [`#385`](https://github.com/Kotlin/kotlinx-kover/issues/385) Exclude nested functions in function excluded by annotation
 * [`#303`](https://github.com/Kotlin/kotlinx-kover/issues/303) Optional function parameters should not be considered a "branch"
-* [`#436`](https://github.com/Kotlin/kotlinx-kover/issues/436) Fixed randomly koverHtmlReport fails with "Stream closed" or "zip file closed"
+* [`#436`](https://github.com/Kotlin/kotlinx-kover/issues/436) Fixed random koverHtmlReport fails with "Stream closed" or "zip file closed"
 
 ### Build features
 * Upgraded Gradle version to `8.2.1`
