@@ -31,13 +31,13 @@ private const val APPEND_TO_DATA_FILE = true
 private const val LINING_ONLY_MODE = false
 
 /**
- * Enables saving the array in the /candy field,
+ * Enables saving the array in the candy field,
  * without it there will be an appeal to the hash table foreach method, which very slow.
  */
 private const val ENABLE_TRACING = "idea.new.tracing.coverage=true"
 
 /**
- * Print errors to the Gradle stdout
+ * Disable agent logging to stdout for messages of levels `debug`, `info`, `warn`.
  */
 private const val PRINT_ONLY_ERRORS = "idea.coverage.log.level=error"
 
@@ -62,13 +62,14 @@ internal fun buildJvmAgentArgs(
 
     return mutableListOf(
         "-javaagent:${jarFile.canonicalPath}=${argsFile.canonicalPath}",
-        "-D$ENABLE_TRACING",
-        "-D$PRINT_ONLY_ERRORS",
-        "-D$IGNORE_STATIC_CONSTRUCTORS",
-        "-D$DO_NOT_COUNT_HIT_AMOUNT"
+        property(ENABLE_TRACING),
+        property(PRINT_ONLY_ERRORS),
+        property(IGNORE_STATIC_CONSTRUCTORS),
+        property(DO_NOT_COUNT_HIT_AMOUNT)
     )
 }
 
+private fun property(propertyDef: String) = "-D$propertyDef"
 
 private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String>) {
     binReportFile.parentFile.mkdirs()

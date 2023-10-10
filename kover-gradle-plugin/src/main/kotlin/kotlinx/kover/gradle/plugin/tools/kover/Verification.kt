@@ -4,30 +4,23 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
+import com.intellij.rt.coverage.aggregate.api.AggregatorApi
+import com.intellij.rt.coverage.aggregate.api.Request
 import com.intellij.rt.coverage.verify.Verifier
 import com.intellij.rt.coverage.verify.api.*
-import com.intellij.rt.coverage.verify.api.Target
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
-import kotlinx.kover.gradle.plugin.dsl.MetricType
 import kotlinx.kover.gradle.plugin.tools.BoundViolations
 import kotlinx.kover.gradle.plugin.tools.RuleViolations
 import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
-import org.gradle.workers.WorkAction
-import org.gradle.workers.WorkQueue
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import java.io.File
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.util.*
 
 internal fun ReportContext.koverVerify(specifiedRules: List<VerificationRule>, outputReportFile: File) {
-    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
-        this.classpath.from(this@koverVerify.classpath)
-    }
-
-    workQueue.submit(VerifyReportAction::class.java) {
+    submitAction<VerifyReportAction, VerifyReportParameters> {
         outputFile.set(outputReportFile)
         rules.convention(specifiedRules)
         filters.convention(this@koverVerify.filters)
@@ -38,10 +31,13 @@ internal fun ReportContext.koverVerify(specifiedRules: List<VerificationRule>, o
     }
 }
 
+internal interface VerifyReportParameters: ReportParameters {
+    val outputFile: RegularFileProperty
+    val rules: ListProperty<VerificationRule>
+}
 
-
-internal abstract class VerifyReportAction : WorkAction<VerifyReportParameters> {
-    override fun execute() {
+internal abstract class VerifyReportAction : AbstractReportAction<VerifyReportParameters>() {
+    override fun generate() {
         val violations = koverVerify(
             parameters.rules.get(),
             parameters.filters.get(),
@@ -76,12 +72,12 @@ internal fun koverVerify(
         rulesForGroup.forEachIndexed { ruleIndex, rule ->
             val bounds = rule.bounds.mapIndexed { boundIndex, b ->
                 Bound(
-                    boundIndex, b.counterToReporter(), b.valueTypeToReporter(), b.valueToReporter(b.minValue),
-                    b.valueToReporter(b.maxValue)
+                    boundIndex, b.counterToIntellij(), b.valueTypeToIntellij(), b.valueToIntellij(b.minValue),
+                    b.valueToIntellij(b.maxValue)
                 )
 
             }
-            rulesArray += Rule(ruleIndex, group.ic, rule.targetToReporter(), bounds)
+            rulesArray += Rule(ruleIndex, group.ic, rule.targetToIntellij(), bounds)
         }
     }
 
@@ -112,41 +108,6 @@ private fun groupRules(
     }
 
     return groupedMap.entries.map { it.key to it.value }
-}
-
-
-private fun VerificationRule.targetToReporter(): Target {
-    return when (entityType) {
-        GroupingEntityType.APPLICATION -> Target.ALL
-        GroupingEntityType.CLASS -> Target.CLASS
-        GroupingEntityType.PACKAGE -> Target.PACKAGE
-    }
-}
-
-private fun VerificationBound.counterToReporter(): Counter {
-    return when (metric) {
-        MetricType.LINE -> Counter.LINE
-        MetricType.INSTRUCTION -> Counter.INSTRUCTION
-        MetricType.BRANCH -> Counter.BRANCH
-    }
-}
-
-private fun VerificationBound.valueTypeToReporter(): ValueType {
-    return when (aggregation) {
-        AggregationType.COVERED_COUNT -> ValueType.COVERED
-        AggregationType.MISSED_COUNT -> ValueType.MISSED
-        AggregationType.COVERED_PERCENTAGE -> ValueType.COVERED_RATE
-        AggregationType.MISSED_PERCENTAGE -> ValueType.MISSED_RATE
-    }
-}
-
-private fun VerificationBound.valueToReporter(value: BigDecimal?): BigDecimal? {
-    value ?: return null
-    return if (aggregation.isPercentage) {
-        value.divide(ONE_HUNDRED, 6, RoundingMode.HALF_UP)
-    } else {
-        value
-    }
 }
 
 private fun processViolations(
@@ -238,3 +199,24 @@ private data class ViolationId(val index: Int, val entityName: String?) : Compar
         return 0
     }
 }
+
+private fun aggregateBinReports(files: ArtifactContent, filters: List<ReportFilters>, tempDir: File): List<AggregationGroup> {
+    val aggGroups = filters.mapIndexed { index: Int, reportFilters: ReportFilters ->
+        val filePrefix = if (filters.size > 1) "-$index" else ""
+        AggregationGroup(
+            tempDir.resolve("agg-ic$filePrefix.ic"),
+            tempDir.resolve("agg-smap$filePrefix.smap"),
+            reportFilters
+        )
+    }
+
+    val requests = aggGroups.map { group ->
+        Request(group.filters.toIntellij(), group.ic, group.smap)
+    }
+
+    AggregatorApi.aggregate(requests, files.reports.toList(), files.outputs.toList())
+
+    return aggGroups
+}
+
+private class AggregationGroup(val ic: File, val smap: File, val filters: ReportFilters)

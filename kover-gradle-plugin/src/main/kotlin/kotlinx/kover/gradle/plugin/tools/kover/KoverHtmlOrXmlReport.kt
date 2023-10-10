@@ -4,24 +4,16 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
-import com.intellij.rt.coverage.report.api.Filters
 import com.intellij.rt.coverage.report.api.ReportApi
 import kotlinx.kover.gradle.plugin.commons.ReportContext
-import kotlinx.kover.gradle.plugin.util.asPatterns
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
-import org.gradle.workers.WorkAction
-import org.gradle.workers.WorkQueue
 import java.io.File
 
 
 internal fun ReportContext.koverHtmlReport(htmlReportDir: File, htmlTitle: String, charsetName: String?) {
-    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
-        this.classpath.from(this@koverHtmlReport.classpath)
-    }
-
-    workQueue.submit(HtmlReportAction::class.java) {
+    submitAction<HtmlReportAction, HtmlReportParameters> {
         htmlDir.set(htmlReportDir)
         title.convention(htmlTitle)
         charset.convention(charsetName)
@@ -34,11 +26,7 @@ internal fun ReportContext.koverHtmlReport(htmlReportDir: File, htmlTitle: Strin
 }
 
 internal fun ReportContext.koverXmlReport(xmlReportFile: File) {
-    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
-        classpath.from(this@koverXmlReport.classpath)
-    }
-
-    workQueue.submit(XmlReportAction::class.java) {
+    submitAction<XmlReportAction, XmlReportParameters> {
         xmlFile.set(xmlReportFile)
         filters.convention(this@koverXmlReport.filters)
 
@@ -58,38 +46,28 @@ internal interface HtmlReportParameters : ReportParameters {
     val title: Property<String>
 }
 
-internal abstract class XmlReportAction : WorkAction<XmlReportParameters> {
-    override fun execute() {
+internal abstract class XmlReportAction : AbstractReportAction<XmlReportParameters>() {
+    override fun generate() {
         val files = parameters.files.get()
-        val filtersIntern = parameters.filters.get()
-        val filters = Filters(
-            filtersIntern.includesClasses.toList().asPatterns(),
-            filtersIntern.excludesClasses.toList().asPatterns(),
-            filtersIntern.excludesAnnotations.toList().asPatterns()
-        )
+        val filters = parameters.filters.get()
 
         ReportApi.xmlReport(
             parameters.xmlFile.get().asFile,
             files.reports.toList(),
             files.outputs.toList(),
             files.sources.toList(),
-            filters
+            filters.toIntellij()
         )
     }
 }
 
-internal abstract class HtmlReportAction : WorkAction<HtmlReportParameters> {
-    override fun execute() {
+internal abstract class HtmlReportAction : AbstractReportAction<HtmlReportParameters>() {
+    override fun generate() {
         val htmlDir = parameters.htmlDir.get().asFile
         htmlDir.mkdirs()
 
         val files = parameters.files.get()
-        val filtersIntern = parameters.filters.get()
-        val filters = Filters(
-            filtersIntern.includesClasses.toList().asPatterns(),
-            filtersIntern.excludesClasses.toList().asPatterns(),
-            filtersIntern.excludesAnnotations.toList().asPatterns()
-        )
+        val filters = parameters.filters.get()
 
         ReportApi.htmlReport(
             parameters.htmlDir.get().asFile,
@@ -98,7 +76,7 @@ internal abstract class HtmlReportAction : WorkAction<HtmlReportParameters> {
             files.reports.toList(),
             files.outputs.toList(),
             files.sources.toList(),
-            filters
+            filters.toIntellij()
         )
     }
 }
