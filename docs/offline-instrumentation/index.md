@@ -62,8 +62,8 @@ configurations.register("koverCli") {
 }
 
 dependencies {
-    runtimeOnly("org.jetbrains.kotlinx:kover-offline-runtime:0.7.3")
-    add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.7.3")
+    runtimeOnly("org.jetbrains.kotlinx:kover-offline-runtime:0.7.4")
+    add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.7.4")
 
     testImplementation(kotlin("test"))
 }

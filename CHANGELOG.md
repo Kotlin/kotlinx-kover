@@ -1,3 +1,24 @@
+0.7.4 / 2023-10-10
+===================
+## Kover Gradle Plugin
+### Features
+* [`#441`](https://github.com/Kotlin/kotlinx-kover/issues/441) Added support for Android dynamic feature plugins
+
+### Bugfixes
+* [`#440`](https://github.com/Kotlin/kotlinx-kover/issues/440) Replaced absolute paths in the Kover artifact with relative ones
+* [`#446`](https://github.com/Kotlin/kotlinx-kover/issues/446) Disabled writing of FreeMarker logs to stdout when generating an HTML report
+* [`#470`](https://github.com/Kotlin/kotlinx-kover/issues/470) Update HTML report path to be clickable
+* [`#385`](https://github.com/Kotlin/kotlinx-kover/issues/385) Exclude nested functions in function excluded by annotation
+* [`#303`](https://github.com/Kotlin/kotlinx-kover/issues/303) Optional function parameters should not be considered a "branch"
+* [`#436`](https://github.com/Kotlin/kotlinx-kover/issues/436) Fixed random koverHtmlReport fails with "Stream closed" or "zip file closed"
+
+### Build features
+* Upgraded Gradle version to `8.2.1`
+
+### Test features
+* [`#437`](https://github.com/Kotlin/kotlinx-kover/issues/437) Added functional test on Gradle nested classes validation error
+
+
 0.7.3 / 2023-07-26
 ===================
 ## Kover Gradle Plugin
