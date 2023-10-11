@@ -34,7 +34,7 @@ class BuildCacheRelocationTests {
             assertEquals("SUCCESS", result1.taskOutcome(":koverHtmlReport"))
             assertEquals("SUCCESS", result1.taskOutcome(":koverBinaryReport"))
             assertEquals("SUCCESS", result1.taskOutcome(":koverVerify"))
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             throw AssertionError("Build log \n${result1.output}",e)
         }
 
@@ -58,7 +58,7 @@ class BuildCacheRelocationTests {
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverHtmlReport"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverBinaryReport"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverVerify"))
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             throw AssertionError("Build log \n${result2.output}",e)
         }
 
