@@ -65,7 +65,7 @@ internal class ReportsCachingTests {
         reportAndCheck("SUCCESS", "UP-TO-DATE",true)
     }
 
-    @GeneratedTest(tool = CoverageToolVendor.KOVER)
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testProjectReportCaching() {
         useLocalCache()
 
