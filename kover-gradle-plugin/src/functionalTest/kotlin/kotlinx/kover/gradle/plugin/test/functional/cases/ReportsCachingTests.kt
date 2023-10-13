@@ -105,9 +105,9 @@ internal class ReportsCachingTests {
 
     private fun BuildConfigurator.reportAndCheck(testOutcome: String, reportsOutcome: String = testOutcome, cached: Boolean = false) {
         val args = if (cached) {
-            arrayOf("koverXmlReport", "koverHtmlReport", "--build-cache")
+            arrayOf("koverXmlReport", "koverHtmlReport", "--build-cache", "--info")
         } else {
-            arrayOf("koverXmlReport", "koverHtmlReport")
+            arrayOf("koverXmlReport", "koverHtmlReport", "--info")
         }
         run(*args) {
             checkDefaultBinReport()
