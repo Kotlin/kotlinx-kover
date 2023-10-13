@@ -135,11 +135,11 @@ private class CheckerContextImpl(
         checkHtmlReport(mustExist = mustExist)
     }
 
-    override fun checkOutcome(taskNameOrPath: String, expectedOutcome: String) {
+    override fun checkOutcome(taskNameOrPath: String, vararg expectedOutcome: String) {
         val taskPath = taskNameOrPath.asPath()
         val outcome = result.taskOutcome(taskPath) ?: noTaskFound(taskNameOrPath, taskPath)
 
-        assertEquals(expectedOutcome, outcome, "Unexpected outcome for task '$taskPath'")
+        assertContains(expectedOutcome.toSet(), outcome, "Unexpected outcome for task '$taskPath'")
     }
 
     override fun taskNotCalled(taskNameOrPath: String) {

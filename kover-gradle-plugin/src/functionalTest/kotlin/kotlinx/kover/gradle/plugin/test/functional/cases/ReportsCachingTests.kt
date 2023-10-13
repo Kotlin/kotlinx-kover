@@ -3,6 +3,7 @@
  */
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
+import kotlinx.kover.gradle.plugin.commons.CoverageToolVendor
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
@@ -29,36 +30,39 @@ internal class ReportsCachingTests {
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        reportAndCheck("SUCCESS", true)
+        reportAndCheck("SUCCESS", cached = true)
 
         run("clean", "--build-cache") {
             checkDefaultBinReport(false)
             checkDefaultReports(false)
         }
-        reportAndCheck("FROM-CACHE", true)
+        reportAndCheck("FROM-CACHE", cached = true)
     }
 
     @SlicedGeneratedTest(allTools = true)
-    fun BuildConfigurator.testOuOfDateOnSources() {
+    fun BuildConfigurator.testOutOfDateOnSources() {
         useLocalCache()
 
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        reportAndCheck("SUCCESS", true)
+        reportAndCheck("SUCCESS", cached = true)
 
         edit("src/main/kotlin/Sources.kt") {
             "$it\n class Additional"
         }
         // tasks must be restarted after the source code is edited
-        reportAndCheck("SUCCESS", true)
+        reportAndCheck("SUCCESS", cached = true)
 
         edit("src/test/kotlin/TestClass.kt") {
             "$it\n class AdditionalTest"
         }
 
-        // tasks must be restarted after tests are edited
-        reportAndCheck("SUCCESS", true)
+        // test task must be restarted after test class is edited
+        // , but reports can be up-to-date because no sources changed.
+        // For JaCoCo .exec binary report contains instrumentation time, so it's unstable between builds and can cause the report generation.
+        // For Kover it is also not guaranteed to have a stable binary .ic file, so sometimes reports can be regenerated.
+        reportAndCheck("SUCCESS", "UP-TO-DATE",true)
     }
 
     @SlicedGeneratedTest(allTools = true)
@@ -68,27 +72,31 @@ internal class ReportsCachingTests {
         addProjectWithKover {
             sourcesFrom("simple")
         }
-        reportAndCheck("SUCCESS", true)
+        reportAndCheck("SUCCESS", cached = true)
         run("clean", "--build-cache") {
             checkDefaultBinReport(false)
             checkDefaultReports(false)
         }
-        reportAndCheck("FROM-CACHE", true)
+        reportAndCheck("FROM-CACHE", cached = true)
     }
 
 
-    private fun BuildConfigurator.reportAndCheck(outcome: String, cached: Boolean = false) {
+    private fun BuildConfigurator.reportAndCheck(
+        outcome: String,
+        reportsAlternativeOutcome: String = outcome,
+        cached: Boolean = false
+    ) {
         val args = if (cached) {
-            arrayOf("koverXmlReport", "koverHtmlReport", "--build-cache")
+            arrayOf("koverXmlReport", "koverHtmlReport", "--build-cache", "--info")
         } else {
-            arrayOf("koverXmlReport", "koverHtmlReport")
+            arrayOf("koverXmlReport", "koverHtmlReport", "--info")
         }
         run(*args) {
             checkDefaultBinReport()
             checkDefaultReports()
             checkOutcome("test", outcome)
-            checkOutcome("koverXmlReport", outcome)
-            checkOutcome("koverHtmlReport", outcome)
+            checkOutcome("koverXmlReport", outcome, reportsAlternativeOutcome)
+            checkOutcome("koverHtmlReport", outcome, reportsAlternativeOutcome)
         }
     }
 }

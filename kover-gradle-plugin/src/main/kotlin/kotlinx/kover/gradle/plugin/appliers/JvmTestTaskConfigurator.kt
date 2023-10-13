@@ -39,6 +39,12 @@ internal class JvmTestTaskConfigurator(
             }
         testTask.dependsOn(data.findAgentJarTask)
 
+        testTask.doFirst {
+            // delete report so that when the data is re-measured, it is not appended to an already existing file
+            // see https://github.com/Kotlin/kotlinx-kover/issues/489
+            binReportProvider.get().asFile.delete()
+        }
+
         // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
         val excluded = data.excludedClasses + listOf("android.*", "com.android.*")
 
