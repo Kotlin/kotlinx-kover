@@ -24,6 +24,10 @@ internal interface BuildConfigurator {
 
     fun edit(filePath: String, editor: (String) -> String)
 
+    fun add(filePath: String, editor: () -> String)
+
+    fun delete(filePath: String)
+
     fun useLocalCache(use: Boolean = true)
 
     fun prepare(): TestBuildConfig
@@ -70,6 +74,14 @@ internal abstract class BuilderConfiguratorWrapper(private val origin: BuildConf
 
     override fun edit(filePath: String, editor: (String) -> String) {
         origin.edit(filePath, editor)
+    }
+
+    override fun add(filePath: String, editor: () -> String) {
+        origin.add(filePath, editor)
+    }
+
+    override fun delete(filePath: String) {
+        origin.delete(filePath)
     }
 
     override fun useLocalCache(use: Boolean) {

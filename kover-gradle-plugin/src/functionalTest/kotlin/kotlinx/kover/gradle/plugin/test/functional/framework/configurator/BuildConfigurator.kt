@@ -39,7 +39,18 @@ internal data class TestFileEditStep(
     val filePath: String,
     val editor: (String) -> String
 ): TestExecutionStep() {
-    override val name: String = "Edit: $filePath"
+    override val name: String = "Edit file: $filePath"
+}
+
+internal data class TestFileAddStep(
+    val filePath: String,
+    val editor: () -> String
+): TestExecutionStep() {
+    override val name: String = "Add file: $filePath"
+}
+
+internal data class TestFileDeleteStep(val filePath: String): TestExecutionStep() {
+    override val name: String = "Delete file: $filePath"
 }
 
 private open class TestBuildConfigurator : BuildConfigurator {
@@ -78,6 +89,14 @@ private open class TestBuildConfigurator : BuildConfigurator {
 
     override fun edit(filePath: String, editor: (String) -> String) {
         steps += TestFileEditStep(filePath, editor)
+    }
+
+    override fun add(filePath: String, editor: () -> String) {
+        steps += TestFileAddStep(filePath, editor)
+    }
+
+    override fun delete(filePath: String) {
+        steps += TestFileDeleteStep(filePath)
     }
 
     override fun useLocalCache(use: Boolean) {

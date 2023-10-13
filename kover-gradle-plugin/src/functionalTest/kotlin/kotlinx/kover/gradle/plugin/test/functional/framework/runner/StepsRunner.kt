@@ -30,11 +30,7 @@ ${this.targetDir.buildScript()}
             }
 
             is TestFileEditStep -> {
-                if (File(step.filePath).isAbsolute) {
-                    throw Exception("It is not allowed to edit a file by an absolute path. For $description")
-                }
-
-                val file = this.targetDir.resolve(step.filePath)
+                val file = projectFile(step.filePath, description)
                 if (!file.exists()) {
                     throw Exception("Project file not found for editing. For $description")
                 }
@@ -43,10 +39,27 @@ ${this.targetDir.buildScript()}
                 val newContent = step.editor(content)
                 file.writeText(newContent)
             }
+
+            is TestFileAddStep -> {
+                val file = projectFile(step.filePath, description)
+
+                file.writeText(step.editor())
+            }
+
+            is TestFileDeleteStep -> {
+                val file = projectFile(step.filePath, description)
+                file.delete()
+            }
         }
-
-
     }
+}
+
+private fun GradleBuild.projectFile(path: String, description: String): File {
+    if (File(path).isAbsolute) {
+        throw Exception("It is not allowed to edit a file by an absolute path. For $description")
+    }
+
+    return targetDir.resolve(path)
 }
 
 private fun File.buildScript(): String {

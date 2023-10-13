@@ -39,8 +39,8 @@ internal class ReportsCachingTests {
         reportAndCheck("FROM-CACHE", cached = true)
     }
 
-    @GeneratedTest(tool = CoverageToolVendor.KOVER)
-    fun BuildConfigurator.testKoverOutOfDateOnSources() {
+    @SlicedGeneratedTest(allTools = true)
+    fun BuildConfigurator.testOutOfDateOnSources() {
         useLocalCache()
 
         addProjectWithKover {
@@ -58,32 +58,11 @@ internal class ReportsCachingTests {
             "$it\n class AdditionalTest"
         }
 
-        // test task must be restarted after test class is edited, but reports is up-to-date because no sources changed
+        // test task must be restarted after test class is edited
+        // , but reports can be up-to-date because no sources changed.
+        // For JaCoCo .exec binary report contains instrumentation time, so it's unstable between builds and can cause the report generation.
+        // For Kover it is also not guaranteed to have a stable binary .ic file, so sometimes reports can be regenerated.
         reportAndCheck("SUCCESS", "UP-TO-DATE",true)
-    }
-
-    @GeneratedTest(tool = CoverageToolVendor.JACOCO)
-    fun BuildConfigurator.testJaCoCoOutOfDateOnSources() {
-        useLocalCache()
-
-        addProjectWithKover {
-            sourcesFrom("simple")
-        }
-        reportAndCheck("SUCCESS", cached = true)
-
-        edit("src/main/kotlin/Sources.kt") {
-            "$it\n class Additional"
-        }
-        // tasks must be restarted after the source code is edited
-        reportAndCheck("SUCCESS", cached = true)
-
-        edit("src/test/kotlin/TestClass.kt") {
-            "$it\n class AdditionalTest"
-        }
-
-        // test task must be restarted after test class is edited,
-        // reports is not up-to-date because JaCoCo .exec binary report contains instrumentation time
-        reportAndCheck("SUCCESS", "SUCCESS",true)
     }
 
     @GeneratedTest(tool = CoverageToolVendor.KOVER)
@@ -102,8 +81,11 @@ internal class ReportsCachingTests {
     }
 
 
-
-    private fun BuildConfigurator.reportAndCheck(testOutcome: String, reportsOutcome: String = testOutcome, cached: Boolean = false) {
+    private fun BuildConfigurator.reportAndCheck(
+        outcome: String,
+        reportsAlternativeOutcome: String = outcome,
+        cached: Boolean = false
+    ) {
         val args = if (cached) {
             arrayOf("koverXmlReport", "koverHtmlReport", "--build-cache", "--info")
         } else {
@@ -112,9 +94,9 @@ internal class ReportsCachingTests {
         run(*args) {
             checkDefaultBinReport()
             checkDefaultReports()
-            checkOutcome("test", testOutcome)
-            checkOutcome("koverXmlReport", reportsOutcome)
-            checkOutcome("koverHtmlReport", reportsOutcome)
+            checkOutcome("test", outcome)
+            checkOutcome("koverXmlReport", outcome, reportsAlternativeOutcome)
+            checkOutcome("koverHtmlReport", outcome, reportsAlternativeOutcome)
         }
     }
 }
