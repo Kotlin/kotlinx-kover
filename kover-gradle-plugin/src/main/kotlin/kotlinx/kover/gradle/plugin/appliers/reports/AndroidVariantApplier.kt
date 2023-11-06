@@ -85,10 +85,6 @@ internal fun ObjectFactory.androidReports(variant: String, layout: ProjectLayout
         onCheck = false
     }
 
-    reports.verify {
-        onCheck = false
-    }
-
     return reports
 }
 

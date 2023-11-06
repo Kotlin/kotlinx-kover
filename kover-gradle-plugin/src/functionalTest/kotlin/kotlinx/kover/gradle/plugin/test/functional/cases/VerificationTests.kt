@@ -5,8 +5,15 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerContext
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.createCheckerContext
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
+import kotlinx.kover.gradle.plugin.test.functional.framework.runner.buildFromTemplate
+import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
+import org.junit.jupiter.api.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 internal class VerificationTests {
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
@@ -192,6 +199,18 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
         }
 
         run("koverVerify")
+    }
+
+    /**
+     * In the common verify config, rules are declared that always lead to an error.
+     * Verification of the Android build variant should use these rules and failed.
+     */
+    @Test
+    fun testAndroidInverseOrder() {
+        val buildSource = buildFromTemplate("android-common-verify")
+        val build = buildSource.generate()
+        val buildResult = build.runWithParams(":app:koverVerifyRelease")
+        assertFalse(buildResult.isSuccessful)
     }
 
 }
