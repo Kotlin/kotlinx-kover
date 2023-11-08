@@ -32,7 +32,7 @@ Binary reports are presented in `ic` format, and can later be used in the [Kover
 You'll need to pass the system property `kover.offline.report.path` to the application with the path where you want a binary report to be saved.
 
 If this property is specified, then at the end of the JVM process,
-the binary coverage report will be saved to a file along the path passed in the parameter value.
+the binary coverage report will be saved to a file at the path passed in the parameter value.
 
 If the file does not exist, it will be created. If a file with that name already exists, it will be overwritten.
 

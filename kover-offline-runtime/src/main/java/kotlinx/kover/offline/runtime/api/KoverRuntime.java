@@ -27,7 +27,7 @@ public class KoverRuntime {
      * JVM property name used to define the path where the offline report will be stored.
      * <p>
      * If this property is specified, then at the end of the JVM process,
-     * the binary coverage report will be saved to a file along the path passed in the parameter value.
+     * the binary coverage report will be saved to a file at the path passed in the parameter value.
      * <p>
      *  If the file does not exist, it will be created. If a file with that name already exists, it will be overwritten.
      */
