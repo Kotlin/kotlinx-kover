@@ -8,3 +8,9 @@ plugins {
 dependencies {
     kover(project(":app"))
 }
+
+kover {
+    variants {
+        create("custom") { }
+    }
+}

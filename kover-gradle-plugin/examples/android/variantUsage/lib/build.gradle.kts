@@ -34,3 +34,9 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.5.0")
     testImplementation("junit:junit:4.13.2")
 }
+
+kover {
+    variants {
+        create("custom") { }
+    }
+}

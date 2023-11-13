@@ -14,8 +14,7 @@ internal fun File.writeBuildScript(projectConfig: TestProjectConfigurator, slice
         writePlugins(projectConfig.plugins, slice)
         writeRepositories(projectConfig.repositories)
         writeDependencies(projectConfig.projectDependencies, slice)
-        writeBlocks(projectConfig.rawBlocks)
-        writeOverriddenTool(slice)
+        writeBlocks(projectConfig.blocks(), slice)
     }
 }
 
@@ -29,8 +28,8 @@ private fun FormattedWriter.writePlugins(plugins: PluginsConfiguratorImpl, slice
             val name = when {
                 language == ScriptLanguage.GROOVY && type == KotlinPluginType.JVM -> """id "org.jetbrains.kotlin.jvm""""
                 language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTIPLATFORM -> """id "org.jetbrains.kotlin.multiplatform""""
-                language == ScriptLanguage.KOTLIN && type == KotlinPluginType.JVM -> """kotlin("jvm")"""
-                language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTIPLATFORM -> """kotlin("multiplatform")"""
+                language == ScriptLanguage.KTS && type == KotlinPluginType.JVM -> """kotlin("jvm")"""
+                language == ScriptLanguage.KTS && type == KotlinPluginType.MULTIPLATFORM -> """kotlin("multiplatform")"""
                 else -> throw Exception("Unsupported test combination: language $language and project type $type")
             }
             val version = plugins.kotlinVersion?.let { """version "$it"""" } ?: ""
@@ -38,7 +37,7 @@ private fun FormattedWriter.writePlugins(plugins: PluginsConfiguratorImpl, slice
         }
 
         if (plugins.useKover) {
-            val name = if (language == ScriptLanguage.KOTLIN) {
+            val name = if (language == ScriptLanguage.KTS) {
                 """id("org.jetbrains.kotlinx.kover")"""
             } else {
                 """id "org.jetbrains.kotlinx.kover""""
@@ -67,8 +66,8 @@ private fun FormattedWriter.writeDependencies(koverDependencies: List<String>, s
     val template = when {
         language == ScriptLanguage.GROOVY && type == KotlinPluginType.JVM -> GROOVY_JVM_DEPS
         language == ScriptLanguage.GROOVY && type == KotlinPluginType.MULTIPLATFORM -> GROOVY_MPP_DEPS
-        language == ScriptLanguage.KOTLIN && type == KotlinPluginType.JVM -> KOTLIN_JVM_DEPS
-        language == ScriptLanguage.KOTLIN && type == KotlinPluginType.MULTIPLATFORM -> KOTLIN_MPP_DEPS
+        language == ScriptLanguage.KTS && type == KotlinPluginType.JVM -> KOTLIN_JVM_DEPS
+        language == ScriptLanguage.KTS && type == KotlinPluginType.MULTIPLATFORM -> KOTLIN_MPP_DEPS
         else -> throw Exception("Unsupported test combination: language $language and project type $type")
     }
     template.replace(DEPS_PLACEHOLDER, subprojectsPart).lines().forEach {
@@ -84,23 +83,12 @@ private fun FormattedWriter.writeDependencies(koverDependencies: List<String>, s
     }
 }
 
-private fun FormattedWriter.writeBlocks(rawBlocks: List<String>) {
-    rawBlocks.forEach {
-        text(it)
+private fun FormattedWriter.writeBlocks(rawBlocks: List<(BuildSlice, String) -> String>, slice: BuildSlice) {
+    val gradleVersion = overriddenGradleVersion ?: defaultGradleVersion
+    rawBlocks.forEach { block ->
+        text(block(slice, gradleVersion))
     }
 }
-
-private fun FormattedWriter.writeOverriddenTool(slice: BuildSlice) {
-    val vendor = slice.toolVendor ?: return
-
-    call("kover") {
-        val koverWriter = KoverWriter(this)
-        if (vendor == CoverageToolVendor.JACOCO) {
-            koverWriter.useJacoco()
-        }
-    }
-}
-
 
 private const val DEPS_PLACEHOLDER = "/*DEPS*/"
 

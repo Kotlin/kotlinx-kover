@@ -62,7 +62,11 @@ internal class MultiProjectTests {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                disable()
+                variants {
+                    instrumentation {
+                        excludeAll.set(true)
+                    }
+                }
             }
         }
 
@@ -70,7 +74,11 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                disable()
+                variants {
+                    instrumentation {
+                        excludeAll.set(true)
+                    }
+                }
             }
         }
 
@@ -91,8 +99,10 @@ internal class MultiProjectTests {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                excludeTests{
-                    tasks(defaultTestTaskName(slice.type))
+                variants {
+                    testTasks {
+                        excluded.add(defaultTestTaskName(slice.type))
+                    }
                 }
             }
         }
@@ -101,8 +111,10 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                excludeTests{
-                    tasks(defaultTestTaskName(slice.type))
+                variants {
+                    testTasks {
+                        excluded.add(defaultTestTaskName(slice.type))
+                    }
                 }
             }
         }

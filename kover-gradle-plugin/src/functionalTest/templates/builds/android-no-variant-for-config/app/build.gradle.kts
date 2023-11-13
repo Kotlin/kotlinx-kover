@@ -48,8 +48,10 @@ dependencies {
  * Kover configs
  */
 
-koverReport {
-    androidReports("unexisted") {
-        // any config
+kover {
+    reports {
+        variant("unexisted") {
+            // any config
+        }
     }
 }

@@ -48,28 +48,25 @@ dependencies {
  * Kover configs
  */
 
-koverReport {
-    defaults {
-        mergeWith("release")
-    }
-
-    androidReports("release") {
-        // filters for all report types only of 'release' build type
-        filters {
-            excludes {
-                classes(
-                        "*Fragment",
-                        "*Fragment\$*",
-                        "*Activity",
-                        "*Activity\$*",
-                        "*.databinding.*",
-                        "*.BuildConfig",
-
-                        // excludes debug classes
-                        "*.DebugUtil"
-                )
-            }
+kover {
+    variants {
+        create("custom") {
+            add("release")
         }
     }
+    reports {
+        variant("release") {
+            // filters for all report types only of 'release' build type
+            filters {
+                excludes {
+                    androidGeneratedClasses()
+                    classes(
+                        // excludes debug classes
+                        "*.DebugUtil"
+                    )
+                }
+            }
+        }
 
+    }
 }

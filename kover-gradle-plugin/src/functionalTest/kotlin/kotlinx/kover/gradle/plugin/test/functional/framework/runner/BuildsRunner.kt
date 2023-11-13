@@ -129,6 +129,8 @@ private class GradleBuildImpl(
             gradleArgs += "--no-daemon"
         }
 
+        gradleArgs += "--stacktrace"
+
         logInfo("Run Gradle commands $gradleArgs for project '${targetDir.canonicalPath}' with wrapper '${env.wrapperDir.canonicalPath}'")
 
         val envVars: MutableMap<String, String> = mutableMapOf()

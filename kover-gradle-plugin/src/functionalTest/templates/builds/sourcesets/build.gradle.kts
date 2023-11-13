@@ -10,8 +10,10 @@ repositories {
 sourceSets.create("extra")
 
 kover {
-    excludeSourceSets {
-        names("extra")
+    variants {
+        sources {
+            excludedSourceSets.add("extra")
+        }
     }
 }
 

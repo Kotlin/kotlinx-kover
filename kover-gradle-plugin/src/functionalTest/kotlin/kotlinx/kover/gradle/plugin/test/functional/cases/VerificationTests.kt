@@ -21,17 +21,19 @@ internal class VerificationTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                verify {
-                    rule("test rule") {
-                        bound {
-                            minValue = 50
-                            maxValue = 60
-                        }
-                        bound {
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 2
-                            maxValue = 10
+            kover{
+                reports {
+                    verify {
+                        rule("test rule") {
+                            bound {
+                                min.set(50)
+                                max.set(60)
+                            }
+                            bound {
+                                aggregationForGroup.set(AggregationType.COVERED_COUNT)
+                                min.set(2)
+                                max.set(10)
+                            }
                         }
                     }
                 }
@@ -46,48 +48,50 @@ internal class VerificationTests {
         addProjectWithKover {
             sourcesFrom("verification")
 
-            koverReport {
-                verify {
-                    rule("counts rule") {
-                        bound {
-                            minValue = 58
-                            maxValue = 60
+            kover {
+                reports {
+                    verify {
+                        rule("counts rule") {
+                            bound {
+                                min.set(58)
+                                max.set(60)
+                            }
+                            bound {
+                                aggregationForGroup.set(AggregationType.COVERED_COUNT)
+                                min.set(2)
+                                max.set(3)
+                            }
                         }
-                        bound {
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 2
-                            maxValue = 3
+                        rule("fully uncovered instructions by classes") {
+                            groupBy.set(GroupingEntityType.CLASS)
+                            bound {
+                                coverageUnits.set(MetricType.INSTRUCTION)
+                                aggregationForGroup.set(AggregationType.MISSED_PERCENTAGE)
+                                min.set(100)
+                            }
                         }
-                    }
-                    rule("fully uncovered instructions by classes") {
-                        entity = GroupingEntityType.CLASS
-                        bound {
-                            metric = MetricType.INSTRUCTION
-                            aggregation = AggregationType.MISSED_PERCENTAGE
-                            minValue = 100
+                        rule("fully covered instructions by packages") {
+                            groupBy.set(GroupingEntityType.PACKAGE)
+                            bound {
+                                coverageUnits.set(MetricType.INSTRUCTION)
+                                aggregationForGroup.set(AggregationType.COVERED_PERCENTAGE)
+                                min.set(100)
+                            }
                         }
-                    }
-                    rule("fully covered instructions by packages") {
-                        entity = GroupingEntityType.PACKAGE
-                        bound {
-                            metric = MetricType.INSTRUCTION
-                            aggregation = AggregationType.COVERED_PERCENTAGE
-                            minValue = 100
+                        rule("branches by classes") {
+                            groupBy.set(GroupingEntityType.CLASS)
+                            bound {
+                                coverageUnits.set(MetricType.BRANCH)
+                                aggregationForGroup.set(AggregationType.COVERED_COUNT)
+                                min.set(1000)
+                            }
                         }
-                    }
-                    rule("branches by classes") {
-                        entity = GroupingEntityType.CLASS
-                        bound {
-                            metric = MetricType.BRANCH
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 1000
-                        }
-                    }
-                    rule("missed packages") {
-                        entity = GroupingEntityType.PACKAGE
-                        bound {
-                            aggregation = AggregationType.MISSED_COUNT
-                            maxValue = 1
+                        rule("missed packages") {
+                            groupBy.set(GroupingEntityType.PACKAGE)
+                            bound {
+                                aggregationForGroup.set(AggregationType.MISSED_COUNT)
+                                max.set(1)
+                            }
                         }
                     }
                 }
@@ -153,11 +157,13 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                verify {
-                    rule("root rule") {
-                        bound {
-                            minValue = 99
+            kover {
+                reports {
+                    verify {
+                        rule("root rule") {
+                            bound {
+                                min.set(99)
+                            }
                         }
                     }
                 }
@@ -177,19 +183,21 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                verify {
-                    rule("root rule") {
-                        bound {
-                            minValue = 99
+            kover {
+                reports {
+                    verify {
+                        rule("root rule") {
+                            bound {
+                                min.set(99)
+                            }
                         }
-                    }
 
-                    defaults {
-                        verify {
-                            rule("root rule") {
-                                bound {
-                                    minValue = 10
+                        total {
+                            verify {
+                                rule("root rule") {
+                                    bound {
+                                        min.set(10)
+                                    }
                                 }
                             }
                         }

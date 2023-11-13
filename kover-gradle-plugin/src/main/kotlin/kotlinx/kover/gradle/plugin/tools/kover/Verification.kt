@@ -97,11 +97,9 @@ private fun groupRules(
     val groupedMap = mutableMapOf<ReportFilters, MutableList<VerificationRule>>()
 
     allRules.forEach {
-        val filters = it.filters ?: commonFilters
-
-        val excludesClasses = filters.excludesClasses
-        val includesClasses = filters.includesClasses
-        val excludesAnnotations = filters.excludesAnnotations
+        val excludesClasses = commonFilters.excludesClasses
+        val includesClasses = commonFilters.includesClasses
+        val excludesAnnotations = commonFilters.excludesAnnotations
 
         val reportFilters = ReportFilters(includesClasses, emptySet(), excludesClasses, excludesAnnotations)
         groupedMap.computeIfAbsent(reportFilters) { mutableListOf() } += it

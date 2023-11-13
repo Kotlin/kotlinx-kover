@@ -4,71 +4,44 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
-import kotlinx.kover.gradle.plugin.commons.CompilationUnit
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
+import kotlinx.kover.gradle.plugin.appliers.origin.LanguageCompilation
+import kotlinx.kover.gradle.plugin.appliers.origin.CompilationDetails
 import kotlinx.kover.gradle.plugin.util.DynamicBean
 import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileCollection
-import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 
-/**
- * Extract JVM compilation unit form Kotlin compilation ([this]).
- */
-internal inline fun DynamicBean.asJvmCompilationUnit(
-    excludeJava: Boolean,
+internal fun Iterable<DynamicBean>.jvmCompilations(
     isJavaOutput: (File) -> Boolean
-): CompilationUnit {
-    val sources = beanCollection("allKotlinSourceSets").flatMap {
-        it["kotlin"].valueCollection<File>("srcDirs")
-    }.toSet()
-
-    val outputs = get("output").value<ConfigurableFileCollection>("classesDirs").files.filterNot {
-        excludeJava && isJavaOutput(it)
-    }.toSet()
-
-    val compileTasks = mutableListOf<Task>()
-    compileTasks += value<Task>("compileKotlinTask")
-    if (!excludeJava) {
-        valueOrNull<TaskProvider<Task>?>("compileJavaTaskProvider")?.orNull?.let { task -> compileTasks += task }
-    }
-
-    return CompilationUnit(sources, outputs, compileTasks)
-}
-
-internal fun DynamicBean.extractJvmCompilations(
-    koverExtension: KoverProjectExtensionImpl,
-    isJavaOutput: (File) -> Boolean
-): Map<String, CompilationUnit> {
-    if (koverExtension.disabled) {
-        // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
-        return emptyMap()
-    }
-
-    val compilations = this.beanCollection("compilations").filter {
-        // always ignore test source set by default
-        val name = it.value<String>("name")
-        name != SourceSet.TEST_SOURCE_SET_NAME
-                // ignore specified JVM source sets
-                && name !in koverExtension.sourceSets.sourceSets
-    }
-
-    return compilations.associate { compilation ->
+): Map<String, CompilationDetails> {
+    return associate { compilation ->
         val name = compilation.value<String>("name")
-        name to extractJvmCompilation(koverExtension, compilation, isJavaOutput)
+        name to extractJvmCompilation(compilation, isJavaOutput)
     }
 }
 
 private fun extractJvmCompilation(
-    koverExtension: KoverProjectExtensionImpl,
     compilation: DynamicBean,
     isJavaOutput: (File) -> Boolean
-): CompilationUnit {
-    return if (koverExtension.disabled) {
-        // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
-        CompilationUnit()
-    } else {
-        compilation.asJvmCompilationUnit(koverExtension.excludeJava, isJavaOutput)
-    }
+): CompilationDetails {
+    val sources = compilation.beanCollection("allKotlinSourceSets").flatMap<DynamicBean, File> {
+        it["kotlin"].valueCollection("srcDirs")
+    }.toSet()
+
+    val kotlinOutputs = compilation["output"].value<ConfigurableFileCollection>("classesDirs").files.filterNot<File> {
+        isJavaOutput(it)
+    }.toSet()
+
+    val javaOutputs = compilation["output"].value<ConfigurableFileCollection>("classesDirs").files.filter<File> {
+        isJavaOutput(it)
+    }.toSet()
+
+    val kotlinCompileTask = compilation.value<Task>("compileKotlinTask")
+    val javaCompileTask = compilation.valueOrNull<TaskProvider<Task>?>("compileJavaTaskProvider")?.orNull
+
+    val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
+    val java = LanguageCompilation(javaOutputs, javaCompileTask)
+
+    return CompilationDetails(sources, kotlin, java)
 }

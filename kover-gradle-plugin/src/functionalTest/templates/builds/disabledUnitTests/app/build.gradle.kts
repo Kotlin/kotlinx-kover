@@ -49,38 +49,27 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 
-koverReport {
-    // filters for all report types of all build variants
-    filters {
-        excludes {
-            classes(
-                "*Fragment",
-                "*Fragment\$*",
-                "*Activity",
-                "*Activity\$*",
-                "*.databinding.*",
-                "*.BuildConfig"
-            )
-        }
-    }
-
-    androidReports("release") {
-        // filters for all report types only of 'release' build type
+kover {
+    reports {
+        // filters for all report types of all build variants
         filters {
             excludes {
-                classes(
-                        "*Fragment",
-                        "*Fragment\$*",
-                        "*Activity",
-                        "*Activity\$*",
-                        "*.databinding.*",
-                        "*.BuildConfig",
+                androidGeneratedClasses()
+            }
+        }
 
+        variant("release") {
+            // filters for all report types only of 'release' build type
+            filters {
+                excludes {
+                    androidGeneratedClasses()
+
+                    classes(
                         // excludes debug classes
                         "*.DebugUtil"
-                )
+                    )
+                }
             }
         }
     }
-
 }

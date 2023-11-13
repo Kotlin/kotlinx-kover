@@ -159,7 +159,7 @@ koverReport {
             onCheck = false
             
             // directory for HTML report
-            setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+            htmlDir = layout.buildDirectory.dir("my-project-report/html-result")
     
             // overriding filters only for the HTML report
             filters {

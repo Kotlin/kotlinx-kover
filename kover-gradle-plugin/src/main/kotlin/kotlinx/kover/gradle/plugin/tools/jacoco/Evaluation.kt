@@ -19,7 +19,7 @@ import java.math.BigDecimal
 
 internal fun ReportContext.printJacocoCoverage(request: CoverageRequest, outputFile: File) {
     val bound = VerificationBound(ONE_HUNDRED, BigDecimal.ZERO, request.metric, request.aggregation)
-    val failRule = VerificationRule(true, null, null, request.entity, listOf(bound))
+    val failRule = VerificationRule(true, "", request.entity, listOf(bound))
 
     val violations = doJacocoVerify(listOf(failRule))
     if (violations.isEmpty()) {

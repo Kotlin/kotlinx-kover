@@ -8,10 +8,6 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerCont
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.ExamplesTest
 
 internal class ExamplesBuildTests {
-    @ExamplesTest("jvm/defaults")
-    fun CheckerContext.jvmDefaultValues() {
-        // build only
-    }
 
     @ExamplesTest("jvm/merged")
     fun CheckerContext.jvmMerged() {

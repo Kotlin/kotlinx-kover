@@ -7,18 +7,19 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
 internal class VariantUsageTests {
-    @ExamplesTest("android/variantUsage", [":app:koverXmlReport"])
+    @ExamplesTest("android/variantUsage", [":app:koverXmlReportCustom"])
     fun CheckerContext.testAndroidVariantUsage() {
         subproject(":app") {
-            xmlReport {
+            xmlReport("custom") {
                 // check test tasks
                 checkOutcome(":app:testDebugUnitTest", "SUCCESS")
                 checkOutcome(":lib:testDebugUnitTest", "SUCCESS")
 
                 // check artifact generation tasks
                 checkOutcome(":app:koverGenerateArtifactDebug", "SUCCESS")
+                checkOutcome(":app:koverGenerateArtifactCustom", "SUCCESS")
                 checkOutcome(":lib:koverGenerateArtifactDebug", "SUCCESS")
-                checkOutcome(":app:koverGenerateArtifact", "SUCCESS")
+                checkOutcome(":lib:koverGenerateArtifactCustom", "SUCCESS")
 
                 classCounter("kotlinx.kover.test.android.DebugUtil").assertFullyCovered()
                 classCounter("kotlinx.kover.test.android.lib.DebugUtil").assertFullyCovered()
@@ -28,9 +29,9 @@ internal class VariantUsageTests {
         }
     }
 
-    @ExamplesTest("android/multiplatform", [":koverXmlReport"])
+    @ExamplesTest("android/multiplatform", [":koverXmlReportCustom"])
     fun CheckerContext.testMultiplatformVariantUsage() {
-        xmlReport {
+        xmlReport("custom") {
             // check test tasks
             checkOutcome(":app:testDebugUnitTest", "SUCCESS")
             checkOutcome(":lib:testDebugUnitTest", "SUCCESS")
@@ -38,7 +39,7 @@ internal class VariantUsageTests {
             // check artifact generation tasks
             checkOutcome(":lib:koverGenerateArtifactDebug", "SUCCESS")
             checkOutcome(":app:koverGenerateArtifactDebug", "SUCCESS")
-            checkOutcome(":app:koverGenerateArtifact", "SUCCESS")
+            checkOutcome(":app:koverGenerateArtifactCustom", "SUCCESS")
 
             // check android classes from :lib
             classCounter("kotlinx.kover.test.android.lib.DebugUtil").assertFullyCovered()
@@ -51,7 +52,7 @@ internal class VariantUsageTests {
         }
     }
 
-    @ExamplesTest("android/flavors", [":app:koverXmlReport"])
+    @ExamplesTest("android/flavors", [":app:koverXmlReportCustom"])
     fun CheckerContext.testFlavoursFallbacksAndMissingDimensions() {
         // check test tasks
         checkOutcome(":app:testApp1AppDebugUnitTest", "SUCCESS")
@@ -60,7 +61,7 @@ internal class VariantUsageTests {
         // check artifact generation tasks
         checkOutcome(":app:koverGenerateArtifactApp1AppDebug", "SUCCESS")
         checkOutcome(":lib:koverGenerateArtifactLib1LibDebug", "SUCCESS")
-        checkOutcome(":app:koverGenerateArtifact", "SUCCESS")
+        checkOutcome(":app:koverGenerateArtifactCustom", "SUCCESS")
     }
 
 }

@@ -4,11 +4,13 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.configurator
 
+import kotlinx.kover.gradle.plugin.commons.CoverageToolVendor
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.kotlinVersionCurrent
-import kotlinx.kover.gradle.plugin.test.functional.framework.writer.*
+import kotlinx.kover.gradle.plugin.test.functional.framework.mirroring.printGradleDsl
+import org.gradle.api.Project
 
 internal fun createConfigurator(): BuildConfigurator {
     return TestBuildConfigurator()
@@ -63,11 +65,11 @@ private open class TestBuildConfigurator : BuildConfigurator {
         projects[path] = TestProjectConfigurator().also(generator)
     }
 
-    override fun addProjectWithKover(path: String, name: String, generator: ProjectConfigurator.() -> Unit) {
+    override fun addProjectWithKover(path: String, name: String, kotlinVersion: String?, generator: ProjectConfigurator.() -> Unit) {
         addProject(path, name) {
             plugins {
                 if (path == ":") {
-                    kotlin(kotlinVersionCurrent)
+                    kotlin(kotlinVersion ?: kotlinVersionCurrent)
                     kover(koverVersionCurrent)
                 } else {
                     kotlin()
@@ -114,7 +116,7 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
     val sourceTemplates: MutableSet<String> = mutableSetOf()
     val plugins: PluginsConfiguratorImpl = PluginsConfiguratorImpl()
     val projectDependencies: MutableList<String> = mutableListOf()
-    val rawBlocks: MutableList<String> = mutableListOf()
+    val rawBlocks: MutableList<(BuildSlice, String) -> String> = mutableListOf()
 
     private val repositoriesConfigurator: TestRepositoriesConfigurator = TestRepositoriesConfigurator()
 
@@ -129,29 +131,10 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
         repositoriesConfigurator.also(block)
     }
 
-    override fun kover(config: KoverProjectExtension.() -> Unit) {
-        val builder = StringBuilder()
-        val writer = FormattedWriter(builder::append)
-
-        writer.call("kover") {
-            val koverWriter = KoverWriter(this)
-            config(koverWriter)
+    override fun kover(config: KoverExtension.(Project) -> Unit) {
+        rawBlocks += { slice, gradle ->
+            printGradleDsl<KoverExtension, Project>(slice.language, gradle, "kover", config)
         }
-
-        rawBlocks += builder.toString()
-    }
-
-    override fun koverReport(config: KoverReportExtension.() -> Unit) {
-        val builder = StringBuilder()
-        val writer = FormattedWriter(builder::append)
-
-        writer.call("koverReport") {
-            val koverWriter = KoverReportExtensionWriter(this)
-            config(koverWriter)
-        }
-
-
-        rawBlocks += builder.toString()
     }
 
 
@@ -161,6 +144,20 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
 
     override fun dependencyKover(path: String) {
         projectDependencies += path
+    }
+
+    fun blocks(): List<(BuildSlice, String) -> String> {
+        // block with JaCoCo
+        return rawBlocks + { slice, gradleVersion ->
+            val vendor = slice.toolVendor
+            if (vendor == CoverageToolVendor.JACOCO) {
+                printGradleDsl<KoverExtension>(slice.language, gradleVersion, "kover") {
+                    useJacoco()
+                }
+            } else {
+                ""
+            }
+        }
     }
 }
 

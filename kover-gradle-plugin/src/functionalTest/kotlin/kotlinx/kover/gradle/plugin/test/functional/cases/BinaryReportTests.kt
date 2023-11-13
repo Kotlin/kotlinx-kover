@@ -1,7 +1,6 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.BuildConfigurator
-import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.fileInBuildDir
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTest
 import kotlin.test.assertTrue
 
@@ -34,12 +33,16 @@ internal class BinaryReportTests {
     @GeneratedTest
     fun BuildConfigurator.testOnCheck() {
         addProjectWithKover {
-            koverReport {
-                defaults {
-                    binary {
-                        onCheck.set(true)
+            kover {
+
+                reports {
+                    total {
+                        binary {
+                            onCheck.set(true)
+                        }
                     }
                 }
+
             }
         }
 
@@ -53,10 +56,12 @@ internal class BinaryReportTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                defaults {
-                    binary {
-                        file.set(fileInBuildDir("custom/fileName"))
+            kover {
+                reports {
+                    total {
+                        binary {
+                            file.set(it.layout.buildDirectory.file("custom/fileName"))
+                        }
                     }
                 }
             }

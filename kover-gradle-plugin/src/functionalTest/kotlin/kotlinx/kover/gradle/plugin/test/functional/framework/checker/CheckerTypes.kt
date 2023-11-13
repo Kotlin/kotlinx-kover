@@ -39,6 +39,7 @@ internal interface CheckerContext {
     fun checkHtmlReport(variantName: String = "", mustExist: Boolean = true)
     fun checkOutcome(taskNameOrPath: String, vararg expectedOutcome: String)
     fun taskNotCalled(taskNameOrPath: String)
+    fun taskIsCalled(taskNameOrPath: String)
     fun checkDefaultReports(mustExist: Boolean = true)
     fun checkDefaultBinReport(mustExist: Boolean = true)
 }

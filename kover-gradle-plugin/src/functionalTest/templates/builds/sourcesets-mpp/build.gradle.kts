@@ -8,8 +8,10 @@ repositories {
 }
 
 kover {
-    excludeSourceSets {
-        names("extra")
+    variants {
+        sources {
+            excludedSourceSets.add("extra")
+        }
     }
 }
 

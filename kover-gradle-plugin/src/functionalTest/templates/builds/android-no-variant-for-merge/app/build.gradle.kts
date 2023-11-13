@@ -48,8 +48,10 @@ dependencies {
  * Kover configs
  */
 
-koverReport {
-    defaults {
-        mergeWith("unexisted")
+kover {
+    variants {
+        create("custom") {
+            add("unexisted")
+        }
     }
 }

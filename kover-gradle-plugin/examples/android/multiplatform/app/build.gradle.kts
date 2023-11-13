@@ -74,48 +74,40 @@ dependencies {
     kover(project(":lib"))
 }
 
-koverReport {
-    // filters for all report types of all build variants
-    filters {
-        excludes {
-            classes(
-                "*Fragment",
-                "*Fragment\$*",
-                "*Activity",
-                "*Activity\$*",
-                "*.databinding.*",
-                "*.BuildConfig"
-            )
+kover {
+
+    variants {
+        create("custom") {
+
+            add("jvm")
+            /**
+             * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the report variant `custom`.
+             * Thus, information from the 'debug' variant will be included in the `custom` report for this project and any project that specifies this project as a dependency.
+             */
+            addWithDependencies("debug")
         }
     }
 
-    defaults {
-        /**
-         * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the default reports.
-         * Thus, information from the 'debug' variant will be included in the default report for this project and any project that specifies this project as a dependency.
-         *
-         * Since the report already contains classes from the JVM target, they will be supplemented with classes from 'debug' build variant of Android target.
-         */
-        mergeWith("debug")
-    }
-
-    androidReports("release") {
-        // filters for all report types only of 'release' build type
+    reports {
+        // filters for all report types of all build variants
         filters {
             excludes {
-                classes(
-                        "*Fragment",
-                        "*Fragment\$*",
-                        "*Activity",
-                        "*Activity\$*",
-                        "*.databinding.*",
-                        "*.BuildConfig",
-
-                        // excludes debug classes
-                        "*.DebugUtil"
-                )
+                androidGeneratedClasses()
             }
         }
-    }
 
+        variant("release") {
+            // filters for all report types only of 'release' build type
+            filters {
+                excludes {
+                    androidGeneratedClasses()
+                    classes(
+                        // excludes debug classes
+                        "*.DebugUtil"
+                    )
+                }
+            }
+        }
+
+    }
 }

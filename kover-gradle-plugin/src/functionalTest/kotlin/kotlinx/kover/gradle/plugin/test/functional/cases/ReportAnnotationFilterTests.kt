@@ -16,20 +16,22 @@ internal class ReportAnnotationFilterTests {
     fun BuildConfigurator.testExclusions() {
         addProjectWithKover {
             sourcesFrom("annotations-main")
-            koverReport {
-                filters {
-                    excludes {
-                        annotatedBy("org.jetbrains.Exclude", "*ByMask")
+            kover {
+                reports {
+                    filters {
+                        excludes {
+                            annotatedBy("org.jetbrains.Exclude", "*ByMask")
+                        }
                     }
-                }
 
-                verify {
-                    rule {
-                        bound {
-                            metric = LINE
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 9
-                            maxValue = 9
+                    verify {
+                        rule {
+                            bound {
+                                coverageUnits.set(LINE)
+                                aggregationForGroup.set(AggregationType.COVERED_COUNT)
+                                min.set(9)
+                                max.set(9)
+                            }
                         }
                     }
                 }
@@ -55,29 +57,28 @@ internal class ReportAnnotationFilterTests {
     fun BuildConfigurator.testOverride() {
         addProjectWithKover {
             sourcesFrom("annotations-main")
-            koverReport {
-                filters {
-                    excludes {
-                        annotatedBy("org.jetbrains.Exclude", "*ByMask")
+            kover {
+                reports {
+                    filters {
+                        excludes {
+                            annotatedBy("org.jetbrains.Exclude", "*ByMask")
+                        }
                     }
-                }
-                verify {
-                    rule {
+                    verify {
                         filters {
                             // clear all filters
                         }
-
-                        bound {
-                            metric = LINE
-                            aggregation = AggregationType.COVERED_COUNT
-                            minValue = 16
-                            maxValue = 16
+                        rule {
+                            bound {
+                                coverageUnits.set(LINE)
+                                aggregationForGroup.set(AggregationType.COVERED_COUNT)
+                                min.set(15)
+                                max.set(15)
+                            }
                         }
                     }
-                }
 
-                defaults {
-                    xml {
+                    total {
                         filters {
                             excludes {
                                 annotatedBy("org.jetbrains.OverriddenExclude")
@@ -88,7 +89,7 @@ internal class ReportAnnotationFilterTests {
             }
         }
 
-        run("koverXmlReport", "check") {
+        run("koverXmlReport", "koverHtmlReport", "check") {
             xmlReport {
                 methodCounter("org.jetbrains.PartiallyExcludedClass", "function1").assertAbsent()
                 methodCounter("org.jetbrains.PartiallyExcludedClass", "function2").assertFullyCovered()

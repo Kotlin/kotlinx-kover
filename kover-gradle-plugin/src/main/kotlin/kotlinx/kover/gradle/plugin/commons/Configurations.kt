@@ -33,6 +33,18 @@ internal interface VariantNameAttr : Named {
 }
 
 /**
+ * Build type of the Android project.
+ */
+internal interface VariantOriginAttr : Named {
+    companion object {
+        val ATTRIBUTE = Attribute.of(
+            "kotlinx.kover.variant.origin",
+            VariantOriginAttr::class.java
+        )
+    }
+}
+
+/**
  * Path of the project for which the artifact is published.
  */
 internal interface ProjectPathAttr : Named {
@@ -50,7 +62,7 @@ internal interface ProjectPathAttr : Named {
 internal interface BuildTypeAttr : Named {
     companion object {
         val ATTRIBUTE = Attribute.of(
-            "kotlinx.kover.android.build-type",
+            "kotlinx.kover.variant.android.build-type",
             BuildTypeAttr::class.java
         )
     }
@@ -63,7 +75,7 @@ internal interface ProductFlavorAttr : Named {
     companion object {
         fun of(flavorDimension: String): Attribute<ProductFlavorAttr> {
             return Attribute.of(
-                "kotlinx.kover.android.flavor-dimension:$flavorDimension",
+                "kotlinx.kover.variant.android.flavor-dimension:$flavorDimension",
                 ProductFlavorAttr::class.java
             )
         }

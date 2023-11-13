@@ -4,17 +4,13 @@
 
 package kotlinx.kover.gradle.plugin
 
-import kotlinx.kover.api.*
-import kotlinx.kover.gradle.plugin.appliers.ProjectApplier
+import kotlinx.kover.gradle.plugin.appliers.finalizing
+import kotlinx.kover.gradle.plugin.appliers.prepare
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.MINIMUM_GRADLE_VERSION
+import kotlinx.kover.gradle.plugin.locators.ProvidedVariantsLocator
 import kotlinx.kover.gradle.plugin.util.SemVer
 import org.gradle.api.*
 import org.gradle.api.invocation.*
-import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.*
-import org.jetbrains.kotlin.gradle.plugin.extraProperties
-
-private const val LISTENER_ADDED_PROPERTY_NAME = "kover-dependency-listener-added"
 
 /**
  * Gradle Plugin for JVM Coverage Tools.
@@ -29,10 +25,11 @@ class KoverGradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.gradle.checkVersion()
 
-        val applier = ProjectApplier(target)
-        applier.onApply()
-
-        target.addDeprecations()
+        val context = prepare(target)
+        ProvidedVariantsLocator(target) { provided ->
+            // this code will be executed in after evaluate stage, after all used plugins are finalized
+            context.finalizing(provided)
+        }
     }
 
     /**
@@ -47,11 +44,4 @@ class KoverGradlePlugin : Plugin<Project> {
         )
     }
 
-    @Suppress("DEPRECATION")
-    private fun Project.addDeprecations() {
-        extensions.create<KoverMergedConfig>("koverMerged")
-        tasks.withType<Test>().configureEach {
-            this.extensions.create<KoverTaskExtension>("kover")
-        }
-    }
 }

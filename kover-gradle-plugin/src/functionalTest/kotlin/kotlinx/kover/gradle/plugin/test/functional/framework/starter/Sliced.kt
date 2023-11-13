@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.*
 import org.junit.jupiter.params.*
 import org.junit.jupiter.params.provider.*
 import java.lang.reflect.*
-import java.nio.file.*
 import java.util.stream.*
 
 @Target(AnnotationTarget.FUNCTION)
@@ -32,7 +31,7 @@ internal interface SlicedBuildConfigurator : BuildConfigurator {
     val slice: BuildSlice
 }
 
-private val ALL_LANGUAGES = listOf(ScriptLanguage.KOTLIN, ScriptLanguage.GROOVY)
+private val ALL_LANGUAGES = listOf(ScriptLanguage.KTS, ScriptLanguage.GROOVY)
 private val ALL_TOOLS = listOf(CoverageToolVendor.KOVER, CoverageToolVendor.JACOCO)
 private val ALL_TYPES = listOf(KotlinPluginType.JVM, KotlinPluginType.MULTIPLATFORM)
 
@@ -104,7 +103,7 @@ private class SlicedTestArgumentsProvider : ArgumentsProvider {
         }
 
         // filling default values
-        if (languages.isEmpty()) languages += ScriptLanguage.KOTLIN
+        if (languages.isEmpty()) languages += ScriptLanguage.KTS
         if (types.isEmpty()) types += KotlinPluginType.JVM
         if (tools.isEmpty()) tools += null
 

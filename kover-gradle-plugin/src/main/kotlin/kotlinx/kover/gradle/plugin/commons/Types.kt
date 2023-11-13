@@ -8,9 +8,7 @@ import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.*
 import org.gradle.api.file.*
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
-import org.gradle.api.tasks.testing.*
 import org.gradle.workers.WorkerExecutor
 import java.io.*
 import java.math.BigDecimal
@@ -37,11 +35,15 @@ internal enum class KotlinPluginType {
 }
 
 /**
- * Source of reports variant.
+ * Type of report variant.
+ *
+ * A variant can be created based on a specific origin, total for all origins, or it can be declared by a user.
  */
-internal enum class ReportsVariantType {
-    DEFAULT,
-    ANDROID
+internal enum class ReportVariantType {
+    TOTAL,
+    JVM,
+    ANDROID,
+    CUSTOM
 }
 
 /**
@@ -50,99 +52,6 @@ internal enum class ReportsVariantType {
  * If no Kotlin plugin is used in this project, then [type] is `null`.
  */
 internal class AppliedKotlinPlugin(val type: KotlinPluginType?)
-
-/**
- * Set of Kotlin compilations and test on them.
- */
-internal interface CompilationKit {
-    val tests: TaskCollection<Test>
-    val compilations: Provider<Map<String, CompilationUnit>>
-}
-
-/**
- * Grouped JVM compilations and tests running on them.
- */
-internal class JvmCompilationKit(
-    override val tests: TaskCollection<Test>,
-    // source set -> compilation
-    override val compilations: Provider<Map<String, CompilationUnit>>,
-): CompilationKit
-
-/**
- * Grouped named Android compilations and tests running on them.
- *
- * Contains additional information about the build variant taken from the Android Gradle Plugin
- */
-internal class AndroidVariantCompilationKit(
-    val buildVariant: String,
-    val buildType: String,
-    val flavors: List<AndroidFlavor>,
-
-    val fallbacks: AndroidFallbacks,
-
-    /**
-     * The flavors used in case the dependency contains a dimension that is missing in the current project.
-     * Specific only for this build variant.
-     *
-     * map of (dimension > flavor)
-     */
-    val missingDimensions: Map<String, String>,
-
-    override val tests: TaskCollection<Test>,
-    override val compilations: Provider<Map<String, CompilationUnit>>
-): CompilationKit
-
-internal class AndroidFallbacks(
-    /**
-     *  Specifies a sorted list of fallback build types that the
-     *  Kover can try to use when a dependency does not include a
-     *  key build type. Kover selects the first build type that's
-     *  available in the dependency
-     *
-     *  map of (buildtype > fallbacks)
-     *  */
-    val buildTypes: Map<String, List<String>>,
-
-    /**
-     * first loop through all the flavors and collect for each dimension, and each value, its
-     * fallbacks.
-     *
-     * map of (dimension > (requested > fallbacks))
-     */
-    val flavors: Map<String, Map<String, List<String>>>,
-)
-
-/**
- * Flavor in Android Project.
- */
-internal class AndroidFlavor(
-    val dimension: String,
-    val name: String,
-)
-
-/**
- * Atomic portion of information about the building of part of the project.
- */
-internal class CompilationUnit(
-    /**
-     * Directories of sources, used in [compileTasks].
-     */
-    val sources: Set<File> = emptySet(),
-
-    /**
-     * Directories with compiled classes, outputs of [compileTasks].
-     */
-    val outputs: Set<File> = emptySet(),
-
-    /**
-     * In case when no one compile tasks will be triggered,
-     * output dirs will be empty and reporter can't determine project classes.
-     *
-     * So compile tasks must be triggered anyway.
-     */
-    val compileTasks: List<Task> = emptyList(),
-)
-
 
 internal class ReportContext(
     val files: ArtifactContent,
@@ -174,15 +83,8 @@ internal open class VerificationRule @Inject constructor(
     @get:Input
     val isEnabled: Boolean,
 
-    @get:Nested
-    @get:Nullable
-    @get:Optional
-    val filters: ReportFilters?,
-
     @get:Input
-    @get:Nullable
-    @get:Optional
-    val name: String?,
+    val name: String,
 
     @get:Input
     val entityType: GroupingEntityType,

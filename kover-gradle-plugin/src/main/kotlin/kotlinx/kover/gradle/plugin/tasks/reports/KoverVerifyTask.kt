@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.plugin.tasks.reports
 
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
+import kotlinx.kover.gradle.plugin.dsl.tasks.KoverVerifyReport
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.CacheableTask
@@ -13,7 +14,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
-internal abstract class KoverVerifyTask : AbstractKoverReportTask() {
+internal abstract class KoverVerifyTask : AbstractKoverReportTask(), KoverVerifyReport {
     @get:Nested
     abstract val rules: ListProperty<VerificationRule>
 

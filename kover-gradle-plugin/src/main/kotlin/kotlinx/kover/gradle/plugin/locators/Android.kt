@@ -4,54 +4,27 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
+import kotlinx.kover.gradle.plugin.commons.AndroidBuildVariant
 import kotlinx.kover.gradle.plugin.commons.AndroidFallbacks
 import kotlinx.kover.gradle.plugin.commons.AndroidFlavor
-import kotlinx.kover.gradle.plugin.commons.AndroidVariantCompilationKit
-import kotlinx.kover.gradle.plugin.commons.CompilationUnit
-import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
+import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
+import kotlinx.kover.gradle.plugin.appliers.origin.CompilationDetails
 import kotlinx.kover.gradle.plugin.util.DynamicBean
 import kotlinx.kover.gradle.plugin.util.bean
 import kotlinx.kover.gradle.plugin.util.hasSuperclass
-import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.withType
 
-internal fun Project.afterAndroidPluginApplied(afterAndroid: () -> Unit) {
-    val androidComponents = project.extensions.findByName("androidComponents")?.bean()
-        ?: throw KoverCriticalException("Kover requires extension with name 'androidComponents' for project '${project.path}' since it is recognized as Kotlin+Android project")
-
-    val callback = Action<Any> {
-        project.afterEvaluate {
-            afterAndroid()
-        }
-    }
-
-    if (androidComponents.hasFunction("finalizeDsl", callback)) {
-        /*
-        Assumption: `finalizeDsl` is called in the `afterEvaluate` action, in which build variants are created.
-        Therefore,  if an action is added to the queue inside it, it will be executed only after variants are created
-         */
-        androidComponents("finalizeDsl", callback)
-    } else {
-        // for old versions < 7.0 an action is added to the AAA queue.
-        // Since this code is executed after the applying of AGP, there is a high probability that the action will fall into the `afterEvaluate` queue after the actions of the AGP
-        project.afterEvaluate {
-            afterAndroid()
-        }
-    }
-}
 
 /**
  * Locate Android compilation kits for the given Kotlin Target.
  */
 internal fun Project.androidCompilationKits(
     androidExtension: DynamicBean,
-    koverExtension: KoverProjectExtensionImpl,
     kotlinTarget: DynamicBean
-): List<AndroidVariantCompilationKit> {
+): List<AndroidVariantOrigin> {
     val variants = if ("applicationVariants" in androidExtension) {
         androidExtension.beanCollection("applicationVariants")
     } else {
@@ -61,30 +34,25 @@ internal fun Project.androidCompilationKits(
     val fallbacks = findFallbacks(androidExtension)
 
     return variants.map {
-        extractAndroidKit(androidExtension, koverExtension, kotlinTarget, fallbacks, it)
+        extractAndroidKit(androidExtension, kotlinTarget, fallbacks, it)
     }
 }
 
 private fun Project.extractAndroidKit(
     androidExtension: DynamicBean,
-    koverExtension: KoverProjectExtensionImpl,
     kotlinTarget: DynamicBean,
     fallbacks: AndroidFallbacks,
     variant: DynamicBean
-): AndroidVariantCompilationKit {
+): AndroidVariantOrigin {
     val variantName = variant.value<String>("name")
     val compilations = provider {
-        mapOf("main" to extractCompilationOrEmpty(koverExtension, kotlinTarget, variantName))
+       extractCompilation(kotlinTarget, variantName)
     }
 
+    // if `unitTestVariant` not specified for application/library variant (is null) then unit tests are disabled for it
     val unitTestVariantName = variant.beanOrNull("unitTestVariant")?.value<String>("name")
     val tests = tasks.withType<Test>().matching { test ->
-        // if `unitTestVariant` not specified for application/library variant then unit tests are disabled for it
         unitTestVariantName != null
-                // skip all tests from instrumentation if Kover Plugin is disabled for the project
-                && !koverExtension.disabled
-                // skip this test if it disabled by name
-                && test.name !in koverExtension.tests.tasksNames
                 // use only Android unit tests (local tests)
                 && test.hasSuperclass("AndroidUnitTest")
                 // only tests of current application build variant
@@ -102,7 +70,8 @@ private fun Project.extractAndroidKit(
     // merge flavors to get missing dimensions for variant
     val missingDimensions = findMissingDimensions(androidExtension, variant)
 
-    return AndroidVariantCompilationKit(variantName, buildTypeName, flavors, fallbacks, missingDimensions, tests, compilations)
+    val details = AndroidBuildVariant(variantName, buildTypeName, flavors, fallbacks, missingDimensions)
+    return AndroidVariantOrigin(tests, compilations, details)
 }
 
 private fun findMissingDimensions(androidExtension: DynamicBean, variant: DynamicBean): Map<String, String> {
@@ -120,21 +89,15 @@ private fun findMissingDimensions(androidExtension: DynamicBean, variant: Dynami
     }
 }
 
-private fun extractCompilationOrEmpty(
-    koverExtension: KoverProjectExtensionImpl,
+private fun extractCompilation(
     kotlinTarget: DynamicBean,
     variantName: String
-): CompilationUnit {
-    if (koverExtension.disabled) {
-        // If the Kover plugin is disabled, then it does not provide any directories and compilation tasks to its artifacts.
-        return CompilationUnit()
-    }
-
-    val compilation = kotlinTarget.beanCollection("compilations").first {
+): Map<String, CompilationDetails> {
+    val compilations = kotlinTarget.beanCollection("compilations").filter {
         it.value<String>("name") == variantName
     }
 
-    return compilation.asJvmCompilationUnit(koverExtension.excludeJava) {
+    return compilations.jvmCompilations {
         // exclude java classes from report. Expected java class files are placed in directories like
         //   build/intermediates/javac/debug/classes
         it.parentFile.parentFile.name == "javac"

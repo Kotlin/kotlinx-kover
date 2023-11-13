@@ -52,7 +52,7 @@ internal data class CoverageValue(
 internal data class RuleViolations(
     val entityType: GroupingEntityType,
     val bounds: List<BoundViolations>,
-    val name: String? = null
+    val name: String
 )
 
 internal data class BoundViolations(
@@ -68,7 +68,7 @@ internal fun generateErrorMessage(violations: List<RuleViolations>): String {
     val messageBuilder = StringBuilder()
 
     violations.forEach { rule ->
-        val namedRule = if (rule.name != null) "Rule '${rule.name}'" else "Rule"
+        val namedRule = if (rule.name.isNotEmpty()) "Rule '${rule.name}'" else "Rule"
 
         if (rule.bounds.size == 1) {
             messageBuilder.appendLine("$namedRule violated: ${rule.bounds[0].format(rule)}")

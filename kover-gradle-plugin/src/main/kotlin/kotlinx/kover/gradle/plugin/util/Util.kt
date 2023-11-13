@@ -32,7 +32,7 @@ internal inline fun <T : Any> Boolean.ifFalse(block: () -> T): T? {
 }
 
 /**
- * Replaces characters `*` or `.` to `.*` and `.` regexp characters.
+ * Replaces characters `*` or `.` to `.*`, `#` to `[^.]*` and `?` to `.` regexp characters.
  */
 internal fun String.wildcardsToRegex(): String {
     // in most cases, the characters `*` or `.` will be present therefore, we increase the capacity in advance
@@ -41,8 +41,9 @@ internal fun String.wildcardsToRegex(): String {
     forEach { char ->
         when (char) {
             in regexMetacharactersSet -> builder.append('\\').append(char)
-            '*' -> builder.append('.').append("*")
+            '*' -> builder.append(".*")
             '?' -> builder.append('.')
+            '#' -> builder.append("[^.]*")
             else -> builder.append(char)
         }
     }
