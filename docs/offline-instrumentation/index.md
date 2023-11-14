@@ -18,7 +18,7 @@ must be passed to Kover CLI as arguments, see [Kover CLI](../cli#offline-instrum
 
 To run classes instrumented offline, you'll need to add `org.jetbrains.kotlinx:kover-offline` artifact to the application's classpath.
 
-There are two ways to get coverage:
+There are several ways to get coverage:
 
 - [Save binary report file when the JVM is shut down](#save-binary-report-on-shut-down)
 - [Save binary report in runtime by Kover API](#save-binary-report-in-runtime)
@@ -62,6 +62,11 @@ This can be done by specifying the directories where the class-files are stored,
 Calling these methods is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
 
 See [example](#example-of-using-the-api).
+
+## Logging
+`org.jetbrains.kotlinx:kover-offline` has its own logging system.
+
+By default, error messages are saved to a file in the working directory with the name `kover-offline.log`. To change the path to this file, pass the `kover.offline.log.file.path` system property with new path.
 
 ## Examples
 
@@ -167,7 +172,7 @@ tasks.register("koverReport") {
     val reportFile = Files.createTempFile("kover-report-", ".ic").toFile()
 
     // save binary report to file
-    KoverRuntime.saveReport(reportFile.canonicalPath)
+    KoverRuntime.saveReport(reportFile)
     
     // get binary report as byte array
     val bytes = KoverRuntime.getReport()

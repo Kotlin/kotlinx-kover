@@ -35,9 +35,9 @@ class KoverInit {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
                 try {
-                    KoverRuntime.saveReport(fileName);
+                    KoverRuntime.saveReport(new File(fileName));
                 } catch (Throwable e) {
-                    System.out.println("Kover error: failed to save report file '" + fileName +"': " + e.getMessage());
+                    System.err.println("Kover error: failed to save report file '" + fileName +"': " + e.getMessage());
                 }
             }
         }));

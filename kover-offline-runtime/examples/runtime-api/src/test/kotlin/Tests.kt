@@ -15,7 +15,7 @@ class Tests {
         val reportFile = Files.createTempFile("kover-report-", ".ic").toFile()
 
         // save binary report to file
-        KoverRuntime.saveReport(reportFile.canonicalPath)
+        KoverRuntime.saveReport(reportFile)
 
         // get binary report as byte array
         val bytes = KoverRuntime.getReport()

@@ -74,18 +74,16 @@ public class KoverRuntime {
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
      *
      *
-     * @param fileName name of the file to save binary report
+     * @param file the file to save binary report
      * @throws IOException in case of any error working with files
      */
-    public static void saveReport(String fileName) throws IOException {
-        final File file = new File(fileName);
-
+    public static void saveReport(File file) throws IOException {
         if (!file.exists()) {
             file.getParentFile().mkdirs();
             file.createNewFile();
         }
 
-        try (DataOutputStream outputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(file)))) {
+        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)); DataOutputStream outputStream = new DataOutputStream(out)) {
             CoverageRuntime.dumpIcReport(outputStream);
         }
     }
