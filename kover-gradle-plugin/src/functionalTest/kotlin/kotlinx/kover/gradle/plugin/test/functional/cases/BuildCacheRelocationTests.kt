@@ -15,10 +15,12 @@ class BuildCacheRelocationTests {
     fun test() {
         val cachePath = Files.createTempDirectory("test-gradle-cache-").toFile().canonicalPath
 
+        // escape \ symbol for Windows FS
+        val escapedPath = cachePath.replace("\\", "\\\\")
         val cachePatch = """
             buildCache {
                 local {
-                    directory = "$cachePath"
+                    directory = "$escapedPath"
                 }
             }"""
 
