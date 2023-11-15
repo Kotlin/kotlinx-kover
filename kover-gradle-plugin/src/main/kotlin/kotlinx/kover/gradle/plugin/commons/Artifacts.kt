@@ -54,7 +54,7 @@ internal fun ArtifactContent.write(artifactFile: File, rootDir: File) {
  * Read Kover artifact content from the file.
  */
 internal fun File.parseArtifactFile(rootDir: File): ArtifactContent {
-    if (!exists()) return ArtifactContent(emptySet(), emptySet(), emptySet())
+    if (!exists() || !name.endsWith(".artifact")) return ArtifactContent(emptySet(), emptySet(), emptySet())
 
     val iterator = readLines().iterator()
 
