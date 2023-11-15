@@ -2,13 +2,28 @@ package org.jetbrains.kotlinx.kover
 
 import kotlinx.kover.offline.runtime.api.KoverRuntime
 import java.io.File
+import java.nio.file.Files
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 class Tests {
     @Test
     fun test() {
         MainClass().readState()
+
+        val reportFile = Files.createTempFile("kover-report-", ".ic").toFile()
+
+        // save binary report to file
+        KoverRuntime.saveReport(reportFile)
+
+        // get binary report as byte array
+        val bytes = KoverRuntime.getReport()
+
+        // check reports are same
+        val bytesFromFile = reportFile.readBytes()
+        assertContentEquals(bytesFromFile, bytes)
+
 
         val outputDir = File(System.getProperty("output.dir"))
         val coverage = KoverRuntime.collectByDirs(listOf(outputDir))

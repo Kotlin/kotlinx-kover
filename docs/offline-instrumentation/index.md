@@ -18,26 +18,55 @@ must be passed to Kover CLI as arguments, see [Kover CLI](../cli#offline-instrum
 
 To run classes instrumented offline, you'll need to add `org.jetbrains.kotlinx:kover-offline` artifact to the application's classpath.
 
-There are two ways to get coverage:
+There are several ways to get coverage:
 
-- Run tests to get a binary report file, then run [Kover CLI](../cli#generating-reports) to get HTML or XML report from binary report
-- Call `KoverRuntime.collectByDirs` or `KoverRuntime.collect` in the same process after the tests are finished
+- [Save binary report file when the JVM is shut down](#save-binary-report-on-shut-down)
+- [Save binary report in runtime by Kover API](#save-binary-report-in-runtime)
+- [Get binary report in runtime by Kover API](#get-binary-report-in-runtime)
+- [Get coverage details in runtime by Kover API](#get-coverage-details-in-runtime)
 
-One or both of these ways can be used at the same time.
+Binary reports are presented in `ic` format, and can later be used in the [Kover CLI](../cli#generating-reports) to generate HTML or XML reports.
 
-#### Binary report file
+#### Save binary report on shut down
 
-You'll also need to pass the system property `kover.offline.report.path` to the application with the path where you want a binary report to be saved.
-This binary file can be used to generate human-readable reports using [Kover CLI](../cli#generating-reports).
+You'll need to pass the system property `kover.offline.report.path` to the application with the path where you want a binary report to be saved.
 
-#### In-process reporting
+If this property is specified, then at the end of the JVM process,
+the binary coverage report will be saved to a file at the path passed in the parameter value.
+
+If the file does not exist, it will be created. If a file with that name already exists, it will be overwritten.
+
+#### Save binary report in runtime
+
+Inside the same JVM process in which the tests were run, call Java static method `kotlinx.kover.offline.runtime.api.KoverRuntime.saveReport`.
+
+If the file does not exist, it will be created. If a file already exists, it will be overwritten.
+
+Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
+
+#### Get binary report in runtime
+
+Inside the same JVM process in which the tests were run, call Java static method `kotlinx.kover.offline.runtime.api.KoverRuntime.getReport`.
+This method will return byte array with a binary coverage report, which can be saved to a file later.
+It is important that this byte array cannot be appended to an already existing file, and must be saved to a separate file.
+
+Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
+
+#### Get coverage details in runtime
 
 Inside the same JVM process in which the tests were run, call Java static method `kotlinx.kover.offline.runtime.api.KoverRuntime.collectByDirs` or `kotlinx.kover.offline.runtime.api.KoverRuntime.collect`.
 
 For correct generation of the report, it is necessary to pass the bytecode of the non-instrumented classes.
 This can be done by specifying the directories where the class-files are stored, or a byte array with the bytecode of the application non-instrumented classes.
 
+Calling these methods is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
+
 See [example](#example-of-using-the-api).
+
+## Logging
+`org.jetbrains.kotlinx:kover-offline` has its own logging system.
+
+By default, error messages are saved to a file in the working directory with the name `kover-offline.log`. To change the path to this file, pass the `kover.offline.log.file.path` system property with new path.
 
 ## Examples
 
@@ -140,6 +169,19 @@ tasks.register("koverReport") {
 
 ### Example of using the API
 ```kotlin
+    val reportFile = Files.createTempFile("kover-report-", ".ic").toFile()
+
+    // save binary report to file
+    KoverRuntime.saveReport(reportFile)
+    
+    // get binary report as byte array
+    val bytes = KoverRuntime.getReport()
+    
+    // check reports are same
+    val bytesFromFile = reportFile.readBytes()
+    assertContentEquals(bytesFromFile, bytes)
+
+
     // the directory with class files can be transferred using the system property, any other methods are possible
     val outputDir = File(System.getProperty("output.dir"))
     val coverage = KoverRuntime.collectByDirs(listOf(outputDir))
