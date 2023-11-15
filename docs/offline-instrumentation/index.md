@@ -40,7 +40,7 @@ If the file does not exist, it will be created. If a file with that name already
 
 Inside the same JVM process in which the tests were run, call Java static method `kotlinx.kover.offline.runtime.api.KoverRuntime.saveReport`.
 
-If the file does not exist, it will be created. If a file with that name already exists, it will be overwritten.
+If the file does not exist, it will be created. If a file already exists, it will be overwritten.
 
 Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
 
