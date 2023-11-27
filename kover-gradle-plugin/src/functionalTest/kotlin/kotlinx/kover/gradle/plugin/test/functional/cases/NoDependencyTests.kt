@@ -15,7 +15,7 @@ class NoDependencyTests {
     fun testJvmNotApplied() {
         val buildSource = buildFromTemplate("no-dependency-jvm")
         val build = buildSource.generate()
-        val buildResult = build.runWithParams( "koverHtmlReport")
+        val buildResult = build.runWithParams("koverHtmlReport")
         assertFalse(buildResult.isSuccessful)
         assertContains(buildResult.output, "Kover plugin is not applied")
     }
@@ -24,7 +24,7 @@ class NoDependencyTests {
     fun testAndroidNotApplied() {
         val buildSource = buildFromTemplate("no-dependency-android")
         val build = buildSource.generate()
-        val buildResult = build.runWithParams( ":app:koverHtmlReportDebug")
+        val buildResult = build.runWithParams(":app:koverHtmlReportDebug")
         buildResult.checkNoAndroidSdk()
 
         assertFalse(buildResult.isSuccessful)
@@ -35,7 +35,7 @@ class NoDependencyTests {
     fun testAndroidNoVariant() {
         val buildSource = buildFromTemplate("no-dependency-variant-android")
         val build = buildSource.generate()
-        val buildResult = build.runWithParams( ":app-extra:koverHtmlReportExtra")
+        val buildResult = build.runWithParams(":app-extra:koverHtmlReportExtra")
         buildResult.checkNoAndroidSdk()
 
         assertFalse(buildResult.isSuccessful)
