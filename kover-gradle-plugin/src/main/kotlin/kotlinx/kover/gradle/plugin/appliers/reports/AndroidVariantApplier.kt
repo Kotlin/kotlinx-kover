@@ -53,6 +53,8 @@ internal class AndroidVariantApplier(
         dependencies.configure {
             attributes {
                 // set attribute requirements
+                attribute(KoverMarkerAttr.ATTRIBUTE, project.objects.named("Kover"))
+
                 attribute(BuildTypeAttr.ATTRIBUTE, project.objects.named(kit.buildType))
 
                 kit.missingDimensions.forEach { (dimension, flavorName) ->

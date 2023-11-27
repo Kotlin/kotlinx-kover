@@ -73,6 +73,7 @@ internal abstract class ReportsVariantApplier(
                 asProducer()
                 attributes {
                     // common Kover artifact attributes
+                    attribute(KoverMarkerAttr.ATTRIBUTE, project.objects.named("Kover"))
                     attribute(VariantNameAttr.ATTRIBUTE, project.objects.named(variantName))
                     attribute(ProjectPathAttr.ATTRIBUTE, project.objects.named(project.path))
                 }
@@ -83,6 +84,7 @@ internal abstract class ReportsVariantApplier(
 
         dependencies = project.configurations.register(externalArtifactConfigurationName(variantName)) {
             asConsumer()
+            isTransitive = false
             extendsFrom(koverDependencies)
         }
 

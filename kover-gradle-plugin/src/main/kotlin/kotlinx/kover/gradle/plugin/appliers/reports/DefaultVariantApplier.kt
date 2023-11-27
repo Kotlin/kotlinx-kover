@@ -4,10 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.appliers.reports
 
-import kotlinx.kover.gradle.plugin.commons.DEFAULT_KOVER_VARIANT_NAME
-import kotlinx.kover.gradle.plugin.commons.JvmCompilationKit
-import kotlinx.kover.gradle.plugin.commons.ReportsVariantType
-import kotlinx.kover.gradle.plugin.commons.VariantNameAttr
+import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -15,7 +12,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.named
 
 internal class DefaultVariantApplier(
-    project: Project,
+    private val project: Project,
     koverDependencies: Configuration,
     reportClasspath: Configuration,
     toolProvider: Provider<CoverageTool>
@@ -31,6 +28,7 @@ internal class DefaultVariantApplier(
         // always configure dependencies because variant name is constant for default reports
         dependencies.configure {
             attributes {
+                attribute(KoverMarkerAttr.ATTRIBUTE, project.objects.named("Kover"))
                 attribute(VariantNameAttr.ATTRIBUTE, project.objects.named(DEFAULT_KOVER_VARIANT_NAME))
             }
         }

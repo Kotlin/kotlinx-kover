@@ -9,6 +9,18 @@ import org.gradle.api.artifacts.*
 import org.gradle.api.attributes.*
 
 /**
+ * Attribute to mark any Kover artifact.
+ */
+internal interface KoverMarkerAttr : Named {
+    companion object {
+        val ATTRIBUTE = Attribute.of(
+            "kotlinx.kover.marker",
+            VariantNameAttr::class.java
+        )
+    }
+}
+
+/**
  * Name of the published artifact.
  */
 internal interface VariantNameAttr : Named {
