@@ -26,6 +26,9 @@ internal fun LocatorContext.initKotlinMultiplatformPluginLocator() {
     project.pluginManager.withPlugin(ANDROID_LIB_PLUGIN_ID) {
         project.afterAndroidPluginApplied(::processWithAndroidTarget)
     }
+    project.pluginManager.withPlugin(ANDROID_DYNAMIC_PLUGIN_ID) {
+        project.afterAndroidPluginApplied(::processWithAndroidTarget)
+    }
 
     project.afterEvaluate {
         if (!hasAnyAndroidPlugin) {

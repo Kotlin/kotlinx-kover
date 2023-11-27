@@ -124,7 +124,7 @@ internal fun Project.getKotlinExtension(): DynamicBean {
 }
 
 internal val Project.hasAnyAndroidPlugin: Boolean
-    get() =  pluginManager.hasPlugin(ANDROID_APP_PLUGIN_ID) || pluginManager.hasPlugin(ANDROID_LIB_PLUGIN_ID)
+    get() =  pluginManager.hasPlugin(ANDROID_APP_PLUGIN_ID) || pluginManager.hasPlugin(ANDROID_LIB_PLUGIN_ID)  || pluginManager.hasPlugin(ANDROID_DYNAMIC_PLUGIN_ID)
 
 internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
 
