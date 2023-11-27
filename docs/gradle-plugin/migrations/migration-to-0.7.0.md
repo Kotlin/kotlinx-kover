@@ -1,7 +1,7 @@
-# Kover migration guide from 0.6.x to 0.7.4
+# Kover migration guide from 0.6.x to 0.7.5
 
 ## Migration steps
-To migrate to version `0.7.4`, you must follow all steps below if they are applicable to your project.
+To migrate to version `0.7.5`, you must follow all steps below if they are applicable to your project.
 
 ### Merge reports config was removed
 Now all Kotlin report tasks (`koverHtmlReport`, `koverXmlReport`, `koverVerify`) are in single copy, they can be both single-project or merged cross-projects reports.  
@@ -612,7 +612,7 @@ kover {
 
 ---
 
-### Could not find org.jetbrains.kotlinx:kover:0.7.4
+### Could not find org.jetbrains.kotlinx:kover:0.7.5
 _Solution_
 
 rename dependencies in _buildSrc_ from `org.jetbrains.kotlinx:kover:` to `org.jetbrains.kotlinx:kover-gradle-plugin:`
