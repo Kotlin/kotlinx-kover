@@ -1,10 +1,12 @@
 0.7.5 / 2023-11-28
 ===================
+## Kover Gradle Plugin
 ### Features
 * [`#503`](https://github.com/Kotlin/kotlinx-kover/issues/503) Introduced Offline Runtime API for saving binary report
 
 ### Bugfixes
 * [`#478`](https://github.com/Kotlin/kotlinx-kover/issues/478) Added Kover dependency check
+* [`#451`](https://github.com/Kotlin/kotlinx-kover/issues/451) Skip Kotlin object if it is containing only constants
 * [`#459`](https://github.com/Kotlin/kotlinx-kover/issues/459) Fixed applying of the root verification rules
 * [`#489`](https://github.com/Kotlin/kotlinx-kover/issues/489) Fixed adding data to an already existing binary report file
 
