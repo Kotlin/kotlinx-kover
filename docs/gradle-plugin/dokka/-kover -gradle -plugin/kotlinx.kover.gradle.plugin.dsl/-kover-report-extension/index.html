@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>KoverReportExtension</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+    <script>var pathToRoot = "../../../";</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/jetbrains-mono.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+</head>
+<body>
+<div class="navigation-wrapper" id="navigation-wrapper">
+    <div id="leftToggler"><span class="icon-toggler"></span></div>
+    <div class="library-name">
+            <a href="../../../index.html">
+                    <span>Kover Gradle Plugin</span>
+            </a>
+    </div>
+    <div>
+0.7.5    </div>
+    <div class="pull-right d-flex">
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":kover-gradle-plugin:dokkaHtml/main">jvm</button>
+        </div>
+        <button id="theme-toggle-button"><span id="theme-toggle"></span></button>
+        <div id="searchBar"></div>
+    </div>
+</div>
+<div id="container">
+    <div id="leftColumn">
+        <div id="sideMenu"></div>
+    </div>
+    <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="Kover Gradle Plugin::kotlinx.kover.gradle.plugin.dsl/KoverReportExtension///PointingToDeclaration//-697748096">
+  <div class="breadcrumbs"><a href="../../../index.html">Kover Gradle Plugin</a><span class="delimiter">/</span><a href="../index.html">kotlinx.kover.gradle.plugin.dsl</a><span class="delimiter">/</span><span class="current">KoverReportExtension</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Kover</span><wbr></wbr><span>Report</span><wbr></wbr><span><span>Extension</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":kover-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">KoverReportExtension</a></div><p class="paragraph">Configuration of Kover reports.</p><p class="paragraph">Example of usage:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">koverReport {<br>    filters {<br>        // common filters for all reports of all variants<br>    }<br>    verify {<br>        // common verification rules for all variants<br>    }<br><br>    // default reports - special reports that are filled in by default with class measurements from Kotlin/JVM or Kotlin/MPP projects<br>    defaults {<br>        // add content of reports for specified variant to default reports<br>        mergeWith(&quot;buildVariant&quot;)<br><br>        filters {<br>            // override report filters for default reports<br>        }<br><br>        html {<br>            // configure default HTML report<br>        }<br><br>        xml {<br>            // configure default XML report<br>        }<br><br>        verify {<br>            // configure default coverage verification<br>        }<br>    }<br><br>    androidReports(&quot;buildVariant&quot;) {<br>        filters {<br>            // override report filters for reports of specified Android build variant<br>        }<br><br>        html {<br>            // configure HTML report for specified Android build variant<br>        }<br><br>        xml {<br>            // configure XML report for specified Android build variant<br>        }<br><br>        verify {<br>            // configure coverage verification for specified Android build variant<br>        }<br>    }<br><br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="526649429%2FFunctions%2F-697748096" anchor-label="androidReports" id="526649429%2FFunctions%2F-697748096" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":kover-gradle-plugin:dokkaHtml/main" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="android-reports.html"><span>android</span><wbr></wbr><span><span>Reports</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="526649429%2FFunctions%2F-697748096"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":kover-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="android-reports.html"><span class="token function">androidReports</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">variant<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-reports-config/index.html">KoverReportsConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure reports for classes of specified Android build variant.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1759795369%2FFunctions%2F-697748096" anchor-label="defaults" id="-1759795369%2FFunctions%2F-697748096" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":kover-gradle-plugin:dokkaHtml/main" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="defaults.html"><span><span>defaults</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1759795369%2FFunctions%2F-697748096"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":kover-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="defaults.html"><span class="token function">defaults</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-default-reports-config/index.html">KoverDefaultReportsConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Configure reports for classes from Kotlin/JVM or Kotlin/MPP projects. Also content from specified Android build variant can be added by calling <code class="lang-kotlin">mergeWith</code>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-969596077%2FFunctions%2F-697748096" anchor-label="filters" id="-969596077%2FFunctions%2F-697748096" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":kover-gradle-plugin:dokkaHtml/main" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="filters.html"><span><span>filters</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-969596077%2FFunctions%2F-697748096"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":kover-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="filters.html"><span class="token function">filters</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-report-filters/index.html">KoverReportFilters</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Specify common filters for all report variants, these filters will be inherited in HTML/XML/verification reports. They can be redefined in the settings of a specific report.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1424382346%2FFunctions%2F-697748096" anchor-label="verify" id="-1424382346%2FFunctions%2F-697748096" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main"></a>
+          <div class="table-row" data-filterable-current=":kover-gradle-plugin:dokkaHtml/main" data-filterable-set=":kover-gradle-plugin:dokkaHtml/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="verify.html"><span><span>verify</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1424382346%2FFunctions%2F-697748096"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":kover-gradle-plugin:dokkaHtml/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword"></span><span class="token keyword">fun </span><a href="verify.html"><span class="token function">verify</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">config<span class="token operator">: </span><span data-unresolved-link="org.gradle.api/Action///PointingToDeclaration/">Action</span><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-kover-verification-rules-config/index.html">KoverVerificationRulesConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Specify common verification rules for all report variants: JVM and Android build variants. They can be overridden in the settings for a specific report variant or a specific report in a particular variant.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2023 Copyright</span><span
+                class="pull-right"><span>Generated by </span><a
+                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+    </div>
+</div>
+</body>
+</html>
