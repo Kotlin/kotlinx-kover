@@ -8,3 +8,6 @@ out/
 # Gradle files
 build/
 .gradle/
+
+# generated dokka documentation
+/docs/gradle-plugin/dokka/

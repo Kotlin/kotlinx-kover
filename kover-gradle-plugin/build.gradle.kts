@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.*
 
 plugins {
     kotlin("jvm")
@@ -155,6 +156,13 @@ tasks.dokkaHtml {
         // source set configuration section
         perPackageOption {
             skipDeprecated.set(true)
+        }
+        sourceLink {
+            val sourcesPath = "src/$name/kotlin"
+            val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
+            localDirectory.set(projectDir.resolve(sourcesPath))
+            remoteUrl.set(URL("https://github.com/kotlin/kotlinx-kover/tree/main/$relPath/$sourcesPath"))
+            remoteLineSuffix.set("#L")
         }
     }
 }
