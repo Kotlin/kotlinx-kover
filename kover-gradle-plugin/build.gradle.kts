@@ -158,10 +158,8 @@ tasks.dokkaHtml {
             skipDeprecated.set(true)
         }
         sourceLink {
-            val sourcesPath = "src/$name/kotlin"
-            val relPath = rootProject.projectDir.toPath().relativize(projectDir.toPath())
-            localDirectory.set(projectDir.resolve(sourcesPath))
-            remoteUrl.set(URL("https://github.com/kotlin/kotlinx-kover/tree/main/$relPath/$sourcesPath"))
+            localDirectory.set(rootDir)
+            remoteUrl.set(URL("https://github.com/kotlin/kotlinx-kover/tree/main"))
             remoteLineSuffix.set("#L")
         }
     }
