@@ -14,6 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
+include(":kover-features-java")
 include(":kover-gradle-plugin")
 include(":kover-cli")
 include(":kover-offline-runtime")

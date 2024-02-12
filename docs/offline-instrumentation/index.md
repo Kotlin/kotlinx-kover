@@ -11,12 +11,32 @@ Offline instrumentation is suitable when using runtime environments that do not 
 
 ### Class instrumentation
 
-For instrumentation, you must first build the application, then the root directories for the class files 
-must be passed to Kover CLI as arguments, see [Kover CLI](../cli#offline-instrumentation) for the technical detils.
+#### Instrumentation by Kover CLI
+The Kover CLI is a fat jar that needs to be called and passed certain commands through arguments.
+
+For instrumentation, you must first build the application, then the root directories for the class files
+must be passed to Kover CLI as arguments, see [Kover CLI](../cli#offline-instrumentation) for the technical details.
+
+#### Instrumentation by Kover Features
+Kover Features is an artifact with Java classes that provide capabilities of the Kover library.
+
+Dependency on Kover Features `org.jetbrains.kotlinx:kover-features-java:0.7.5`.
+
+Then you need to use the Kover Features classes to instrument the bytecode of each class:
+```kotlin
+import kotlinx.kover.features.java.KoverFeatures
+  // ...
+
+  val instrumenter = KoverFeatures.createOfflineInstrumenter()
+  
+  // read class-file with name `fileName` bytes to `classBytes`
+  val instrumentedBytes = instrumenter.instrument(classBytes, fileName)
+  // save `instrumentedBytes` to file
+```
 
 ### Dump coverage result
 
-To run classes instrumented offline, you'll need to add `org.jetbrains.kotlinx:kover-offline` artifact to the application's classpath.
+To run classes instrumented offline, you'll need to add `org.jetbrains.kotlinx:kover-offline-runtime` artifact to the application's classpath.
 
 There are several ways to get coverage:
 
@@ -64,16 +84,18 @@ Calling these methods is allowed only after all tests are completed. If the meth
 See [example](#example-of-using-the-api).
 
 ## Logging
-`org.jetbrains.kotlinx:kover-offline` has its own logging system.
+`org.jetbrains.kotlinx:kover-offline-runtime` has its own logging system.
 
-By default, error messages are saved to a file in the working directory with the name `kover-offline.log`. To change the path to this file, pass the `kover.offline.log.file.path` system property with new path.
+By default, warning and error messages are printed to standard error stream. 
+
+It is also possible to save all log messages to a file, to do this, you need to pass the system property `kover.offline.log.file.path` with path to the log file.
 
 ## Examples
 
 ### Gradle example for binary report
 
 Example of a custom binary report production using Kover tool CLI in Gradle
-```
+```kotlin
 plugins {
     kotlin("jvm") version "1.8.0"
     application

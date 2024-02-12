@@ -16,9 +16,9 @@
 
 package kotlinx.kover.cli.commands
 
-import com.intellij.rt.coverage.report.api.Filters
-import com.intellij.rt.coverage.report.api.ReportApi
-import kotlinx.kover.cli.util.asPatterns
+import kotlinx.kover.cli.util.asRegex
+import kotlinx.kover.features.jvm.KoverLegacyFeatures
+import kotlinx.kover.features.jvm.KoverLegacyFeatures.ClassFilters
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.Option
 import java.io.File
@@ -77,15 +77,16 @@ internal class ReportCommand : Command {
 
 
     override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {
-        val filters = Filters(
-            includeClasses.asPatterns(),
-            excludeClasses.asPatterns(),
-            excludeAnnotation.asPatterns()
+        val filters = ClassFilters(
+            includeClasses.asRegex().toSet(),
+            excludeClasses.asRegex().toSet(),
+            excludeAnnotation.asRegex().toSet()
         )
+
         var fail = false
         if (xmlFile != null) {
             try {
-                ReportApi.xmlReport(xmlFile, title ?: "Kover XML Report", binaryReports, outputRoots, sourceRoots, filters)
+                KoverLegacyFeatures.xmlReport(xmlFile, binaryReports, outputRoots, sourceRoots, title ?: "Kover XML Report", filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("XML generation failed: " + e.message)
@@ -93,7 +94,7 @@ internal class ReportCommand : Command {
         }
         if (htmlDir != null) {
             try {
-                ReportApi.htmlReport(htmlDir, title, null, binaryReports, outputRoots, sourceRoots, filters)
+                KoverLegacyFeatures.htmlReport(htmlDir, binaryReports, outputRoots, sourceRoots, title ?: "Kover HTML Report", filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("HTML generation failed: " + e.message)

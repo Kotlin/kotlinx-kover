@@ -1,2 +1,3 @@
 - [Kover Gradle Plugin](gradle-plugin)
 - [Kover Command Line Interface](cli)
+- [Kover offline instrumentation](offline-instrumentation)

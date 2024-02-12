@@ -1,6 +1,7 @@
 package kotlinx.kover.offline.runtime;
 
 import com.intellij.rt.coverage.offline.api.CoverageRuntime;
+import com.intellij.rt.coverage.util.ErrorReporter;
 import kotlinx.kover.offline.runtime.api.KoverRuntime;
 
 import java.io.File;
@@ -17,16 +18,21 @@ import static kotlinx.kover.offline.runtime.api.KoverRuntime.REPORT_PROPERTY_NAM
 class KoverInit {
 
     static {
-        String reportNameSavedOnExitProp = System.getProperty(REPORT_PROPERTY_NAME);
         String logFileProp = System.getProperty(LOG_FILE_PROPERTY_NAME);
-
-        if (logFileProp != null) {
-            CoverageRuntime.setLogPath(new File(LOG_FILE_PROPERTY_NAME));
+        if (logFileProp == null) {
+            // by default, we do not create a file, because we do not know what rights our application is running with
+            //   and whether it can create files in the current directory or next to the binary report file
+            CoverageRuntime.setLogPath(null);
         } else {
-            CoverageRuntime.setLogPath(new File(KoverRuntime.DEFAULT_LOG_FILE_NAME));
+            CoverageRuntime.setLogPath(new File(logFileProp));
         }
 
+        // setting the logging level in the "standard" error output stream
+        CoverageRuntime.setLogLevel(ErrorReporter.WARNING);
+
+        String reportNameSavedOnExitProp = System.getProperty(REPORT_PROPERTY_NAME);
         if (reportNameSavedOnExitProp != null) {
+            // if a parameter is passed, then use the shutdown hook to save the binary report to a file
             saveOnExit(reportNameSavedOnExitProp);
         }
     }
