@@ -35,8 +35,8 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
         return buildJvmAgentArgs(jarFile, binReportFile, excludedClasses)
     }
 
-    override fun xmlReport(xmlFile: File, context: ReportContext) {
-        context.jacocoXmlReport(xmlFile)
+    override fun xmlReport(xmlFile: File, title: String, context: ReportContext) {
+        context.jacocoXmlReport(xmlFile, title)
     }
 
     override fun htmlReport(htmlDir: File, title: String, charset: String?, context: ReportContext) {

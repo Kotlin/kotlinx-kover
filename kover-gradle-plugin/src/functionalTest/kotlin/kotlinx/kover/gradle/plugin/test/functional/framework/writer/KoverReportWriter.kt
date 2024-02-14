@@ -135,6 +135,8 @@ internal class KoverXmlReportConfigWriter(private val writer: FormattedWriter) :
             field = value
         }
 
+    override val title: Property<String> = PropertyWriter("title", writer)
+
     override fun setReportFile(xmlFile: File) {
         writer.assign("reportFile", xmlFile.forScript())
     }

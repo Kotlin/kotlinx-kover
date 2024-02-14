@@ -139,6 +139,8 @@ internal open class KoverHtmlReportConfigImpl @Inject constructor(private val ob
 internal open class KoverXmlReportConfigImpl @Inject constructor(
     private val objects: ObjectFactory
 ) : KoverXmlReportConfig {
+    override val title: Property<String> = objects.property()
+
     override var onCheck: Boolean = false
 
     internal var filters: KoverReportFiltersImpl? = null

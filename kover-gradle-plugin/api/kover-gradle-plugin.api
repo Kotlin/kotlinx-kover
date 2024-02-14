@@ -342,6 +342,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverXmlReportCo
 	public abstract fun filters (Lorg/gradle/api/Action;)V
 	public abstract fun getOnCheck ()Z
 	public fun getReportFile ()Ljava/lang/Void;
+	public abstract fun getTitle ()Lorg/gradle/api/provider/Property;
 	public fun overrideFilters (Lkotlin/jvm/functions/Function0;)V
 	public abstract fun setOnCheck (Z)V
 	public abstract fun setReportFile (Ljava/io/File;)V

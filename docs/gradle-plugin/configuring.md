@@ -94,6 +94,9 @@ koverReport {
             //  generate an XML report when running the `check` task
             onCheck = false
 
+            // XML report title (the location depends on the library)
+            title.set("Custom XML report title")
+          
             // XML report file
             setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
 
@@ -283,6 +286,9 @@ koverReport {
             //  generate an XML report when running the `check` task
             onCheck = false
 
+            // XML report title (the location depends on the library)
+            title.set("Custom XML report title")
+          
             // XML report file
             setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
 
