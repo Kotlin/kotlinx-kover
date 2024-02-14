@@ -53,6 +53,7 @@ internal abstract class XmlReportAction : AbstractReportAction<XmlReportParamete
 
         ReportApi.xmlReport(
             parameters.xmlFile.get().asFile,
+            parameters.projectPath.get(),
             files.reports.toList(),
             files.outputs.toList(),
             files.sources.toList(),
@@ -68,6 +69,10 @@ internal abstract class HtmlReportAction : AbstractReportAction<HtmlReportParame
 
         val files = parameters.files.get()
         val filters = parameters.filters.get()
+
+        // repeat reading freemarker temple from resources if error occurred, see https://github.com/Kotlin/kotlinx-kover/issues/510
+        // the values are selected empirically so that the maximum report generation time is not much more than a second
+        ReportApi.setFreemarkerRetry(7, 150)
 
         ReportApi.htmlReport(
             parameters.htmlDir.get().asFile,
