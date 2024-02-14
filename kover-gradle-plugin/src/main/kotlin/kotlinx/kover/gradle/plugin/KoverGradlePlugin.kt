@@ -32,7 +32,6 @@ class KoverGradlePlugin : Plugin<Project> {
         val applier = ProjectApplier(target)
         applier.onApply()
 
-        target.addDependencyListener()
         target.addDeprecations()
     }
 
@@ -53,20 +52,6 @@ class KoverGradlePlugin : Plugin<Project> {
         extensions.create<KoverMergedConfig>("koverMerged")
         tasks.withType<Test>().configureEach {
             this.extensions.create<KoverTaskExtension>("kover")
-        }
-    }
-
-    private fun Project.addDependencyListener() {
-        /*
-         The plugin is applied for each project, but different projects in the same build have the same `gradle` object
-         In order not to add the listener again, it is necessary to check whether we added it earlier.
-
-         The most reliable way is to use the extra properties extension,
-         because it is always present and tied to a specific instance of the `Gradle`.
-         */
-        if (gradle.extraProperties.properties[LISTENER_ADDED_PROPERTY_NAME] == null) {
-            gradle.extraProperties.properties[LISTENER_ADDED_PROPERTY_NAME] = true
-            gradle.addListener(DependencyCheckListener())
         }
     }
 }
