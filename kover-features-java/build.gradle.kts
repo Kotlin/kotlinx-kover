@@ -20,7 +20,7 @@ plugins {
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
-    description.set("Implementation of calling the main features of Kover via Java invokes")
+    description.set("Implementation of calling the main features of Kover programmatically")
     fatJar.set(true)
 }
 

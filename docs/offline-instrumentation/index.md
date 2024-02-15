@@ -18,11 +18,11 @@ For instrumentation, you must first build the application, then the root directo
 must be passed to Kover CLI as arguments, see [Kover CLI](../cli#offline-instrumentation) for the technical details.
 
 #### Instrumentation by Kover Features
-Kover Features is an artifact with Java classes that provide capabilities of the Kover library.
+Kover Features is a library that provides capabilities similar to Kover CLI and Kover Gradle plugin.
 
-Dependency on Kover Features `org.jetbrains.kotlinx:kover-features-java:0.7.5`.
+You can declare a dependency on Kover Features using following coordinates: `org.jetbrains.kotlinx:kover-features-java:0.7.5`.
 
-Then you need to use the Kover Features classes to instrument the bytecode of each class:
+Then you can use the Kover Features classes to instrument the bytecode of each class:
 ```kotlin
 import kotlinx.kover.features.java.KoverFeatures
   // ...
@@ -36,7 +36,7 @@ import kotlinx.kover.features.java.KoverFeatures
 
 ### Dump coverage result
 
-To run classes instrumented offline, you'll need to add `org.jetbrains.kotlinx:kover-offline-runtime` artifact to the application's classpath.
+To run classes instrumented offline (with CLI) or programmatically (with Kover Features), you'll need to add `org.jetbrains.kotlinx:kover-offline-runtime` artifact to the application's classpath.
 
 There are several ways to get coverage:
 
