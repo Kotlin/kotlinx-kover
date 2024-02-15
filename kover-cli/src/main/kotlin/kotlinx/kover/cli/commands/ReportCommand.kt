@@ -47,8 +47,8 @@ internal class ReportCommand : Command {
     @Option(name = "--html", usage = "generate a HTML report in the specified path", metaVar = "<html-dir>")
     private var htmlDir: File? = null
 
-    @Option(name = "--title", usage = "title in the HTML report", metaVar = "<html-title>")
-    private var htmlTitle: String? = null
+    @Option(name = "--title", usage = "title in the HTML or XML report", metaVar = "<title>")
+    private var title: String? = null
 
     @Option(
         name = "--include",
@@ -85,7 +85,7 @@ internal class ReportCommand : Command {
         var fail = false
         if (xmlFile != null) {
             try {
-                ReportApi.xmlReport(xmlFile, binaryReports, outputRoots, sourceRoots, filters)
+                ReportApi.xmlReport(xmlFile, title ?: "Kover XML Report", binaryReports, outputRoots, sourceRoots, filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("XML generation failed: " + e.message)
@@ -93,7 +93,7 @@ internal class ReportCommand : Command {
         }
         if (htmlDir != null) {
             try {
-                ReportApi.htmlReport(htmlDir, htmlTitle, null, binaryReports, outputRoots, sourceRoots, filters)
+                ReportApi.htmlReport(htmlDir, title, null, binaryReports, outputRoots, sourceRoots, filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("HTML generation failed: " + e.message)
