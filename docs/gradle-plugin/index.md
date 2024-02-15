@@ -44,7 +44,7 @@ Add the following to your top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.5"
+     id("org.jetbrains.kotlinx.kover") version "0.7.6"
 }
 ```
 
@@ -62,7 +62,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.5")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.6")
     }
 }
 
@@ -78,7 +78,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.5'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.6'
     }
 }
   

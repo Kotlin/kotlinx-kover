@@ -20,7 +20,7 @@ must be passed to Kover CLI as arguments, see [Kover CLI](../cli#offline-instrum
 #### Instrumentation by Kover Features
 Kover Features is a library that provides capabilities similar to Kover CLI and Kover Gradle plugin.
 
-You can declare a dependency on Kover Features using following coordinates: `org.jetbrains.kotlinx:kover-features-jvm:0.7.5`.
+You can declare a dependency on Kover Features using following coordinates: `org.jetbrains.kotlinx:kover-features-jvm:0.7.6`.
 
 Then you can use the Kover Features classes to instrument the bytecode of each class:
 ```kotlin
@@ -113,8 +113,8 @@ configurations.register("koverCli") {
 }
 
 dependencies {
-    runtimeOnly("org.jetbrains.kotlinx:kover-offline-runtime:0.7.5")
-    add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.7.5")
+    runtimeOnly("org.jetbrains.kotlinx:kover-offline-runtime:0.7.6")
+    add("koverCli", "org.jetbrains.kotlinx:kover-cli:0.7.6")
 
     testImplementation(kotlin("test"))
 }
