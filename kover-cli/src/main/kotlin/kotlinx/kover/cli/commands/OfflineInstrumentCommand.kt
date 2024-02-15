@@ -16,9 +16,8 @@
 
 package kotlinx.kover.cli.commands
 
-import com.intellij.rt.coverage.instrument.api.OfflineInstrumentationApi
-import com.intellij.rt.coverage.report.api.Filters
-import kotlinx.kover.cli.util.asPatterns
+import kotlinx.kover.cli.util.asRegex
+import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.Option
 import java.io.File
@@ -63,21 +62,14 @@ internal class OfflineInstrumentCommand : Command {
 
 
     override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {
-        // disable ConDy for offline instrumentations
-        System.setProperty("coverage.condy.enable", "false")
-
-        val outputRoots = ArrayList<File>(roots.size)
-        for (i in roots.indices) {
-            outputRoots.add(outputDir!!)
-        }
-        val filters = Filters(
-            includeClasses.asPatterns(),
-            excludeClasses.asPatterns(),
-            excludeAnnotation.asPatterns()
+        val filters = KoverLegacyFeatures.ClassFilters(
+            includeClasses.asRegex().toSet(),
+            excludeClasses.asRegex().toSet(),
+            excludeAnnotation.asRegex().toSet()
         )
 
         try {
-            OfflineInstrumentationApi.instrument(roots, outputRoots, filters, countHits)
+            KoverLegacyFeatures.instrument(outputDir!!, roots, filters, countHits)
         } catch (e: Exception) {
             errorWriter.println("Instrumentation failed: " + e.message)
             return -1

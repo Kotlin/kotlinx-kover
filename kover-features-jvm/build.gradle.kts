@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2023 JetBrains s.r.o.
+ * Copyright 2000-2024 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ plugins {
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
-    description.set("Compiled dependency to ensure the operation of the code that has been instrumented offline")
+    description.set("Implementation of calling the main features of Kover programmatically")
     fatJar.set(true)
 }
 
@@ -33,21 +33,20 @@ repositories {
     mavenCentral()
 }
 
-val fatJarDependency = "fatJar"
-val fatJarConfiguration = configurations.create(fatJarDependency)
+tasks.processResources {
+    val version = if (project.hasProperty("releaseVersion")) {
+        project.property("releaseVersion").toString()
+    } else {
+        project.version.toString()
+    }
 
-dependencies {
-    compileOnly(libs.intellij.offline)
-    fatJarConfiguration(libs.intellij.offline)
+    filesMatching("**/kover.version") {
+        filter {
+            it.replace("\$version", version)
+        }
+    }
 }
 
-tasks.jar {
-    from(
-        fatJarConfiguration.map { if (it.isDirectory) it else zipTree(it) }
-    ) {
-        exclude("OSGI-OPT/**")
-        exclude("META-INF/**")
-        exclude("LICENSE")
-        exclude("classpath.index")
-    }
+dependencies {
+    implementation(libs.intellij.reporter)
 }

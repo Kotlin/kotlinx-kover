@@ -16,9 +16,7 @@
 
 package kotlinx.kover.cli.util
 
-import java.util.regex.Pattern
-
-internal fun List<String>.asPatterns(): List<Pattern> = map { Pattern.compile(it.wildcardsToRegex()) }
+internal fun List<String>.asRegex(): List<String> = map { it.wildcardsToRegex() }
 
 /**
  * Replaces characters `*` or `.` to `.*` and `.` regexp characters and also add escape char '\' before regexp metacharacters (see [regexMetacharactersSet]).
