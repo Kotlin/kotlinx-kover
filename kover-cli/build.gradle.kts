@@ -33,7 +33,7 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":kover-features-java"))
+    implementation(project(":kover-features-jvm"))
 
     implementation(libs.args4j)
 

@@ -1,4 +1,4 @@
-package kotlinx.kover.features.java;
+package kotlinx.kover.features.jvm;
 
 import com.intellij.rt.coverage.instrument.api.OfflineInstrumentationApi;
 
@@ -18,7 +18,7 @@ class OfflineInstrumenterImpl implements OfflineInstrumenter {
 
     @Override
     public byte[] instrument(InputStream originalClass, String debugName) throws IOException {
-        String condySetting = ConDySettings.disableConDy();
+        String previousConDySetting = ConDySettings.disableConDy();
 
         try {
             return OfflineInstrumentationApi.instrument(originalClass, countHits);
@@ -27,7 +27,7 @@ class OfflineInstrumenterImpl implements OfflineInstrumenter {
                     String.format("Error while instrumenting '%s' with Kover instrumenter version '%s'",
                             debugName, KoverFeatures.getVersion()), e);
         } finally {
-            ConDySettings.restoreConDy(condySetting);
+            ConDySettings.restoreConDy(previousConDySetting);
         }
     }
 

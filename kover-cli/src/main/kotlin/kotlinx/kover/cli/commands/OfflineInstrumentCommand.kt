@@ -17,7 +17,7 @@
 package kotlinx.kover.cli.commands
 
 import kotlinx.kover.cli.util.asRegex
-import kotlinx.kover.features.java.KoverLegacyFeatures
+import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.Option
 import java.io.File

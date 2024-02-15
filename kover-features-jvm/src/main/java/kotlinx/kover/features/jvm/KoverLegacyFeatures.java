@@ -1,4 +1,4 @@
-package kotlinx.kover.features.java;
+package kotlinx.kover.features.jvm;
 
 import com.intellij.rt.coverage.instrument.api.OfflineInstrumentationApi;
 import com.intellij.rt.coverage.report.api.Filters;
@@ -34,11 +34,11 @@ public class KoverLegacyFeatures {
             outputs.add(resultDir);
         }
 
-        String condySetting = ConDySettings.disableConDy();
+        String previousConDySetting = ConDySettings.disableConDy();
         try {
             OfflineInstrumentationApi.instrument(originalDirs, outputs, convertFilters(filters), countHits);
         } finally {
-            ConDySettings.restoreConDy(condySetting);
+            ConDySettings.restoreConDy(previousConDySetting);
         }
     }
 
@@ -53,7 +53,7 @@ public class KoverLegacyFeatures {
      * @param filters Filters to limit the classes that will be displayed in the report
      * @throws IOException In case of a report generation error
      */
-    public static void xmlReport(
+    public static void generateXmlReport(
             File xmlFile,
             List<File> binaryReports,
             List<File> classfileDirs,
@@ -75,7 +75,7 @@ public class KoverLegacyFeatures {
      * @param filters Filters to limit the classes that will be displayed in the report.
      * @throws IOException In case of a report generation error
      */
-    public static void htmlReport(
+    public static void generateHtmlReport(
             File htmlDir,
             List<File> binaryReports,
             List<File> classfileDirs,

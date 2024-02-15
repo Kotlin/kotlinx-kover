@@ -1,4 +1,4 @@
-package kotlinx.kover.features.java;
+package kotlinx.kover.features.jvm;
 
 import java.io.InputStream;
 import java.util.Scanner;

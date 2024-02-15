@@ -1,4 +1,4 @@
-package kotlinx.kover.features.java;
+package kotlinx.kover.features.jvm;
 
 import java.io.IOException;
 import java.io.InputStream;

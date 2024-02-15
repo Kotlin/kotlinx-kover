@@ -1,4 +1,4 @@
-package kotlinx.kover.features.java;
+package kotlinx.kover.features.jvm;
 
 /**
  * Internal class to control JVM ConDy settings.
