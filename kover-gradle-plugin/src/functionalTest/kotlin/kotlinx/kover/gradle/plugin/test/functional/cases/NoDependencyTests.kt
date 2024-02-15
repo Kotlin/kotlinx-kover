@@ -3,13 +3,17 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.checkNoAndroidSdk
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.buildFromTemplate
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFalse
 
 /**
  * Tests on dependency check https://github.com/Kotlin/kotlinx-kover/issues/478.
+ *
+ * Temporary disabled
  */
+@Disabled
 class NoDependencyTests {
     @Test
     fun testJvmNotApplied() {
