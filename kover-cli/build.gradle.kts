@@ -33,7 +33,8 @@ kotlin {
 }
 
 dependencies {
-    implementation(libs.intellij.reporter)
+    implementation(project(":kover-features-jvm"))
+
     implementation(libs.args4j)
 
     testImplementation(kotlin("test"))

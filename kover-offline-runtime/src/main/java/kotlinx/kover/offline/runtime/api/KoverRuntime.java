@@ -17,13 +17,6 @@ import java.util.List;
 public class KoverRuntime {
 
     /**
-     * Default name of file with Kover offline logs.
-     *
-     * Can be overridden using the {@link KoverRuntime#LOG_FILE_PROPERTY_NAME} property.
-     */
-    public static final String DEFAULT_LOG_FILE_NAME = "kover-offline.log";
-
-    /**
      * JVM property name used to define the path where the offline report will be stored.
      * <p>
      * If this property is specified, then at the end of the JVM process,
@@ -37,7 +30,7 @@ public class KoverRuntime {
      * JVM property name used to define the path to the file with Kover offline logs.
      *
      *<p>
-     * If this property is not specified, the logs are saved to the {@link KoverRuntime#DEFAULT_LOG_FILE_NAME} file located in the current directory.
+     * If this property is not specified, the logs file will not be created.
      */
     public static final String LOG_FILE_PROPERTY_NAME = "kover.offline.log.file.path";
 
