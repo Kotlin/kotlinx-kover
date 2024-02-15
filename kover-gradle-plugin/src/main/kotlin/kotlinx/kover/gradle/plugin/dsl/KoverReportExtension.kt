@@ -221,6 +221,7 @@ public interface KoverReportsConfig {
      *      }
      *
      *      onCheck = false
+     *      title.set("Custom XML report title")
      *      setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
      *  }
      * ```
@@ -621,6 +622,9 @@ public interface KoverHtmlReportConfig {
  *     // Generate an XML report when running the `check` task
  *     onCheck = false
  *
+ *     // XML report title (the location depends on the library)
+ *     title.set("Custom XML report title")
+ *
  *     // Specify file to generate XML report
  *     setReportFile(layout.buildDirectory.file("my-xml-report.xml"))
  * }
@@ -632,6 +636,13 @@ public interface KoverXmlReportConfig {
      * Override common filters only for XML report.
      */
     public fun filters(config: Action<KoverReportFilters>)
+
+    /**
+     * Specify title in XML report.
+     *
+     * `"Kover Gradle Plugin XML report for $projectPath"` by default.
+     */
+    public val title: Property<String>
 
     /**
      * Generate an XML report when running the `check` task.

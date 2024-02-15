@@ -25,9 +25,10 @@ internal fun ReportContext.koverHtmlReport(htmlReportDir: File, htmlTitle: Strin
     }
 }
 
-internal fun ReportContext.koverXmlReport(xmlReportFile: File) {
+internal fun ReportContext.koverXmlReport(xmlReportFile: File, xmlTitle: String) {
     submitAction<XmlReportAction, XmlReportParameters> {
         xmlFile.set(xmlReportFile)
+        title.convention(xmlTitle)
         filters.convention(this@koverXmlReport.filters)
 
         files.convention(this@koverXmlReport.files)
@@ -39,6 +40,7 @@ internal fun ReportContext.koverXmlReport(xmlReportFile: File) {
 
 internal interface XmlReportParameters : ReportParameters {
     val xmlFile: RegularFileProperty
+    val title: Property<String>
 }
 
 internal interface HtmlReportParameters : ReportParameters {
@@ -53,7 +55,7 @@ internal abstract class XmlReportAction : AbstractReportAction<XmlReportParamete
 
         ReportApi.xmlReport(
             parameters.xmlFile.get().asFile,
-            parameters.projectPath.get(),
+            parameters.title.get(),
             files.reports.toList(),
             files.outputs.toList(),
             files.sources.toList(),

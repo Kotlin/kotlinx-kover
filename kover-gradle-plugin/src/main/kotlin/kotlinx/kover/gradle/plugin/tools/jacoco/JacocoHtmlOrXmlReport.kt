@@ -21,8 +21,8 @@ internal fun ReportContext.jacocoHtmlReport(htmlDir: File, title: String, charse
     }
 }
 
-internal fun ReportContext.jacocoXmlReport(xmlFile: File) {
-    callAntReport(projectPath) {
+internal fun ReportContext.jacocoXmlReport(xmlFile: File, title: String) {
+    callAntReport(title) {
         xmlFile.parentFile.mkdirs()
         invokeMethod("xml", mapOf("destfile" to xmlFile))
     }

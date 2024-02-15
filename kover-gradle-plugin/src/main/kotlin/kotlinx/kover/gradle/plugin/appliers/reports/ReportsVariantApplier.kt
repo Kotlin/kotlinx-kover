@@ -129,6 +129,7 @@ internal abstract class ReportsVariantApplier(
     ) {
         reportConfig.binary.onCheck.convention(false)
         reportConfig.binary.file.convention(project.layout.buildDirectory.file(binaryReportPath(variantName)))
+        reportConfig.xml.title.convention("Kover Gradle Plugin XML report for ${project.path}")
 
         val runOnCheck = mutableListOf<Any>()
 
@@ -146,6 +147,7 @@ internal abstract class ReportsVariantApplier(
 
         xmlTask.configure {
             reportFile.convention(project.layout.file(reportConfig.xml.reportFileProperty))
+            title.convention(reportConfig.xml.title)
             filters.set((reportConfig.xml.filters ?: reportConfig.filters ?: commonFilters).convert())
         }
         if (reportConfig.xml.onCheck) {

@@ -98,7 +98,7 @@ internal interface CoverageTool {
     /**
      * Generate XML report.
      */
-    fun xmlReport(xmlFile: File, context: ReportContext)
+    fun xmlReport(xmlFile: File, title: String, context: ReportContext)
 
     /**
      * Generate binary report in IntelliJ format (Kover-only).
