@@ -45,8 +45,14 @@ internal class JvmTestTaskConfigurator(
             binReportProvider.get().asFile.delete()
         }
 
-        // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
-        val excluded = data.excludedClasses + listOf("android.*", "com.android.*")
+
+        val excluded = data.excludedClasses +
+                listOf(
+                    // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
+                    "android.*", "com.android.*",
+                    // excludes JVM internal classes, in some cases, errors occur when trying to instrument these classes, for example, when using JaCoCo + Robolectric. There is also no point in instrumenting them in Kover.
+                    "jdk.internal.*"
+                )
 
         testTask.jvmArgumentProviders += JvmTestTaskArgumentProvider(
             testTask.temporaryDir,

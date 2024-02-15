@@ -8,7 +8,7 @@ import java.io.*
 
 internal fun buildJvmAgentArgs(jarFile: File, binReportFile: File, excludedClasses: Set<String>): List<String> {
     val agentArgs = listOfNotNull(
-        "destfile=${binReportFile.canonicalPath},append=true,inclnolocationclasses=false,dumponexit=true,output=file,jmx=false",
+        "destfile=${binReportFile.canonicalPath},append=true,inclnolocationclasses=true,dumponexit=true,output=file,jmx=false",
         excludedClasses.joinToFilterString("excludes")
     ).joinToString(",")
 
