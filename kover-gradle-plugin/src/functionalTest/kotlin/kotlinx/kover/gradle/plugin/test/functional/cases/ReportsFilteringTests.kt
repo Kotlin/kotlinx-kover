@@ -147,4 +147,33 @@ internal class ReportsFilteringTests {
         }
     }
 
+
+    /**
+     * Check that when excluding packages, the excluding occurs starting from the root package,
+     * and there is no search for any middle occurrence of the specified string.
+     *
+     * See https://github.com/Kotlin/kotlinx-kover/issues/543
+     */
+    @SlicedGeneratedTest(allTools = true)
+    fun BuildConfigurator.testPackageInTheMiddle() {
+        addProjectWithKover {
+            sourcesFrom("different-packages")
+
+            koverReport {
+                filters {
+                    excludes {
+                        packages("foo")
+                    }
+                }
+
+            }
+        }
+        run("koverXmlReport") {
+            xmlReport {
+                classCounter("foo.bar.FooClass").assertAbsent()
+                classCounter("org.jetbrains.foo.ExampleClass").assertCovered()
+            }
+        }
+    }
+
 }

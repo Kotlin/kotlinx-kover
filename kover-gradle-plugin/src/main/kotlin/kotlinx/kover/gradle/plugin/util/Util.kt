@@ -32,14 +32,6 @@ internal inline fun <T : Any> Boolean.ifFalse(block: () -> T): T? {
 }
 
 /**
- * Replaces characters `.` to `|` or `\` and added `.class` as postfix and `.* /` or `.*\` as prefix.
- */
-internal fun String.wildcardsToClassFileRegex(): String {
-    val filenameWithWildcards = "*" + File.separatorChar + this.replace('.', File.separatorChar) + ".class"
-    return filenameWithWildcards.wildcardsToRegex()
-}
-
-/**
  * Replaces characters `*` or `.` to `.*` and `.` regexp characters.
  */
 internal fun String.wildcardsToRegex(): String {

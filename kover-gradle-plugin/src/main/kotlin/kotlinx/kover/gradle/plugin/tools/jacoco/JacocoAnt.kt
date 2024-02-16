@@ -7,7 +7,8 @@ package kotlinx.kover.gradle.plugin.tools.jacoco
 import groovy.lang.Closure
 import groovy.lang.GroovyObject
 import kotlinx.kover.gradle.plugin.commons.ReportContext
-import kotlinx.kover.gradle.plugin.util.wildcardsToClassFileRegex
+import kotlinx.kover.gradle.plugin.util.wildcardsToRegex
+import java.io.File
 
 
 internal fun ReportContext.callAntReport(
@@ -28,14 +29,18 @@ internal fun ReportContext.callAntReport(
     val filteredOutput = if (filters.excludesClasses.isNotEmpty() || filters.includesClasses.isNotEmpty()) {
         val excludeRegexes = filters.excludesClasses.map { Regex(it.wildcardsToClassFileRegex()) }
         val includeRegexes = filters.includesClasses.map { Regex(it.wildcardsToClassFileRegex()) }
-        services.objects.fileCollection().from(files.outputs).asFileTree.filter { file ->
-            // the `canonicalPath` is used because a `File.separatorChar` was used to construct the class-file regex
-            val path = file.canonicalPath
-            // if the inclusion rules are declared, then the file must fit at least one of them
-            (includeRegexes.isEmpty() || includeRegexes.any { regex -> path.matches(regex) })
-                    // if the exclusion rules are declared, then the file should not fit any of them
-                    && excludeRegexes.none { regex -> path.matches(regex) }
+
+        val outputCollections = files.outputs.map { output ->
+            services.objects.fileCollection().from(output).asFileTree.filter { file ->
+                // the `canonicalPath` is used because a `File.separatorChar` was used to construct the class-file regex
+                val path = file.toRelativeString(output)
+                // if the inclusion rules are declared, then the file must fit at least one of them
+                (includeRegexes.isEmpty() || includeRegexes.any { regex -> path.matches(regex) })
+                        // if the exclusion rules are declared, then the file should not fit any of them
+                        && excludeRegexes.none { regex -> path.matches(regex) }
+            }
         }
+        services.objects.fileCollection().from(outputCollections)
     } else {
         services.objects.fileCollection().from(files.outputs)
     }
@@ -77,3 +82,12 @@ internal inline fun GroovyObject.invokeWithBody(
         )
     )
 }
+
+/**
+ * Replaces characters `.` to `|` or `\` and added `.class` as postfix and `.* /` or `.*\` as prefix.
+ */
+private fun String.wildcardsToClassFileRegex(): String {
+    val filenameWithWildcards = this.replace('.', File.separatorChar) + ".class"
+    return filenameWithWildcards.wildcardsToRegex()
+}
+
