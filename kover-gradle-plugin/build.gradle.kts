@@ -146,11 +146,9 @@ afterEvaluate {
 
 tasks.dokkaHtml {
     moduleName.set("Kover Gradle Plugin")
-    outputDirectory.set(rootProject.layout.projectDirectory.dir("docs/gradle-plugin/dokka").asFile)
+    outputDirectory.set(projectDir.resolve("docs/dokka"))
 
-    if (project.hasProperty("releaseVersion")) {
-        moduleVersion.set(project.property("releaseVersion") as String)
-    }
+    moduleVersion.set(project.property("kover.release.version").toString())
 
     dokkaSourceSets.configureEach {
         // source set configuration section
@@ -162,6 +160,22 @@ tasks.dokkaHtml {
             remoteUrl.set(URL("https://github.com/kotlin/kotlinx-kover/tree/main"))
             remoteLineSuffix.set("#L")
         }
+    }
+}
+
+tasks.register("releaseDocs") {
+    val dirName = "gradle-plugin"
+    val description = "Kover Gradle Plugin"
+    val sourceDir = projectDir.resolve("docs")
+    val resultDir = rootDir.resolve("docs/$dirName")
+    val mainIndexFile = rootDir.resolve("docs/index.md")
+
+    dependsOn(tasks.dokkaHtml)
+
+    doLast {
+        resultDir.mkdirs()
+        sourceDir.copyRecursively(resultDir)
+        mainIndexFile.appendText("- [$description]($dirName)\n")
     }
 }
 

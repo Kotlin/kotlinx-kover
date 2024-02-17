@@ -63,3 +63,17 @@ tasks.jar {
 repositories {
     mavenCentral()
 }
+
+tasks.register("releaseDocs") {
+    val dirName = "cli"
+    val description = "Kover Command Line Interface"
+    val sourceDir = projectDir.resolve("docs")
+    val resultDir = rootDir.resolve("docs/$dirName")
+    val mainIndexFile = rootDir.resolve("docs/index.md")
+
+    doLast {
+        resultDir.mkdirs()
+        sourceDir.copyRecursively(resultDir)
+        mainIndexFile.appendText("- [$description]($dirName)\n")
+    }
+}

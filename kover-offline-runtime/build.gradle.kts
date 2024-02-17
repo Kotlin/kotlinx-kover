@@ -51,3 +51,17 @@ tasks.jar {
         exclude("classpath.index")
     }
 }
+
+tasks.register("releaseDocs") {
+    val dirName = "offline-instrumentation"
+    val description = "Kover offline instrumentation"
+    val sourceDir = projectDir.resolve("docs")
+    val resultDir = rootDir.resolve("docs/$dirName")
+    val mainIndexFile = rootDir.resolve("docs/index.md")
+
+    doLast {
+        resultDir.mkdirs()
+        sourceDir.copyRecursively(resultDir)
+        mainIndexFile.appendText("- [$description]($dirName)\n")
+    }
+}
