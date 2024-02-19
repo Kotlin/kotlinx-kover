@@ -95,10 +95,10 @@ koverReport {
             onCheck = false
 
             // XML report title (the location depends on the library)
-            title.set("Custom XML report title")
+            title = "Custom XML report title"
           
             // XML report file
-            setReportFile(layout.buildDirectory.file("my-project-report/result.xml"))
+            xmlFile = layout.buildDirectory.file("my-project-report/result.xml")
 
             // overriding filters only for the XML report 
             filters {
@@ -134,7 +134,7 @@ koverReport {
             onCheck = false
 
             // directory for HTML report
-            setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+            htmlDir = layout.buildDirectory.dir("my-project-report/html-result")
 
             // overriding filters only for the HTML report
             filters {
@@ -326,7 +326,7 @@ koverReport {
             onCheck = false
 
             // directory for HTML report
-            setReportDir(layout.buildDirectory.dir("my-project-report/html-result"))
+            htmlDir = layout.buildDirectory.dir("my-project-report/html-result")
 
             // overriding filters only for the HTML report
             filters {

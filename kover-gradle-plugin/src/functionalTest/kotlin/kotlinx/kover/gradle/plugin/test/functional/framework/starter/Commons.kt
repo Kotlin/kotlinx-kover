@@ -119,7 +119,7 @@ internal fun File.patchSettingsFile(
     localRepositoryPath: String,
     overrideKotlinVersion: String?
 ) {
-    val language = if (name.endsWith(".kts")) ScriptLanguage.KOTLIN else ScriptLanguage.GROOVY
+    val language = if (name.endsWith(".kts")) ScriptLanguage.KTS else ScriptLanguage.GROOVY
 
     val originLines = readLines()
 

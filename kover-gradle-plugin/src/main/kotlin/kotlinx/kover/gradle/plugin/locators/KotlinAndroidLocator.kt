@@ -4,8 +4,9 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
+import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
+import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.*
 
@@ -15,33 +16,17 @@ Because of this, Kover may not have direct access to the Android plugin classes,
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal fun LocatorContext.initKotlinAndroidPluginLocator() {
-    listener.onApplyPlugin(KotlinPluginType.ANDROID)
-
-    project.pluginManager.withPlugin(ANDROID_APP_PLUGIN_ID) {
-        project.afterAndroidPluginApplied { processAndroidTarget() }
-    }
-    project.pluginManager.withPlugin(ANDROID_LIB_PLUGIN_ID) {
-        project.afterAndroidPluginApplied { processAndroidTarget() }
-    }
-    project.pluginManager.withPlugin(ANDROID_DYNAMIC_PLUGIN_ID) {
-        project.afterAndroidPluginApplied { processAndroidTarget() }
-    }
-}
-
-private fun LocatorContext.processAndroidTarget() {
+internal fun Project.locateKotlinAndroidVariants(): AllVariantOrigins {
     val kotlinExtension = project.getKotlinExtension()
-    locateAndroidCompilations(kotlinExtension)
-
-    listener.finalize()
+    val android = locateAndroidVariants(kotlinExtension)
+    return AllVariantOrigins(null, android)
 }
 
-private fun LocatorContext.locateAndroidCompilations(kotlinExtension: DynamicBean) {
+private fun Project.locateAndroidVariants(kotlinExtension: DynamicBean): List<AndroidVariantOrigin> {
     val androidExtension = project.extensions.findByName("android")?.bean()
         ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
 
     val kotlinTarget = kotlinExtension["target"]
 
-    val androidCompilations = project.androidCompilationKits(androidExtension, koverExtension, kotlinTarget)
-    listener.android(androidCompilations)
+    return project.androidCompilationKits(androidExtension, kotlinTarget)
 }

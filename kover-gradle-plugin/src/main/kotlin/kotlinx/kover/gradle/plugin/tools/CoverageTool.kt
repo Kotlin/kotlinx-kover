@@ -8,10 +8,9 @@ import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_VERSION
-import kotlinx.kover.gradle.plugin.dsl.internal.*
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverExtensionImpl
 import kotlinx.kover.gradle.plugin.tools.jacoco.JacocoTool
 import kotlinx.kover.gradle.plugin.tools.kover.KoverTool
-import org.gradle.api.Project
 import org.gradle.api.file.*
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
@@ -48,7 +47,7 @@ internal sealed class CoverageToolVariant(
 }
 
 internal class KoverToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.KOVER, version)
-internal object KoverToolDefaultVariant: CoverageToolVariant(CoverageToolVendor.KOVER, KOVER_TOOL_VERSION)
+internal object KoverToolBuiltin: CoverageToolVariant(CoverageToolVendor.KOVER, KOVER_TOOL_VERSION)
 
 internal class JacocoToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.JACOCO, version)
 
@@ -125,17 +124,13 @@ internal interface CoverageTool {
  * Factory to create instance of coverage tool according project settings from Kover project extension.
  */
 internal object CoverageToolFactory {
-    fun get(project: Project, projectExtension: KoverProjectExtensionImpl): Provider<CoverageTool> {
-        return project.provider {
-            // Kover Tool Default by default
-            val variant = projectExtension.toolVariant
-
-            when (variant?.vendor) {
-                CoverageToolVendor.KOVER -> KoverTool(variant)
-                CoverageToolVendor.JACOCO -> JacocoTool(variant)
-                null -> KoverTool(KoverToolDefaultVariant)
+    fun get(projectExtension: KoverExtensionImpl): Provider<CoverageTool> {
+        return projectExtension.useJacoco.map {
+            if (it) {
+                JacocoTool(JacocoToolVariant(projectExtension.jacocoVersion.get()))
+            } else {
+                KoverTool(KoverToolBuiltin)
             }
         }
     }
-
 }

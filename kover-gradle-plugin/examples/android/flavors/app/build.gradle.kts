@@ -98,44 +98,36 @@ dependencies {
 }
 
 
-koverReport {
-    // filters for all report types of all build variants
-    filters {
-        excludes {
-            classes(
-                "*Fragment",
-                "*Fragment\$*",
-                "*Activity",
-                "*Activity\$*",
-                "*.databinding.*",
-                "*.BuildConfig"
-            )
+kover {
+    variants {
+        create("custom") {
+            /**
+             * Tests, sources, classes, and compilation tasks of the 'app1AppDebug' build variant will be included in the report variant `custom`.
+             * Thus, information from the 'app1AppDebug' variant will be included in the 'custom' report for this project and any project that specifies this project as a dependency.
+             */
+            addWithDependencies("app1AppDebug")
         }
     }
 
-    defaults {
-        /**
-         * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the default report.
-         * Thus, information from the 'app1AppDebug' variant will be included in the default report for this project and any project that specifies this project as a dependency.
-         */
-        mergeWith("app1AppDebug")
-    }
-
-    androidReports("app1AppRelease") {
-        // filters for all report types only of 'app1AppRelease' build variant
+    reports {
+        // filters for all report types of all build variants
         filters {
             excludes {
-                classes(
-                    "*Fragment",
-                    "*Fragment\$*",
-                    "*Activity",
-                    "*Activity\$*",
-                    "*.databinding.*",
-                    "*.BuildConfig",
+                androidGeneratedClasses()
+            }
+        }
 
-                    // excludes debug classes
-                    "*.DebugUtil"
-                )
+        variant("app1AppRelease") {
+            // filters for all report types only of 'app1AppRelease' build variant
+            filters {
+                excludes {
+                    androidGeneratedClasses()
+
+                    classes(
+                        // excludes debug classes
+                        "*.DebugUtil"
+                    )
+                }
             }
         }
     }

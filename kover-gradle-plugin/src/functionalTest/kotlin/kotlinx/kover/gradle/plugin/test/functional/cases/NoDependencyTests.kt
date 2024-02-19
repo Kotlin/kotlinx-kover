@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * Tests on dependency check https://github.com/Kotlin/kotlinx-kover/issues/478.
@@ -20,8 +21,10 @@ class NoDependencyTests {
         val buildSource = buildFromTemplate("no-dependency-jvm")
         val build = buildSource.generate()
         val buildResult = build.runWithParams("koverHtmlReport")
-        assertFalse(buildResult.isSuccessful)
-        assertContains(buildResult.output, "Kover plugin is not applied")
+
+        // temporarily, this behavior is now allowed, see https://github.com/gradle/gradle/issues/27019
+        // build listeners also can't be used because of project isolation https://github.com/Kotlin/kotlinx-kover/issues/513
+        assertTrue(buildResult.isSuccessful)
     }
 
     @Test
@@ -31,8 +34,9 @@ class NoDependencyTests {
         val buildResult = build.runWithParams(":app:koverHtmlReportDebug")
         buildResult.checkNoAndroidSdk()
 
-        assertFalse(buildResult.isSuccessful)
-        assertContains(buildResult.output, "Kover plugin is not applied")
+        // temporarily, this behavior is now allowed, see https://github.com/gradle/gradle/issues/27019
+        // build listeners also can't be used because of project isolation https://github.com/Kotlin/kotlinx-kover/issues/513
+        assertTrue(buildResult.isSuccessful)
     }
 
     @Test
@@ -43,6 +47,6 @@ class NoDependencyTests {
         buildResult.checkNoAndroidSdk()
 
         assertFalse(buildResult.isSuccessful)
-        assertContains(buildResult.output, "Kover android variant 'extra' was not matched with any variant from dependency")
+        assertContains(buildResult.output, "Could not resolve all task dependencies for configuration ':app-extra:koverExternalArtifactsExtra'")
     }
 }

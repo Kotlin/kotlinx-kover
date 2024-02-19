@@ -7,7 +7,9 @@ package kotlinx.kover.gradle.plugin.test.functional.framework.configurator
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
+import org.gradle.api.Project
 import org.gradle.api.Transformer
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Provider
@@ -16,7 +18,7 @@ import java.util.function.BiFunction
 
 
 internal interface BuildConfigurator {
-    fun addProjectWithKover(path: String = ":", name: String = path.substringAfterLast(":"), generator: ProjectConfigurator.() -> Unit)
+    fun addProjectWithKover(path: String = ":", name: String = path.substringAfterLast(":"), kotlinVersion: String? = null, generator: ProjectConfigurator.() -> Unit)
 
     fun addProject(path: String, name: String, generator: ProjectConfigurator.() -> Unit)
 
@@ -38,9 +40,7 @@ internal interface ProjectConfigurator {
 
     fun repositories(block: RepositoriesConfigurator.() -> Unit)
 
-    fun kover(config: KoverProjectExtension.() -> Unit)
-
-    fun koverReport(config: KoverReportExtension.() -> Unit)
+    fun kover(config: KoverExtension.(Project) -> Unit)
 
     fun sourcesFrom(template: String)
 
@@ -57,11 +57,15 @@ internal interface RepositoriesConfigurator {
     fun repository(name: String)
 }
 
+internal interface ProjectScope {
+    val layout: ProjectLayout
+}
+
 
 internal abstract class BuilderConfiguratorWrapper(private val origin: BuildConfigurator) : BuildConfigurator {
 
-    override fun addProjectWithKover(path: String, name: String, generator: ProjectConfigurator.() -> Unit) {
-        origin.addProjectWithKover(path, name, generator)
+    override fun addProjectWithKover(path: String, name: String, kotlinVersion: String?, generator: ProjectConfigurator.() -> Unit) {
+        origin.addProjectWithKover(path, name, kotlinVersion, generator)
     }
 
     override fun addProject(path: String, name: String, generator: ProjectConfigurator.() -> Unit) {

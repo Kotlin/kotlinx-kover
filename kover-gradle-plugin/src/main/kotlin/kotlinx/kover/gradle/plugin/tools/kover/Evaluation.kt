@@ -37,7 +37,7 @@ internal abstract class CollectCoverageAction : AbstractReportAction<CollectCove
     override fun generate() {
         val request = parameters.request.get()
         val bound = VerificationBound(ONE_HUNDRED, BigDecimal.ZERO, request.metric, request.aggregation)
-        val failRule = VerificationRule(true, null, null, request.entity, listOf(bound))
+        val failRule = VerificationRule(true, "", request.entity, listOf(bound))
 
         // change API after https://youtrack.jetbrains.com/issue/IDEA-323463 will be implemented
         val violations = koverVerify(

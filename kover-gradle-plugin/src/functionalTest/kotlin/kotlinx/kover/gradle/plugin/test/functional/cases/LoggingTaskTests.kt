@@ -68,11 +68,13 @@ internal class LoggingTaskTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                defaults {
-                    log {
-                        header = "Custom header"
-                        format = "My format for <entity> is <value>"
+            kover {
+                reports {
+                    total {
+                        log {
+                            header.set("Custom header")
+                            format.set("My format for <entity> is <value>")
+                        }
                     }
                 }
             }
@@ -91,14 +93,16 @@ internal class LoggingTaskTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                defaults {
-                    log {
-                        header = "Coverage for classes:"
-                        format = "Class <entity> covered instructions=<value>"
-                        groupBy = GroupingEntityType.CLASS
-                        aggregationForGroup = AggregationType.COVERED_COUNT
-                        coverageUnits = MetricType.INSTRUCTION
+            kover {
+                reports {
+                    total {
+                        log {
+                            header.set("Coverage for classes:")
+                            format.set("Class <entity> covered instructions=<value>")
+                            groupBy.set(GroupingEntityType.CLASS)
+                            aggregationForGroup.set(AggregationType.COVERED_COUNT)
+                            coverageUnits.set(MetricType.INSTRUCTION)
+                        }
                     }
                 }
             }
@@ -123,14 +127,16 @@ internal class LoggingTaskTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                defaults {
-                    log {
-                        header = "Coverage for classes:"
-                        format = "Class <entity> covered instructions=<value>"
-                        groupBy = GroupingEntityType.CLASS
-                        aggregationForGroup = AggregationType.COVERED_COUNT
-                        coverageUnits = MetricType.INSTRUCTION
+            kover {
+                reports {
+                    total {
+                        log {
+                            header.set("Coverage for classes:")
+                            format.set("Class <entity> covered instructions=<value>")
+                            groupBy.set(GroupingEntityType.CLASS)
+                            aggregationForGroup.set(AggregationType.COVERED_COUNT)
+                            coverageUnits.set(MetricType.INSTRUCTION)
+                        }
                     }
                 }
             }

@@ -15,8 +15,10 @@ internal class InstrumentationFilteringTests {
             sourcesFrom("simple")
 
             kover {
-                excludeInstrumentation {
-                    classes("org.jetbrains.*Exa?ple*")
+                variants {
+                    instrumentation {
+                        excludedClasses.add("org.jetbrains.*Exa?ple*")
+                    }
                 }
             }
         }

@@ -62,46 +62,23 @@ internal class AccessorsTests {
                 }
 
 
+                KoverNames.pluginId mustBe "org.jetbrains.kotlinx.kover"
+                KoverNames.jvmVariantName mustBe "jvm"
+                KoverNames.configurationName mustBe "kover"
+                KoverNames.extensionName mustBe "kover"
+               
 
-                tasks.koverXmlReportName mustBe "koverXmlReport"
-                tasks.koverXmlReportName mustBe KoverNames.DEFAULT_XML_REPORT_NAME
+                KoverNames.koverXmlReportName mustBe "koverXmlReport"
+                KoverNames.koverHtmlReportName mustBe "koverHtmlReport"
+                KoverNames.koverBinaryReportName mustBe "koverBinaryReport"
+                KoverNames.koverVerifyName mustBe "koverVerify"
+                KoverNames.koverLogName mustBe "koverLog"
 
-                tasks.koverHtmlReportName mustBe "koverHtmlReport"
-                tasks.koverHtmlReportName mustBe KoverNames.DEFAULT_HTML_REPORT_NAME
-                
-                tasks.koverBinaryReportName mustBe "koverBinaryReport"
-                tasks.koverBinaryReportName mustBe KoverNames.DEFAULT_BINARY_REPORT_NAME
-
-                tasks.koverVerifyName mustBe "koverVerify"
-                tasks.koverVerifyName mustBe KoverNames.DEFAULT_VERIFY_REPORT_NAME
-                
-                tasks.koverLogName mustBe "koverLog"
-                tasks.koverLogName mustBe KoverNames.DEFAULT_LOG_REPORT_NAME
-
-
-
-                tasks.koverAndroidXmlReportName("variant") mustBe "koverXmlReportVariant"
-                tasks.koverAndroidXmlReportName("variant") mustBe KoverNames.androidXmlReport("variant")
-
-                tasks.koverAndroidHtmlReportName("variant") mustBe "koverHtmlReportVariant"
-                tasks.koverAndroidHtmlReportName("variant") mustBe KoverNames.androidHtmlReport("variant")
-
-                tasks.koverAndroidBinaryReportName("variant") mustBe "koverBinaryReportVariant"
-                tasks.koverAndroidBinaryReportName("variant") mustBe KoverNames.androidBinaryReport("variant")
-
-                tasks.koverAndroidVerifyName("variant") mustBe "koverVerifyVariant"
-                tasks.koverAndroidVerifyName("variant") mustBe KoverNames.androidVerify("variant")
-                
-                tasks.koverAndroidLogName("variant") mustBe "koverLogVariant"
-                tasks.koverAndroidLogName("variant") mustBe KoverNames.androidLog("variant")
-
-
-
-                extensions.koverExtensionName mustBe "kover"
-                extensions.koverExtensionName mustBe KoverNames.PROJECT_EXTENSION_NAME
-
-                extensions.koverReportExtensionName mustBe "koverReport"
-                extensions.koverReportExtensionName mustBe KoverNames.REPORT_EXTENSION_NAME
+                KoverNames.koverXmlReportName("variant") mustBe "koverXmlReportVariant"
+                KoverNames.koverHtmlReportName("variant") mustBe "koverHtmlReportVariant"
+                KoverNames.koverBinaryReportName("variant") mustBe "koverBinaryReportVariant"
+                KoverNames.koverVerifyName("variant") mustBe "koverVerifyVariant"
+                KoverNames.koverLogName("variant") mustBe "koverLogVariant"
 
                 infix fun String.mustBe(a: String) {
                     if (this != a) throw AssertionError("Expected " + a + ", actual " + this)

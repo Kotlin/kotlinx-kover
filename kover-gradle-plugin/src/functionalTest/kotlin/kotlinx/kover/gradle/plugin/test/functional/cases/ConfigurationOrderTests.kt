@@ -20,12 +20,12 @@ internal class ConfigurationOrderTests {
      * A test to verify that the order of application of the Kover plugin does not affect the correct operation.
      * Kover + Kotlin Android Plugin
      */
-    @TemplateTest("android-inverse-order", [":app:koverXmlReport", ":app:koverXmlReportRelease"])
+    @TemplateTest("android-inverse-order", [":app:koverXmlReportCustom", ":app:koverXmlReportRelease"])
     fun CheckerContext.testAndroidInverseOrder() {
         subproject(":app") {
-            checkXmlReport()
+            checkXmlReport("custom")
             checkXmlReport("release")
-            checkOutcome(":app:koverXmlReport", "SUCCESS")
+            checkOutcome(":app:koverXmlReportCustom", "SUCCESS")
             checkOutcome(":app:koverXmlReportRelease", "SUCCESS")
         }
     }
@@ -34,11 +34,11 @@ internal class ConfigurationOrderTests {
      * A test to verify that the order of application of the Kover plugin does not affect the correct operation.
      * Kover + Kotlin Multiplatform Plugin with Android target
      */
-    @TemplateTest("android-mpp-inverse-order", [":koverXmlReport", ":koverXmlReportRelease"])
+    @TemplateTest("android-mpp-inverse-order", [":koverXmlReportCustom", ":koverXmlReportRelease"])
     fun CheckerContext.testAndroidMppInverseOrder() {
-        checkXmlReport()
+        checkXmlReport("custom")
         checkXmlReport("release")
-        checkOutcome(":koverXmlReport", "SUCCESS")
+        checkOutcome(":koverXmlReportCustom", "SUCCESS")
         checkOutcome(":koverXmlReportRelease", "SUCCESS")
     }
 
@@ -50,7 +50,7 @@ internal class ConfigurationOrderTests {
 
         buildResult.checkNoAndroidSdk()
         assertFalse(buildResult.isSuccessful, "Build must fall")
-        assertContains(buildResult.output, "impossible to configure Android reports for it")
+        assertContains(buildResult.output, "variant because it does not exist")
     }
 
     @Test
@@ -61,7 +61,7 @@ internal class ConfigurationOrderTests {
 
         buildResult.checkNoAndroidSdk()
         assertFalse(buildResult.isSuccessful, "Build must fall")
-        assertContains(buildResult.output, "impossible to merge default reports with its measurements")
+        assertContains(buildResult.output, "Could not find the provided variant")
     }
 
 }

@@ -68,26 +68,29 @@ kotlin {
  */
 
 
-koverReport {
-    defaults {
-        mergeWith("release")
+kover {
+    variants {
+        create("custom") {
+            /**
+             * Tests, sources, classes, and compilation tasks of the 'release' build variant will be included in the `custom` reports.
+             * Thus, information from the 'release' variant will be included in the `custom` report for this project and any project that specifies this project as a dependency.
+             */
+            add("release")
+        }
     }
 
-    androidReports("release") {
-        // filters for all report types only of 'release' build type
-        filters {
-            excludes {
-                classes(
-                    "*Fragment",
-                    "*Fragment\$*",
-                    "*Activity",
-                    "*Activity\$*",
-                    "*.databinding.*",
-                    "*.BuildConfig",
+    reports {
+        variant("release") {
+            // filters for all report types only of 'release' build type
+            filters {
+                excludes {
+                    androidGeneratedClasses()
 
-                    // excludes debug classes
-                    "*.DebugUtil"
-                )
+                    classes(
+                        // excludes debug classes
+                        "*.DebugUtil"
+                    )
+                }
             }
         }
     }

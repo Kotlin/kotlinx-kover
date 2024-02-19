@@ -4,10 +4,9 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
-import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.internal.*
-import kotlinx.kover.gradle.plugin.util.*
-import org.gradle.api.*
+import kotlinx.kover.gradle.plugin.appliers.origin.JvmVariantOrigin
+import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
+import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 
@@ -17,35 +16,18 @@ Because of this, Kover may not have direct access to the JVM plugin classes, and
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal fun LocatorContext.initKotlinJvmPluginLocator() {
-    listener.onApplyPlugin(KotlinPluginType.JVM)
 
-    project.afterEvaluate {
-        afterJvmOnly()
-    }
-}
-
-private fun LocatorContext.afterJvmOnly() {
+internal fun Project.locateKotlinJvmVariants(): AllVariantOrigins {
     val kotlinExtension = project.getKotlinExtension()
-    locateJvmCompilations(kotlinExtension)
-    listener.finalize()
-}
+    val tests = tasks.withType<Test>()
 
-private fun LocatorContext.locateJvmCompilations(kotlinExtension: DynamicBean) {
-    val tests = project.tasks.withType<Test>().matching {
-        // skip all tests from instrumentation if Kover Plugin is disabled for the project
-        !koverExtension.disabled
-                // skip this test if it disabled by name
-                && it.name !in koverExtension.tests.tasksNames
-    }
-
-    val compilations = project.provider {
-        kotlinExtension["target"].extractJvmCompilations(koverExtension) {
+    val compilations = provider {
+        kotlinExtension["target"].beanCollection("compilations").jvmCompilations {
             // exclude java classes from report. Expected java class files are placed in directories like
             //   build/classes/java/main
             it.parentFile.name == "java"
         }
     }
 
-    listener.jvm(JvmCompilationKit(tests, compilations))
+    return AllVariantOrigins(JvmVariantOrigin(tests, compilations), emptyList())
 }

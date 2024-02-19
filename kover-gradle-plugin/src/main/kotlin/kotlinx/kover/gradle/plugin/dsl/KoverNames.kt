@@ -1,7 +1,13 @@
+/*
+ * Copyright 2017-2023 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
+
 package kotlinx.kover.gradle.plugin.dsl
 
-import kotlinx.kover.gradle.plugin.commons.htmlReportTaskName
+import kotlinx.kover.gradle.plugin.commons.*
+import kotlinx.kover.gradle.plugin.commons.KoverMigrations
 import kotlinx.kover.gradle.plugin.commons.binaryReportTaskName
+import kotlinx.kover.gradle.plugin.commons.htmlReportTaskName
 import kotlinx.kover.gradle.plugin.commons.logTaskName
 import kotlinx.kover.gradle.plugin.commons.verifyTaskName
 import kotlinx.kover.gradle.plugin.commons.xmlReportTaskName
@@ -13,175 +19,285 @@ import org.gradle.api.tasks.TaskContainer
  */
 public object KoverNames {
     /**
+     * ID of Kover Gradle Plugin.
+     */
+    public val pluginId: String
+        get() = KOVER_PLUGIN_ID
+
+    /**
+     * Name of reports variant for JVM targets.
+     * It includes all code from a project using the Kotlin/JVM plugin, or the code of the JVM target from a project using Kotlin/Multiplatform.
+     */
+    public val jvmVariantName: String
+        get() = JVM_VARIANT_NAME
+
+    /**
      * Name of the configuration to add dependency on Kover reports from another project.
      */
-    public const val DEPENDENCY_CONFIGURATION_NAME = "kover"
+    public val configurationName: String
+        get() = KOVER_DEPENDENCY_NAME
 
     /**
-     * Name of the project extension to configure Kover measurements.
+     * Name of the project extension to configure Kover.
      */
-    public const val PROJECT_EXTENSION_NAME = "kover"
-
-    /**
-     * Name of the project extension to configure Kover reports.
-     */
-    public const val REPORT_EXTENSION_NAME = "koverReport"
+    public val extensionName: String
+        get() = KOVER_PROJECT_EXTENSION_NAME
 
     /**
      * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.
      */
-    public const val DEFAULT_XML_REPORT_NAME = "koverXmlReport"
-
-    /**
-     * Name of the binary report generation task for Kotlin JVM and Kotlin multiplatform projects.
-     */
-    public const val DEFAULT_BINARY_REPORT_NAME = "koverBinaryReport"
+    public val koverXmlReportName
+        get() = XML_REPORT_NAME
 
     /**
      * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
      */
-    public const val DEFAULT_HTML_REPORT_NAME = "koverHtmlReport"
+    public val koverHtmlReportName
+        get() = HTML_REPORT_NAME
+
+    /**
+     * Name of the binary report generation task for Kotlin JVM and Kotlin multiplatform projects.
+     */
+    public val koverBinaryReportName
+        get() = BINARY_REPORT_NAME
 
     /**
      * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
      */
-    public const val DEFAULT_VERIFY_REPORT_NAME = "koverVerify"
+    public val koverVerifyName
+        get() = VERIFY_REPORT_NAME
 
     /**
      * Name of the coverage logging task for Kotlin JVM and Kotlin multiplatform projects.
      */
+    public val koverLogName
+        get() = LOG_REPORT_NAME
+
+
+    /**
+     * Name of the XML report generation task for [variant] Kover report variant.
+     */
+    public fun koverXmlReportName(variant: String): String {
+        return xmlReportTaskName(variant)
+    }
+
+    /**
+     * Name of the HTML report generation task for [variant] Kover report variant.
+     */
+    public fun koverHtmlReportName(variant: String): String {
+        return htmlReportTaskName(variant)
+    }
+
+    /**
+     * Name of the binary report generation task for [variant] Kover report variant.
+     */
+    public fun koverBinaryReportName(variant: String): String {
+        return binaryReportTaskName(variant)
+    }
+
+    /**
+     * Name of the verification task for [variant] Kover report variant.
+     */
+    public fun koverVerifyName(variant: String): String {
+        return verifyTaskName(variant)
+    }
+
+    /**
+     * Name of the coverage logging task for [variant] Kover report variant.
+     */
+    public fun koverLogName(variant: String): String {
+        return logTaskName(variant)
+    }
+
+    // ===
+    // Deprecations
+    // Remove in 0.9.0
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.pluginId property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("pluginId"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val PLUGIN_ID = KOVER_PLUGIN_ID
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.configurationName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("configurationName"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val DEPENDENCY_CONFIGURATION_NAME = KOVER_DEPENDENCY_NAME
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("extensionName"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val PROJECT_EXTENSION_NAME = KOVER_PROJECT_EXTENSION_NAME
+
+    @Deprecated(
+        message = "Extension was removed, use kover { ... } extension. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("kover"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val REPORT_EXTENSION_NAME = "koverReport"
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.koverXmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("koverXmlReportName"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val DEFAULT_XML_REPORT_NAME = "koverXmlReport"
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.koverBinaryReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("koverBinaryReportName"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val DEFAULT_BINARY_REPORT_NAME = "koverBinaryReport"
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.koverHtmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("koverHtmlReportName"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val DEFAULT_HTML_REPORT_NAME = "koverHtmlReport"
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.koverVerifyName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("koverVerifyName"),
+        level = DeprecationLevel.ERROR
+    )
+    public const val DEFAULT_VERIFY_REPORT_NAME = "koverVerify"
+
+    @Deprecated(
+        message = "Constant was removed, use KoverNames.koverLogName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("koverLogName"),
+        level = DeprecationLevel.ERROR
+    )
     public const val DEFAULT_LOG_REPORT_NAME = "koverLog"
-
-    /**
-     * Name of the XML report generation task for [buildVariant] Android build variant for Android projects.
-     */
-    public fun androidXmlReport(buildVariant: String): String {
-        return xmlReportTaskName(buildVariant)
-    }
-
-    /**
-     * Name of the HTML report generation task for [buildVariant] Android build variant for Android projects.
-     */
-    public fun androidHtmlReport(buildVariant: String): String {
-        return htmlReportTaskName(buildVariant)
-    }
-
-    /**
-     * Name of the binary report generation task for [buildVariant] Android build variant for Android projects.
-     */
-    public fun androidBinaryReport(buildVariant: String): String {
-        return binaryReportTaskName(buildVariant)
-    }
-
-    /**
-     * Name of the verification task for [buildVariant] Android build variant for Android projects.
-     */
-    public fun androidVerify(buildVariant: String): String {
-        return verifyTaskName(buildVariant)
-    }
-
-    /**
-     * Name of the coverage logging task for [buildVariant] Android build variant for Android projects.
-     */
-    public fun androidLog(buildVariant: String): String {
-        return logTaskName(buildVariant)
-    }
 }
 
-/**
- * Name of the XML report generation task for Kotlin JVM and Kotlin multiplatform projects.
- *
- * Has the same value as [KoverNames.DEFAULT_XML_REPORT_NAME].
- */
-public val TaskContainer.koverXmlReportName
-    get() = KoverNames.DEFAULT_XML_REPORT_NAME
 
-/**
- * Name of the HTML report generation task for Kotlin JVM and Kotlin multiplatform projects.
- *
- * Has the same value as [KoverNames.DEFAULT_HTML_REPORT_NAME].
- */
-public val TaskContainer.koverHtmlReportName
-    get() = KoverNames.DEFAULT_HTML_REPORT_NAME
+// ===
+// Deprecations
+// Remove in 0.9.0
 
-/**
- * Name of the binary report generation task for Kotlin JVM and Kotlin multiplatform projects.
- *
- * Has the same value as [KoverNames.DEFAULT_BINARY_REPORT_NAME].
- */
-public val TaskContainer.koverBinaryReportName
-    get() = KoverNames.DEFAULT_BINARY_REPORT_NAME
+@Deprecated(
+    message = "Property was removed, use KoverNames.koverXmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverXmlReportName"),
+    level = DeprecationLevel.ERROR
+)
+public val TaskContainer.koverXmlReportName: String
+    get() {
+        throw KoverDeprecationException("Property koverXmlReportName was removed, use KoverNames.koverXmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }
 
-/**
- * Name of the verification task for Kotlin JVM and Kotlin multiplatform projects.
- *
- * Has the same value as [KoverNames.DEFAULT_VERIFY_REPORT_NAME].
- */
-public val TaskContainer.koverVerifyName
-    get() = KoverNames.DEFAULT_VERIFY_REPORT_NAME
+@Deprecated(
+    message = "Property was removed, use KoverNames.koverHtmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverHtmlReportName"),
+    level = DeprecationLevel.ERROR
+)
+public val TaskContainer.koverHtmlReportName: String
+    get() {
+        throw KoverDeprecationException("Property koverHtmlReportName was removed, use KoverNames.koverHtmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }
 
-/**
- * Name of the coverage logging task for Kotlin JVM and Kotlin multiplatform projects.
- *
- * Has the same value as [KoverNames.DEFAULT_LOG_REPORT_NAME].
- */
-public val TaskContainer.koverLogName
-    get() = KoverNames.DEFAULT_LOG_REPORT_NAME
+@Deprecated(
+    message = "Property was removed, use KoverNames.koverBinaryReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverBinaryReportName"),
+    level = DeprecationLevel.ERROR
+)
+public val TaskContainer.koverBinaryReportName: String
+    get() {
+        throw KoverDeprecationException("Property koverBinaryReportName was removed, use KoverNames.koverBinaryReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }
 
+@Deprecated(
+    message = "Property was removed, use KoverNames.koverVerifyName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverVerifyName"),
+    level = DeprecationLevel.ERROR
+)
+public val TaskContainer.koverVerifyName: String
+    get() {
+        throw KoverDeprecationException("Property koverVerifyName was removed, use KoverNames.koverVerifyName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }
 
-/**
- * Name of the XML report generation task for [buildVariantName] Android build variant for Android projects.
- *
- * Returns the same value as [KoverNames.androidXmlReport].
- */
+@Deprecated(
+    message = "Property was removed, use KoverNames.koverLogName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverLogName"),
+    level = DeprecationLevel.ERROR
+)
+public val TaskContainer.koverLogName: String
+    get() {
+        throw KoverDeprecationException("Property koverLogName was removed, use KoverNames.koverLogName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }
+
+@Deprecated(
+    message = "Function was removed, use KoverNames.koverXmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverXmlReportName(buildVariantName)"),
+    level = DeprecationLevel.ERROR
+)
+@Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidXmlReportName(buildVariantName: String): String {
-    return KoverNames.androidXmlReport(buildVariantName)
+    throw KoverDeprecationException("Function koverAndroidXmlReportName(buildVariantName) was removed, use KoverNames.koverXmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
-/**
- * Name of the HTML report generation task for [buildVariantName] Android build variant for Android projects.
- *
- * Returns the same value as [KoverNames.androidHtmlReport].
- */
+@Deprecated(
+    message = "Function was removed, use KoverNames.koverHtmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverHtmlReportName(buildVariantName)"),
+    level = DeprecationLevel.ERROR
+)
+@Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): String {
-    return KoverNames.androidHtmlReport(buildVariantName)
+    throw KoverDeprecationException("Function koverAndroidHtmlReportName(buildVariantName) was removed, use KoverNames.koverHtmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
-/**
- * Name of the binary report generation task for [buildVariantName] Android build variant for Android projects.
- *
- * Returns the same value as [KoverNames.androidBinaryReport].
- */
+@Deprecated(
+    message = "Function was removed, use KoverNames.koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverBinaryReportName(buildVariantName)"),
+    level = DeprecationLevel.ERROR
+)
+@Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidBinaryReportName(buildVariantName: String): String {
-    return KoverNames.androidBinaryReport(buildVariantName)
+    throw KoverDeprecationException("Function koverAndroidBinaryReportName(buildVariantName) was removed, use koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
-/**
- * Name of the XML report generation task for [buildVariantName] Android build variant for Android projects.
- *
- * Returns the same value as [KoverNames.androidVerify].
- */
+@Deprecated(
+    message = "Function was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverVerifyName(buildVariantName)"),
+    level = DeprecationLevel.ERROR
+)
+@Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidVerifyName(buildVariantName: String): String {
-    return KoverNames.androidVerify(buildVariantName)
+    throw KoverDeprecationException("Function koverAndroidVerifyName(buildVariantName) was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
-/**
- * Name of the coverage logging task for [buildVariantName] Android build variant for Android projects.
- *
- * Returns the same value as [KoverNames.androidLog].
- */
+@Deprecated(
+    message = "Function was removed, use KoverNames.koverLogName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.koverLogName(buildVariantName)"),
+    level = DeprecationLevel.ERROR
+)
+@Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidLogName(buildVariantName: String): String {
-    return KoverNames.androidLog(buildVariantName)
+    throw KoverDeprecationException("Function koverAndroidLogName(buildVariantName) was removed, use KoverNames.koverLogName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
-/**
- * Name of the project extension to configure Kover measurements.
- */
+@Deprecated(
+    message = "Property was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.extensionName"),
+    level = DeprecationLevel.ERROR
+)
 public val ExtensionContainer.koverExtensionName: String
-    get() = KoverNames.PROJECT_EXTENSION_NAME
+    get() {
+        throw KoverDeprecationException("Property koverExtensionName was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }
 
-/**
- * Name of the project extension to configure Kover reports.
- */
+@Deprecated(
+    message = "Property was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("KoverNames.extensionName"),
+    level = DeprecationLevel.ERROR
+)
 public val ExtensionContainer.koverReportExtensionName: String
-    get() = KoverNames.REPORT_EXTENSION_NAME
+    get() {
+        throw KoverDeprecationException("Property koverReportExtensionName was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }

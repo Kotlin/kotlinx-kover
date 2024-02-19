@@ -14,16 +14,18 @@ internal class ReportsFilteringTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                filters {
-                    excludes {
-                        classes("org.jetbrains.*Exa?ple*")
+            kover {
+                reports {
+                    filters {
+                        excludes {
+                            classes("org.jetbrains.*Exa?ple*")
+                        }
                     }
-                }
-                verify {
-                    rule {
-                        // without ExampleClass covered lines count = 2, but 4 with it
-                        maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                    verify {
+                        rule {
+                            // without ExampleClass covered lines count = 2, but 4 with it
+                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                        }
                     }
                 }
             }
@@ -41,23 +43,25 @@ internal class ReportsFilteringTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                filters {
-                    excludes {
-                        classes("org.*")
-                    }
-                }
-                verify {
-                    rule {
-                        // without ExampleClass covered lines count = 2, but 4 with it
-                        maxBound(2, aggregation = AggregationType.COVERED_COUNT)
-                    }
-                }
-
-                defaults {
+            kover {
+                reports {
                     filters {
                         excludes {
-                            classes("org.jetbrains.*Exa?ple*")
+                            classes("org.*")
+                        }
+                    }
+                    verify {
+                        rule {
+                            // without ExampleClass covered lines count = 2, but 4 with it
+                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                        }
+                    }
+
+                    total {
+                        filters {
+                            excludes {
+                                classes("org.jetbrains.*Exa?ple*")
+                            }
                         }
                     }
                 }
@@ -76,37 +80,31 @@ internal class ReportsFilteringTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                filters {
-                    excludes {
-                        classes("foo.*")
-                    }
-                }
-
-                defaults {
+            kover {
+                reports {
                     filters {
                         excludes {
-                            classes("org.*")
+                            classes("foo.*")
                         }
                     }
 
-                    xml {
+                    total {
                         filters {
                             excludes {
-                                classes("org.jetbrains.*Exa?ple*")
+                                classes("org.*")
                             }
                         }
-                    }
 
-                    verify {
-                        filters {
-                            excludes {
-                                classes("org.jetbrains.*Exa?ple*")
+                        verify {
+                            filters {
+                                excludes {
+                                    classes("org.jetbrains.*Exa?ple*")
+                                }
                             }
-                        }
-                        rule {
-                            // without ExampleClass covered lines count = 2, but 4 with it
-                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                            rule {
+                                // without ExampleClass covered lines count = 2, but 4 with it
+                                maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                            }
                         }
                     }
                 }
@@ -125,17 +123,19 @@ internal class ReportsFilteringTests {
         addProjectWithKover {
             sourcesFrom("simple")
 
-            koverReport {
-                filters {
-                    excludes {
-                        classes("org.jetbrains.*Exa?ple*")
+            kover {
+                reports {
+                    filters {
+                        excludes {
+                            classes("org.jetbrains.*Exa?ple*")
+                        }
+
+                        includes {
+                            classes("org.jetbrains.*Cla?s")
+                        }
                     }
 
-                    includes {
-                        classes("org.jetbrains.*Cla?s")
-                    }
                 }
-
             }
         }
         run("koverXmlReport") {
@@ -159,13 +159,15 @@ internal class ReportsFilteringTests {
         addProjectWithKover {
             sourcesFrom("different-packages")
 
-            koverReport {
-                filters {
-                    excludes {
-                        packages("foo")
+            kover {
+                reports {
+                    filters {
+                        excludes {
+                            packages("foo")
+                        }
                     }
-                }
 
+                }
             }
         }
         run("koverXmlReport") {

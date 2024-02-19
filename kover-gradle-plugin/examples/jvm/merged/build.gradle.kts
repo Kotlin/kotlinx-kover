@@ -15,21 +15,23 @@ dependencies {
     kover(project(":subproject"))
 }
 
-koverReport {
-    filters {
-        excludes {
-            classes("kotlinx.kover.examples.merged.utils.*", "kotlinx.kover.examples.merged.subproject.utils.*")
+kover {
+    reports {
+        filters {
+            excludes {
+                classes("kotlinx.kover.examples.merged.utils.*", "kotlinx.kover.examples.merged.subproject.utils.*")
+            }
+            includes {
+                classes("kotlinx.kover.examples.merged.*")
+            }
         }
-        includes {
-            classes("kotlinx.kover.examples.merged.*")
-        }
-    }
 
-    verify {
-        rule {
-            bound {
-                minValue = 50
-                maxValue = 75
+        verify {
+            rule {
+                bound {
+                    min.set(50)
+                    max.set(75)
+                }
             }
         }
     }

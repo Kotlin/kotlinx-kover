@@ -42,12 +42,6 @@ internal fun coverageLogPath(variant: String): String {
     return "kover${separator}coverage${variant.capitalized()}.txt"
 }
 
-internal fun artifactFilePath(variant: String): String {
-    return if (variant == DEFAULT_KOVER_VARIANT_NAME) {
-        "kover${separator}default.artifact"
-    } else {
-        "kover${separator}$variant.artifact"
-    }
-}
+internal fun artifactFilePath(variant: String): String = "kover${separator}$variant.artifact"
 
 private val separator = File.separatorChar

@@ -119,7 +119,7 @@ private fun GroovyObject.violations(): List<RuleViolations> {
         val isMax = match.groupValues[6].asIsMax(it)
         val expected = match.groupValues[7].asValue(it, agg)
 
-        RuleViolations(entityType, listOf(BoundViolations(isMax, expected, value, metric, agg, entityName)))
+        RuleViolations(entityType, listOf(BoundViolations(isMax, expected, value, metric, agg, entityName)), "")
     }.toList()
 }
 

@@ -40,10 +40,12 @@ internal class XmlReportTests {
         addProjectWithKover(":nested") {
             sourcesFrom("simple")
 
-            koverReport {
-                defaults {
-                    xml {
-                        this.title.set("My Custom XML title")
+            kover {
+                reports {
+                    total {
+                        xml {
+                            this.title.set("My Custom XML title")
+                        }
                     }
                 }
             }

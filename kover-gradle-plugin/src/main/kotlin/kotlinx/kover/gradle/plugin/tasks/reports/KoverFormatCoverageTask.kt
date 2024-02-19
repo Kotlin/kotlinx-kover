@@ -7,6 +7,7 @@ package kotlinx.kover.gradle.plugin.tasks.reports
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.tasks.KoverLogReport
 import kotlinx.kover.gradle.plugin.tools.CoverageRequest
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -14,7 +15,7 @@ import org.gradle.api.tasks.*
 import javax.annotation.Nullable
 
 @CacheableTask
-internal abstract class KoverFormatCoverageTask : AbstractKoverReportTask() {
+internal abstract class KoverFormatCoverageTask : AbstractKoverReportTask(), KoverLogReport {
     @get:Input
     @get:Optional
     @get:Nullable

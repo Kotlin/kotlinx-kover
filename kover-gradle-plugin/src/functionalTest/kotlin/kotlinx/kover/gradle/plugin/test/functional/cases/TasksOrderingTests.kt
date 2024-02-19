@@ -11,10 +11,12 @@ internal class TasksOrderingTests {
     fun BuildConfigurator.testProjectTasks() {
         addProjectWithKover {
             sourcesFrom("simple")
-            koverReport {
-                verify {
-                    rule {
-                        minBound(100)
+            kover {
+                reports {
+                    verify {
+                        rule {
+                            minBound(100)
+                        }
                     }
                 }
             }

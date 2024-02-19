@@ -12,7 +12,6 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.writer.*
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.extension.*
 import java.lang.reflect.*
-import java.nio.file.*
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
@@ -22,7 +21,7 @@ import java.nio.file.*
     ExtendWith(SingleTestInterceptor::class)
 )
 internal annotation class GeneratedTest(
-    val language: ScriptLanguage = ScriptLanguage.KOTLIN,
+    val language: ScriptLanguage = ScriptLanguage.KTS,
     val type: KotlinPluginType = KotlinPluginType.JVM,
     val tool: CoverageToolVendor = CoverageToolVendor.KOVER,
     // since nullable types are not allowed in annotations, we store the attribute of an unspecified tool separately
