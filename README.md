@@ -54,6 +54,8 @@ plugins {
 After you applied Kover Gradle plugin, [Kover tasks](https://kotlin.github.io/kotlinx-kover/gradle-plugin#kover-tasks) will be created for generating reports and verification. 
 E.g. to generate HTML report for non-Android project run `./gradlew koverHtmlReport` - this will automatically start code compilation, execution of instrumented tests, and an HTML report will be generated with measurement results in the build folder.
 
+It is also important that after applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
+
 #### Legacy Plugin Application
 
 [Legacy method](https://docs.gradle.org/current/userguide/plugins.html#sec:old_plugin_application) of applying plugins
