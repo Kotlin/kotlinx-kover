@@ -39,7 +39,7 @@ internal class JvmVariantArtifacts(
         }
 
         fromOrigin(variantOrigin) { compilationName ->
-            compilationName !in variantConfig.classes.excludedSourceSets.get()
+            compilationName !in variantConfig.sources.excludedSourceSets.get()
                     && compilationName != "test"
         }
     }

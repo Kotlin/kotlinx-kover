@@ -4,7 +4,9 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
+import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import kotlinx.kover.gradle.plugin.dsl.KoverExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverMergingConfig
 import kotlinx.kover.gradle.plugin.dsl.KoverReportConfig
 import kotlinx.kover.gradle.plugin.dsl.KoverVariantsRootConfig
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
@@ -22,6 +24,9 @@ internal abstract class KoverExtensionImpl @Inject constructor(
 ): KoverExtension {
     internal val variants: KoverVariantsRootConfigImpl = objects.newInstance()
     internal val reports: KoverReportConfigImpl = objects.newInstance(objects, layout, projectPath)
+    internal val merge: KoverMergingConfigImpl = objects.newInstance()
+    internal var isMerged: Boolean = false
+    internal val finalizeActions: MutableList<() -> Unit> = mutableListOf()
 
     init {
         @Suppress("LeakingThis")
@@ -45,5 +50,17 @@ internal abstract class KoverExtensionImpl @Inject constructor(
 
     override fun reports(block: Action<KoverReportConfig>) {
         block.execute(reports)
+    }
+
+    override fun merge(block: Action<KoverMergingConfig>) {
+        if (isMerged) {
+            throw KoverIllegalConfigException("An attempt to re-invoke the 'merge' block. Only one merging config is allowed")
+        }
+        isMerged = true
+        block.execute(merge)
+    }
+
+    internal fun beforeFinalize(action: () -> Unit) {
+        finalizeActions += action
     }
 }

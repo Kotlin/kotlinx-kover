@@ -72,6 +72,10 @@ private fun parseFunction(invoke: FunctionInvoke, context: ParseContext): Expres
         return SetOperatorCall(receiver, rightSide)
     }
 
+    if (invoke.name == "line" && invoke.args.size == 1 && invoke.args.first() is ValueInvoke) {
+        return CodeLine((invoke.args.first() as ValueInvoke).value as String)
+    }
+
     if (invoke.name.startsWith("get") && invoke.name != "get" && invoke.args.isEmpty()) {
         val propertyName = extractPropertyName(invoke.name)
         return PropertyGetter(propertyName, receiver)
@@ -121,6 +125,8 @@ internal class VariableUsage(val name: String): Expression(null)
 internal class SetOperatorCall(val leftSide: Expression, val rightSide: Expression): Expression(null)
 internal class PropertyGetter(val name: String, receiver: Expression?): Expression(receiver)
 internal class PropertySetter(val name: String, val value: Expression, receiver: Expression?): Expression(receiver)
+
+internal class CodeLine(val line: String): Expression(null)
 
 internal class FunctionCall(val name: String, receiver: Expression?, val args: List<Expression>): Expression(receiver)
 

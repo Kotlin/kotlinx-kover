@@ -10,6 +10,7 @@ import kotlinx.kover.gradle.plugin.appliers.instrumentation.instrument
 import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
 import kotlinx.kover.gradle.plugin.appliers.origin.JvmVariantOrigin
 import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
+import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.JVM_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import kotlinx.kover.gradle.plugin.commons.ReportVariantType
@@ -26,6 +27,14 @@ import org.gradle.kotlin.dsl.newInstance
  * the availability and settings of the Android plugin, the user settings of the Kover plugin itself.
  */
 internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
+    projectExtension.finalizeActions.forEach { action ->
+        try {
+            action()
+        } catch (e: Exception) {
+            throw KoverException("An error occurred while executing before Kover finalize action", e)
+        }
+    }
+
     val jvmVariant =
         origins.jvm?.createVariant(this, variantConfig(JVM_VARIANT_NAME))
 

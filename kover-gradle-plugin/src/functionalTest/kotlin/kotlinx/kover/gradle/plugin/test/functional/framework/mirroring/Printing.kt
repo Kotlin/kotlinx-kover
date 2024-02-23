@@ -73,6 +73,9 @@ private fun printExpression(context: PrintingContext, expression: Expression) {
         is SetOperatorCall -> handleSetOperatorCall(context, expression)
         is VarargExpression -> handleVarargExpression(context, expression)
         is VariableUsage -> context.print(expression.name)
+        is CodeLine -> {
+            context.print(expression.line)
+        }
     }
 }
 

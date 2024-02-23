@@ -36,6 +36,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverBinaryTaskC
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverExtension {
 	public abstract fun getJacocoVersion ()Lorg/gradle/api/provider/Property;
 	public abstract fun getUseJacoco ()Lorg/gradle/api/provider/Property;
+	public abstract fun merge (Lorg/gradle/api/Action;)V
 	public abstract fun reports (Lorg/gradle/api/Action;)V
 	public abstract fun useJacoco ()V
 	public abstract fun useJacoco (Ljava/lang/String;)V
@@ -59,6 +60,26 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverLogTaskConf
 	public abstract fun getGroupBy ()Lorg/gradle/api/provider/Property;
 	public abstract fun getHeader ()Lorg/gradle/api/provider/Property;
 	public abstract fun getOnCheck ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverMergingConfig {
+	public abstract fun allProjects ()V
+	public abstract fun allProjects (Lorg/gradle/api/specs/Spec;)V
+	public abstract fun createVariant (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public abstract fun instrumentation (Lorg/gradle/api/Action;)V
+	public abstract fun projects ([Ljava/lang/String;)V
+	public abstract fun sources (Lorg/gradle/api/Action;)V
+	public abstract fun subprojects ()V
+	public abstract fun subprojects (Lorg/gradle/api/specs/Spec;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverMergingInstrumentation : kotlinx/kover/gradle/plugin/dsl/KoverProjectAware, kotlinx/kover/gradle/plugin/dsl/KoverVariantInstrumentation {
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverMergingVariantCreate : kotlinx/kover/gradle/plugin/dsl/KoverProjectAware, kotlinx/kover/gradle/plugin/dsl/KoverVariantCreateConfig {
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverMergingVariantSources : kotlinx/kover/gradle/plugin/dsl/KoverProjectAware, kotlinx/kover/gradle/plugin/dsl/KoverVariantSources {
 }
 
 public final class kotlinx/kover/gradle/plugin/dsl/KoverNames {
@@ -101,6 +122,10 @@ public final class kotlinx/kover/gradle/plugin/dsl/KoverNamesKt {
 	public static final fun koverAndroidLogName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidVerifyName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
 	public static final fun koverAndroidXmlReportName (Lorg/gradle/api/tasks/TaskContainer;Ljava/lang/String;)Ljava/lang/String;
+}
+
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectAware {
+	public abstract fun getProject ()Lorg/gradle/api/Project;
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportConfig {

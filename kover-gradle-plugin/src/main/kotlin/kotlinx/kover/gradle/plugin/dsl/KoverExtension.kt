@@ -109,4 +109,85 @@ public interface KoverExtension {
      * ```
      */
     public fun reports(block: Action<KoverReportConfig>)
+
+    /**
+     * Configuring a merged report.
+     *
+     * **Attention! Using this block breaks the project isolation and is incompatible with the configuration cache!**
+     * If you need configuration cache support, please explicitly configure Kover plugin in each project using [variants] blocks.
+     *
+     * Used as a shortcut for group configuration of the plugin in several projects and merging reports.
+     * If you specify this block without additional commands
+     * ```
+     *  kover {
+     *      merge {
+     *      }
+     *  }
+     * ```
+     * it will be equivalent to this code
+     * ```
+     *  val thisProject = project
+     *  subprojects {
+     *      apply("org.jetbrains.kotlinx.kover")
+     *      thisProject.dependencies.add("kover", this)
+     *      extensions.getByType(KoverExtension::class.java).useJacoco.set(thisProject.extensions.getByType(KoverExtension::class.java).useJacoco)
+     *      extensions.getByType(KoverExtension::class.java).jacocoVersion.set(thisProject.extensions.getByType(KoverExtension::class.java).jacocoVersion)
+     *  }
+     * ```
+     * As a result, a merged report will be created in the project in which this `merge` block was called (merging project).
+     *
+     * It is acceptable to limit the projects in which the configuration will take place by adding filters:
+     * ```
+     *  kover {
+     *      merge {
+     *          subprojects {
+     *              it.name != "uncovered"
+     *          }
+     *      }
+     *  }
+     * ```
+     * This way Kover plugin will not be applied in a project named `uncovered`.
+     *
+     * If you specify several filters, Kover plugin will be applied in the project if at least one of these filters will return `true`.
+     *
+     *
+     * Full list of functions:
+     * ```
+     *  kover {
+     *      merge {
+     *          // include all subprojects
+     *          subprojects()
+     *
+     *          // include subprojects that have passed the filter
+     *          subprojects {
+     *              // filter predicate
+     *          }
+     *
+     *          // include all projects of the build
+     *          allProjects()
+     *
+     *          // include all projects of the build that have passed the filter
+     *          allProjects {
+     *              // filter predicate
+     *          }
+     *
+     *          // include projects by name or path
+     *          projects("project-name", ":")
+     *
+     *          sources {
+     *              // set up sources for all variants of all included projects
+     *          }
+     *
+     *          instrumentation {
+     *              // set up instrumentation for all variants of all included projects
+     *          }
+     *
+     *          createVariant("variantName") {
+     *              // create custom variant
+     *          }
+     *      }
+     *  }
+     * ```
+     */
+    public fun merge(block: Action<KoverMergingConfig>)
 }

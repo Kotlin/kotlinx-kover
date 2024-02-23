@@ -10,7 +10,6 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.kotlinVersionCurrent
 import kotlinx.kover.gradle.plugin.test.functional.framework.mirroring.printGradleDsl
-import org.gradle.api.Project
 
 internal fun createConfigurator(): BuildConfigurator {
     return TestBuildConfigurator()
@@ -131,9 +130,9 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
         repositoriesConfigurator.also(block)
     }
 
-    override fun kover(config: KoverExtension.(Project) -> Unit) {
+    override fun kover(config: KoverExtension.(ProjectScope) -> Unit) {
         rawBlocks += { slice, gradle ->
-            printGradleDsl<KoverExtension, Project>(slice.language, gradle, "kover", config)
+            printGradleDsl<KoverExtension, ProjectScope>(slice.language, gradle, "kover", config)
         }
     }
 

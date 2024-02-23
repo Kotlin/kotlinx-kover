@@ -40,7 +40,7 @@ internal interface ProjectConfigurator {
 
     fun repositories(block: RepositoriesConfigurator.() -> Unit)
 
-    fun kover(config: KoverExtension.(Project) -> Unit)
+    fun kover(config: KoverExtension.(ProjectScope) -> Unit)
 
     fun sourcesFrom(template: String)
 
@@ -57,8 +57,8 @@ internal interface RepositoriesConfigurator {
     fun repository(name: String)
 }
 
-internal interface ProjectScope {
-    val layout: ProjectLayout
+internal interface ProjectScope: Project {
+    fun line(value: String)
 }
 
 
