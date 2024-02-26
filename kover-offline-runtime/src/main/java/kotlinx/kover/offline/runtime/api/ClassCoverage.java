@@ -17,9 +17,10 @@ public class ClassCoverage {
 
     /**
      * File name from byte code (without directories).
-     * <p/>
+     * <p>
      * Full file name is not stored in bytecode, only the file name without a path
      * which later makes it possible to "guess" in which source file the class was declared.
+     * </p>
      */
     public String fileName;
 

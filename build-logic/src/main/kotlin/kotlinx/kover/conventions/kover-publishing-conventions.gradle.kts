@@ -18,8 +18,15 @@ import groovy.util.NodeList
  */
 
 plugins {
+    `java-base`
     `maven-publish`
     signing
+}
+
+// automatically generate sources and javadoc artifacts along with the main library jar
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 interface KoverPublicationExtension {
@@ -39,21 +46,9 @@ publishing {
         addSonatypeRepository()
     }
 
-    val sources = sourceSets.main.map { it.allSource }
-    val javadocJar = tasks.register("javadocJar", org.gradle.jvm.tasks.Jar::class) {
-        archiveClassifier.set("javadoc")
-        // contents are deliberately left empty
-    }
-    val sourcesJar = tasks.register("sourcesJar", org.gradle.jvm.tasks.Jar::class) {
-        archiveClassifier.set("sources")
-        from(sources)
-    }
     publications.withType<MavenPublication>().configureEach {
         addMetadata()
         signPublicationIfKeyPresent()
-
-        artifact(javadocJar)
-        artifact(sourcesJar)
     }
     tasks.withType<PublishToMavenRepository>().configureEach {
         dependsOn(tasks.withType<Sign>())

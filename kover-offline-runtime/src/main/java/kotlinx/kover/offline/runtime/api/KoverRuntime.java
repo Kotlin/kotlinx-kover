@@ -36,8 +36,9 @@ public class KoverRuntime {
 
     /**
      * Get classes coverage. For the correct collection of coverage, an analysis of the class-files is required.
-     * <p/>
+     * <p>
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
+     * </p>
      *
      * @param classFileRoots root directories containing non-instrumented class-files the coverage of which
      *                       needs to be measured.
@@ -50,9 +51,9 @@ public class KoverRuntime {
 
     /**
      * Get classes coverage. For the correct collecting of coverage, an analysis of the class-files is required.
-     * <p/>
+     * <p>
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
-     *
+     * </p>
      * @param classFiles a bytecode of non-instrumented application classes the coverage of which needs to be measured.
      * @return Coverage of classes that were present in the <code>classFiles</code> parameter.
      */
@@ -63,9 +64,9 @@ public class KoverRuntime {
     /**
      * Save coverage binary report in file with ic format.
      * If the file does not exist, it will be created. If a file already exists, it will be overwritten.
-     * <p/>
+     * <p>
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
-     *
+     * </p>
      *
      * @param file the file to save binary report
      * @throws IOException in case of any error working with files
@@ -84,9 +85,9 @@ public class KoverRuntime {
     /**
      * Get content of the coverage binary report with ic format.
      * The resulting byte array can be directly saved to an ic file for working with the CLI
-     * <p/>
+     * <p>
      * Calling this method is allowed only after all tests are completed. If the method is called in parallel with the execution of the measured code, the coverage value is unpredictable.
-     *
+     * </p>
      *
      * @return byte array with binary report in ic format
      * @throws IOException in case of any error working with files
