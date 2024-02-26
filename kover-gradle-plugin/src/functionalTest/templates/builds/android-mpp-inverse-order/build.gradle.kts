@@ -69,8 +69,8 @@ kotlin {
 
 
 kover {
-    variants {
-        create("custom") {
+    currentProject {
+        createVariant("custom") {
             /**
              * Tests, sources, classes, and compilation tasks of the 'release' build variant will be included in the `custom` reports.
              * Thus, information from the 'release' variant will be included in the `custom` report for this project and any project that specifies this project as a dependency.

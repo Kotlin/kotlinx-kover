@@ -173,7 +173,7 @@ public interface KoverMergingConfig {
     /**
      * Create custom report variant with name [variantName] in all included projects.
      *
-     * For more information about the settings, see [KoverVariantsRootConfig.create].
+     * For more information about the settings, see [KoverCurrentProjectVariantsConfig.createVariant].
      *
      * This action is executed delayed, just before all tasks are created, at the after evaluate stage.
      * A corresponding project is passed in the argument. Analyzing this project, you can make flexible configurations.
@@ -230,12 +230,12 @@ public interface KoverMergingVariantSources: KoverVariantSources, KoverProjectAw
  *  }
  * ```
  */
-public interface KoverMergingInstrumentation: KoverVariantInstrumentation, KoverProjectAware
+public interface KoverMergingInstrumentation: KoverProjectInstrumentation, KoverProjectAware
 
 /**
  * Create custom report variant in all included projects.
  *
- * For more information about the settings, see [KoverVariantsRootConfig.create].
+ * For more information about the settings, see [KoverCurrentProjectVariantsConfig.createVariant].
  *
  * This action is executed delayed, just before all tasks are created, at the after evaluate stage.
  * A corresponding project is passed in the argument. Analyzing this project, you can make flexible configurations.

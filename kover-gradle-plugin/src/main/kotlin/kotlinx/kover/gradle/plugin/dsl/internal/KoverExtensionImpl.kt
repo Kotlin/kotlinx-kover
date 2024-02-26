@@ -5,14 +5,12 @@
 package kotlinx.kover.gradle.plugin.dsl.internal
 
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
-import kotlinx.kover.gradle.plugin.dsl.KoverExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverMergingConfig
-import kotlinx.kover.gradle.plugin.dsl.KoverReportConfig
-import kotlinx.kover.gradle.plugin.dsl.KoverVariantsRootConfig
+import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
 import org.gradle.api.Action
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
@@ -22,9 +20,10 @@ internal abstract class KoverExtensionImpl @Inject constructor(
     layout: ProjectLayout,
     projectPath: String
 ): KoverExtension {
-    internal val variants: KoverVariantsRootConfigImpl = objects.newInstance()
-    internal val reports: KoverReportConfigImpl = objects.newInstance(objects, layout, projectPath)
+    internal val current: KoverCurrentProjectVariantsConfigImpl = objects.newInstance()
+    internal val reports: KoverReportsConfigImpl = objects.newInstance(objects, layout, projectPath)
     internal val merge: KoverMergingConfigImpl = objects.newInstance()
+    internal abstract val koverDisabled: Property<Boolean>
     internal var isMerged: Boolean = false
     internal val finalizeActions: MutableList<() -> Unit> = mutableListOf()
 
@@ -33,6 +32,12 @@ internal abstract class KoverExtensionImpl @Inject constructor(
         useJacoco.convention(false)
         @Suppress("LeakingThis")
         jacocoVersion.convention(JACOCO_TOOL_DEFAULT_VERSION)
+        @Suppress("LeakingThis")
+        koverDisabled.convention(false)
+    }
+
+    override fun disable() {
+        koverDisabled.set(true)
     }
 
     override fun useJacoco() {
@@ -44,11 +49,11 @@ internal abstract class KoverExtensionImpl @Inject constructor(
         jacocoVersion.set(version)
     }
 
-    override fun variants(block: Action<KoverVariantsRootConfig>) {
-        block.execute(variants)
+    override fun currentProject(block: Action<KoverCurrentProjectVariantsConfig>) {
+        block.execute(current)
     }
 
-    override fun reports(block: Action<KoverReportConfig>) {
+    override fun reports(block: Action<KoverReportsConfig>) {
         block.execute(reports)
     }
 

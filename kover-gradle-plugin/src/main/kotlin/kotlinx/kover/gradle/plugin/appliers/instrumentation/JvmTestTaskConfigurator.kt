@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.appliers.instrumentation
 
 import kotlinx.kover.gradle.plugin.appliers.KoverContext
 import kotlinx.kover.gradle.plugin.commons.binReportPath
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectInstrumentation
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
 import org.gradle.api.file.RegularFile
@@ -18,7 +19,11 @@ import java.io.File
 /**
  * Add online instrumentation to all JVM test tasks.
  */
-internal fun TaskCollection<Test>.instrument(koverContext: KoverContext, excludedClasses: Provider<Set<String>>) {
+internal fun TaskCollection<Test>.instrument(
+    koverContext: KoverContext,
+    koverDisabled: Provider<Boolean>,
+    instrumentation: KoverProjectInstrumentation
+) {
     configureEach {
         val binReportProvider =
             project.layout.buildDirectory.map { dir ->
@@ -33,7 +38,7 @@ internal fun TaskCollection<Test>.instrument(koverContext: KoverContext, exclude
         }
 
         // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
-        val excludedClassesWithAndroid = excludedClasses.map { it +
+        val excludedClassesWithAndroid = instrumentation.excludedClasses.map { it +
                 setOf(
                     // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
                     "android.*", "com.android.*",
@@ -42,10 +47,22 @@ internal fun TaskCollection<Test>.instrument(koverContext: KoverContext, exclude
                 )
         }
 
+        val taskInstrumentationDisabled = koverDisabled.map {
+            // disable task instrumentation if Kover disabled
+            if (it) return@map true
+            // disable task instrumentation if it disabled for all tasks
+            if (instrumentation.disabledForAll.get()) return@map true
+            // disable task instrumentation if it explicitly excluded by name
+            if (name in instrumentation.disabledForTasks.get()) return@map true
+            //
+            return@map false
+        }
+
         jvmArgumentProviders += JvmTestTaskArgumentProvider(
             temporaryDir,
             koverContext.toolProvider,
             koverContext.findAgentJarTask.map { it.agentJar.get().asFile },
+            taskInstrumentationDisabled,
             excludedClassesWithAndroid,
             binReportProvider
         )
@@ -65,6 +82,9 @@ private class JvmTestTaskArgumentProvider(
     val agentJar: Provider<File>,
 
     @get:Input
+    val instrumentationDisabled: Provider<Boolean>,
+
+    @get:Input
     val excludedClasses: Provider<Set<String>>,
 
     @get:OutputFile
@@ -81,8 +101,12 @@ private class JvmTestTaskArgumentProvider(
     }
 
     override fun asArguments(): MutableIterable<String> {
-        return toolProvider.get()
-            .jvmAgentArgs(agentJar.get(), tempDir, reportProvider.get().asFile, excludedClasses.get())
-            .toMutableList()
+        return if (!instrumentationDisabled.get()) {
+            toolProvider.get()
+                .jvmAgentArgs(agentJar.get(), tempDir, reportProvider.get().asFile, excludedClasses.get())
+                .toMutableList()
+        } else {
+            mutableListOf()
+        }
     }
 }

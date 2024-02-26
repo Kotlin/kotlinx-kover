@@ -8,7 +8,7 @@ repositories {
 }
 
 kover {
-    variants {
+    currentProject {
         sources {
             excludedSourceSets.add("extra")
         }

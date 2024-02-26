@@ -11,6 +11,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.invoke
@@ -18,15 +19,15 @@ import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
 
-internal abstract class KoverReportConfigImpl @Inject constructor(
+internal abstract class KoverReportsConfigImpl @Inject constructor(
     private val objects: ObjectFactory,
     private val layout: ProjectLayout,
     private val projectPath: String
-) : KoverReportConfig {
+) : KoverReportsConfig {
     private val rootFilters: KoverReportFiltersConfigImpl = objects.newInstance()
     private val rootVerify: KoverVerificationRulesConfigImpl = objects.newInstance()
 
-    internal val total: KoverReportSetConfigImpl = createVariant(TOTAL_VARIANT_NAME, projectPath)
+    internal val total: KoverReportSetConfigImpl = createReportSet(TOTAL_VARIANT_NAME, projectPath)
 
     internal val byName: MutableMap<String, KoverReportSetConfigImpl> = mutableMapOf()
 
@@ -44,12 +45,12 @@ internal abstract class KoverReportConfigImpl @Inject constructor(
 
     override fun variant(variant: String, config: Action<KoverReportSetConfig>) {
         val report = byName.getOrPut(variant) {
-            createVariant(variant, projectPath)
+            createReportSet(variant, projectPath)
         }
         config(report)
     }
 
-    internal fun createVariant(variantName: String, projectPath: String): KoverReportSetConfigImpl {
+    internal fun createReportSet(variantName: String, projectPath: String): KoverReportSetConfigImpl {
         val block =
             objects.newInstance<KoverReportSetConfigImpl>(objects, layout.buildDirectory, variantName, projectPath)
 

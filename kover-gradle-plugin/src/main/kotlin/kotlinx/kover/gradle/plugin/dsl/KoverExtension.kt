@@ -14,6 +14,11 @@ import org.gradle.api.provider.Property
 public interface KoverExtension {
 
     /**
+     *
+     */
+    public fun disable()
+
+    /**
      * Use [JaCoCo](https://www.jacoco.org/jacoco/) as coverage tool with version [JACOCO_TOOL_DEFAULT_VERSION] for measure coverage and generate reports.
      */
     public fun useJacoco()
@@ -46,29 +51,28 @@ public interface KoverExtension {
      * project classes, a list of Gradle test tasks, classes that need to be excluded from instrumentation.
      *
      * ```
-     *  variants {
+     *  currentProject {
      *      // create report variant with custom name,
      *      // in which it is acceptable to add information from other variants of the current project, as well as `kover` dependencies
-     *      create("custom") {
+     *      createVariant("custom") {
      *          // ...
      *      }
      *
      *      // Configure the variant that is automatically created in the current project
      *      // For example, "jvm" for JVM target or "debug" for Android build variant
-     *      provided("jvm") {
+     *      providedVariant("jvm") {
      *          // ...
      *      }
      *
      *      // Configure the variant for all the code that is available in the current project.
      *      // This variant always exists for any type of project.
-     *      total {
+     *      totalVariant {
      *          // ...
      *      }
      *  }
      * ```
      */
-    public fun variants(block: Action<KoverVariantsRootConfig>)
-
+    public fun currentProject(block: Action<KoverCurrentProjectVariantsConfig>)
 
     /**
      * Configuration of Kover reports.
@@ -108,13 +112,13 @@ public interface KoverExtension {
      *  }
      * ```
      */
-    public fun reports(block: Action<KoverReportConfig>)
+    public fun reports(block: Action<KoverReportsConfig>)
 
     /**
      * Configuring a merged report.
      *
      * **Attention! Using this block breaks the project isolation and is incompatible with the configuration cache!**
-     * If you need configuration cache support, please explicitly configure Kover plugin in each project using [variants] blocks.
+     * If you need configuration cache support, please explicitly configure Kover plugin in each project using [currentProject] blocks.
      *
      * Used as a shortcut for group configuration of the plugin in several projects and merging reports.
      * If you specify this block without additional commands
@@ -130,8 +134,8 @@ public interface KoverExtension {
      *  subprojects {
      *      apply("org.jetbrains.kotlinx.kover")
      *      thisProject.dependencies.add("kover", this)
-     *      extensions.getByType(KoverExtension::class.java).useJacoco.set(thisProject.extensions.getByType(KoverExtension::class.java).useJacoco)
-     *      extensions.getByType(KoverExtension::class.java).jacocoVersion.set(thisProject.extensions.getByType(KoverExtension::class.java).jacocoVersion)
+     *
+     *      // apply values from `useJacoco` and `jacocoVersion`
      *  }
      * ```
      * As a result, a merged report will be created in the project in which this `merge` block was called (merging project).

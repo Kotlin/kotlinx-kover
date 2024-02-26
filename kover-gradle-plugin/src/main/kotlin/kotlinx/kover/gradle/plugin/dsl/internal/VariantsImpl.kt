@@ -9,25 +9,28 @@ import kotlinx.kover.gradle.plugin.commons.TOTAL_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
-internal abstract class KoverVariantsRootConfigImpl @Inject constructor(val objects: ObjectFactory) :
-    KoverVariantConfigImpl(objects), KoverVariantsRootConfig {
+internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructor(val objects: ObjectFactory) :
+    KoverVariantConfigImpl(objects), KoverCurrentProjectVariantsConfig {
     internal val customVariants: MutableMap<String, KoverVariantCreateConfigImpl> = mutableMapOf()
     internal val providedVariants: MutableMap<String, KoverVariantConfigImpl> = mutableMapOf()
+    internal val instrumentation: KoverProjectInstrumentation = objects.newInstance()
 
     init {
         sources.excludeJava.convention(false)
         sources.excludedSourceSets.convention(emptySet())
 
-        instrumentation.excludeAll.set(false)
-        instrumentation.excludedClasses.addAll(emptySet())
-
         testTasks.excluded.addAll(emptySet())
+
+        instrumentation.disabledForAll.convention(false)
+        instrumentation.disabledForTasks.convention(emptySet())
+        instrumentation.excludedClasses.convention(emptySet())
     }
 
-    override fun create(variantName: String, block: Action<KoverVariantCreateConfig>) {
+    override fun createVariant(variantName: String, block: Action<KoverVariantCreateConfig>) {
         if (variantName == TOTAL_VARIANT_NAME) {
             throw KoverIllegalConfigException("The custom variant name cannot be empty.")
         }
@@ -41,7 +44,7 @@ internal abstract class KoverVariantsRootConfigImpl @Inject constructor(val obje
         block.execute(variantConfig)
     }
 
-    override fun provided(variantName: String, block: Action<KoverVariantConfig>) {
+    override fun providedVariant(variantName: String, block: Action<KoverVariantConfig>) {
         if (variantName == TOTAL_VARIANT_NAME) {
             throw KoverIllegalConfigException("The provided variant name cannot be empty.")
         }
@@ -55,7 +58,7 @@ internal abstract class KoverVariantsRootConfigImpl @Inject constructor(val obje
         block.execute(variantConfig)
     }
 
-    override fun total(block: Action<KoverVariantConfig>) {
+    override fun totalVariant(block: Action<KoverVariantConfig>) {
         val variantConfig = providedVariants.getOrPut(TOTAL_VARIANT_NAME) {
             objects.newInstance<KoverVariantConfigImpl>().also { newVariant ->
                 newVariant.deriveFrom(this)
@@ -65,19 +68,18 @@ internal abstract class KoverVariantsRootConfigImpl @Inject constructor(val obje
         block.execute(variantConfig)
     }
 
+    override fun instrumentation(block: Action<KoverProjectInstrumentation>) {
+        block.execute(instrumentation)
+    }
+
 }
 
 internal abstract class KoverVariantConfigImpl @Inject constructor(objects: ObjectFactory) : KoverVariantConfig {
     internal val sources: KoverVariantSources = objects.newInstance()
-    internal val instrumentation: KoverVariantInstrumentation = objects.newInstance()
     internal val testTasks: KoverVariantTestTasks = objects.newInstance()
 
     override fun sources(block: Action<KoverVariantSources>) {
         block.execute(sources)
-    }
-
-    override fun instrumentation(block: Action<KoverVariantInstrumentation>) {
-        block.execute(instrumentation)
     }
 
     override fun testTasks(block: Action<KoverVariantTestTasks>) {
@@ -87,9 +89,6 @@ internal abstract class KoverVariantConfigImpl @Inject constructor(objects: Obje
     internal fun deriveFrom(other: KoverVariantConfigImpl) {
         sources.excludeJava.set(other.sources.excludeJava)
         sources.excludedSourceSets.addAll(other.sources.excludedSourceSets)
-
-        instrumentation.excludeAll.set(other.instrumentation.excludeAll)
-        instrumentation.excludedClasses.addAll(other.instrumentation.excludedClasses)
 
         testTasks.excluded.addAll(other.testTasks.excluded)
     }

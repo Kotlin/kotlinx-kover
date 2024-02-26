@@ -18,7 +18,7 @@ internal class TaskFilteringTests {
         addProjectWithKover {
             sourcesFrom("simple")
             kover {
-                variants {
+                currentProject {
                     testTasks {
                         excluded.add(defaultTestTaskName(slice.type))
                     }

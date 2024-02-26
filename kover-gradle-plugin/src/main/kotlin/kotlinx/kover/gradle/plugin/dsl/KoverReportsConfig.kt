@@ -71,7 +71,7 @@ import org.gradle.api.provider.Provider
  *  }
  * ```
  */
-public interface KoverReportConfig {
+public interface KoverReportsConfig {
     /**
      * Specify common filters for all report variants, these filters will be inherited in HTML/XML/verification reports.
      * They can be redefined in the settings of a specific report variant.

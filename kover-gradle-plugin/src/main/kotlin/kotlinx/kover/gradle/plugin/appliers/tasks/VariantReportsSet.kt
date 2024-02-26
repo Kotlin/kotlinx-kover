@@ -23,13 +23,14 @@ import org.gradle.kotlin.dsl.register
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 
-internal class VariantTasks(
+internal class VariantReportsSet(
     private val project: Project,
     private val variantName: String,
     private val type: ReportVariantType,
     private val toolProvider: Provider<CoverageTool>,
     private val config: KoverReportSetConfigImpl,
-    private val reporterConfiguration: Configuration
+    private val reporterConfiguration: Configuration,
+    private val koverDisabled: Provider<Boolean>
 ) {
     private val htmlTask: TaskProvider<KoverHtmlTask>
     private val xmlTask: TaskProvider<KoverXmlTask>
@@ -154,11 +155,15 @@ internal class VariantTasks(
         taskDescription: String
     ): TaskProvider<T> {
         val task = register<T>(name)
+        // extract property to variable so as not to create a closure to `this`
+        val koverDisabledProvider = koverDisabled
         task.configure {
             group = LifecycleBasePlugin.VERIFICATION_GROUP
             description = taskDescription
             tool.convention(toolProvider)
             reportClasspath.from(reporterConfiguration)
+
+            onlyIf { !koverDisabledProvider.get() }
         }
         return task
     }

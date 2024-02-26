@@ -19,8 +19,16 @@ internal open class CustomVariantArtifacts(
     variantName: String,
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration?,
-    variantConfig: KoverVariantCreateConfigImpl
-): AbstractVariantArtifacts(project, variantName, toolProvider, koverBucketConfiguration, variantConfig) {
+    variantConfig: KoverVariantCreateConfigImpl,
+    koverDisabled: Provider<Boolean>
+) : AbstractVariantArtifacts(
+    project,
+    variantName,
+    toolProvider,
+    koverBucketConfiguration,
+    variantConfig,
+    koverDisabled
+) {
     init {
         producerConfiguration.configure {
             attributes {

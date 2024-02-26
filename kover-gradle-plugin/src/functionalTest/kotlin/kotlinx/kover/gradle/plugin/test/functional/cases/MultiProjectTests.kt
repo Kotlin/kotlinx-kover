@@ -58,13 +58,13 @@ internal class MultiProjectTests {
     }
 
     @SlicedGeneratedTest(allTypes = true, allTools = true)
-    fun SlicedBuildConfigurator.testDisabledKover() {
+    fun SlicedBuildConfigurator.testDisableInstrumentation() {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                variants {
+                currentProject {
                     instrumentation {
-                        excludeAll.set(true)
+                        disabledForAll.set(true)
                     }
                 }
             }
@@ -74,22 +74,23 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                variants {
+                currentProject {
                     instrumentation {
-                        excludeAll.set(true)
+                        disabledForAll.set(true)
                     }
                 }
             }
         }
 
         run("koverXmlReport", "koverHtmlReport", "koverVerify") {
+            // instrumentation disabled (no output binary report) but test task is executed
             checkDefaultBinReport(false)
-            taskNotCalled(defaultTestTaskName(slice.type))
-
+            checkOutcome(defaultTestTaskName(slice.type), "SUCCESS")
 
             subproject(subprojectPath) {
+                // instrumentation disabled (no output binary report) but test task is executed
                 checkDefaultBinReport(false)
-                taskNotCalled(defaultTestTaskName(slice.type))
+                checkOutcome(defaultTestTaskName(slice.type), "SUCCESS")
             }
         }
     }
@@ -99,7 +100,7 @@ internal class MultiProjectTests {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                variants {
+                currentProject {
                     testTasks {
                         excluded.add(defaultTestTaskName(slice.type))
                     }
@@ -111,7 +112,7 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                variants {
+                currentProject {
                     testTasks {
                         excluded.add(defaultTestTaskName(slice.type))
                     }

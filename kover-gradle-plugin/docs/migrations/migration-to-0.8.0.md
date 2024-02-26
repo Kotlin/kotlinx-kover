@@ -14,7 +14,7 @@ kover {
     }
 }
 ```
-The settings from the old `kover` are now either left as is, or moved to `kover { variants { ... } }` block.
+The settings from the old `kover` are now either left as is, or moved to `kover { currentProject { ... } }` block.
 
 Following configuration
 ```kotlin
@@ -40,7 +40,7 @@ kover {
 Since `0.8.0` looks like:
 ```kotlin
 kover {
-    variants {
+    currentProject {
         testTasks {
             /* exclude Gradle test tasks */
             excluded.addAll(testTasks)
@@ -92,8 +92,8 @@ The newly created variant is initially empty, in order for classes to appear in 
 when generating it, need to add existing variants provided from Kotlin targets to it: it can be a `jvm` variant, or any of an Android build variant.
 ```kotlin
 kover {
-    variants {
-        create("custom") {
+    currentProject {
+        createVariant("custom") {
             add("jvm")
             add("release")
         }
@@ -162,8 +162,8 @@ Since `0.8.0`, specifying filters for specific type of report (HTML or XML) is d
 In this case, it is better to create a new custom variant and override the filters in it:
 ```kotlin
 kover {
-    variants {
-        create("customJvm") {
+    currentProject {
+        createVariant("customJvm") {
             add("jvm")
         }
     }

@@ -25,8 +25,16 @@ internal class AndroidVariantArtifacts(
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration,
     variantSource: AndroidVariantOrigin,
-    variantConfig: KoverVariantConfigImpl
-): AbstractVariantArtifacts(project, variantName, toolProvider, koverBucketConfiguration, variantConfig) {
+    variantConfig: KoverVariantConfigImpl,
+    koverDisabled: Provider<Boolean>
+) : AbstractVariantArtifacts(
+    project,
+    variantName,
+    toolProvider,
+    koverBucketConfiguration,
+    variantConfig,
+    koverDisabled
+) {
     init {
         val androidDetails = variantSource.buildVariant
 

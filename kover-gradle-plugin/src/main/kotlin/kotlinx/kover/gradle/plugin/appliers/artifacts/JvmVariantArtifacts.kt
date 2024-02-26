@@ -21,8 +21,16 @@ internal class JvmVariantArtifacts(
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration,
     variantOrigin: JvmVariantOrigin,
-    variantConfig: KoverVariantConfigImpl
-) : AbstractVariantArtifacts(project, JVM_VARIANT_NAME, toolProvider, koverBucketConfiguration, variantConfig) {
+    variantConfig: KoverVariantConfigImpl,
+    koverDisabled: Provider<Boolean>
+) : AbstractVariantArtifacts(
+    project,
+    JVM_VARIANT_NAME,
+    toolProvider,
+    koverBucketConfiguration,
+    variantConfig,
+    koverDisabled
+) {
     init {
         producerConfiguration.configure {
             attributes {

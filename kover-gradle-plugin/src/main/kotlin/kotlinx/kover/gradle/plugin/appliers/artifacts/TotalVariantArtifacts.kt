@@ -19,8 +19,16 @@ internal class TotalVariantArtifacts(
     project: Project,
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration,
-    variantConfig: KoverVariantConfigImpl
-): AbstractVariantArtifacts(project, TOTAL_VARIANT_NAME, toolProvider, koverBucketConfiguration, variantConfig) {
+    variantConfig: KoverVariantConfigImpl,
+    koverDisabled: Provider<Boolean>
+) : AbstractVariantArtifacts(
+    project,
+    TOTAL_VARIANT_NAME,
+    toolProvider,
+    koverBucketConfiguration,
+    variantConfig,
+    koverDisabled
+) {
     init {
         producerConfiguration.configure {
             attributes {

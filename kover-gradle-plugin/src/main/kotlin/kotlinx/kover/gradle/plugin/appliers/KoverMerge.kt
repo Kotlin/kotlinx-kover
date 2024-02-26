@@ -82,10 +82,10 @@ private fun KoverExtensionImpl.configBeforeFinalize(targetProject: Project, appl
             targetExtension.jacocoVersion.set(jacocoVersion)
         }
 
-        merge.sourcesAction?.execute(targetExtension.variants.sources.wrap(targetProject))
-        merge.instrumentationAction?.execute(targetExtension.variants.instrumentation.wrap(targetProject))
+        merge.sourcesAction?.execute(targetExtension.current.sources.wrap(targetProject))
+        merge.instrumentationAction?.execute(targetExtension.current.instrumentation.wrap(targetProject))
         merge.variantsAction.forEach { (variantName, action) ->
-            targetExtension.variants.create(variantName) {
+            targetExtension.current.createVariant(variantName) {
                 action.execute(wrap(targetProject))
             }
         }
@@ -100,9 +100,10 @@ private fun KoverVariantSources.wrap(project: Project): KoverMergingVariantSourc
     }
 }
 
-private fun KoverVariantInstrumentation.wrap(project: Project): KoverMergingInstrumentation {
+private fun KoverProjectInstrumentation.wrap(project: Project): KoverMergingInstrumentation {
     return object : KoverMergingInstrumentation {
-        override val excludeAll: Property<Boolean> = this@wrap.excludeAll
+        override val disabledForAll: Property<Boolean> = this@wrap.disabledForAll
+        override val disabledForTasks: SetProperty<String> = this@wrap.disabledForTasks
         override val excludedClasses: SetProperty<String> = this@wrap.excludedClasses
         override val project: Project = project
     }
@@ -110,7 +111,6 @@ private fun KoverVariantInstrumentation.wrap(project: Project): KoverMergingInst
 private fun KoverVariantCreateConfig.wrap(project: Project): KoverMergingVariantCreate {
     return object : KoverMergingVariantCreate {
         override fun sources(block: Action<KoverVariantSources>) = this@wrap.sources(block)
-        override fun instrumentation(block: Action<KoverVariantInstrumentation>) = this@wrap.instrumentation(block)
         override fun testTasks(block: Action<KoverVariantTestTasks>) = this@wrap.testTasks(block)
         override fun add(vararg variantNames: String, optional: Boolean) = this@wrap.add(*variantNames, optional = optional)
         override fun addWithDependencies(vararg variantNames: String, optional: Boolean) = this@wrap.addWithDependencies(*variantNames, optional = optional)

@@ -22,7 +22,8 @@ internal sealed class AbstractVariantArtifacts(
     val variantName: String,
     private val toolProvider: Provider<CoverageTool>,
     private val koverBucketConfiguration: Configuration?,
-    private val variantConfig: KoverVariantConfigImpl
+    private val variantConfig: KoverVariantConfigImpl,
+    koverDisabled: Provider<Boolean>
 ) {
     internal val artifactGenTask: TaskProvider<KoverArtifactGenerationTask>
     protected val producerConfiguration: NamedDomainObjectProvider<Configuration>
@@ -36,6 +37,7 @@ internal sealed class AbstractVariantArtifacts(
 
         artifactGenTask.configure {
             artifactFile.set(buildDirectory.file(artifactFilePath(variantName)))
+            onlyIf { !koverDisabled.get() }
         }
 
         val artifactProperty = artifactGenTask.flatMap { task -> task.artifactFile }
@@ -65,10 +67,8 @@ internal sealed class AbstractVariantArtifacts(
 
     protected fun fromOrigin(origin: VariantOrigin, compilationFilter: (String) -> Boolean = { true }) {
         val tests = origin.tests.matching {
-            // skip all tests from instrumentation if Kover Plugin is disabled for the project
-            !variantConfig.instrumentation.excludeAll.get()
-                    // skip this test if it disabled by name
-                    && it.name !in variantConfig.testTasks.excluded.getOrElse(emptySet())
+            // skip this test if it disabled by name
+            it.name !in variantConfig.testTasks.excluded.getOrElse(emptySet())
         }
 
         // filter some compilation, e.g. JVM source sets

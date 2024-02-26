@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.appliers
 
-import kotlinx.kover.gradle.plugin.appliers.tasks.VariantTasks
+import kotlinx.kover.gradle.plugin.appliers.tasks.VariantReportsSet
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverExtensionImpl
 import kotlinx.kover.gradle.plugin.tasks.services.KoverAgentJarTask
@@ -60,6 +60,7 @@ internal fun prepare(project: Project): KoverContext {
         dependsOn(agentClasspath)
 
         this.tool.convention(toolProvider)
+        this.koverDisabled.convention(projectExtension.koverDisabled)
         this.agentJar.set(project.layout.buildDirectory.map { dir -> dir.file(agentFilePath(toolProvider.get().variant)) })
         this.agentClasspath.from(agentClasspath)
     }
@@ -74,13 +75,14 @@ internal fun prepare(project: Project): KoverContext {
         JVM_REPORTER_CONFIGURATION_NAME,
         toolProvider.map { tool -> tool.jvmReporterExtraDependency })
 
-    val totalReports = VariantTasks(
+    val totalReports = VariantReportsSet(
         project,
         TOTAL_VARIANT_NAME,
         ReportVariantType.TOTAL,
         toolProvider,
         projectExtension.reports.total,
-        reporterClasspath
+        reporterClasspath,
+        projectExtension.koverDisabled
     )
 
     return KoverContext(

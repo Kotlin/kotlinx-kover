@@ -76,8 +76,8 @@ dependencies {
 
 kover {
 
-    variants {
-        create("custom") {
+    currentProject {
+        createVariant("custom") {
 
             add("jvm")
             /**
