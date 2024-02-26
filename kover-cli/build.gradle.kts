@@ -23,7 +23,6 @@ plugins {
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
     description.set("Command Line Interface for Kotlin Coverage Toolchain")
-    fatJar.set(true)
 }
 
 kotlin {

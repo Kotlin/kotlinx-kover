@@ -3,6 +3,8 @@
  */
 package kotlinx.kover.gradle.plugin.dsl
 
+import kotlinx.kover.features.jvm.KoverFeatures
+
 /**
  * Stable reference point for various versions that Kover leverages.
  */
@@ -21,4 +23,10 @@ public object KoverVersions {
      * JaCoCo coverage tool version used by default.
      */
     public const val JACOCO_TOOL_DEFAULT_VERSION = "0.8.10"
+
+    /**
+     * Current version of Kover Gradle Plugin
+     */
+    public val version: String
+        get() = KoverFeatures.getVersion()
 }

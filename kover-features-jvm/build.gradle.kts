@@ -21,7 +21,6 @@ plugins {
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
     description.set("Implementation of calling the main features of Kover programmatically")
-    fatJar.set(true)
 }
 
 java {
@@ -40,10 +39,10 @@ tasks.processResources {
         project.version.toString()
     }
 
-    filesMatching("**/kover.version") {
-        filter {
-            it.replace("\$version", version)
-        }
+    val file = destinationDir.resolve("kover.version")
+
+    doLast {
+        file.writeText(version)
     }
 }
 

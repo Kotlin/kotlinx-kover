@@ -6,3 +6,8 @@ pluginManagement {
 }
 rootProject.name = "example-minimal"
 
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}

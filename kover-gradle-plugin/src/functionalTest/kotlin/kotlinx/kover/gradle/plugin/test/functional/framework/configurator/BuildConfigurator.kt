@@ -77,10 +77,6 @@ private open class TestBuildConfigurator : BuildConfigurator {
                 }
             }
 
-            repositories {
-                repository("mavenCentral()")
-            }
-
             generator()
         }
     }

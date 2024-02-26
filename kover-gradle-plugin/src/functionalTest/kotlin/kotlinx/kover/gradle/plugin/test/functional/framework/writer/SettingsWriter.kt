@@ -10,7 +10,7 @@ import java.io.*
 
 internal fun FormattedWriter.writePluginManagement(language: ScriptLanguage,
                                                    koverVersion: String,
-                                                   localRepositoryPath: String,
+                                                   snapshotRepos: List<String>,
                                                    overrideKotlinVersion: String?) {
     call("resolutionStrategy") {
         call("eachPlugin") {
@@ -24,9 +24,22 @@ internal fun FormattedWriter.writePluginManagement(language: ScriptLanguage,
     }
 
     call("repositories") {
-        line("maven { url=${localRepositoryPath.uriForScript(language)} }")
+        snapshotRepos.forEach { repo ->
+            line("maven { url=${repo.uriForScript(language)} }")
+        }
         line("gradlePluginPortal()")
         line("mavenCentral()")
+    }
+}
+
+internal fun FormattedWriter.writeDependencyManagement(language: ScriptLanguage, snapshotRepos: List<String>) {
+    call("dependencyResolutionManagement") {
+        call("repositories") {
+            snapshotRepos.forEach { repo ->
+                line("maven { url=${repo.uriForScript(language)} }")
+            }
+            line("mavenCentral()")
+        }
     }
 }
 

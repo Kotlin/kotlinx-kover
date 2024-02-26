@@ -10,7 +10,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.common.koverVersion
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.defaultGradleWrapperDir
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.examplesDir
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenGradleVersion
-import kotlinx.kover.gradle.plugin.test.functional.framework.common.localRepositoryPath
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.snapshotRepositoriesPropertyValue
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.overriddenKotlinVersion
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.templateBuildsDir
 import kotlinx.kover.gradle.plugin.util.SemVer
@@ -19,7 +19,7 @@ import java.io.File
 import java.nio.file.Files
 
 internal fun buildFromTemplate(templateName: String): BuildSource {
-    val source = createBuildSource(localRepositoryPath, koverVersionCurrent)
+    val source = createBuildSource(snapshotRepositoriesPropertyValue, koverVersionCurrent)
     source.overriddenKotlinVersion = overriddenKotlinVersion
 
     val dir = templateBuildsDir.resolve(templateName)
@@ -34,7 +34,7 @@ internal fun buildFromTemplate(templateName: String): BuildSource {
 }
 
 internal fun buildFromExample(examplePath: String): BuildSource {
-    val source = createBuildSource(localRepositoryPath, koverVersionCurrent)
+    val source = createBuildSource(snapshotRepositoriesPropertyValue, koverVersionCurrent)
     source.overriddenKotlinVersion = overriddenKotlinVersion
 
     val exampleDir = examplesDir.resolve(examplePath)
@@ -50,7 +50,7 @@ internal fun generateBuild(generator: (File) -> Unit): BuildSource {
     val dir = Files.createTempDirectory("generated-build-").toFile()
 
     generator(dir)
-    val source = createBuildSource(localRepositoryPath, koverVersionCurrent)
+    val source = createBuildSource(snapshotRepositoriesPropertyValue, koverVersionCurrent)
     source.overriddenKotlinVersion = overriddenKotlinVersion
     source.buildType = "generated"
     source.from(dir)

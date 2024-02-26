@@ -23,10 +23,6 @@ internal class AccessorsTests {
                     id("org.jetbrains.kotlinx.kover")
                 }
 
-                repositories {
-                    mavenCentral()
-                }
-
                 tasks.register("custom") {
                     dependsOn(tasks.koverHtmlReport)
                     dependsOn(tasks.koverXmlReport)

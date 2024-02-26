@@ -1,3 +1,7 @@
+import org.gradle.kotlin.dsl.base
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.java
+
 /*
  * Copyright 2000-2023 JetBrains s.r.o.
  *
@@ -16,29 +20,11 @@
 
 plugins {
     java
-    id("kover-publishing-conventions")
-}
-
-extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
-    description.set("Compiled dependency to ensure the operation of the code that has been instrumented offline")
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
-}
-
-repositories {
-    mavenCentral()
 }
 
 val fatJarDependency = "fatJar"
 val fatJarConfiguration = configurations.create(fatJarDependency)
 
-dependencies {
-    compileOnly(libs.intellij.offline)
-    fatJarConfiguration(libs.intellij.offline)
-}
 
 tasks.jar {
     from(
@@ -48,19 +34,5 @@ tasks.jar {
         exclude("META-INF/**")
         exclude("LICENSE")
         exclude("classpath.index")
-    }
-}
-
-tasks.register("releaseDocs") {
-    val dirName = "offline-instrumentation"
-    val description = "Kover offline instrumentation"
-    val sourceDir = projectDir.resolve("docs")
-    val resultDir = rootDir.resolve("docs/$dirName")
-    val mainIndexFile = rootDir.resolve("docs/index.md")
-
-    doLast {
-        resultDir.mkdirs()
-        sourceDir.copyRecursively(resultDir)
-        mainIndexFile.appendText("- [$description]($dirName)\n")
     }
 }

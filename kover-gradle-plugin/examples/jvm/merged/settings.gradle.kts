@@ -8,3 +8,9 @@ rootProject.name = "example-merged"
 
 include(":subproject")
 include(":excluded")
+
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
