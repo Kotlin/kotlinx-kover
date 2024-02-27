@@ -42,13 +42,12 @@ internal class ProvidedVariantsLocator(
 
     private fun enqueueAndroid(reason: String) {
         val androidComponents = project.extensions.findByName("androidComponents")?.bean()
-            ?: throw KoverCriticalException("Kover requires extension with name 'androidComponents' for project '${project.path}' since it is recognized as Kotlin+Android project")
 
         val callback = Action<Any> {
             enqueue(reason)
         }
 
-        if (androidComponents.hasFunction("finalizeDsl", callback)) {
+        if (androidComponents != null && androidComponents.hasFunction("finalizeDsl", callback)) {
             /*
             Assumption: `finalizeDsl` is called in the `afterEvaluate` action, in which build variants are created.
             Therefore,  if an action is added to the queue inside it, it will be executed only after variants are created
