@@ -80,6 +80,25 @@ public interface KoverCurrentProjectVariantsConfig: KoverVariantConfig {
      * ```
      */
     public fun instrumentation(block: Action<KoverProjectInstrumentation>)
+
+    /**
+     * Set up tests, the run of which is used to measure coverage.
+     *
+     * To measure coverage, Kover runs Gradle test tasks, instrumentation takes place before they are performed, and code coverage is measured during execution.
+     *
+     * By default, Kover use all [org.gradle.api.tasks.testing.Test] tasks to measure coverage.
+     *
+     * Example:
+     * ```
+     *  testTasks {
+     *      // The coverage of the test1 and test2 tasks will no longer be taken into account in the reports
+     *      //  as well as these tasks will not be called when generating the report.
+     *      // These tasks will not be instrumented even if you explicitly run them
+     *      excluded.addAll("test1", "test2")
+     *  }
+     * ```
+     */
+    public fun testTasks(block: Action<KoverVariantTestTasks>)
 }
 
 /**
@@ -104,24 +123,6 @@ public interface KoverVariantConfig {
      * ```
      */
     public fun sources(block: Action<KoverVariantSources>)
-
-    /**
-     * Set up tests, the run of which is used to measure coverage.
-     *
-     * To measure coverage, Kover runs Gradle test tasks, instrumentation takes place before they are performed, and code coverage is measured during execution.
-     *
-     * By default, Kover use all [org.gradle.api.tasks.testing.Test] to measure coverage.
-     *
-     * Example:
-     * ```
-     *  testTasks {
-     *      // The coverage of the test1 and test2 tasks will no longer be taken into account in the reports
-     *      //  as well as these tasks will not be called when generating the report
-     *      excluded.addAll("test1", "test2")
-     *  }
-     * ```
-     */
-    public fun testTasks(block: Action<KoverVariantTestTasks>)
 }
 
 /**
@@ -167,9 +168,6 @@ public interface KoverVariantSources {
  *      // disable instrumentation of test tasks of all classes
  *      disabledForAll = true
  *
- *      // disable instrumentation of test task `test2`
- *      disabledForTasks.add("test2")
- *
  *      // disable instrumentation of specified classes in test tasks
  *      excludedClasses.addAll("foo.bar.*Biz", "*\$Generated")
  *  }
@@ -182,11 +180,6 @@ public interface KoverProjectInstrumentation {
     public val disabledForAll: Property<Boolean>
 
     /**
-     * Disable instrumentation in specified tasks
-     */
-    public val disabledForTasks: SetProperty<String>
-
-    /**
      * Disable instrumentation in test tasks of specified classes
      */
     public val excludedClasses: SetProperty<String>
@@ -197,13 +190,14 @@ public interface KoverProjectInstrumentation {
  *
  * To measure coverage, Kover runs Gradle test tasks, instrumentation takes place before they are performed, and code coverage is measured during execution.
  *
- * By default, Kover use all [org.gradle.api.tasks.testing.Test] to measure coverage.
+ * By default, Kover use all [org.gradle.api.tasks.testing.Test] tasks to measure coverage.
  *
  * Example:
  * ```
  *  testTasks {
  *      // The coverage of the test1 and test2 tasks will no longer be taken into account in the reports
- *      //  as well as these tasks will not be called when generating the report
+ *      //  as well as these tasks will not be called when generating the report.
+ *      // These tasks will not be instrumented even if you explicitly run them.
  *      excluded.addAll("test1", "test2")
  *  }
  * ```
@@ -211,7 +205,7 @@ public interface KoverProjectInstrumentation {
 public interface KoverVariantTestTasks {
     /**
      * Specifies not to use test task with passed names to measure coverage.
-     * These tasks will also not be called when generating Kover reports.
+     * These tasks will also not be called when generating Kover reports and these tasks will not be instrumented even if you explicitly run them.
      */
     public val excluded: SetProperty<String>
 }

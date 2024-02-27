@@ -6,7 +6,7 @@ package kotlinx.kover.gradle.plugin.appliers.instrumentation
 
 import kotlinx.kover.gradle.plugin.appliers.KoverContext
 import kotlinx.kover.gradle.plugin.commons.binReportPath
-import kotlinx.kover.gradle.plugin.dsl.KoverProjectInstrumentation
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverCurrentProjectVariantsConfigImpl
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
 import org.gradle.api.file.RegularFile
@@ -22,7 +22,7 @@ import java.io.File
 internal fun TaskCollection<Test>.instrument(
     koverContext: KoverContext,
     koverDisabled: Provider<Boolean>,
-    instrumentation: KoverProjectInstrumentation
+    current: KoverCurrentProjectVariantsConfigImpl
 ) {
     configureEach {
         val binReportProvider =
@@ -38,7 +38,7 @@ internal fun TaskCollection<Test>.instrument(
         }
 
         // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
-        val excludedClassesWithAndroid = instrumentation.excludedClasses.map { it +
+        val excludedClassesWithAndroid = current.instrumentation.excludedClasses.map { it +
                 setOf(
                     // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
                     "android.*", "com.android.*",
@@ -51,9 +51,9 @@ internal fun TaskCollection<Test>.instrument(
             // disable task instrumentation if Kover disabled
             if (it) return@map true
             // disable task instrumentation if it disabled for all tasks
-            if (instrumentation.disabledForAll.get()) return@map true
+            if (current.instrumentation.disabledForAll.get()) return@map true
             // disable task instrumentation if it explicitly excluded by name
-            if (name in instrumentation.disabledForTasks.get()) return@map true
+            if (name in current.testTasks.excluded.get()) return@map true
             //
             return@map false
         }

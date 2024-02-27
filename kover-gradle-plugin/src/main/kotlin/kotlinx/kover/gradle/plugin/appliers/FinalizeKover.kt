@@ -36,9 +36,8 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
         }
     }
 
-    val koverDisabled = projectExtension.koverDisabled
     val jvmVariant =
-        origins.jvm?.createVariant(this, koverDisabled, variantConfig(JVM_VARIANT_NAME))
+        origins.jvm?.createVariant(this, variantConfig(JVM_VARIANT_NAME))
 
     if (jvmVariant != null) {
         VariantReportsSet(
@@ -48,12 +47,12 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             toolProvider,
             reportsConfig(JVM_VARIANT_NAME, project.path),
             reporterClasspath,
-            koverDisabled
+            projectExtension.koverDisabled
         ).assign(jvmVariant)
     }
 
     val androidVariants = origins.android.map { providedDetails ->
-        providedDetails.createVariant(this, koverDisabled, variantConfig(providedDetails.buildVariant.buildVariant))
+        providedDetails.createVariant(this, variantConfig(providedDetails.buildVariant.buildVariant))
     }
 
     val variantArtifacts = mutableMapOf<String, AbstractVariantArtifacts>()
@@ -68,7 +67,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     }
 
     val totalVariant =
-        TotalVariantArtifacts(project, toolProvider, koverBucketConfiguration, variantConfig(TOTAL_VARIANT_NAME), koverDisabled)
+        TotalVariantArtifacts(project, toolProvider, koverBucketConfiguration, variantConfig(TOTAL_VARIANT_NAME), projectExtension)
     variantArtifacts.values.forEach { totalVariant.mergeWith(it) }
     totalReports.assign(totalVariant)
 
@@ -87,7 +86,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
         }
 
         val customVariant =
-            CustomVariantArtifacts(project, name, toolProvider,  koverBucketConfiguration, config, koverDisabled)
+            CustomVariantArtifacts(project, name, toolProvider,  koverBucketConfiguration, config, projectExtension)
 
         config.variantsByName.forEach { (mergedName, optionality) ->
             val mergedVariant = variantArtifacts[mergedName]
@@ -111,7 +110,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             toolProvider,
             reportsConfig(name, project.path),
             reporterClasspath,
-            koverDisabled
+            projectExtension.koverDisabled
         ).assign(customVariant)
 
     }
@@ -124,7 +123,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             toolProvider,
             reportsConfig(androidVariant.variantName, project.path),
             reporterClasspath,
-            koverDisabled
+            projectExtension.koverDisabled
         ).assign(androidVariant)
     }
 }
@@ -145,26 +144,24 @@ private fun KoverContext.reportsConfig(variantName: String, projectPath: String)
 
 private fun JvmVariantOrigin.createVariant(
     koverContext: KoverContext,
-    koverDisabled: Provider<Boolean>,
     config: KoverVariantCreateConfigImpl,
 ): JvmVariantArtifacts {
-    tests.instrument(koverContext, koverDisabled, koverContext.projectExtension.current.instrumentation)
+    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.current)
     return JvmVariantArtifacts(
         koverContext.project,
         koverContext.toolProvider,
         koverContext.koverBucketConfiguration,
         this,
         config,
-        koverDisabled
+        koverContext.projectExtension
     )
 }
 
 private fun AndroidVariantOrigin.createVariant(
     koverContext: KoverContext,
-    koverDisabled: Provider<Boolean>,
     config: KoverVariantCreateConfigImpl,
 ): AndroidVariantArtifacts {
-    tests.instrument(koverContext, koverDisabled, koverContext.projectExtension.current.instrumentation)
+    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.current)
     return AndroidVariantArtifacts(
         koverContext.project,
         buildVariant.buildVariant,
@@ -172,6 +169,6 @@ private fun AndroidVariantOrigin.createVariant(
         koverContext.koverBucketConfiguration,
         this,
         config,
-        koverDisabled
+        koverContext.projectExtension
     )
 }

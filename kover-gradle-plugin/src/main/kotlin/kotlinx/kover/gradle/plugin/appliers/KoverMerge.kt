@@ -6,7 +6,7 @@ package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.KOVER_PLUGIN_ID
 import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverExtensionImpl
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -72,8 +72,8 @@ private fun KoverContext.configSelectedProjects(targetProjects: List<Project>) {
     }
 }
 
-private fun KoverExtensionImpl.configBeforeFinalize(targetProject: Project, applyJacoco: Boolean = true) {
-    val targetExtension = targetProject.extensions.getByType(KoverExtensionImpl::class.java)
+private fun KoverProjectExtensionImpl.configBeforeFinalize(targetProject: Project, applyJacoco: Boolean = true) {
+    val targetExtension = targetProject.extensions.getByType(KoverProjectExtensionImpl::class.java)
 
     targetExtension.beforeFinalize {
         if (applyJacoco) {
@@ -103,7 +103,6 @@ private fun KoverVariantSources.wrap(project: Project): KoverMergingVariantSourc
 private fun KoverProjectInstrumentation.wrap(project: Project): KoverMergingInstrumentation {
     return object : KoverMergingInstrumentation {
         override val disabledForAll: Property<Boolean> = this@wrap.disabledForAll
-        override val disabledForTasks: SetProperty<String> = this@wrap.disabledForTasks
         override val excludedClasses: SetProperty<String> = this@wrap.excludedClasses
         override val project: Project = project
     }
@@ -111,7 +110,6 @@ private fun KoverProjectInstrumentation.wrap(project: Project): KoverMergingInst
 private fun KoverVariantCreateConfig.wrap(project: Project): KoverMergingVariantCreate {
     return object : KoverMergingVariantCreate {
         override fun sources(block: Action<KoverVariantSources>) = this@wrap.sources(block)
-        override fun testTasks(block: Action<KoverVariantTestTasks>) = this@wrap.testTasks(block)
         override fun add(vararg variantNames: String, optional: Boolean) = this@wrap.add(*variantNames, optional = optional)
         override fun addWithDependencies(vararg variantNames: String, optional: Boolean) = this@wrap.addWithDependencies(*variantNames, optional = optional)
         override val project: Project = project

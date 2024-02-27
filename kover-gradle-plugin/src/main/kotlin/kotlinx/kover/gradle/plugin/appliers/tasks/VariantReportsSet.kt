@@ -203,5 +203,5 @@ private fun KoverVerifyRuleImpl.convert(): VerificationRule {
 }
 
 private fun KoverVerifyBound.convert(): VerificationBound {
-    return VerificationBound(min.orNull?.toBigDecimal(), max.orNull?.toBigDecimal(), coverageUnits.get(), aggregationForGroup.get())
+    return VerificationBound(minValue.orNull?.toBigDecimal(), maxValue.orNull?.toBigDecimal(), coverageUnits.get(), aggregationForGroup.get())
 }

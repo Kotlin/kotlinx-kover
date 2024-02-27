@@ -7,6 +7,7 @@ package kotlinx.kover.gradle.plugin.appliers.artifacts
 import kotlinx.kover.gradle.plugin.commons.ReportVariantType
 import kotlinx.kover.gradle.plugin.commons.VariantNameAttr
 import kotlinx.kover.gradle.plugin.commons.VariantOriginAttr
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantCreateConfigImpl
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.Project
@@ -20,14 +21,14 @@ internal open class CustomVariantArtifacts(
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration?,
     variantConfig: KoverVariantCreateConfigImpl,
-    koverDisabled: Provider<Boolean>
+    projectExtension: KoverProjectExtensionImpl
 ) : AbstractVariantArtifacts(
     project,
     variantName,
     toolProvider,
     koverBucketConfiguration,
     variantConfig,
-    koverDisabled
+    projectExtension
 ) {
     init {
         producerConfiguration.configure {

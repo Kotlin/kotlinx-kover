@@ -15,11 +15,11 @@ import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
 
-internal abstract class KoverExtensionImpl @Inject constructor(
+internal abstract class KoverProjectExtensionImpl @Inject constructor(
     objects: ObjectFactory,
     layout: ProjectLayout,
     projectPath: String
-): KoverExtension {
+): KoverProjectExtension {
     internal val current: KoverCurrentProjectVariantsConfigImpl = objects.newInstance()
     internal val reports: KoverReportsConfigImpl = objects.newInstance(objects, layout, projectPath)
     internal val merge: KoverMergingConfigImpl = objects.newInstance()

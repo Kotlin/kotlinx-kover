@@ -5,7 +5,7 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.appliers.tasks.VariantReportsSet
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverExtensionImpl
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tasks.services.KoverAgentJarTask
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.Project
@@ -19,7 +19,7 @@ import org.gradle.api.provider.Provider
  */
 internal class KoverContext(
     val project: Project,
-    val projectExtension: KoverExtensionImpl,
+    val projectExtension: KoverProjectExtensionImpl,
     val toolProvider: Provider<CoverageTool>,
     val findAgentJarTask: Provider<KoverAgentJarTask>,
     val koverBucketConfiguration: Configuration,

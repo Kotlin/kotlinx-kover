@@ -29,8 +29,8 @@ kover {
         verify {
             rule {
                 bound {
-                    min.set(50)
-                    max.set(75)
+                    minValue.set(50)
+                    maxValue.set(75)
                 }
             }
         }

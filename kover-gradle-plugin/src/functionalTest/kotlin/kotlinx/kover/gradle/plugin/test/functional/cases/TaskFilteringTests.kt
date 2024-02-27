@@ -33,8 +33,6 @@ internal class TaskFilteringTests {
 
             taskNotCalled(defaultTestTaskName(slice.type))
 
-            // reason must be printed
-
             // if task `test` is excluded from instrumentation then the binary report is not created for it
             checkDefaultBinReport(false)
         }

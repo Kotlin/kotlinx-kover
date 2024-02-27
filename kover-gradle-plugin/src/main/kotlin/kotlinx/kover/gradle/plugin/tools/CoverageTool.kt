@@ -8,7 +8,7 @@ import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_VERSION
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverExtensionImpl
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tools.jacoco.JacocoTool
 import kotlinx.kover.gradle.plugin.tools.kover.KoverTool
 import org.gradle.api.file.*
@@ -124,7 +124,7 @@ internal interface CoverageTool {
  * Factory to create instance of coverage tool according project settings from Kover project extension.
  */
 internal object CoverageToolFactory {
-    fun get(projectExtension: KoverExtensionImpl): Provider<CoverageTool> {
+    fun get(projectExtension: KoverProjectExtensionImpl): Provider<CoverageTool> {
         return projectExtension.useJacoco.map {
             if (it) {
                 JacocoTool(JacocoToolVariant(projectExtension.jacocoVersion.get()))

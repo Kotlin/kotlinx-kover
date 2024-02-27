@@ -11,7 +11,6 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.invoke
@@ -172,50 +171,50 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
 
     override fun minBound(minValue: Int, coverageUnits: MetricType, aggregationForGroup: AggregationType) {
         val newBound = createBound()
-        newBound.min.set(minValue)
+        newBound.minValue.set(minValue)
         newBound.coverageUnits.set(coverageUnits)
         newBound.aggregationForGroup.set(aggregationForGroup)
         bounds += newBound
     }
 
-    override fun minBound(min: Int) {
+    override fun minBound(minValue: Int) {
         val newBound = createBound()
-        newBound.min.set(min)
+        newBound.minValue.set(minValue)
         bounds += newBound
     }
 
-    override fun minBound(min: Provider<Int>) {
+    override fun minBound(minValue: Provider<Int>) {
         val newBound = createBound()
-        newBound.min.set(min)
+        newBound.minValue.set(minValue)
         bounds += newBound
     }
 
-    override fun maxBound(maxValue: Int, coverageUnits: MetricType, aggregation: AggregationType) {
+    override fun maxBound(maxValue: Int, coverageUnits: MetricType, aggregationForGroup: AggregationType) {
         val newBound = createBound()
-        newBound.max.set(maxValue)
+        newBound.maxValue.set(maxValue)
         newBound.coverageUnits.set(coverageUnits)
-        newBound.aggregationForGroup.set(aggregation)
+        newBound.aggregationForGroup.set(aggregationForGroup)
         bounds += newBound
     }
 
-    override fun maxBound(max: Int) {
+    override fun maxBound(maxValue: Int) {
         val newBound = createBound()
-        newBound.max.set(max)
+        newBound.maxValue.set(maxValue)
         bounds += newBound
     }
 
-    override fun maxBound(max: Provider<Int>) {
+    override fun maxBound(maxValue: Provider<Int>) {
         val newBound = createBound()
-        newBound.max.set(max)
+        newBound.maxValue.set(maxValue)
         bounds += newBound
     }
 
-    override fun bound(min: Int, max: Int, coverageUnits: MetricType, aggregation: AggregationType) {
+    override fun bound(minValue: Int, maxValue: Int, coverageUnits: MetricType, aggregationForGroup: AggregationType) {
         val newBound = createBound()
-        newBound.min.set(min)
-        newBound.max.set(max)
+        newBound.minValue.set(minValue)
+        newBound.maxValue.set(maxValue)
         newBound.coverageUnits.set(coverageUnits)
-        newBound.aggregationForGroup.set(aggregation)
+        newBound.aggregationForGroup.set(aggregationForGroup)
         bounds += newBound
     }
 

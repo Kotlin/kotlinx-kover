@@ -130,9 +130,9 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
         repositoriesConfigurator.also(block)
     }
 
-    override fun kover(config: KoverExtension.(ProjectScope) -> Unit) {
+    override fun kover(config: KoverProjectExtension.(ProjectScope) -> Unit) {
         rawBlocks += { slice, gradle ->
-            printGradleDsl<KoverExtension, ProjectScope>(slice.language, gradle, "kover", config)
+            printGradleDsl<KoverProjectExtension, ProjectScope>(slice.language, gradle, "kover", config)
         }
     }
 
@@ -150,7 +150,7 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
         return rawBlocks + { slice, gradleVersion ->
             val vendor = slice.toolVendor
             if (vendor == CoverageToolVendor.JACOCO) {
-                printGradleDsl<KoverExtension>(slice.language, gradleVersion, "kover") {
+                printGradleDsl<KoverProjectExtension>(slice.language, gradleVersion, "kover") {
                     useJacoco()
                 }
             } else {

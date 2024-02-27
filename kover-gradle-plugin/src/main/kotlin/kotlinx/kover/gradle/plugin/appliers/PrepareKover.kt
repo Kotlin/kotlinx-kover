@@ -6,7 +6,7 @@ package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.appliers.tasks.VariantReportsSet
 import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.dsl.internal.KoverExtensionImpl
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tasks.services.KoverAgentJarTask
 import kotlinx.kover.gradle.plugin.tools.CoverageToolFactory
 import org.gradle.api.Project
@@ -23,7 +23,7 @@ internal fun prepare(project: Project): KoverContext {
         asBucket()
     }
 
-    val projectExtension = project.extensions.create<KoverExtensionImpl>(
+    val projectExtension = project.extensions.create<KoverProjectExtensionImpl>(
         KOVER_PROJECT_EXTENSION_NAME,
         project.objects,
         project.layout,

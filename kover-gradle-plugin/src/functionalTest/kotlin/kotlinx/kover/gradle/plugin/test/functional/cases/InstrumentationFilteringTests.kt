@@ -46,6 +46,7 @@ internal class InstrumentationFilteringTests {
         }
 
         run("build", "koverXmlReport") {
+            checkOutcome("test", "SUCCESS")
             checkDefaultBinReport(false)
         }
     }
@@ -57,14 +58,15 @@ internal class InstrumentationFilteringTests {
 
             kover {
                 currentProject {
-                    instrumentation {
-                        disabledForTasks.add("test")
+                    testTasks {
+                        excluded.add("test")
                     }
                 }
             }
         }
 
-        run("build", "koverXmlReport") {
+        run("build") {
+            checkOutcome("test", "SUCCESS")
             checkDefaultBinReport(false)
         }
     }

@@ -18,6 +18,7 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
     internal val customVariants: MutableMap<String, KoverVariantCreateConfigImpl> = mutableMapOf()
     internal val providedVariants: MutableMap<String, KoverVariantConfigImpl> = mutableMapOf()
     internal val instrumentation: KoverProjectInstrumentation = objects.newInstance()
+    internal val testTasks: KoverVariantTestTasks = objects.newInstance()
 
     init {
         sources.excludeJava.convention(false)
@@ -26,8 +27,9 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
         testTasks.excluded.addAll(emptySet())
 
         instrumentation.disabledForAll.convention(false)
-        instrumentation.disabledForTasks.convention(emptySet())
         instrumentation.excludedClasses.convention(emptySet())
+
+        testTasks.excluded.addAll(emptySet())
     }
 
     override fun createVariant(variantName: String, block: Action<KoverVariantCreateConfig>) {
@@ -72,25 +74,22 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
         block.execute(instrumentation)
     }
 
+    override fun testTasks(block: Action<KoverVariantTestTasks>) {
+        block.execute(testTasks)
+    }
+
 }
 
 internal abstract class KoverVariantConfigImpl @Inject constructor(objects: ObjectFactory) : KoverVariantConfig {
     internal val sources: KoverVariantSources = objects.newInstance()
-    internal val testTasks: KoverVariantTestTasks = objects.newInstance()
 
     override fun sources(block: Action<KoverVariantSources>) {
         block.execute(sources)
     }
 
-    override fun testTasks(block: Action<KoverVariantTestTasks>) {
-        block.execute(testTasks)
-    }
-
     internal fun deriveFrom(other: KoverVariantConfigImpl) {
         sources.excludeJava.set(other.sources.excludeJava)
         sources.excludedSourceSets.addAll(other.sources.excludedSourceSets)
-
-        testTasks.excluded.addAll(other.testTasks.excluded)
     }
 }
 

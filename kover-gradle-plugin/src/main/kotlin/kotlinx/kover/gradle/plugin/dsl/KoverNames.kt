@@ -114,63 +114,63 @@ public object KoverNames {
     // Remove in 0.9.0
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.pluginId property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol PLUGIN_ID was removed, use pluginId instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("pluginId"),
         level = DeprecationLevel.ERROR
     )
     public const val PLUGIN_ID = KOVER_PLUGIN_ID
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.configurationName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol DEPENDENCY_CONFIGURATION_NAME was removed, use configurationName instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("configurationName"),
         level = DeprecationLevel.ERROR
     )
     public const val DEPENDENCY_CONFIGURATION_NAME = KOVER_DEPENDENCY_NAME
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol PROJECT_EXTENSION_NAME was removed, use extensionName instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("extensionName"),
         level = DeprecationLevel.ERROR
     )
     public const val PROJECT_EXTENSION_NAME = KOVER_PROJECT_EXTENSION_NAME
 
     @Deprecated(
-        message = "Extension was removed, use kover { ... } extension. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("kover"),
+        message = "Kover renaming: Symbol REPORT_EXTENSION_NAME was removed, use extensionName instead Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        replaceWith = ReplaceWith("extensionName"),
         level = DeprecationLevel.ERROR
     )
     public const val REPORT_EXTENSION_NAME = "koverReport"
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.koverXmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol DEFAULT_XML_REPORT_NAME was removed, use koverXmlReportName instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("koverXmlReportName"),
         level = DeprecationLevel.ERROR
     )
     public const val DEFAULT_XML_REPORT_NAME = "koverXmlReport"
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.koverBinaryReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol DEFAULT_BINARY_REPORT_NAME was removed, use koverBinaryReportName instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("koverBinaryReportName"),
         level = DeprecationLevel.ERROR
     )
     public const val DEFAULT_BINARY_REPORT_NAME = "koverBinaryReport"
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.koverHtmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol DEFAULT_HTML_REPORT_NAME was removed, use koverHtmlReport instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("koverHtmlReportName"),
         level = DeprecationLevel.ERROR
     )
     public const val DEFAULT_HTML_REPORT_NAME = "koverHtmlReport"
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.koverVerifyName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol DEFAULT_VERIFY_REPORT_NAME was removed, use koverVerifyName instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("koverVerifyName"),
         level = DeprecationLevel.ERROR
     )
     public const val DEFAULT_VERIFY_REPORT_NAME = "koverVerify"
 
     @Deprecated(
-        message = "Constant was removed, use KoverNames.koverLogName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol DEFAULT_LOG_REPORT_NAME was removed, use koverLogName instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("koverLogName"),
         level = DeprecationLevel.ERROR
     )
@@ -183,8 +183,7 @@ public object KoverNames {
 // Remove in 0.9.0
 
 @Deprecated(
-    message = "Property was removed, use KoverNames.koverXmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverXmlReportName"),
+    message = "Property koverXmlReportName was removed, use KoverNames.koverXmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 public val TaskContainer.koverXmlReportName: String
@@ -193,8 +192,7 @@ public val TaskContainer.koverXmlReportName: String
     }
 
 @Deprecated(
-    message = "Property was removed, use KoverNames.koverHtmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverHtmlReportName"),
+    message = "Property koverHtmlReportName was removed, use KoverNames.koverHtmlReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 public val TaskContainer.koverHtmlReportName: String
@@ -203,8 +201,7 @@ public val TaskContainer.koverHtmlReportName: String
     }
 
 @Deprecated(
-    message = "Property was removed, use KoverNames.koverBinaryReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverBinaryReportName"),
+    message = "Property koverBinaryReportName was removed, use KoverNames.koverBinaryReportName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 public val TaskContainer.koverBinaryReportName: String
@@ -213,8 +210,7 @@ public val TaskContainer.koverBinaryReportName: String
     }
 
 @Deprecated(
-    message = "Property was removed, use KoverNames.koverVerifyName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverVerifyName"),
+    message = "Property koverVerifyName was removed, use KoverNames.koverVerifyName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 public val TaskContainer.koverVerifyName: String
@@ -223,8 +219,7 @@ public val TaskContainer.koverVerifyName: String
     }
 
 @Deprecated(
-    message = "Property was removed, use KoverNames.koverLogName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverLogName"),
+    message = "Property koverLogName was removed, use KoverNames.koverLogName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 public val TaskContainer.koverLogName: String
@@ -233,58 +228,52 @@ public val TaskContainer.koverLogName: String
     }
 
 @Deprecated(
-    message = "Function was removed, use KoverNames.koverXmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverXmlReportName(buildVariantName)"),
+    message = "Function koverAndroidXmlReportName was removed, use KoverNames.koverXmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 @Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidXmlReportName(buildVariantName: String): String {
-    throw KoverDeprecationException("Function koverAndroidXmlReportName(buildVariantName) was removed, use KoverNames.koverXmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    throw KoverDeprecationException("Function koverAndroidXmlReportName was removed, use KoverNames.koverXmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
 @Deprecated(
-    message = "Function was removed, use KoverNames.koverHtmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverHtmlReportName(buildVariantName)"),
+    message = "Function koverAndroidHtmlReportName was removed, use KoverNames.koverHtmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 @Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): String {
-    throw KoverDeprecationException("Function koverAndroidHtmlReportName(buildVariantName) was removed, use KoverNames.koverHtmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    throw KoverDeprecationException("Function koverAndroidHtmlReportName was removed, use KoverNames.koverHtmlReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
 @Deprecated(
-    message = "Function was removed, use KoverNames.koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverBinaryReportName(buildVariantName)"),
+    message = "Function koverAndroidBinaryReportName was removed, use KoverNames.koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 @Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidBinaryReportName(buildVariantName: String): String {
-    throw KoverDeprecationException("Function koverAndroidBinaryReportName(buildVariantName) was removed, use koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    throw KoverDeprecationException("Function koverAndroidBinaryReportName was removed, use koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
 @Deprecated(
-    message = "Function was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverVerifyName(buildVariantName)"),
+    message = "Function koverAndroidVerifyName was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 @Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidVerifyName(buildVariantName: String): String {
-    throw KoverDeprecationException("Function koverAndroidVerifyName(buildVariantName) was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    throw KoverDeprecationException("Function koverAndroidVerifyName was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
 @Deprecated(
-    message = "Function was removed, use KoverNames.koverLogName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.koverLogName(buildVariantName)"),
+    message = "Function koverAndroidLogName was removed, use KoverNames.koverLogName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 @Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidLogName(buildVariantName: String): String {
-    throw KoverDeprecationException("Function koverAndroidLogName(buildVariantName) was removed, use KoverNames.koverLogName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    throw KoverDeprecationException("Function koverAndroidLogName was removed, use KoverNames.koverLogName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
 @Deprecated(
-    message = "Property was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.extensionName"),
+    message = "Property koverExtensionName was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 public val ExtensionContainer.koverExtensionName: String
@@ -293,8 +282,7 @@ public val ExtensionContainer.koverExtensionName: String
     }
 
 @Deprecated(
-    message = "Property was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("KoverNames.extensionName"),
+    message = "Property koverReportExtensionName was removed, use KoverNames.extensionName property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 public val ExtensionContainer.koverReportExtensionName: String

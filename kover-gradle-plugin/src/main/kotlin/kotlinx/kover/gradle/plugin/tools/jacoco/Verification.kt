@@ -113,13 +113,13 @@ private fun GroovyObject.violations(): List<RuleViolations> {
 
         val entityType = match.groupValues[1].asEntityType(it)
         val entityName = match.groupValues[2].run { if (this == ":") null else this }
-        val metric = match.groupValues[3].asMetricType(it)
+        val coverageUnits = match.groupValues[3].asMetricType(it)
         val agg = match.groupValues[4].asAggType(it)
         val value = match.groupValues[5].asValue(it, agg)
         val isMax = match.groupValues[6].asIsMax(it)
         val expected = match.groupValues[7].asValue(it, agg)
 
-        RuleViolations(entityType, listOf(BoundViolations(isMax, expected, value, metric, agg, entityName)), "")
+        RuleViolations(entityType, listOf(BoundViolations(isMax, expected, value, coverageUnits, agg, entityName)), "")
     }.toList()
 }
 

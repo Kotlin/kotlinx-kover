@@ -32,10 +32,10 @@ koverReport {
         // add common verification rule
         rule {
             // check this rule during verification 
-            isEnabled = true
+            disabled = false
   
             // specify the code unit for which coverage will be aggregated 
-            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+            groupBy = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
   
             // overriding filters only for current rule
             filters {
@@ -64,10 +64,10 @@ koverReport {
               maxValue = 99
   
               // specify which units to measure coverage for
-              metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+              coverageUnits = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
   
               // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
-              aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+              aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
   
             // add lower bound for percentage of covered lines
@@ -225,10 +225,10 @@ koverReport {
         // add common verification rule
         rule {
             // check this rule during verification 
-            isEnabled = true
+            disabled = false
 
             // specify the code unit for which coverage will be aggregated 
-            entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+            groupBy = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
 
             // overriding filters only for current rule
             filters {
@@ -257,10 +257,10 @@ koverReport {
                 maxValue = 99
 
                 // specify which units to measure coverage for
-                metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                coverageUnits = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
 
                 // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
-                aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
             }
 
             // add lower bound for percentage of covered lines
@@ -358,10 +358,10 @@ koverReport {
             // add verification rule
             rule {
                 // check this rule during verification 
-                isEnabled = true
+                disabled = false
 
                 // specify the code unit for which coverage will be aggregated 
-                entity = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
+                groupBy = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
 
                 // overriding filters only for current rule
                 filters {
@@ -390,10 +390,10 @@ koverReport {
                     maxValue = 99
 
                     // specify which units to measure coverage for
-                    metric = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                    coverageUnits = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
 
                     // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
-                    aggregation = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+                    aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
                 }
 
                 // add lower bound for percentage of covered lines
