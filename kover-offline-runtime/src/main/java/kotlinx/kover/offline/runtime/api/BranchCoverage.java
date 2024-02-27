@@ -10,15 +10,17 @@ package kotlinx.kover.offline.runtime.api;
 public class BranchCoverage {
 	/**
 	 * The unique branch number for the line. For the same method bytecode, the branch numbers are stable.
-	 * <p/>
+	 * <p>
 	 * The branch number is not directly related to the source code, and it is impossible to reliably understand which expression this branch refers to.
+	 * </p>
 	 */
 	public int branchNumber;
 
 	/**
 	 * The number of code executions of this branch.
-	 * <p/>
-	 * The accuracy of the value is not guaranteed, it is recommended to use this field in this form <code>(hit != 0)<code/>.
+	 * <p>
+	 * The accuracy of the value is not guaranteed, it is recommended to use this field in this form <code>(hit != 0)</code>.
+	 * </p>
 	 */
 	public int hit;
 }

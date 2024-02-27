@@ -12,22 +12,25 @@ import java.util.List;
 public class MethodCoverage {
 	/**
 	 * JVM signature of the method.
-	 * <p/>
+	 * <p>
 	 * example: <code>convert(I)Ljava.lang.String</code>
+	 * </p>
 	 */
 	public String signature;
 
 	/**
 	 * The number of code executions of the first instruction of this method.
-	 * <p/>
-	 * The accuracy of the value is not guaranteed, it is recommended to use this field in this form <code>(hit != 0)<code/>.
+	 * <p>
+	 * The accuracy of the value is not guaranteed, it is recommended to use this field in this form <code>(hit != 0)</code>.
+	 * </p>
 	 */
 	public int hit;
 
 	/**
 	 * Coverage for each line of source code for this method.
-	 * <p/>
+	 * <p>
 	 * Ordered by line number in ascending order.
+	 * </p>
 	 */
 	public List<LineCoverage> lines;
 }

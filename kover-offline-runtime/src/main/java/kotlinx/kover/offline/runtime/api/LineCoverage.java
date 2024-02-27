@@ -17,17 +17,20 @@ public class LineCoverage {
 
 	/**
 	 * The number of code executions at least one byte-code instruction of this line.
-	 * <p/>
-	 * The accuracy of the value is not guaranteed, it is recommended to use this field in this form <code>(hit != 0)<code/>.
+	 * <p>
+	 * The accuracy of the value is not guaranteed, it is recommended to use this field in this form <code>(hit != 0)</code>.
+	 * </p>
 	 */
 	public int hit;
 
 	/**
 	 * If there is a conditional expression and several code branches on one line, the coverage is measured for each of them individually.
-	 * <p/>
+	 * <p>
 	 * If there is no branching in the line, then this list is empty
-	 * <p/>
+	 * </p>
+	 * <p>
 	 * Ordered by a branch number in ascending order.
+	 * </p>
 	 */
 	//
 	public List<BranchCoverage> branches;

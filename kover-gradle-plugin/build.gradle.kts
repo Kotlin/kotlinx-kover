@@ -11,7 +11,7 @@ plugins {
 
     `kotlin-dsl`
     `java-gradle-plugin`
-
+    alias(libs.plugins.gradle.pluginPublish)
     id("kover-publishing-conventions")
 }
 
@@ -196,14 +196,22 @@ publishing {
     }
 }
 
+signing {
+    // disable signing if private key isn't passed
+    isRequired = findProperty("libs.sign.key.private") != null
+}
 
 gradlePlugin {
+    website.set("https://github.com/Kotlin/kotlinx-kover")
+    vcsUrl.set("https://github.com/Kotlin/kotlinx-kover.git")
+
     plugins {
         create("Kover") {
             id = "org.jetbrains.kotlinx.kover"
             implementationClass = "kotlinx.kover.gradle.plugin.KoverGradlePlugin"
             displayName = "Gradle Plugin for Kotlin Code Coverage Tools"
             description = "Evaluate code coverage for projects written in Kotlin"
+            tags.addAll("kover", "kotlin", "coverage")
         }
     }
 }
