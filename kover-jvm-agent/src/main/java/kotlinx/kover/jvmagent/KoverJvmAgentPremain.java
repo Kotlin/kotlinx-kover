@@ -2,9 +2,9 @@ package kotlinx.kover.jvmagent;
 
 import java.io.*;
 import java.lang.instrument.Instrumentation;
+import java.util.Arrays;
 import java.util.HashSet;
-
-import static kotlinx.kover.jvmagent.ParseUtils.isBoolean;
+import java.util.List;
 
 public class KoverJvmAgentPremain {
 
@@ -19,6 +19,15 @@ public class KoverJvmAgentPremain {
     private static final String regexMetacharacters = "<([{\\^-=$!|]})+.>";
 
     private static final HashSet<Character> regexMetacharactersSet = new HashSet<Character>();
+
+    private static final List<String> attributes = Arrays.asList(
+            FILE_PATH_ATTRIBUTE,
+            APPEND_ATTRIBUTE,
+            EXCLUDE_WITH_WILDCARDS_ATTRIBUTE,
+            EXCLUDE_WITH_REGEX_ATTRIBUTE,
+            INCLUDE_WITH_WILDCARDS_ATTRIBUTE,
+            INCLUDE_WITH_REGEX_ATTRIBUTE
+    );
 
     static {
         for (int i = 0; i < regexMetacharacters.length(); i++) {
@@ -39,6 +48,9 @@ public class KoverJvmAgentPremain {
         return new File(args.substring(FILE_PREFIX_IN_ARGS.length()));
     }
 
+    public static boolean isBoolean(String value) {
+        return "true".equals(value) || "false".equals(value);
+    }
 
     private static KoverAgentSettings readSettingsFromFile(File file) throws IOException {
         KoverAgentSettings settings = new KoverAgentSettings();
@@ -70,7 +82,8 @@ public class KoverJvmAgentPremain {
                 } else if (line.length() == 0) {
                     // skip empty line
                 } else {
-                    throw new IllegalArgumentException("Unrecognized line in Kover arguments file: " + line);
+                    throw new IllegalArgumentException("Unrecognized line in Kover arguments file: " + line
+                            + ". Line must start with one of prefixes: " + attributes);
                 }
                 line = reader.readLine();
             }

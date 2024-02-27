@@ -6,8 +6,6 @@ import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.List;
 
-import static kotlinx.kover.jvmagent.ParseUtils.isBoolean;
-
 public class IntellijIntegration {
     /**
      * A flag to enable tracking per test coverage.
@@ -22,7 +20,7 @@ public class IntellijIntegration {
     /**
      * Create hit block only for line, false adds the ability to count branches
      */
-    private static final boolean LINING_ONLY_MODE = false;
+    private static final boolean LINES_ONLY_MODE = false;
 
     private IntellijIntegration() {
         // no-op
@@ -41,7 +39,7 @@ public class IntellijIntegration {
         // Disable agent logging to stdout for messages of levels `debug`, `info`, `warn`.
         System.setProperty("idea.coverage.log.level", "error");
 
-        // Enables saving the array in the candy field,
+        // Enables saving the array in the ConDy field,
         // without it there will be an appeal to the hash table foreach method, which very slow.
         System.setProperty("idea.new.tracing.coverage", "true");
 
@@ -83,7 +81,7 @@ public class IntellijIntegration {
         args.add(Boolean.toString(TRACKING_PER_TEST));
         args.add(Boolean.toString(CALCULATE_FOR_UNLOADED_CLASSES));
         args.add(Boolean.toString(settings.appendToReportFile));
-        args.add(Boolean.toString(LINING_ONLY_MODE));
+        args.add(Boolean.toString(LINES_ONLY_MODE));
 
         args.addAll(settings.inclusions);
 
@@ -98,7 +96,7 @@ public class IntellijIntegration {
     private static String joinIntellijArgs(List<String> args) {
         StringBuilder builder = new StringBuilder();
         for (String arg : args) {
-            if (isBoolean(arg)) {
+            if (KoverJvmAgentPremain.isBoolean(arg)) {
                 builder.append(arg);
             } else {
                 builder.append('"');
