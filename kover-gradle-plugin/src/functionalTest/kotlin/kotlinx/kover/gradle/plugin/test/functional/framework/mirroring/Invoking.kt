@@ -147,7 +147,7 @@ private class Handler(
 
         val invoke = FunctionInvoke(receiver, methodName, method.returnType, proxy?.javaClass, argInvokes)
         slicer += invoke
-        return wrapResul(invoke, method, proxy, args)
+        return wrapResult(invoke, method, proxy, args)
     }
 
     private fun invokeArgs(params: List<Parameter>, args: Array<Any?>?): List<Invoke> {
@@ -160,7 +160,7 @@ private class Handler(
         }
     }
 
-    private fun wrapResul(resultAsReceiver: Invoke, method: Method, proxy: Any?, args: Array<Any?>?): Any? {
+    private fun wrapResult(resultAsReceiver: Invoke, method: Method, proxy: Any?, args: Array<Any?>?): Any? {
         val type = method.returnType
 
         if (ProviderClass.isAssignableFrom(type)) {

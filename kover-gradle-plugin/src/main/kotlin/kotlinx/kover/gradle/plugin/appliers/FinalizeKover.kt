@@ -32,7 +32,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
         try {
             action()
         } catch (e: Exception) {
-            throw KoverException("An error occurred while executing before Kover finalize action", e)
+            throw KoverCriticalException("An error occurred while executing before Kover finalize action", e)
         }
     }
 

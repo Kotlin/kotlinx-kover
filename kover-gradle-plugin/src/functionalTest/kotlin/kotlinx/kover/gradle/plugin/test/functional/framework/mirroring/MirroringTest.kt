@@ -27,7 +27,7 @@ private val groovyExample = """
                     }
                     verify {
                         rule("my Rule") {
-                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.MetricType.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
+                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
                         }
                     }
                 }
@@ -51,7 +51,7 @@ private val ktsExample = """
                     }
                     verify {
                         rule("my Rule") {
-                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.MetricType.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
+                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
                         }
                     }
                 }
@@ -75,7 +75,7 @@ private val ktsAfter8Example = """
             }
             verify {
                 rule("my Rule") {
-                    bound(10, 20, kotlinx.kover.gradle.plugin.dsl.MetricType.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
+                    bound(10, 20, kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
                 }
             }
         }

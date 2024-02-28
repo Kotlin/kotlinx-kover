@@ -119,7 +119,7 @@ public interface KoverProjectExtension {
     /**
      * Configuring a merged report.
      *
-     * **Attention! Using this block breaks the project isolation and is incompatible with the configuration cache!**
+     * **Attention! Usage of this block breaks project isolation and is incompatible with the configuration cache!**
      * If you need configuration cache support, please explicitly configure Kover plugin in each project using [currentProject] blocks.
      *
      * Used as a shortcut for group configuration of the plugin in several projects and merging reports.
@@ -206,11 +206,11 @@ public interface KoverProjectExtension {
     }
 
     @Deprecated(
-        message = "Function excludeTests was removed, specify excluded tasks in `currentProject { testTasks { excluded.addAll(/*name of tasks*/) } }`. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Function excludeTests was removed, specify excluded tasks in `currentProject { instrumentation { disabledForTestTasks.addAll(/*name of tasks*/) } }`. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         level = DeprecationLevel.ERROR
     )
     public fun excludeTests(config: Action<KoverTestsExclusions>) {
-        throw KoverDeprecationException("Function excludeTests was removed, specify excluded tasks in `currentProject { testTasks { excluded.addAll(/*name of tasks*/) } }`. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+        throw KoverDeprecationException("Function excludeTests was removed, specify excluded tasks in `currentProject { instrumentation { disabledForTestTasks.addAll(/*name of tasks*/) } }`. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
     }
 
     @Deprecated(

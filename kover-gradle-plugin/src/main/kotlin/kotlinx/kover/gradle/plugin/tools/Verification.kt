@@ -34,7 +34,7 @@ internal fun File.writeNoSources(header: String?) {
 
 internal data class CoverageRequest(
     val entity: GroupingEntityType,
-    val metric: MetricType,
+    val metric: CoverageUnit,
     val aggregation: AggregationType,
     val header: String?,
     val lineFormat: String,
@@ -59,7 +59,7 @@ internal data class BoundViolations(
     val isMax: Boolean,
     val expectedValue: BigDecimal,
     val actualValue: BigDecimal,
-    val metric: MetricType,
+    val metric: CoverageUnit,
     val aggregation: AggregationType,
     val entityName: String? = null
 )
@@ -89,9 +89,9 @@ private fun BoundViolations.format(rule: RuleViolations): String {
     val directionText = if (isMax) "maximum" else "minimum"
 
     val metricText = when (metric) {
-        MetricType.LINE -> "lines"
-        MetricType.INSTRUCTION -> "instructions"
-        MetricType.BRANCH -> "branches"
+        CoverageUnit.LINE -> "lines"
+        CoverageUnit.INSTRUCTION -> "instructions"
+        CoverageUnit.BRANCH -> "branches"
     }
 
     val valueTypeText = when (aggregation) {

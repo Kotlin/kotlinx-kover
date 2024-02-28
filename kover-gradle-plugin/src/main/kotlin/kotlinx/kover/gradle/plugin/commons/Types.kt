@@ -105,7 +105,7 @@ internal open class VerificationBound(
     val maxValue: BigDecimal?,
 
     @get:Input
-    val metric: MetricType,
+    val metric: CoverageUnit,
 
     @get:Input
     val aggregation: AggregationType

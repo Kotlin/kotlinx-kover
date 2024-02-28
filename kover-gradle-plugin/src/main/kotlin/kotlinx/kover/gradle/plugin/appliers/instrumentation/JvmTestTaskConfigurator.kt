@@ -53,7 +53,7 @@ internal fun TaskCollection<Test>.instrument(
             // disable task instrumentation if it disabled for all tasks
             if (current.instrumentation.disabledForAll.get()) return@map true
             // disable task instrumentation if it explicitly excluded by name
-            if (name in current.testTasks.excluded.get()) return@map true
+            if (name in current.instrumentation.disabledForTestTasks.get()) return@map true
             //
             return@map false
         }

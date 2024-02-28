@@ -10,13 +10,13 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTe
 internal class MergingTests {
 
     @GeneratedTest
-    fun BuildConfigurator.testRootImplicitly() {
+    fun BuildConfigurator.testRootNoProjects() {
         addProjectWithKover {
             sourcesFrom("simple")
 
             kover {
                 merge {
-                    // merge with all subprojects
+                    // no projects
                 }
             }
         }
@@ -27,17 +27,7 @@ internal class MergingTests {
             sourcesFrom("two")
         }
 
-        run(":koverXmlReport") {
-            checkOutcome(":koverGenerateArtifact", "SUCCESS")
-            checkOutcome(":one:koverGenerateArtifact", "SUCCESS")
-            checkOutcome(":two:koverGenerateArtifact", "SUCCESS")
-
-            xmlReport {
-                classCounter("org.jetbrains.ExampleClass").assertCovered()
-                classCounter("org.jetbrains.one.OneClass").assertCovered()
-                classCounter("org.jetbrains.two.TwoClass").assertCovered()
-            }
-        }
+        run(":koverXmlReport", errorExpected = true)
     }
 
     @GeneratedTest
@@ -114,7 +104,7 @@ internal class MergingTests {
             sourcesFrom("simple")
             kover {
                 merge {
-                    // merge with all subprojects
+                    // merge with all projects
                     allProjects()
                 }
             }
@@ -205,38 +195,6 @@ internal class MergingTests {
     }
 
     @GeneratedTest
-    fun BuildConfigurator.testIntermediateImplicitly() {
-        addProjectWithKover {
-            sourcesFrom("simple")
-        }
-        addProjectWithKover(":one") {
-            sourcesFrom("one")
-            kover {
-                merge {
-                    // merge with all subprojects
-                }
-            }
-        }
-        addProjectWithKover(":one:two") {
-            sourcesFrom("two")
-        }
-
-        run(":one:koverXmlReport") {
-            taskNotCalled(":koverGenerateArtifact")
-            checkOutcome(":one:koverGenerateArtifact", "SUCCESS")
-            checkOutcome(":one:two:koverGenerateArtifact", "SUCCESS")
-
-            subproject(":one") {
-                xmlReport {
-                    classCounter("org.jetbrains.ExampleClass").assertAbsent()
-                    classCounter("org.jetbrains.one.OneClass").assertCovered()
-                    classCounter("org.jetbrains.two.TwoClass").assertCovered()
-                }
-            }
-        }
-    }
-
-    @GeneratedTest
     fun BuildConfigurator.testIntermediateSubprojects() {
         addProjectWithKover {
             sourcesFrom("simple")
@@ -314,7 +272,7 @@ internal class MergingTests {
             sourcesFrom("one")
             kover {
                 merge {
-                    // merge with all subprojects
+                    // merge with all projects, including top-level one
                     allProjects()
                 }
             }
@@ -414,8 +372,10 @@ internal class MergingTests {
 
             kover {
                 merge {
+                    subprojects()
+
                     instrumentation {
-                        // change instrumentation in all projects
+                        // change instrumentation in all selected projects
                         excludedClasses.add("org.jetbrains.*")
                     }
                 }
@@ -448,7 +408,9 @@ internal class MergingTests {
 
             kover {
                 merge {
-                    // change sources in all projects
+                    subprojects()
+
+                    // change sources in all selected projects
                     sources {
                         excludedSourceSets.add("main")
                     }
@@ -482,7 +444,9 @@ internal class MergingTests {
 
             kover { scope ->
                 merge {
-                    // change sources in all projects
+                    subprojects()
+
+                    // change sources in all selected projects
                     createVariant("custom") {
                         // bad Kotlin vararg support if vararg is not the last parameter
                         scope.line("""add("jvm")  """)

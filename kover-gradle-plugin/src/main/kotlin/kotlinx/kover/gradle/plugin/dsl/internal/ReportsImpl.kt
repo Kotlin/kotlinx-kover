@@ -89,7 +89,7 @@ internal abstract class KoverReportSetConfigImpl @Inject constructor(
 
         log.format.convention("<entity> line coverage: <value>%")
         log.groupBy.convention(GroupingEntityType.APPLICATION)
-        log.coverageUnits.convention(MetricType.LINE)
+        log.coverageUnits.convention(CoverageUnit.LINE)
         log.aggregationForGroup.convention(AggregationType.COVERED_PERCENTAGE)
     }
 
@@ -169,7 +169,7 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
         groupBy.set(GroupingEntityType.APPLICATION)
     }
 
-    override fun minBound(minValue: Int, coverageUnits: MetricType, aggregationForGroup: AggregationType) {
+    override fun minBound(minValue: Int, coverageUnits: CoverageUnit, aggregationForGroup: AggregationType) {
         val newBound = createBound()
         newBound.minValue.set(minValue)
         newBound.coverageUnits.set(coverageUnits)
@@ -189,7 +189,7 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
         bounds += newBound
     }
 
-    override fun maxBound(maxValue: Int, coverageUnits: MetricType, aggregationForGroup: AggregationType) {
+    override fun maxBound(maxValue: Int, coverageUnits: CoverageUnit, aggregationForGroup: AggregationType) {
         val newBound = createBound()
         newBound.maxValue.set(maxValue)
         newBound.coverageUnits.set(coverageUnits)
@@ -209,7 +209,7 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
         bounds += newBound
     }
 
-    override fun bound(minValue: Int, maxValue: Int, coverageUnits: MetricType, aggregationForGroup: AggregationType) {
+    override fun bound(minValue: Int, maxValue: Int, coverageUnits: CoverageUnit, aggregationForGroup: AggregationType) {
         val newBound = createBound()
         newBound.minValue.set(minValue)
         newBound.maxValue.set(maxValue)
@@ -228,7 +228,7 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
 
     private fun createBound(): KoverVerifyBound {
         val newBound = objects.newInstance<KoverVerifyBound>()
-        newBound.coverageUnits.set(MetricType.LINE)
+        newBound.coverageUnits.set(CoverageUnit.LINE)
         newBound.aggregationForGroup.set(AggregationType.COVERED_PERCENTAGE)
         return newBound
     }

@@ -246,12 +246,12 @@ public fun TaskContainer.koverAndroidHtmlReportName(buildVariantName: String): S
 }
 
 @Deprecated(
-    message = "Function koverAndroidBinaryReportName was removed, use KoverNames.koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    message = "Function koverAndroidBinaryReportName was removed, use KoverNames.koverBinaryReportName function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 @Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidBinaryReportName(buildVariantName: String): String {
-    throw KoverDeprecationException("Function koverAndroidBinaryReportName was removed, use koverBinaryReportName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    throw KoverDeprecationException("Function koverAndroidBinaryReportName was removed, use koverBinaryReportName function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
 @Deprecated(

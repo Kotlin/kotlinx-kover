@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.plugin.appliers
 
 import kotlinx.kover.gradle.plugin.commons.KOVER_PLUGIN_ID
+import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import org.gradle.api.Action
@@ -37,9 +38,9 @@ private fun KoverContext.selectProjects(): List<Project> {
     val subprojectsFilters = mergeConfig.subprojectsFilters
     val allProjectsFilters = mergeConfig.allProjectsFilters
 
-    // by default if no filters are explicitly specified, then we take all the subprojects
+    // by default if no filters are explicitly specified, then throw exception
     if (subprojectsFilters.isEmpty() && allProjectsFilters.isEmpty()) {
-        subprojectsFilters += Spec<Project> { true }
+        throw KoverIllegalConfigException("The projects that need to be used in the merged report are not specified. Please specify 'subprojects()', 'projects()', or 'allProjects()'")
     }
 
     project.subprojects.forEach { subproject ->
@@ -77,7 +78,7 @@ private fun KoverProjectExtensionImpl.configBeforeFinalize(targetProject: Projec
 
     targetExtension.beforeFinalize {
         if (applyJacoco) {
-            // set up jacoco
+            // Propagate whether jacoco used or not
             targetExtension.useJacoco.set(useJacoco)
             targetExtension.jacocoVersion.set(jacocoVersion)
         }
@@ -103,6 +104,7 @@ private fun KoverVariantSources.wrap(project: Project): KoverMergingVariantSourc
 private fun KoverProjectInstrumentation.wrap(project: Project): KoverMergingInstrumentation {
     return object : KoverMergingInstrumentation {
         override val disabledForAll: Property<Boolean> = this@wrap.disabledForAll
+        override val disabledForTestTasks: SetProperty<String> = this@wrap.disabledForTestTasks
         override val excludedClasses: SetProperty<String> = this@wrap.excludedClasses
         override val project: Project = project
     }

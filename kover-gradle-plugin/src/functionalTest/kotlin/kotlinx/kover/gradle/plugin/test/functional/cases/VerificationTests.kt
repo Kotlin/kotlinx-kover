@@ -62,7 +62,7 @@ internal class VerificationTests {
                         rule("fully uncovered instructions by classes") {
                             groupBy.set(GroupingEntityType.CLASS)
                             bound {
-                                coverageUnits.set(MetricType.INSTRUCTION)
+                                coverageUnits.set(CoverageUnit.INSTRUCTION)
                                 aggregationForGroup.set(AggregationType.MISSED_PERCENTAGE)
                                 minValue.set(100)
                             }
@@ -70,7 +70,7 @@ internal class VerificationTests {
                         rule("fully covered instructions by packages") {
                             groupBy.set(GroupingEntityType.PACKAGE)
                             bound {
-                                coverageUnits.set(MetricType.INSTRUCTION)
+                                coverageUnits.set(CoverageUnit.INSTRUCTION)
                                 aggregationForGroup.set(AggregationType.COVERED_PERCENTAGE)
                                 minValue.set(100)
                             }
@@ -78,7 +78,7 @@ internal class VerificationTests {
                         rule("branches by classes") {
                             groupBy.set(GroupingEntityType.CLASS)
                             bound {
-                                coverageUnits.set(MetricType.BRANCH)
+                                coverageUnits.set(CoverageUnit.BRANCH)
                                 aggregationForGroup.set(AggregationType.COVERED_COUNT)
                                 minValue.set(1000)
                             }

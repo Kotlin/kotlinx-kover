@@ -11,7 +11,7 @@ import org.gradle.api.specs.Spec
 /**
  * Configuring a merged report.
  *
- * **Attention! Using this block breaks the project isolation and is incompatible with the configuration cache!**
+ * **Attention! Usage of this block breaks project isolation and is incompatible with the configuration cache!**
  * If you need configuration cache support, please explicitly configure Kover plugin in each project using [variants] blocks.
  *
  * Used as a shortcut for group configuration of the plugin in several projects and merging reports.

@@ -350,7 +350,7 @@ public interface KoverReportSetConfig {
      *      header = null
      *      format = "<entity> line coverage: <value>%"
      *      groupBy = GroupingEntityType.APPLICATION
-     *      coverageUnits = MetricType.LINE
+     *      coverageUnits = CoverageUnit.LINE
      *      aggregationForGroup = AggregationType.COVERED_PERCENTAGE
      *  }
      * ```
@@ -378,7 +378,7 @@ public interface KoverReportSetConfig {
  *      header = null
  *      format = "<entity> line coverage: <value>%"
  *      groupBy = GroupingEntityType.APPLICATION
- *      coverageUnits = MetricType.LINE
+ *      coverageUnits = CoverageUnit.LINE
  *      aggregationForGroup = AggregationType.COVERED_PERCENTAGE
  *  }
  * ```
@@ -428,9 +428,9 @@ public interface KoverLogTaskConfig {
     /**
      * The type of application code division (unit type) whose unit coverage will be considered independently.
      *
-     * [MetricType.LINE] by default.
+     * [CoverageUnit.LINE] by default.
      */
-    public val coverageUnits: Property<MetricType>
+    public val coverageUnits: Property<CoverageUnit>
 
     /**
      * Specifies aggregation function that will be calculated over all the units of the same group.
@@ -985,7 +985,7 @@ public interface KoverVerifyRule {
      * // At least 75% of lines should be covered in order for build to pass
      * bound {
      *     aggregationForGroup = AggregationType.COVERED_PERCENTAGE // Default aggregation
-     *     coverageUnits = MetricType.LINE
+     *     coverageUnits = CoverageUnit.LINE
      *     minValue = 75
      * }
      * ```
@@ -1058,7 +1058,7 @@ public interface KoverVerifyRule {
      */
     public fun minBound(
         minValue: Int,
-        coverageUnits: MetricType = MetricType.LINE,
+        coverageUnits: CoverageUnit = CoverageUnit.LINE,
         aggregationForGroup: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
@@ -1076,7 +1076,7 @@ public interface KoverVerifyRule {
      */
     public fun maxBound(
         maxValue: Int,
-        coverageUnits: MetricType = MetricType.LINE,
+        coverageUnits: CoverageUnit = CoverageUnit.LINE,
         aggregationForGroup: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
@@ -1096,7 +1096,7 @@ public interface KoverVerifyRule {
     public fun bound(
         minValue: Int,
         maxValue: Int,
-        coverageUnits: MetricType = MetricType.LINE,
+        coverageUnits: CoverageUnit = CoverageUnit.LINE,
         aggregationForGroup: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
@@ -1129,9 +1129,9 @@ public interface KoverVerifyBound {
      * The type of application code division (unit type) whose unit coverage will be considered independently.
      * It affects which blocks the value of the covered and missed units will be calculated for.
      *
-     * [MetricType.LINE] by default.
+     * [CoverageUnit.LINE] by default.
      */
-    public val coverageUnits: Property<MetricType>
+    public val coverageUnits: Property<CoverageUnit>
 
     /**
      * Specifies aggregation function that will be calculated over all the units of the same group.
@@ -1149,7 +1149,7 @@ public interface KoverVerifyBound {
         replaceWith = ReplaceWith("coverageUnits"),
         level = DeprecationLevel.ERROR
     )
-    public var metric: MetricType
+    public var metric: CoverageUnit
         get() {
             throw KoverDeprecationException("Kover renaming: Symbol metric was removed, use coverageUnits instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
         }
@@ -1174,7 +1174,8 @@ public interface KoverVerifyBound {
 /**
  * Type of the metric to evaluate code coverage.
  */
-public enum class MetricType {
+public enum class CoverageUnit {
+
     /**
      * Number of lines.
      */
@@ -1188,6 +1189,17 @@ public enum class MetricType {
     /**
      * Number of branches covered.
      */
+    BRANCH
+}
+
+@Deprecated(
+    message = "Kover renaming: Symbol MetricType was removed, use CoverageUnit instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("pluginId"),
+    level = DeprecationLevel.ERROR
+)
+public enum class MetricType {
+    LINE,
+    INSTRUCTION,
     BRANCH
 }
 

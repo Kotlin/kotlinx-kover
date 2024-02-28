@@ -19,8 +19,8 @@ internal class TaskFilteringTests {
             sourcesFrom("simple")
             kover {
                 currentProject {
-                    testTasks {
-                        excluded.add(defaultTestTaskName(slice.type))
+                    instrumentation {
+                        disabledForTestTasks.add(defaultTestTaskName(slice.type))
                     }
                 }
             }

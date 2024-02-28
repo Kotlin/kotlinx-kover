@@ -7,7 +7,7 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 import kotlinx.kover.gradle.plugin.commons.CoverageToolVendor
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
-import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.BuildConfigurator
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTest
 import kotlin.test.assertEquals
@@ -101,7 +101,7 @@ internal class LoggingTaskTests {
                             format.set("Class <entity> covered instructions=<value>")
                             groupBy.set(GroupingEntityType.CLASS)
                             aggregationForGroup.set(AggregationType.COVERED_COUNT)
-                            coverageUnits.set(MetricType.INSTRUCTION)
+                            coverageUnits.set(CoverageUnit.INSTRUCTION)
                         }
                     }
                 }
@@ -135,7 +135,7 @@ internal class LoggingTaskTests {
                             format.set("Class <entity> covered instructions=<value>")
                             groupBy.set(GroupingEntityType.CLASS)
                             aggregationForGroup.set(AggregationType.COVERED_COUNT)
-                            coverageUnits.set(MetricType.INSTRUCTION)
+                            coverageUnits.set(CoverageUnit.INSTRUCTION)
                         }
                     }
                 }

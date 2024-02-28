@@ -18,18 +18,14 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
     internal val customVariants: MutableMap<String, KoverVariantCreateConfigImpl> = mutableMapOf()
     internal val providedVariants: MutableMap<String, KoverVariantConfigImpl> = mutableMapOf()
     internal val instrumentation: KoverProjectInstrumentation = objects.newInstance()
-    internal val testTasks: KoverVariantTestTasks = objects.newInstance()
 
     init {
         sources.excludeJava.convention(false)
         sources.excludedSourceSets.convention(emptySet())
 
-        testTasks.excluded.addAll(emptySet())
-
         instrumentation.disabledForAll.convention(false)
         instrumentation.excludedClasses.convention(emptySet())
-
-        testTasks.excluded.addAll(emptySet())
+        instrumentation.disabledForTestTasks.convention(emptySet())
     }
 
     override fun createVariant(variantName: String, block: Action<KoverVariantCreateConfig>) {
@@ -72,10 +68,6 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
 
     override fun instrumentation(block: Action<KoverProjectInstrumentation>) {
         block.execute(instrumentation)
-    }
-
-    override fun testTasks(block: Action<KoverVariantTestTasks>) {
-        block.execute(testTasks)
     }
 
 }

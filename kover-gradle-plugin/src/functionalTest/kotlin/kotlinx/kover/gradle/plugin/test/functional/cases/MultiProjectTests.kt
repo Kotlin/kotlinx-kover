@@ -83,14 +83,12 @@ internal class MultiProjectTests {
         }
 
         run("koverXmlReport", "koverHtmlReport", "koverVerify") {
-            // instrumentation disabled (no output binary report) but test task is executed
             checkDefaultBinReport(false)
-            checkOutcome(defaultTestTaskName(slice.type), "SUCCESS")
+            taskNotCalled(defaultTestTaskName(slice.type))
 
             subproject(subprojectPath) {
-                // instrumentation disabled (no output binary report) but test task is executed
                 checkDefaultBinReport(false)
-                checkOutcome(defaultTestTaskName(slice.type), "SUCCESS")
+                taskNotCalled(defaultTestTaskName(slice.type))
             }
         }
     }
@@ -101,8 +99,8 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-common")
             kover {
                 currentProject {
-                    testTasks {
-                        excluded.add(defaultTestTaskName(slice.type))
+                    instrumentation {
+                        disabledForTestTasks.add(defaultTestTaskName(slice.type))
                     }
                 }
             }
@@ -113,8 +111,8 @@ internal class MultiProjectTests {
             dependencyKover(subprojectPath)
             kover {
                 currentProject {
-                    testTasks {
-                        excluded.add(defaultTestTaskName(slice.type))
+                    instrumentation {
+                        disabledForTestTasks.add(defaultTestTaskName(slice.type))
                     }
                 }
             }

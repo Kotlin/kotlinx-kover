@@ -64,7 +64,7 @@ koverReport {
               maxValue = 99
   
               // specify which units to measure coverage for
-              coverageUnits = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+              coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
   
               // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
               aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
@@ -196,7 +196,7 @@ koverReport {
             // Specifies by which entity the code for separate coverage evaluation will be grouped
             groupBy = GroupingEntityType.APPLICATION
             // Specifies which metric is used for coverage evaluation
-            coverageUnits = MetricType.LINE
+            coverageUnits = CoverageUnit.LINE
             // Specifies aggregation function that will be calculated over all the elements of the same group
             aggregationForGroup = AggregationType.COVERED_PERCENTAGE
         }
@@ -257,7 +257,7 @@ koverReport {
                 maxValue = 99
 
                 // specify which units to measure coverage for
-                coverageUnits = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
 
                 // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
                 aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
@@ -390,7 +390,7 @@ koverReport {
                     maxValue = 99
 
                     // specify which units to measure coverage for
-                    coverageUnits = kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+                    coverageUnits = kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
 
                     // specify an aggregating function to obtain a single value that will be checked against the lower and upper boundaries
                     aggregationForGroup = kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
@@ -436,7 +436,7 @@ koverReport {
             // Specifies by which entity the code for separate coverage evaluation will be grouped
             groupBy = GroupingEntityType.APPLICATION
             // Specifies which metric is used for coverage evaluation
-            coverageUnits = MetricType.LINE
+            coverageUnits = CoverageUnit.LINE
             // Specifies aggregation function that will be calculated over all the elements of the same group
             aggregationForGroup = AggregationType.COVERED_PERCENTAGE
         }
@@ -598,7 +598,7 @@ For example, an entire line from source code or a specific JVM instruction from 
 All units are grouped into one or more groups. 
 Based on amount of the executed and non-executed code units, one number (coverage value) will be calculated for each group using the aggregation function.
 
-Type `MetricType` determines for which types of units the coverage will be measured.
+Type `CoverageUnit` determines for which types of units the coverage will be measured.
 It is:
  - `LINE`
  - `INSTRUCTION`

@@ -76,7 +76,42 @@ If you use the extensions property to access the extension
     }
     ```
    See details in [corresponding section](#custom-reports-variants).
-4. filters !
+4. Delete all `filters` blocks from the settings of a specific report (XML, HTML, verify, log, etc.), e.g.
+    ```kotlin
+    koverReport {
+        defaults {
+            html {
+                filters {
+                    // filters
+                }
+            }
+        }
+    }
+    ```
+    move the filters to commons for all variants settings
+    ```kotlin
+    kover {
+        reports {
+            filters {
+                // filters
+            }     
+        }
+    }
+    ```
+    or specific variant settings, like
+    ```kotlin
+    kover {
+        reports {
+            total {
+                filters {
+                    // filters
+                }
+            }
+        }
+    }
+    ```
+    If you need to create specific reports with individual sets of filters, then create a [custom reports variant](#custom-reports-variants).
+
 5. Rename some functions and properties, the actual names are written in error messages or IDE hints
 6. For kts files and Gradle versions less than 8.2, it is necessary to replace the assignment operator with a call `set()` function for some properties in DSL.
    These properties can be found by configuration error messages. 
@@ -125,9 +160,9 @@ Since `0.8.0` looks like:
 ```kotlin
 kover {
     currentProject {
-        testTasks {
+        instrumentation {
             /* exclude Gradle test tasks */
-            excluded.addAll(testTasks)
+            disabledForTestTasks.addAll(testTasks)
         }
 
         instrumentation {
@@ -396,7 +431,7 @@ kover {
 }
 ```
 
-#### Function excludeTests was removed, specify excluded tasks in `currentProject { testTasks { excluded.addAll(/*name of tasks*/) } }`
+#### Function excludeTests was removed, specify excluded tasks in `currentProject { instrumentation { disabledForTestTasks.addAll(/*name of tasks*/) } }`
 
 Instead of 
 ```kotlin
@@ -410,8 +445,8 @@ write
 ```kotlin
 kover {
     currentProject {
-        testTasks {
-            excluded.addAll(/*names*/)
+        instrumentation {
+            disabledForTestTasks.addAll(/*names*/)
         }
     }
 }

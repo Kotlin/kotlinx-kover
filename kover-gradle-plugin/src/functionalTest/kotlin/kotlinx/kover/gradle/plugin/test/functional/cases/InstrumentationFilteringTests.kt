@@ -58,8 +58,8 @@ internal class InstrumentationFilteringTests {
 
             kover {
                 currentProject {
-                    testTasks {
-                        excluded.add("test")
+                    instrumentation {
+                        disabledForTestTasks.add("test")
                     }
                 }
             }

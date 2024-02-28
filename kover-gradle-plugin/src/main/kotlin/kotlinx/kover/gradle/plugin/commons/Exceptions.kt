@@ -10,8 +10,6 @@ internal class KoverCriticalException(message: String, cause: Throwable? = null)
 
 internal open class KoverIllegalConfigException(message: String): GradleException(message)
 
-internal open class KoverException(message: String, e: Throwable? = null): GradleException(message, e)
-
 internal class KoverDeprecationException(message: String): KoverIllegalConfigException(message)
 
 internal class KoverVerificationException(violations: String): GradleException(violations)
