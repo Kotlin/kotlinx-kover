@@ -18,6 +18,7 @@ plugins {
     java
     id("kover-publishing-conventions")
     id("kover-docs-conventions")
+    id("kover-fat-jar-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
@@ -33,23 +34,9 @@ repositories {
     mavenCentral()
 }
 
-val fatJarDependency = "fatJar"
-val fatJarConfiguration = configurations.create(fatJarDependency)
-
 dependencies {
     compileOnly(libs.intellij.offline)
-    fatJarConfiguration(libs.intellij.offline)
-}
-
-tasks.jar {
-    from(
-        fatJarConfiguration.map { if (it.isDirectory) it else zipTree(it) }
-    ) {
-        exclude("OSGI-OPT/**")
-        exclude("META-INF/**")
-        exclude("LICENSE")
-        exclude("classpath.index")
-    }
+    fatJar(libs.intellij.offline)
 }
 
 extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {

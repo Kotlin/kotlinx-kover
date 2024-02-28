@@ -20,6 +20,7 @@ plugins {
     kotlin("jvm")
     id("kover-publishing-conventions")
     id("kover-docs-conventions")
+    id("kover-fat-jar-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
@@ -33,9 +34,16 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":kover-features-jvm"))
+    compileOnly(kotlin("stdlib"))
+    fatJar(kotlin("stdlib"))
 
-    implementation(libs.args4j)
+    fatJar(project(":kover-features-jvm"))
+    compileOnly(project(":kover-features-jvm"))
+    testImplementation(project(":kover-features-jvm"))
+
+    fatJar(libs.args4j)
+    compileOnly(libs.args4j)
+    testImplementation(libs.args4j)
 
     testImplementation(kotlin("test"))
 }
@@ -49,14 +57,6 @@ tasks.withType<KotlinCompile>().configureEach {
 tasks.jar {
     manifest {
         attributes("Main-Class" to "kotlinx.kover.cli.MainKt")
-    }
-
-    from(
-        configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
-    ) {
-        exclude("OSGI-OPT/**")
-        exclude("META-INF/**")
-        exclude("LICENSE")
     }
 }
 
