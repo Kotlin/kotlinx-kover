@@ -18,9 +18,15 @@ plugins {
     java
     id("kover-publishing-conventions")
     id("kover-fat-jar-conventions")
+    id("kover-docs-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
+    description.set("Kover JVM instrumentation agent")
+}
+
+extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+    docsDirectory.set("jvm-agent")
     description.set("Kover JVM instrumentation agent")
 }
 

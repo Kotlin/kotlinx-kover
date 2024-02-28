@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("kover-publishing-conventions")
+    id("kover-docs-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
@@ -63,16 +64,7 @@ repositories {
     mavenCentral()
 }
 
-tasks.register("releaseDocs") {
-    val dirName = "cli"
-    val description = "Kover Command Line Interface"
-    val sourceDir = projectDir.resolve("docs")
-    val resultDir = rootDir.resolve("docs/$dirName")
-    val mainIndexFile = rootDir.resolve("docs/index.md")
-
-    doLast {
-        resultDir.mkdirs()
-        sourceDir.copyRecursively(resultDir)
-        mainIndexFile.appendText("- [$description]($dirName)\n")
-    }
+extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+    docsDirectory.set("cli")
+    description.set("Kover Command Line Interface")
 }

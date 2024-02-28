@@ -13,6 +13,7 @@ plugins {
     `java-gradle-plugin`
     alias(libs.plugins.gradle.pluginPublish)
     id("kover-publishing-conventions")
+    id("kover-docs-conventions")
 }
 
 repositories {
@@ -167,20 +168,10 @@ tasks.dokkaHtml {
     }
 }
 
-tasks.register("releaseDocs") {
-    val dirName = "gradle-plugin"
-    val description = "Kover Gradle Plugin"
-    val sourceDir = projectDir.resolve("docs")
-    val resultDir = rootDir.resolve("docs/$dirName")
-    val mainIndexFile = rootDir.resolve("docs/index.md")
-
-    dependsOn(tasks.dokkaHtml)
-
-    doLast {
-        resultDir.mkdirs()
-        sourceDir.copyRecursively(resultDir)
-        mainIndexFile.appendText("- [$description]($dirName)\n")
-    }
+extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+    docsDirectory.set("gradle-plugin")
+    description.set("Kover Gradle Plugin")
+    callDokkaHtml.set(true)
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {

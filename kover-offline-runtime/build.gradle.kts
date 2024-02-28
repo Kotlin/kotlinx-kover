@@ -17,6 +17,7 @@
 plugins {
     java
     id("kover-publishing-conventions")
+    id("kover-docs-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
@@ -51,16 +52,8 @@ tasks.jar {
     }
 }
 
-tasks.register("releaseDocs") {
-    val dirName = "offline-instrumentation"
-    val description = "Kover offline instrumentation"
-    val sourceDir = projectDir.resolve("docs")
-    val resultDir = rootDir.resolve("docs/$dirName")
-    val mainIndexFile = rootDir.resolve("docs/index.md")
-
-    doLast {
-        resultDir.mkdirs()
-        sourceDir.copyRecursively(resultDir)
-        mainIndexFile.appendText("- [$description]($dirName)\n")
-    }
+extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+    docsDirectory.set("offline-instrumentation")
+    description.set("Kover offline instrumentation")
+    callDokkaHtml.set(true)
 }
