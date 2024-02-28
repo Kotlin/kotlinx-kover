@@ -19,6 +19,14 @@ public final class kotlinx/kover/gradle/plugin/dsl/AggregationType : java/lang/E
 	public static fun values ()[Lkotlinx/kover/gradle/plugin/dsl/AggregationType;
 }
 
+public final class kotlinx/kover/gradle/plugin/dsl/CoverageUnit : java/lang/Enum {
+	public static final field BRANCH Lkotlinx/kover/gradle/plugin/dsl/CoverageUnit;
+	public static final field INSTRUCTION Lkotlinx/kover/gradle/plugin/dsl/CoverageUnit;
+	public static final field LINE Lkotlinx/kover/gradle/plugin/dsl/CoverageUnit;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/gradle/plugin/dsl/CoverageUnit;
+	public static fun values ()[Lkotlinx/kover/gradle/plugin/dsl/CoverageUnit;
+}
+
 public final class kotlinx/kover/gradle/plugin/dsl/GroupingEntityType : java/lang/Enum {
 	public static final field APPLICATION Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
 	public static final field CLASS Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
@@ -37,7 +45,6 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverCurrentProj
 	public abstract fun createVariant (Ljava/lang/String;Lorg/gradle/api/Action;)V
 	public abstract fun instrumentation (Lorg/gradle/api/Action;)V
 	public abstract fun providedVariant (Ljava/lang/String;Lorg/gradle/api/Action;)V
-	public abstract fun testTasks (Lorg/gradle/api/Action;)V
 	public abstract fun totalVariant (Lorg/gradle/api/Action;)V
 }
 
@@ -150,6 +157,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectExte
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverProjectInstrumentation {
 	public abstract fun getDisabledForAll ()Lorg/gradle/api/provider/Property;
+	public abstract fun getDisabledForTestTasks ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getExcludedClasses ()Lorg/gradle/api/provider/SetProperty;
 }
 
@@ -214,10 +222,6 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVariantSour
 	public abstract fun getExcludedSourceSets ()Lorg/gradle/api/provider/SetProperty;
 }
 
-public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVariantTestTasks {
-	public abstract fun getExcluded ()Lorg/gradle/api/provider/SetProperty;
-}
-
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerificationRulesConfig {
 	public abstract fun rule (Ljava/lang/String;Lorg/gradle/api/Action;)V
 	public abstract fun rule (Lorg/gradle/api/Action;)V
@@ -228,29 +232,29 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyBound
 	public abstract fun getAggregationForGroup ()Lorg/gradle/api/provider/Property;
 	public abstract fun getCoverageUnits ()Lorg/gradle/api/provider/Property;
 	public abstract fun getMaxValue ()Lorg/gradle/api/provider/Property;
-	public fun getMetric ()Lkotlinx/kover/gradle/plugin/dsl/MetricType;
+	public fun getMetric ()Lkotlinx/kover/gradle/plugin/dsl/CoverageUnit;
 	public abstract fun getMinValue ()Lorg/gradle/api/provider/Property;
 	public fun setAggregation (Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
-	public fun setMetric (Lkotlinx/kover/gradle/plugin/dsl/MetricType;)V
+	public fun setMetric (Lkotlinx/kover/gradle/plugin/dsl/CoverageUnit;)V
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyRule {
-	public abstract fun bound (IILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public abstract fun bound (IILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
 	public abstract fun bound (Lorg/gradle/api/Action;)V
-	public static synthetic fun bound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;IILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+	public static synthetic fun bound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;IILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
 	public fun filters (Lorg/gradle/api/Action;)V
 	public abstract fun getDisabled ()Lorg/gradle/api/provider/Property;
 	public fun getEntity ()Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;
 	public abstract fun getGroupBy ()Lorg/gradle/api/provider/Property;
 	public fun isEnabled ()Z
 	public abstract fun maxBound (I)V
-	public abstract fun maxBound (ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public abstract fun maxBound (ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
 	public abstract fun maxBound (Lorg/gradle/api/provider/Provider;)V
-	public static synthetic fun maxBound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+	public static synthetic fun maxBound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
 	public abstract fun minBound (I)V
-	public abstract fun minBound (ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public abstract fun minBound (ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
 	public abstract fun minBound (Lorg/gradle/api/provider/Provider;)V
-	public static synthetic fun minBound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;ILkotlinx/kover/gradle/plugin/dsl/MetricType;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+	public static synthetic fun minBound$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVerifyRule;ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
 	public fun setEnabled (Z)V
 	public fun setEntity (Lkotlinx/kover/gradle/plugin/dsl/GroupingEntityType;)V
 }
