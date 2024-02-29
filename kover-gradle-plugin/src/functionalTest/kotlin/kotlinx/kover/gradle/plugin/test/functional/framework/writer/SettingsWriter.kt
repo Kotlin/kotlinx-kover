@@ -25,7 +25,7 @@ internal fun FormattedWriter.writePluginManagement(language: ScriptLanguage,
 
     call("repositories") {
         snapshotRepos.forEach { repo ->
-            line("maven { url=${repo.uriForScript(language)} }")
+            line("maven { url=${repo.replace("\\", "\\\\").uriForScript(language)} }")
         }
         line("gradlePluginPortal()")
         line("mavenCentral()")
@@ -36,7 +36,7 @@ internal fun FormattedWriter.writeDependencyManagement(language: ScriptLanguage,
     call("dependencyResolutionManagement") {
         call("repositories") {
             snapshotRepos.forEach { repo ->
-                line("maven { url=${repo.uriForScript(language)} }")
+                line("maven { url=${repo.replace("\\", "\\\\").uriForScript(language)} }")
             }
             line("mavenCentral()")
         }
