@@ -4,13 +4,22 @@
 [![JetBrains incubator project](https://jb.gg/badges/incubator.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
 [![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
 
-Kotlin Code Coverage Toolset
+Kover is a set of solutions for collecting test coverage of Kotlin code compiled for JVM and Android platforms.
 
-For more information about Kover Gradle Plugin, please refer to the [documentation of the latest release](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
+Kover Toolset:
+- [Kover Gradle Plugin](#kover-gradle-plugin)
+- [Kover CLI](#kover-cli)
+- [Kover offline instrumentation](#kover-offline-instrumentation)
+- [Kover JVM agent](#kover-jvm-agent)
+- [Kover features artifact](#kover-features-artifact)
 
-For more information about Kover CLI, please refer to the [documentation of the latest release](https://kotlin.github.io/kotlinx-kover/cli).
+## Kover Gradle Plugin
+For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation of the latest release](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
 
-## Features
+A beta version of the plugin is also available. The DSL of this version is unstable and can be changed after receiving feedback.
+Please refer to the [documentation of the Beta release](/kover-gradle-plugin/docs/index.md) and the [Migration guide](/kover-gradle-plugin/docs/migrations/migration-to-0.8.0.md).
+
+### Features
 
 * Collection of code coverage through `JVM` tests (JS and native targets are not supported yet).
 * Generating `HTML` and `XML` reports.
@@ -19,10 +28,6 @@ For more information about Kover CLI, please refer to the [documentation of the 
 * Support mixed `Kotlin` and `Java` sources
 * Verification rules with bounds in the Gradle plugin to keep track of coverage.
 * Using JaCoCo library in Gradle plugin as an alternative for coverage measuring and report generation.
-* Offline instrumentation of class files.
-* Instrumentation and report generation using Command Line Interface
-
-## Gradle Quickstart
 
 The recommended way of applying Kover is with the
 [plugins DSL](https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block).
@@ -56,7 +61,7 @@ E.g. to generate HTML report for non-Android project run `./gradlew koverHtmlRep
 
 It is also important that after applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
 
-#### Legacy Plugin Application
+### Legacy Plugin Application
 
 [Legacy method](https://docs.gradle.org/current/userguide/plugins.html#sec:old_plugin_application) of applying plugins
 can be used if you cannot use the plugins DSL for some reason.
@@ -110,6 +115,26 @@ dependencies {
 in this case report will be generated for current project joined with `:another:project` project.
 
 **More examples of Gradle plugin applying can be found in [example folder](kover-gradle-plugin/examples)**
+
+## Kover CLI
+Standalone JVM application used for offline instrumentation and generation of human-readable reports.
+
+[Documentation of the latest stable release](https://kotlin.github.io/kotlinx-kover/cli).
+
+## Kover offline instrumentation
+Offline instrumentation is the modification of class-files stored on disk to measure their coverage.
+
+The ways of offline instrumentation and running of the instrumented applications are described in the [documentation](https://kotlin.github.io/kotlinx-kover/offline-instrumentation).
+
+## Kover JVM agent
+JVM agent is a jar file that modifies the bytecode of loaded into the JVM classes in order to measure coverage.
+
+It was added in the beta version. [documentations](/kover-jvm-agent/docs/index.md)
+
+## Kover features artifact
+A JVM dependency that allows to programmatically instrument class-files on a disk.
+
+[Documentation of the latest stable release](https://kotlin.github.io/kotlinx-kover/offline-instrumentation/#instrumentation-by-kover-features)
 
 ## Building locally and Contributing
 

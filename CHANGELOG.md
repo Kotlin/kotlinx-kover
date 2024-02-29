@@ -1,19 +1,41 @@
+0.8.0-Beta / 2024-02-29
+===================
+## Kover Gradle Plugin
+### Features
+* [`#461`](https://github.com/Kotlin/kotlinx-kover/issues/461) Implemented DSL revision 4
+* [`#410`](https://github.com/Kotlin/kotlinx-kover/issues/410) Add possibility of lazy configuration of Kover extensions
+* [`#462`](https://github.com/Kotlin/kotlinx-kover/issues/462) Redesign the concept of default reports
+* [`#463`](https://github.com/Kotlin/kotlinx-kover/issues/463) Add the ability to create custom report variants
+* [`#338`](https://github.com/Kotlin/kotlinx-kover/issues/338) Create an interface for Kover tasks
+* [`#66`](https://github.com/Kotlin/kotlinx-kover/issues/66) Added support for the publishing plugin to Gradle Plugin Portal
+* [`#466`](https://github.com/Kotlin/kotlinx-kover/issues/466) Implemented multiproject shortcuts
+
+### Bugfixes
+* [`#520`](https://github.com/Kotlin/kotlinx-kover/issues/520) Fixed error: Kover requires extension with name 'androidComponents
+
+### Documentation
+* [`#531`](https://github.com/Kotlin/kotlinx-kover/issues/531) Added explanations about apply of the plugin
+
+## Kover JVM Agent
+* [`#464`](https://github.com/Kotlin/kotlinx-kover/issues/464) Repacked the intellij-agent artifact to kover-jvm-agent
+
+
 0.7.6 / 2024-02-16
 ===================
 ## Kover Gradle Plugin
 ### Features
-* [`527`](https://github.com/Kotlin/kotlinx-kover/issues/527) Added the ability to specify a header for an XML report
+* [`#527`](https://github.com/Kotlin/kotlinx-kover/issues/527) Added the ability to specify a header for an XML report
 
 ### Bugfixes
-* [`510`](https://github.com/Kotlin/kotlinx-kover/issues/510) Fixed `Stream closed` error when generating Kover HTML report
-* [`513`](https://github.com/Kotlin/kotlinx-kover/issues/513) Fixed breaking configuration cache
-* [`517`](https://github.com/Kotlin/kotlinx-kover/issues/517) Fixed incorrect marking of first function line when parameters with default value are used
-* [`530`](https://github.com/Kotlin/kotlinx-kover/issues/530) Fixed the presence of classes instrumented with Robolectric in Jacoco reports
-* [`543`](https://github.com/Kotlin/kotlinx-kover/issues/543) Fixed package exclusion in reports for JaCoCo
+* [`#510`](https://github.com/Kotlin/kotlinx-kover/issues/510) Fixed `Stream closed` error when generating Kover HTML report
+* [`#513`](https://github.com/Kotlin/kotlinx-kover/issues/513) Fixed breaking configuration cache
+* [`#517`](https://github.com/Kotlin/kotlinx-kover/issues/517) Fixed incorrect marking of first function line when parameters with default value are used
+* [`#530`](https://github.com/Kotlin/kotlinx-kover/issues/530) Fixed the presence of classes instrumented with Robolectric in Jacoco reports
+* [`#543`](https://github.com/Kotlin/kotlinx-kover/issues/543) Fixed package exclusion in reports for JaCoCo
 
 ## Kover Offline
 ### Features
-* [`534`](https://github.com/Kotlin/kotlinx-kover/issues/534) Created Kover features artifact to invoke the capabilities of Kover programmatically
+* [`#534`](https://github.com/Kotlin/kotlinx-kover/issues/534) Created Kover features artifact to invoke the capabilities of Kover programmatically
 
 0.7.5 / 2023-11-28
 ===================
