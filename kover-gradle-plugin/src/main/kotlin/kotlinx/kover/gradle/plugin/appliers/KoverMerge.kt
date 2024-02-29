@@ -40,7 +40,7 @@ private fun KoverContext.selectProjects(): List<Project> {
 
     // by default if no filters are explicitly specified, then throw exception
     if (subprojectsFilters.isEmpty() && allProjectsFilters.isEmpty()) {
-        throw KoverIllegalConfigException("The projects that need to be used in the merged report are not specified. Please specify 'subprojects()', 'projects()', or 'allProjects()'")
+        throw KoverIllegalConfigException("No projects have been specified to be used in the merged report in '${project.path}'. Please specify 'subprojects()', 'projects()', or 'allProjects()' in 'merge {}' block or delete this block.")
     }
 
     project.subprojects.forEach { subproject ->

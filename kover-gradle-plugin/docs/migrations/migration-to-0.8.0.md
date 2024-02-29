@@ -88,7 +88,7 @@ If you use the extensions property to access the extension
         }
     }
     ```
-    move the filters to commons for all variants settings
+    move the filters to common block for all variants settings
     ```kotlin
     kover {
         reports {
@@ -543,7 +543,7 @@ koverReport {
     }
 }
 ```
-move the filters to commons for all variants settings 
+move the filters to common block for all variants settings 
 ```kotlin
 kover {
     reports {

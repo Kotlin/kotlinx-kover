@@ -255,12 +255,12 @@ public fun TaskContainer.koverAndroidBinaryReportName(buildVariantName: String):
 }
 
 @Deprecated(
-    message = "Function koverAndroidVerifyName was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    message = "Function koverAndroidVerifyName was removed, use KoverNames.koverVerifyName function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
     level = DeprecationLevel.ERROR
 )
 @Suppress("UNUSED_PARAMETER")
 public fun TaskContainer.koverAndroidVerifyName(buildVariantName: String): String {
-    throw KoverDeprecationException("Function koverAndroidVerifyName was removed, use KoverNames.koverVerifyName(buildVariantName) function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    throw KoverDeprecationException("Function koverAndroidVerifyName was removed, use KoverNames.koverVerifyName function. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
 }
 
 @Deprecated(
