@@ -11,10 +11,10 @@
 * [`#466`](https://github.com/Kotlin/kotlinx-kover/issues/466) Implemented multiproject shortcuts
 
 ### Bugfixes
-* [`#520`](https://github.com/Kotlin/kotlinx-kover/issues/520) Fixed error: Kover requires extension with name 'androidComponents
+* [`#520`](https://github.com/Kotlin/kotlinx-kover/issues/520) Fixed error: Kover requires extension with name 'androidComponents'
 
 ### Documentation
-* [`#531`](https://github.com/Kotlin/kotlinx-kover/issues/531) Added explanations about apply of the plugin
+* [`#531`](https://github.com/Kotlin/kotlinx-kover/issues/531) Added explanations about applying of the plugin
 
 ## Kover JVM Agent
 * [`#464`](https://github.com/Kotlin/kotlinx-kover/issues/464) Repacked the intellij-agent artifact to kover-jvm-agent
