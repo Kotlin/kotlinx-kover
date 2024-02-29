@@ -4,28 +4,27 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
-import kotlinx.kover.gradle.plugin.commons.ArtifactContent
+import kotlinx.kover.features.jvm.KoverFeatures
 import kotlinx.kover.gradle.plugin.commons.ReportContext
-import kotlinx.kover.gradle.plugin.commons.ReportFilters
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
-import kotlinx.kover.gradle.plugin.tools.*
-import org.gradle.api.*
-import org.gradle.api.file.*
-import org.gradle.api.provider.ListProperty
-import org.gradle.api.provider.Property
-import org.gradle.workers.WorkParameters
-import java.io.*
+import kotlinx.kover.gradle.plugin.tools.CoverageRequest
+import kotlinx.kover.gradle.plugin.tools.CoverageTool
+import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
+import org.gradle.api.GradleException
+import org.gradle.api.file.ArchiveOperations
+import org.gradle.api.file.FileCollection
+import java.io.File
 
 
 internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTool {
-    override val jvmAgentDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-agent:${variant.version}"
+    override val jvmAgentDependency: String = "org.jetbrains.kotlinx:kover-jvm-agent:${KoverFeatures.getVersion()}"
 
     override val jvmReporterDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-reporter:${variant.version}"
     override val jvmReporterExtraDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-reporter:${variant.version}"
 
 
     override fun findJvmAgentJar(classpath: FileCollection, archiveOperations: ArchiveOperations): File {
-        return classpath.filter { it.name.startsWith("intellij-coverage-agent") }.files.firstOrNull()
+        return classpath.filter { it.name.startsWith("kover-jvm-agent") }.files.firstOrNull()
             ?: throw GradleException("JVM instrumentation agent not found for Kover Coverage Tool")
     }
 

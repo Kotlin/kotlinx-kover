@@ -1,5 +1,3 @@
-rootProject.name = "kover"
-
 pluginManagement {
     includeBuild("build-logic")
 
@@ -14,6 +12,9 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "kover"
+
+include(":kover-jvm-agent")
 include(":kover-features-jvm")
 include(":kover-gradle-plugin")
 include(":kover-cli")

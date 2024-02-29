@@ -8,10 +8,6 @@ kotlin {
     jvmToolchain(8)
 }
 
-repositories {
-    mavenCentral()
-}
-
 /*
  * Kover configs
  */

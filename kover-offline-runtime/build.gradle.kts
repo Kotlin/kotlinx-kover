@@ -17,11 +17,12 @@
 plugins {
     java
     id("kover-publishing-conventions")
+    id("kover-docs-conventions")
+    id("kover-fat-jar-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
     description.set("Compiled dependency to ensure the operation of the code that has been instrumented offline")
-    fatJar.set(true)
 }
 
 java {
@@ -33,35 +34,13 @@ repositories {
     mavenCentral()
 }
 
-val fatJarDependency = "fatJar"
-val fatJarConfiguration = configurations.create(fatJarDependency)
-
 dependencies {
     compileOnly(libs.intellij.offline)
-    fatJarConfiguration(libs.intellij.offline)
+    fatJar(libs.intellij.offline)
 }
 
-tasks.jar {
-    from(
-        fatJarConfiguration.map { if (it.isDirectory) it else zipTree(it) }
-    ) {
-        exclude("OSGI-OPT/**")
-        exclude("META-INF/**")
-        exclude("LICENSE")
-        exclude("classpath.index")
-    }
-}
-
-tasks.register("releaseDocs") {
-    val dirName = "offline-instrumentation"
-    val description = "Kover offline instrumentation"
-    val sourceDir = projectDir.resolve("docs")
-    val resultDir = rootDir.resolve("docs/$dirName")
-    val mainIndexFile = rootDir.resolve("docs/index.md")
-
-    doLast {
-        resultDir.mkdirs()
-        sourceDir.copyRecursively(resultDir)
-        mainIndexFile.appendText("- [$description]($dirName)\n")
-    }
+extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+    docsDirectory.set("offline-instrumentation")
+    description.set("Kover offline instrumentation")
+    callDokkaHtml.set(true)
 }

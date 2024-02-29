@@ -13,6 +13,7 @@ plugins {
     `java-gradle-plugin`
     alias(libs.plugins.gradle.pluginPublish)
     id("kover-publishing-conventions")
+    id("kover-docs-conventions")
 }
 
 repositories {
@@ -21,7 +22,6 @@ repositories {
     google()
 }
 
-val localRepositoryUri = uri("build/.m2")
 val junitParallelism = findProperty("kover.test.junit.parallelism")?.toString()
 
 sourceSets {
@@ -40,6 +40,7 @@ kotlin.target.compilations.run {
 val functionalTestImplementation = "functionalTestImplementation"
 
 dependencies {
+    implementation(project(":kover-features-jvm"))
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
     compileOnly(libs.gradlePlugin.kotlin)
@@ -48,6 +49,9 @@ dependencies {
     functionalTestImplementation(kotlin("test"))
     functionalTestImplementation(libs.junit.jupiter)
     functionalTestImplementation(libs.junit.params)
+
+    snapshotRelease(project(":kover-features-jvm"))
+    snapshotRelease(project(":kover-jvm-agent"))
 }
 
 kotlin {
@@ -65,7 +69,7 @@ val functionalTest by tasks.registering(Test::class) {
     // use JUnit 5
     useJUnitPlatform()
 
-    dependsOn(tasks.named("publishAllPublicationsToLocalRepository"))
+    dependsOn(tasks.collectRepository)
     doFirst {
         // basic build properties
         setSystemPropertyFromProject("kover.test.kotlin.version")
@@ -73,7 +77,8 @@ val functionalTest by tasks.registering(Test::class) {
         systemProperties["kotlinVersion"] = embeddedKotlinVersion
         systemProperties["gradleVersion"] = gradle.gradleVersion
         systemProperties["koverVersion"] = version
-        systemProperties["localRepositoryPath"] = localRepositoryUri.path
+        systemProperties["snapshotRepositories"] = tasks.collectRepository.get()
+            .repositories.joinToString("\n") { file -> file.absolutePath }
 
         // parallel execution
         systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
@@ -163,37 +168,16 @@ tasks.dokkaHtml {
     }
 }
 
-tasks.register("releaseDocs") {
-    val dirName = "gradle-plugin"
-    val description = "Kover Gradle Plugin"
-    val sourceDir = projectDir.resolve("docs")
-    val resultDir = rootDir.resolve("docs/$dirName")
-    val mainIndexFile = rootDir.resolve("docs/index.md")
-
-    dependsOn(tasks.dokkaHtml)
-
-    doLast {
-        resultDir.mkdirs()
-        sourceDir.copyRecursively(resultDir)
-        mainIndexFile.appendText("- [$description]($dirName)\n")
-    }
+extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+    docsDirectory.set("gradle-plugin")
+    description.set("Kover Gradle Plugin")
+    callDokkaHtml.set(true)
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
     description.set("Kover Gradle Plugin - Kotlin code coverage")
     //`java-gradle-plugin` plugin already creates publication with name `pluginMaven`
     addPublication.set(false)
-}
-
-publishing {
-    repositories {
-        /**
-         * Maven repository in build directory to store artifacts for using in functional tests.
-         */
-        maven(localRepositoryUri) {
-            name = "local"
-        }
-    }
 }
 
 signing {

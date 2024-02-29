@@ -116,7 +116,7 @@ internal val File.build: File
 internal fun File.patchSettingsFile(
     description: String,
     koverVersion: String,
-    localRepositoryPath: String,
+    snapshotRepos: List<String>,
     overrideKotlinVersion: String?
 ) {
     val language = if (name.endsWith(".kts")) ScriptLanguage.KTS else ScriptLanguage.GROOVY
@@ -136,7 +136,7 @@ internal fun File.patchSettingsFile(
                 pluginManagementWriter.writePluginManagement(
                     language,
                     koverVersion,
-                    localRepositoryPath,
+                    snapshotRepos,
                     overrideKotlinVersion
                 )
 
@@ -151,17 +151,19 @@ internal fun File.patchSettingsFile(
         }
 
         if (originLines.isEmpty()) {
-            writer.appendLine("pluginManagement {")
             val pluginManagementWriter = FormattedWriter { l -> writer.append(l) }
-            pluginManagementWriter.writePluginManagement(
-                language,
-                koverVersion,
-                localRepositoryPath,
-                overrideKotlinVersion
-            )
-            writer.appendLine("}")
+            pluginManagementWriter.call("pluginManagement") {
+                pluginManagementWriter.writePluginManagement(
+                    language,
+                    koverVersion,
+                    snapshotRepos,
+                    overrideKotlinVersion
+                )
+            }
         }
 
+        val pluginManagementWriter = FormattedWriter { l -> writer.append(l) }
+        pluginManagementWriter.writeDependencyManagement(language, snapshotRepos)
     }
 }
 
@@ -181,17 +183,3 @@ internal fun File.patchKoverDependency(koverVersion: String) {
         }
     }
 }
-
-/**
- * Override Kover version
- */
-internal fun File.addLocalRepository(path: String) {
-    this.appendText("""
-        
-        repositories {
-            maven("$path")
-        }
-    """.trimIndent())
-}
-
-

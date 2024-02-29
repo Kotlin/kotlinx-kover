@@ -16,8 +16,8 @@ import java.io.File
 import java.nio.file.Files
 
 
-internal fun createBuildSource(localMavenDir: String, koverVersion: String): BuildSource {
-    return BuildSourceImpl(localMavenDir, koverVersion)
+internal fun createBuildSource(snapshotRepos: List<String>, koverVersion: String): BuildSource {
+    return BuildSourceImpl(snapshotRepos, koverVersion)
 }
 
 internal interface BuildSource {
@@ -49,7 +49,7 @@ internal data class BuildEnv(
     val disableBuildCacheByDefault: Boolean = true
 )
 
-private class BuildSourceImpl(val localMavenDir: String, val koverVersion: String) : BuildSource {
+private class BuildSourceImpl(val snapshotRepos: List<String>, val koverVersion: String) : BuildSource {
     private var dir: File? = null
 
     private var copy: Boolean = false
@@ -82,12 +82,11 @@ private class BuildSourceImpl(val localMavenDir: String, val koverVersion: Strin
 
         targetDir.settings.patchSettingsFile(
             "$buildType '$buildName', project dir: ${targetDir.uri}",
-            koverVersion, localMavenDir, overriddenKotlinVersion
+            koverVersion, snapshotRepos, overriddenKotlinVersion
         )
 
         val buildSrcScript = targetDir.buildSrc?.build
         buildSrcScript?.patchKoverDependency(koverVersion)
-        buildSrcScript?.addLocalRepository(localMavenDir)
 
         return GradleBuildImpl(targetDir, copy, buildName, buildType)
     }

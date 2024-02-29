@@ -4,13 +4,14 @@
 
 package kotlinx.kover.gradle.plugin.commons
 
-import kotlinx.kover.gradle.plugin.tools.*
+import kotlinx.kover.features.jvm.KoverFeatures
+import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
 import java.io.File
 
 
 internal fun agentFilePath(toolVariant: CoverageToolVariant): String {
     return if (toolVariant.vendor == CoverageToolVendor.KOVER) {
-        "kover${separator}intellij-coverage-agent-${toolVariant.version}.jar"
+        "kover${separator}kover-jvm-agent-${KoverFeatures.getVersion()}.jar"
     } else {
         "kover${separator}jacoco-coverage-agent-${toolVariant.version}.jar"
     }

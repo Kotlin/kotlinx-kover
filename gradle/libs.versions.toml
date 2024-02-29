@@ -10,6 +10,7 @@ gradle-plugin-publish = "1.2.1"
 [libraries]
 
 # IntelliJ coverage library
+intellij-agent = { module = "org.jetbrains.intellij.deps:intellij-coverage-agent", version.ref = "intellij-coverage" }
 intellij-reporter = { module = "org.jetbrains.intellij.deps:intellij-coverage-reporter", version.ref = "intellij-coverage" }
 intellij-offline = { module = "org.jetbrains.intellij.deps:intellij-coverage-offline", version.ref = "intellij-coverage" }
 

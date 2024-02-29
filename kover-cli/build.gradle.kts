@@ -19,11 +19,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("kover-publishing-conventions")
+    id("kover-docs-conventions")
+    id("kover-fat-jar-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
     description.set("Command Line Interface for Kotlin Coverage Toolchain")
-    fatJar.set(true)
 }
 
 kotlin {
@@ -33,9 +34,16 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":kover-features-jvm"))
+    compileOnly(kotlin("stdlib"))
+    fatJar(kotlin("stdlib"))
 
-    implementation(libs.args4j)
+    fatJar(project(":kover-features-jvm"))
+    compileOnly(project(":kover-features-jvm"))
+    testImplementation(project(":kover-features-jvm"))
+
+    fatJar(libs.args4j)
+    compileOnly(libs.args4j)
+    testImplementation(libs.args4j)
 
     testImplementation(kotlin("test"))
 }
@@ -50,30 +58,13 @@ tasks.jar {
     manifest {
         attributes("Main-Class" to "kotlinx.kover.cli.MainKt")
     }
-
-    from(
-        configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
-    ) {
-        exclude("OSGI-OPT/**")
-        exclude("META-INF/**")
-        exclude("LICENSE")
-    }
 }
 
 repositories {
     mavenCentral()
 }
 
-tasks.register("releaseDocs") {
-    val dirName = "cli"
-    val description = "Kover Command Line Interface"
-    val sourceDir = projectDir.resolve("docs")
-    val resultDir = rootDir.resolve("docs/$dirName")
-    val mainIndexFile = rootDir.resolve("docs/index.md")
-
-    doLast {
-        resultDir.mkdirs()
-        sourceDir.copyRecursively(resultDir)
-        mainIndexFile.appendText("- [$description]($dirName)\n")
-    }
+extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+    docsDirectory.set("cli")
+    description.set("Kover Command Line Interface")
 }

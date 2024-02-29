@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.common
 
+import org.gradle.kotlin.dsl.provideDelegate
 import java.io.File
 
 /**
@@ -59,8 +60,12 @@ internal val isAndroidTestDisabled: Boolean = System.getProperty("kover.test.and
 /**
  * Path to the local maven repository with the current Kover build.
  */
-internal val localRepositoryPath: String = System.getProperty("localRepositoryPath")
-    ?: throw Exception("System property 'localRepositoryPath' not defined for functional tests")
+internal val snapshotRepositoriesPropertyValue: List<String> by lazy {
+    val value = System.getProperty("snapshotRepositories")
+        ?: throw Exception("System property 'localRepositoryPath' not defined for functional tests")
+
+    value.split("\n")
+}
 
 
 internal fun logInfo(message: String) {

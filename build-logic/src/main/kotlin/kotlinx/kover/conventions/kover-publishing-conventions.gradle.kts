@@ -1,6 +1,3 @@
-import groovy.util.Node
-import groovy.util.NodeList
-
 /*
  * Copyright 2000-2023 JetBrains s.r.o.
  *
@@ -31,19 +28,100 @@ java {
 
 interface KoverPublicationExtension {
     val description: Property<String>
-    val fatJar: Property<Boolean>
     val addPublication: Property<Boolean>
+    val localRepository: DirectoryProperty
 }
 
 val extension = extensions.create<KoverPublicationExtension>("koverPublication")
 
 extension.description.convention("")
 extension.addPublication.convention(true)
-extension.fatJar.convention(false)
+extension.localRepository.convention(layout.buildDirectory.dir(".m2"))
+
+internal interface LocalArtifactAttr : Named {
+    companion object {
+        val ATTRIBUTE = Attribute.of(
+            "kotlinx.kover.gradle-plugin",
+            LocalArtifactAttr::class.java
+        )
+    }
+}
+
+val publicationTask: TaskCollection<*> = tasks.matching { task -> task.name == "publishAllPublicationsToLocalRepository" }
+configurations.register("localPublication") {
+    isVisible = false
+    isCanBeResolved = false
+    // this configuration produces modules that can be consumed by other projects
+    isCanBeConsumed = true
+    attributes {
+        attribute(LocalArtifactAttr.ATTRIBUTE, objects.named("local-repository"))
+    }
+
+    outgoing.artifact(extension.localRepository) {
+        builtBy(publicationTask)
+    }
+}
+
+val snapshotRelease = configurations.create("snapshotRelease") {
+    isVisible = true
+    isCanBeResolved = false
+    isCanBeConsumed = false
+}
+
+val externalSnapshots = configurations.create("snapshots") {
+    isVisible = false
+    isCanBeResolved = true
+    // this config consumes modules from OTHER projects, and cannot be consumed by other projects
+    isCanBeConsumed = false
+
+    attributes {
+        attribute(LocalArtifactAttr.ATTRIBUTE, objects.named("local-repository"))
+    }
+
+    extendsFrom(snapshotRelease)
+}
+
+tasks.register<CollectTask>("collectRepository") {
+    dependsOn(publicationTask)
+    dependsOn(externalSnapshots)
+
+    local.convention(extension.localRepository)
+    externals.from(externalSnapshots)
+}
+
+@CacheableTask
+abstract class CollectTask: DefaultTask() {
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val local: DirectoryProperty
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val externals: ConfigurableFileCollection
+
+    @get:OutputDirectories
+    val repositories: MutableList<File> = mutableListOf()
+
+    @TaskAction
+    fun doCollect() {
+        val localFile = local.get().asFile
+        repositories += localFile
+        repositories += externals.toList()
+    }
+}
+
 
 publishing {
     repositories {
         addSonatypeRepository()
+
+        /**
+         * Maven repository in build directory to store artifacts for using in functional tests.
+         */
+        maven {
+            setUrl(extension.localRepository)
+            name = "local"
+        }
     }
 
     publications.withType<MavenPublication>().configureEach {
@@ -60,13 +138,6 @@ afterEvaluate {
         publishing.publications.register<MavenPublication>("Kover") {
             // add jar with module
             from(components["java"])
-        }
-    }
-
-    if (extension.fatJar.get()) {
-        // remove all dependencies for fat JARs after user configuring
-        publishing.publications.withType<MavenPublication>().configureEach {
-            removeDependencies()
         }
     }
 }
@@ -128,21 +199,6 @@ fun MavenPublication.addMetadata() {
         }
     }
 }
-
-fun MavenPublication.removeDependencies() {
-    pom {
-        withXml {
-            val dependencies: NodeList? = asNode().get("dependencies") as? NodeList
-            if (dependencies != null && dependencies.size > 0) {
-                dependencies.forEach { dependency ->
-                    if (dependency is Node)
-                        asNode().remove(dependency)
-                }
-            }
-        }
-    }
-}
-
 
 fun Project.acquireProperty(name: String): String? {
     return project.findProperty(name) as? String ?: System.getenv(name)
