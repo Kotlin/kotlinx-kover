@@ -14,10 +14,10 @@ Kover Toolset:
 - [Kover features artifact](#kover-features-artifact)
 
 ## Kover Gradle Plugin
-For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation of the latest release](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
+For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation of the latest stable release](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
 
 A beta version of the plugin is also available. The DSL of this version is unstable and can be changed after receiving feedback.
-Please refer to the [documentation of the Beta release](/kover-gradle-plugin/docs/index.md) and the [Migration guide](/kover-gradle-plugin/docs/migrations/migration-to-0.8.0.md).
+Detailed documentation is in the process of being written, please refer to the [migration guide](/kover-gradle-plugin/docs/migrations/migration-to-0.8.0.md).
 
 ### Features
 
