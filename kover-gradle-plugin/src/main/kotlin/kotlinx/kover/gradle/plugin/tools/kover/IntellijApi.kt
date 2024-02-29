@@ -9,7 +9,7 @@ import kotlinx.kover.gradle.plugin.commons.VerificationBound
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
-import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
 import kotlinx.kover.gradle.plugin.util.asPatterns
 import java.math.BigDecimal
@@ -31,9 +31,9 @@ internal fun VerificationRule.targetToIntellij(): Target {
 
 internal fun VerificationBound.counterToIntellij(): Counter {
     return when (metric) {
-        MetricType.LINE -> Counter.LINE
-        MetricType.INSTRUCTION -> Counter.INSTRUCTION
-        MetricType.BRANCH -> Counter.BRANCH
+        CoverageUnit.LINE -> Counter.LINE
+        CoverageUnit.INSTRUCTION -> Counter.INSTRUCTION
+        CoverageUnit.BRANCH -> Counter.BRANCH
     }
 }
 

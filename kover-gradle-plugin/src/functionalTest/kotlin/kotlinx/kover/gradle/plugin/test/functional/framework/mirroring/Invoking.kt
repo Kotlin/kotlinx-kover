@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.test.functional.framework.mirroring
 
 import org.gradle.api.Action
 import org.gradle.api.provider.Provider
+import org.gradle.api.specs.Spec
 import java.lang.reflect.*
 
 @Suppress("UNCHECKED_CAST")
@@ -146,7 +147,7 @@ private class Handler(
 
         val invoke = FunctionInvoke(receiver, methodName, method.returnType, proxy?.javaClass, argInvokes)
         slicer += invoke
-        return wrapResul(invoke, method, proxy, args)
+        return wrapResult(invoke, method, proxy, args)
     }
 
     private fun invokeArgs(params: List<Parameter>, args: Array<Any?>?): List<Invoke> {
@@ -159,7 +160,7 @@ private class Handler(
         }
     }
 
-    private fun wrapResul(resultAsReceiver: Invoke?, method: Method, proxy: Any?, args: Array<Any?>?): Any? {
+    private fun wrapResult(resultAsReceiver: Invoke, method: Method, proxy: Any?, args: Array<Any?>?): Any? {
         val type = method.returnType
 
         if (ProviderClass.isAssignableFrom(type)) {
@@ -221,7 +222,7 @@ private fun valueInvoke(parameter: Parameter, slicer: BlockSlicer, value: Any?):
 }
 
 private fun Parameter.isFunctionalType(): Boolean {
-    return type == Action::class.java || Function1::class.java.isAssignableFrom(type)
+    return type == Action::class.java || Function1::class.java.isAssignableFrom(type) || Spec::class.java.isAssignableFrom(type)
 }
 
 private fun lambdaInvoke(parameter: Parameter, slicer: BlockSlicer, value: Any): Invoke {
@@ -261,6 +262,9 @@ private fun lambdaInvoke(parameter: Parameter, slicer: BlockSlicer, value: Any):
     } else if (Function1::class.java.isAssignableFrom(parameter.type)) {
         @Suppress("UNCHECKED_CAST")
         (value as Function1<Any, Any>).invoke(actionReceiver)
+    } else if (Spec::class.java.isAssignableFrom(parameter.type)) {
+        @Suppress("UNCHECKED_CAST")
+        (value as Spec<Any>).isSatisfiedBy(actionReceiver)
     } else {
         throw IllegalStateException("Unknown action type ${parameter.type}")
     }

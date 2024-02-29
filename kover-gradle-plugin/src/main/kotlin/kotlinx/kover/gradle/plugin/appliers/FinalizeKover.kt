@@ -4,18 +4,20 @@
 
 package kotlinx.kover.gradle.plugin.appliers
 
-import kotlinx.kover.gradle.plugin.appliers.tasks.VariantTasks
+import kotlinx.kover.gradle.plugin.appliers.tasks.VariantReportsSet
 import kotlinx.kover.gradle.plugin.appliers.artifacts.*
 import kotlinx.kover.gradle.plugin.appliers.instrumentation.instrument
 import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
 import kotlinx.kover.gradle.plugin.appliers.origin.JvmVariantOrigin
 import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
+import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.JVM_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import kotlinx.kover.gradle.plugin.commons.ReportVariantType
 import kotlinx.kover.gradle.plugin.commons.TOTAL_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportSetConfigImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantCreateConfigImpl
+import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.newInstance
 
 
@@ -26,17 +28,26 @@ import org.gradle.kotlin.dsl.newInstance
  * the availability and settings of the Android plugin, the user settings of the Kover plugin itself.
  */
 internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
+    projectExtension.finalizeActions.forEach { action ->
+        try {
+            action()
+        } catch (e: Exception) {
+            throw KoverCriticalException("An error occurred while executing before Kover finalize action", e)
+        }
+    }
+
     val jvmVariant =
         origins.jvm?.createVariant(this, variantConfig(JVM_VARIANT_NAME))
 
     if (jvmVariant != null) {
-        VariantTasks(
+        VariantReportsSet(
             project,
             JVM_VARIANT_NAME,
             ReportVariantType.JVM,
             toolProvider,
             reportsConfig(JVM_VARIANT_NAME, project.path),
-            reporterClasspath
+            reporterClasspath,
+            projectExtension.koverDisabled
         ).assign(jvmVariant)
     }
 
@@ -48,7 +59,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     jvmVariant?.let { variantArtifacts[JVM_VARIANT_NAME] = it }
     androidVariants.forEach { variantArtifacts[it.variantName] = it }
 
-    val availableVariants = variantArtifacts.keys + projectExtension.variants.customVariants.keys
+    val availableVariants = variantArtifacts.keys + projectExtension.current.customVariants.keys
     projectExtension.reports.byName.forEach { (requestedVariant, _) ->
         if (requestedVariant !in availableVariants) {
             throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
@@ -56,17 +67,17 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     }
 
     val totalVariant =
-        TotalVariantArtifacts(project, toolProvider, koverBucketConfiguration, variantConfig(TOTAL_VARIANT_NAME))
+        TotalVariantArtifacts(project, toolProvider, koverBucketConfiguration, variantConfig(TOTAL_VARIANT_NAME), projectExtension)
     variantArtifacts.values.forEach { totalVariant.mergeWith(it) }
-    totalVariantTasks.assign(totalVariant)
+    totalReports.assign(totalVariant)
 
-    projectExtension.variants.providedVariants.forEach { (name, _) ->
+    projectExtension.current.providedVariants.forEach { (name, _) ->
         if (name !in variantArtifacts) {
             throw KoverIllegalConfigException("It is unacceptable to configure provided variant '$name', since there is no such variant in the project.\nAcceptable variants: ${variantArtifacts.keys}")
         }
     }
 
-    projectExtension.variants.customVariants.forEach { (name, config) ->
+    projectExtension.current.customVariants.forEach { (name, config) ->
         if (name == JVM_VARIANT_NAME) {
             throw KoverIllegalConfigException("It is unacceptable to create a custom reports variant '$JVM_VARIANT_NAME', because this name is reserved for JVM code")
         }
@@ -75,7 +86,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
         }
 
         val customVariant =
-            CustomVariantArtifacts(project, name, toolProvider,  koverBucketConfiguration, config)
+            CustomVariantArtifacts(project, name, toolProvider,  koverBucketConfiguration, config, projectExtension)
 
         config.variantsByName.forEach { (mergedName, optionality) ->
             val mergedVariant = variantArtifacts[mergedName]
@@ -92,40 +103,42 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             }
         }
 
-        VariantTasks(
+        VariantReportsSet(
             project,
             name,
             ReportVariantType.CUSTOM,
             toolProvider,
             reportsConfig(name, project.path),
-            reporterClasspath
+            reporterClasspath,
+            projectExtension.koverDisabled
         ).assign(customVariant)
 
     }
 
     androidVariants.forEach { androidVariant ->
-        VariantTasks(
+        VariantReportsSet(
             project,
             androidVariant.variantName,
             ReportVariantType.ANDROID,
             toolProvider,
             reportsConfig(androidVariant.variantName, project.path),
-            reporterClasspath
+            reporterClasspath,
+            projectExtension.koverDisabled
         ).assign(androidVariant)
     }
 }
 
 private fun KoverContext.variantConfig(variantName: String): KoverVariantCreateConfigImpl {
-    return projectExtension.variants.customVariants.getOrElse(variantName) {
-        val variantConfig = projectExtension.variants.objects.newInstance<KoverVariantCreateConfigImpl>(variantName)
-        variantConfig.deriveFrom(projectExtension.variants)
+    return projectExtension.current.customVariants.getOrElse(variantName) {
+        val variantConfig = projectExtension.current.objects.newInstance<KoverVariantCreateConfigImpl>(variantName)
+        variantConfig.deriveFrom(projectExtension.current)
         variantConfig
     }
 }
 
 private fun KoverContext.reportsConfig(variantName: String, projectPath: String): KoverReportSetConfigImpl {
     return projectExtension.reports.byName.getOrElse(variantName) {
-        projectExtension.reports.createVariant(variantName, projectPath)
+        projectExtension.reports.createReportSet(variantName, projectPath)
     }
 }
 
@@ -133,13 +146,14 @@ private fun JvmVariantOrigin.createVariant(
     koverContext: KoverContext,
     config: KoverVariantCreateConfigImpl,
 ): JvmVariantArtifacts {
-    tests.instrument(koverContext, config.instrumentation.excludedClasses)
+    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.current)
     return JvmVariantArtifacts(
         koverContext.project,
         koverContext.toolProvider,
         koverContext.koverBucketConfiguration,
         this,
-        config
+        config,
+        koverContext.projectExtension
     )
 }
 
@@ -147,13 +161,14 @@ private fun AndroidVariantOrigin.createVariant(
     koverContext: KoverContext,
     config: KoverVariantCreateConfigImpl,
 ): AndroidVariantArtifacts {
-    tests.instrument(koverContext, config.instrumentation.excludedClasses)
+    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.current)
     return AndroidVariantArtifacts(
         koverContext.project,
         buildVariant.buildVariant,
         koverContext.toolProvider,
         koverContext.koverBucketConfiguration,
         this,
-        config
+        config,
+        koverContext.projectExtension
     )
 }

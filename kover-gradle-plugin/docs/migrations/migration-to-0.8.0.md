@@ -1,5 +1,124 @@
 # Kover migration guide from 0.7.x to 0.8.0
 
+- [Migration steps](#migration-steps)
+- [Conceptual changes](#conceptual-changes)
+  - [Single kover project extension](#single-kover-project-extension)
+  - [The concept of default reports has been removed](#the-concept-of-default-reports-has-been-removed)
+  - [Total reports](#total-reports)
+  - [Custom reports variants](#custom-reports-variants)
+  - [More about the reports variant](#more-about-the-reports-variant)
+  - [The format-specific reports filters has been removed](#the-format-specific-reports-filters-has-been-removed)
+  - [Added the ability of lazy configuration](#added-the-ability-of-lazy-configuration)
+  - [Added public interfaces for Kover tasks](#added-public-interfaces-for-kover-tasks)
+- [Migration error messages](#migration-error-messages)
+
+
+## Migration steps
+1. Move all content of extension `koverReport` to `kover { reports { ... } }`.
+If you use the extensions property to access the extension
+    ```kotlin
+    extensions.configure<KoverReportExtension>("koverReport") {
+        // content
+    }
+    ```
+   then it is necessary to move all its contents to
+    ```kotlin
+    extensions.configure<KoverProjectExtension>("kover") {
+      reports {
+          // content
+      }
+    }
+    ```
+2. Move the default reports settings to the total report settings.
+   Instead of
+    ```kotlin
+    koverReport {
+        defaults {
+            // content
+        }
+    }
+    ```
+   write
+    ```kotlin
+    kover {
+        reports {
+            total {
+                // content
+            } 
+        }
+    }
+    ```
+3. For Android Projects or Kotlin Multiplatform with Android target:
+   If you use merging of Android build variants, you need to create a custom variant, configure it, and then you can generate reports for this variant.
+
+   Instead of
+    ```kotlin
+    koverReport {
+        defaults {
+            mergeWith(/*dependent project*/)
+            // reports settings
+        }
+    }
+    ```
+   write
+    ```kotlin
+    kover {
+        currentProject {
+            createVariant("custom") {
+                addWithDependencies(/*dependent project*/)
+            }
+        }
+        reports {
+            variant("custom") {
+                // reports settings
+            }
+        }
+    }
+    ```
+   See details in [corresponding section](#custom-reports-variants).
+4. Delete all `filters` blocks from the settings of a specific report (XML, HTML, verify, log, etc.), e.g.
+    ```kotlin
+    koverReport {
+        defaults {
+            html {
+                filters {
+                    // filters
+                }
+            }
+        }
+    }
+    ```
+    move the filters to common block for all variants settings
+    ```kotlin
+    kover {
+        reports {
+            filters {
+                // filters
+            }     
+        }
+    }
+    ```
+    or specific variant settings, like
+    ```kotlin
+    kover {
+        reports {
+            total {
+                filters {
+                    // filters
+                }
+            }
+        }
+    }
+    ```
+    If you need to create specific reports with individual sets of filters, then create a [custom reports variant](#custom-reports-variants).
+
+5. Rename some functions and properties, the actual names are written in error messages or IDE hints
+6. For kts files and Gradle versions less than 8.2, it is necessary to replace the assignment operator with a call `set()` function for some properties in DSL.
+   These properties can be found by configuration error messages. 
+
+   An example of such properties: `minValue` and `maxValue` in the bound of the verification rule.
+
+
 ## Conceptual changes
 ### Single kover project extension
 The `0.7.x` version used two project extensions named `kover` and `koverReports`.
@@ -14,7 +133,7 @@ kover {
     }
 }
 ```
-The settings from the old `kover` are now either left as is, or moved to `kover { variants { ... } }` block.
+The settings from the old `kover` are now either left as is, or moved to `kover { currentProject { ... } }` block.
 
 Following configuration
 ```kotlin
@@ -40,10 +159,10 @@ kover {
 Since `0.8.0` looks like:
 ```kotlin
 kover {
-    variants {
-        testTasks {
+    currentProject {
+        instrumentation {
             /* exclude Gradle test tasks */
-            excluded.addAll(testTasks)
+            disabledForTestTasks.addAll(testTasks)
         }
 
         instrumentation {
@@ -92,8 +211,8 @@ The newly created variant is initially empty, in order for classes to appear in 
 when generating it, need to add existing variants provided from Kotlin targets to it: it can be a `jvm` variant, or any of an Android build variant.
 ```kotlin
 kover {
-    variants {
-        create("custom") {
+    currentProject {
+        createVariant("custom") {
             add("jvm")
             add("release")
         }
@@ -162,8 +281,8 @@ Since `0.8.0`, specifying filters for specific type of report (HTML or XML) is d
 In this case, it is better to create a new custom variant and override the filters in it:
 ```kotlin
 kover {
-    variants {
-        create("customJvm") {
+    currentProject {
+        createVariant("customJvm") {
             add("jvm")
         }
     }
@@ -197,7 +316,7 @@ kover {
         verify {
             rule {
                 bound {
-                    min = minValueProvider
+                    minValue = minValueProvider
                 }
                 // or
                 minBound(minValueProvider)
@@ -224,5 +343,241 @@ Adding public interfaces will allow to filter Kover tasks, for example, to speci
 ```kotlin
 tasks.check {
     dependsOn(tasks.matching { it is KoverHtmlReport })
+}
+```
+
+## Migration error messages
+
+#### Unresolved reference: koverReport
+Solution: 
+Move content of `koverReport` extension to 
+```kotlin
+kover {
+    reports {
+        // place content of `koverReport` here
+    }
+}
+```
+
+#### Unresolved reference: KoverReportExtension
+There is no such extension anymore.
+
+If used configuration like 
+```kotlin
+extensions.configure<KoverReportExtension>("koverReport") {
+    // content
+}
+```
+then it is necessary to move all its contents to
+```kotlin
+extensions.configure<KoverProjectExtension>("kover") {
+  reports {
+      // content
+  }
+}
+```
+
+#### Default reports was removed, the concepts of total and custom reports are now used.
+If you have an Kotlin/JVM project or an Kotlin Multiplatform project without an Android target, then block `total` should be used instead.
+
+Was:
+```kotlin
+koverReport {
+    defaults {
+        // content    
+    }
+}
+```
+become:
+```kotlin
+kover {
+    reports {
+        total {
+            // content    
+        }    
+    }
+}
+```
+
+#### Kover renaming: Symbol ... was removed, use ... instead
+The function or property used has been renamed. Replace the usage with the character specified in the message.
+
+#### Function excludeJavaCode was removed, to exclude all Java sources write here `variants { sources { excludeJava = true } }` or `variants { sources { excludeJava.set(true) } } instead.
+
+Instead of 
+```kotlin
+kover {
+    excludeJavaCode()
+}
+```
+use for Gradle > 8.2
+```kotlin
+kover {
+    variants { 
+        sources { 
+            excludeJava = true 
+        } 
+    }
+}
+```
+and for Gradle <= 8.2
+```kotlin
+kover {
+    variants { 
+        sources { 
+            excludeJava.set(true) 
+        } 
+    }
+}
+```
+
+#### Function excludeTests was removed, specify excluded tasks in `currentProject { instrumentation { disabledForTestTasks.addAll(/*name of tasks*/) } }`
+
+Instead of 
+```kotlin
+kover {
+    excludeTests {
+        tasks(/*names*/)
+    }
+}
+```
+write 
+```kotlin
+kover {
+    currentProject {
+        instrumentation {
+            disabledForTestTasks.addAll(/*names*/)
+        }
+    }
+}
+```
+
+#### Function excludeInstrumentation was removed, specify instrumentation excluded classes in `currentProject { instrumentation { excludedClasses.addAll(/*class names*/) }`
+
+Instead of 
+```kotlin
+kover {
+    excludeInstrumentation {
+        classes(/* class names */)
+    }
+}
+```
+write 
+```kotlin
+kover {
+    currentProject {
+        instrumentation { 
+            excludedClasses.addAll(/* class names */) 
+        }
+    }
+}
+```
+
+#### "Function excludeSourceSets was removed, specify instrumentation excluded classes in `currentProject { sources { excludedSourceSets.addAll(/*source sets names*/) } }`
+
+Instead of 
+```kotlin
+kover {
+    excludeSourceSets {
+        names(/*source sets names*/)
+    }
+}
+```
+
+write 
+```kotlin
+kover {
+    currentProject { 
+        sources { 
+            excludedSourceSets.addAll(/*source sets names*/) 
+        } 
+    }
+}
+```
+
+#### Block mergeWith was removed, create custom reports variant and merge with specified variant
+
+Now it is possible to add provided variant only to custom reports variant.
+
+You need to create a custom variant, configure it, and then you can generate reports for this variant.
+
+Instead of
+```kotlin
+koverReport {
+    defaults {
+        mergeWith(/*dependent project*/)
+    }
+}
+```
+write
+```kotlin
+kover {
+    currentProject {
+        createVariant("custom") {
+            addWithDependencies(/*dependent project*/)
+        }
+    }
+}
+```
+See details in [corresponding section](#custom-reports-variants).
+
+#### Val cannot be reassigned
+or
+#### Type mismatch: inferred type is ... but Property<...> was expected
+or 
+#### The integer literal does not conform to the expected type Property<Int>
+Reason: the kts file is used in Gradle version less than 8.2
+
+Solution: Update Gradle version or write `.set(value)` instead of ` = value`
+
+#### It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters
+It is necessary to delete the `filters` block from the settings of a specific report (XML, HTML, verify, log, etc.).
+```kotlin
+koverReport {
+    defaults {
+        html {
+            filters {
+                // filters
+            }
+        }
+    }
+}
+```
+move the filters to common block for all variants settings 
+```kotlin
+kover {
+    reports {
+        filters {
+            // filters
+        }     
+    }
+}
+```
+or specific variant settings
+```kotlin
+kover {
+    reports {
+        total {
+            filters {
+                // filters
+            }
+        }
+    }
+}
+```
+If you need to create specific reports with individual sets of filters, then create a [custom reports variant](#custom-reports-variants).
+
+#### Property isEnabled was renamed to disabled and inverted
+Now to disable the rule you need to use the `disabled` property.
+```kotlin
+kover {
+    reports {
+        verify {
+            rule {
+                disabled = true
+                // or disabled.set(true) for kts files in Gradle < 8.2
+            }
+        }
+    }
 }
 ```

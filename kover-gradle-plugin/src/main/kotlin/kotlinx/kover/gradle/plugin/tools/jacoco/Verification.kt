@@ -8,7 +8,7 @@ import groovy.lang.GroovyObject
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
-import kotlinx.kover.gradle.plugin.dsl.MetricType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.tools.BoundViolations
 import kotlinx.kover.gradle.plugin.tools.RuleViolations
 import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
@@ -48,9 +48,9 @@ internal fun ReportContext.doJacocoVerify(rules: List<VerificationRule>): List<R
                     it.bounds.forEach { b ->
                         val limitArgs = mutableMapOf<String, String>()
                         limitArgs["counter"] = when (b.metric) {
-                            MetricType.LINE -> "LINE"
-                            MetricType.INSTRUCTION -> "INSTRUCTION"
-                            MetricType.BRANCH -> "BRANCH"
+                            CoverageUnit.LINE -> "LINE"
+                            CoverageUnit.INSTRUCTION -> "INSTRUCTION"
+                            CoverageUnit.BRANCH -> "BRANCH"
                         }
 
                         var min: BigDecimal? = b.minValue
@@ -113,13 +113,13 @@ private fun GroovyObject.violations(): List<RuleViolations> {
 
         val entityType = match.groupValues[1].asEntityType(it)
         val entityName = match.groupValues[2].run { if (this == ":") null else this }
-        val metric = match.groupValues[3].asMetricType(it)
+        val coverageUnits = match.groupValues[3].asCoverageUnit(it)
         val agg = match.groupValues[4].asAggType(it)
         val value = match.groupValues[5].asValue(it, agg)
         val isMax = match.groupValues[6].asIsMax(it)
         val expected = match.groupValues[7].asValue(it, agg)
 
-        RuleViolations(entityType, listOf(BoundViolations(isMax, expected, value, metric, agg, entityName)), "")
+        RuleViolations(entityType, listOf(BoundViolations(isMax, expected, value, coverageUnits, agg, entityName)), "")
     }.toList()
 }
 
@@ -130,10 +130,10 @@ private fun String.asEntityType(line: String): GroupingEntityType = when (this) 
     else -> throw KoverCriticalException("Unknown JaCoCo entity type '$this' in verification error:\n$line")
 }
 
-private fun String.asMetricType(line: String): MetricType = when (this) {
-    "lines" -> MetricType.LINE
-    "instructions" -> MetricType.INSTRUCTION
-    "branches" -> MetricType.BRANCH
+private fun String.asCoverageUnit(line: String): CoverageUnit = when (this) {
+    "lines" -> CoverageUnit.LINE
+    "instructions" -> CoverageUnit.INSTRUCTION
+    "branches" -> CoverageUnit.BRANCH
     else -> throw KoverCriticalException("Unknown JaCoCo metric type '$this' in verification error:\n$line")
 }
 

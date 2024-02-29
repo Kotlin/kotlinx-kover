@@ -5,15 +5,12 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerContext
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.createCheckerContext
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.buildFromTemplate
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 internal class VerificationTests {
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
@@ -26,13 +23,13 @@ internal class VerificationTests {
                     verify {
                         rule("test rule") {
                             bound {
-                                min.set(50)
-                                max.set(60)
+                                minValue.set(50)
+                                maxValue.set(60)
                             }
                             bound {
                                 aggregationForGroup.set(AggregationType.COVERED_COUNT)
-                                min.set(2)
-                                max.set(10)
+                                minValue.set(2)
+                                maxValue.set(10)
                             }
                         }
                     }
@@ -53,44 +50,44 @@ internal class VerificationTests {
                     verify {
                         rule("counts rule") {
                             bound {
-                                min.set(58)
-                                max.set(60)
+                                minValue.set(58)
+                                maxValue.set(60)
                             }
                             bound {
                                 aggregationForGroup.set(AggregationType.COVERED_COUNT)
-                                min.set(2)
-                                max.set(3)
+                                minValue.set(2)
+                                maxValue.set(3)
                             }
                         }
                         rule("fully uncovered instructions by classes") {
                             groupBy.set(GroupingEntityType.CLASS)
                             bound {
-                                coverageUnits.set(MetricType.INSTRUCTION)
+                                coverageUnits.set(CoverageUnit.INSTRUCTION)
                                 aggregationForGroup.set(AggregationType.MISSED_PERCENTAGE)
-                                min.set(100)
+                                minValue.set(100)
                             }
                         }
                         rule("fully covered instructions by packages") {
                             groupBy.set(GroupingEntityType.PACKAGE)
                             bound {
-                                coverageUnits.set(MetricType.INSTRUCTION)
+                                coverageUnits.set(CoverageUnit.INSTRUCTION)
                                 aggregationForGroup.set(AggregationType.COVERED_PERCENTAGE)
-                                min.set(100)
+                                minValue.set(100)
                             }
                         }
                         rule("branches by classes") {
                             groupBy.set(GroupingEntityType.CLASS)
                             bound {
-                                coverageUnits.set(MetricType.BRANCH)
+                                coverageUnits.set(CoverageUnit.BRANCH)
                                 aggregationForGroup.set(AggregationType.COVERED_COUNT)
-                                min.set(1000)
+                                minValue.set(1000)
                             }
                         }
                         rule("missed packages") {
                             groupBy.set(GroupingEntityType.PACKAGE)
                             bound {
                                 aggregationForGroup.set(AggregationType.MISSED_COUNT)
-                                max.set(1)
+                                maxValue.set(1)
                             }
                         }
                     }
@@ -162,7 +159,7 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
                     verify {
                         rule("root rule") {
                             bound {
-                                min.set(99)
+                                minValue.set(99)
                             }
                         }
                     }
@@ -188,7 +185,7 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
                     verify {
                         rule("root rule") {
                             bound {
-                                min.set(99)
+                                minValue.set(99)
                             }
                         }
 
@@ -196,7 +193,7 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
                             verify {
                                 rule("root rule") {
                                     bound {
-                                        min.set(10)
+                                        minValue.set(10)
                                     }
                                 }
                             }

@@ -10,6 +10,8 @@ import kotlinx.kover.gradle.plugin.commons.ReportVariantType
 import kotlinx.kover.gradle.plugin.commons.VariantOriginAttr
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantConfigImpl
 import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.Named
 import org.gradle.api.Project
@@ -25,8 +27,16 @@ internal class AndroidVariantArtifacts(
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration,
     variantSource: AndroidVariantOrigin,
-    variantConfig: KoverVariantConfigImpl
-): AbstractVariantArtifacts(project, variantName, toolProvider, koverBucketConfiguration, variantConfig) {
+    variantConfig: KoverVariantConfigImpl,
+    projectExtension: KoverProjectExtensionImpl
+) : AbstractVariantArtifacts(
+    project,
+    variantName,
+    toolProvider,
+    koverBucketConfiguration,
+    variantConfig,
+    projectExtension
+) {
     init {
         val androidDetails = variantSource.buildVariant
 

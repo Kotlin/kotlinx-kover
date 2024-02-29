@@ -5,7 +5,7 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.dsl.MetricType.LINE
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
@@ -29,8 +29,8 @@ internal class ReportAnnotationFilterTests {
                             bound {
                                 coverageUnits.set(LINE)
                                 aggregationForGroup.set(AggregationType.COVERED_COUNT)
-                                min.set(9)
-                                max.set(9)
+                                minValue.set(9)
+                                maxValue.set(9)
                             }
                         }
                     }
@@ -72,8 +72,8 @@ internal class ReportAnnotationFilterTests {
                             bound {
                                 coverageUnits.set(LINE)
                                 aggregationForGroup.set(AggregationType.COVERED_COUNT)
-                                min.set(15)
-                                max.set(15)
+                                minValue.set(15)
+                                maxValue.set(15)
                             }
                         }
                     }

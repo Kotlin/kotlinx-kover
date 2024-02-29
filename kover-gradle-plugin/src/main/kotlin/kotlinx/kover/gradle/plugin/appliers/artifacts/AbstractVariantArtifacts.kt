@@ -7,6 +7,7 @@ package kotlinx.kover.gradle.plugin.appliers.artifacts
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantConfigImpl
 import kotlinx.kover.gradle.plugin.appliers.origin.VariantOrigin
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tasks.services.KoverArtifactGenerationTask
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.NamedDomainObjectProvider
@@ -22,7 +23,8 @@ internal sealed class AbstractVariantArtifacts(
     val variantName: String,
     private val toolProvider: Provider<CoverageTool>,
     private val koverBucketConfiguration: Configuration?,
-    private val variantConfig: KoverVariantConfigImpl
+    private val variantConfig: KoverVariantConfigImpl,
+    private val projectExtension: KoverProjectExtensionImpl
 ) {
     internal val artifactGenTask: TaskProvider<KoverArtifactGenerationTask>
     protected val producerConfiguration: NamedDomainObjectProvider<Configuration>
@@ -34,8 +36,10 @@ internal sealed class AbstractVariantArtifacts(
 
         val buildDirectory = project.layout.buildDirectory
 
+        val koverDisabled = projectExtension.koverDisabled
         artifactGenTask.configure {
             artifactFile.set(buildDirectory.file(artifactFilePath(variantName)))
+            onlyIf { !koverDisabled.get() }
         }
 
         val artifactProperty = artifactGenTask.flatMap { task -> task.artifactFile }
@@ -64,11 +68,13 @@ internal sealed class AbstractVariantArtifacts(
     }
 
     protected fun fromOrigin(origin: VariantOrigin, compilationFilter: (String) -> Boolean = { true }) {
+        val excludedTasks = projectExtension.current.instrumentation.disabledForTestTasks
+        val disabledInstrumentation = projectExtension.current.instrumentation.disabledForAll
+
         val tests = origin.tests.matching {
-            // skip all tests from instrumentation if Kover Plugin is disabled for the project
-            !variantConfig.instrumentation.excludeAll.get()
+            !disabledInstrumentation.get()
                     // skip this test if it disabled by name
-                    && it.name !in variantConfig.testTasks.excluded.getOrElse(emptySet())
+                    && it.name !in excludedTasks.get()
         }
 
         // filter some compilation, e.g. JVM source sets
@@ -79,9 +85,9 @@ internal sealed class AbstractVariantArtifacts(
         val kotlinOutputs = compilations.map { compilation -> compilation.flatMap { it.kotlin.outputs } }
 
         val javaCompileTasks =
-            compilations.map { compilation -> if (variantConfig.classes.excludeJava.get()) emptyList() else compilation.mapNotNull { it.java.compileTask } }
+            compilations.map { compilation -> if (variantConfig.sources.excludeJava.get()) emptyList() else compilation.mapNotNull { it.java.compileTask } }
         val javaOutputs =
-            compilations.map { compilation -> if (variantConfig.classes.excludeJava.get()) emptyList() else compilation.flatMap { it.java.outputs } }
+            compilations.map { compilation -> if (variantConfig.sources.excludeJava.get()) emptyList() else compilation.flatMap { it.java.outputs } }
 
 
         val sources = compilations.map { unit -> unit.flatMap { it.sources } }

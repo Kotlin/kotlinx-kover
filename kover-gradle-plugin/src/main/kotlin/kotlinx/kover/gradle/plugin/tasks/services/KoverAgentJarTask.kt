@@ -32,6 +32,9 @@ internal abstract class KoverAgentJarTask : DefaultTask() {
     @get:Internal
     abstract val tool: Property<CoverageTool>
 
+    @get:Input
+    abstract val koverDisabled: Property<Boolean>
+
     @get:Nested
     val toolVariant: CoverageToolVariant
         get() = tool.get().variant
@@ -41,7 +44,13 @@ internal abstract class KoverAgentJarTask : DefaultTask() {
 
     @TaskAction
     fun find() {
-        val srcJar = tool.get().findJvmAgentJar(agentClasspath, archiveOperations)
-        srcJar.copyTo(agentJar.get().asFile, true)
+        if (!koverDisabled.get()) {
+            val srcJar = tool.get().findJvmAgentJar(agentClasspath, archiveOperations)
+            srcJar.copyTo(agentJar.get().asFile, true)
+        } else {
+            // if Kover is disabled - create mock jar file to avoid copying files
+            agentJar.get().asFile.createNewFile()
+        }
+
     }
 }

@@ -10,6 +10,7 @@ import kotlinx.kover.gradle.plugin.commons.VariantOriginAttr
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantConfigImpl
 import kotlinx.kover.gradle.plugin.appliers.origin.JvmVariantOrigin
 import kotlinx.kover.gradle.plugin.commons.JVM_VARIANT_NAME
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -21,8 +22,16 @@ internal class JvmVariantArtifacts(
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration,
     variantOrigin: JvmVariantOrigin,
-    variantConfig: KoverVariantConfigImpl
-) : AbstractVariantArtifacts(project, JVM_VARIANT_NAME, toolProvider, koverBucketConfiguration, variantConfig) {
+    variantConfig: KoverVariantConfigImpl,
+    projectExtension: KoverProjectExtensionImpl
+) : AbstractVariantArtifacts(
+    project,
+    JVM_VARIANT_NAME,
+    toolProvider,
+    koverBucketConfiguration,
+    variantConfig,
+    projectExtension
+) {
     init {
         producerConfiguration.configure {
             attributes {
@@ -39,7 +48,7 @@ internal class JvmVariantArtifacts(
         }
 
         fromOrigin(variantOrigin) { compilationName ->
-            compilationName !in variantConfig.classes.excludedSourceSets.get()
+            compilationName !in variantConfig.sources.excludedSourceSets.get()
                     && compilationName != "test"
         }
     }

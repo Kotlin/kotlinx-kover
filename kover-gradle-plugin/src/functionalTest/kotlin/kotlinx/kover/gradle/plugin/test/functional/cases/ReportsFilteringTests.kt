@@ -24,7 +24,7 @@ internal class ReportsFilteringTests {
                     verify {
                         rule {
                             // without ExampleClass covered lines count = 2, but 4 with it
-                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                            maxBound(2, aggregationForGroup = AggregationType.COVERED_COUNT)
                         }
                     }
                 }
@@ -53,7 +53,7 @@ internal class ReportsFilteringTests {
                     verify {
                         rule {
                             // without ExampleClass covered lines count = 2, but 4 with it
-                            maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                            maxBound(2, aggregationForGroup = AggregationType.COVERED_COUNT)
                         }
                     }
 
@@ -103,7 +103,7 @@ internal class ReportsFilteringTests {
                             }
                             rule {
                                 // without ExampleClass covered lines count = 2, but 4 with it
-                                maxBound(2, aggregation = AggregationType.COVERED_COUNT)
+                                maxBound(2, aggregationForGroup = AggregationType.COVERED_COUNT)
                             }
                         }
                     }

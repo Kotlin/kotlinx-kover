@@ -58,13 +58,13 @@ internal class MultiProjectTests {
     }
 
     @SlicedGeneratedTest(allTypes = true, allTools = true)
-    fun SlicedBuildConfigurator.testDisabledKover() {
+    fun SlicedBuildConfigurator.testDisableInstrumentation() {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                variants {
+                currentProject {
                     instrumentation {
-                        excludeAll.set(true)
+                        disabledForAll.set(true)
                     }
                 }
             }
@@ -74,9 +74,9 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                variants {
+                currentProject {
                     instrumentation {
-                        excludeAll.set(true)
+                        disabledForAll.set(true)
                     }
                 }
             }
@@ -85,7 +85,6 @@ internal class MultiProjectTests {
         run("koverXmlReport", "koverHtmlReport", "koverVerify") {
             checkDefaultBinReport(false)
             taskNotCalled(defaultTestTaskName(slice.type))
-
 
             subproject(subprojectPath) {
                 checkDefaultBinReport(false)
@@ -99,9 +98,9 @@ internal class MultiProjectTests {
         addProjectWithKover(subprojectPath) {
             sourcesFrom("multiproject-common")
             kover {
-                variants {
-                    testTasks {
-                        excluded.add(defaultTestTaskName(slice.type))
+                currentProject {
+                    instrumentation {
+                        disabledForTestTasks.add(defaultTestTaskName(slice.type))
                     }
                 }
             }
@@ -111,9 +110,9 @@ internal class MultiProjectTests {
             sourcesFrom("multiproject-user")
             dependencyKover(subprojectPath)
             kover {
-                variants {
-                    testTasks {
-                        excluded.add(defaultTestTaskName(slice.type))
+                currentProject {
+                    instrumentation {
+                        disabledForTestTasks.add(defaultTestTaskName(slice.type))
                     }
                 }
             }

@@ -18,9 +18,9 @@ internal class TaskFilteringTests {
         addProjectWithKover {
             sourcesFrom("simple")
             kover {
-                variants {
-                    testTasks {
-                        excluded.add(defaultTestTaskName(slice.type))
+                currentProject {
+                    instrumentation {
+                        disabledForTestTasks.add(defaultTestTaskName(slice.type))
                     }
                 }
             }
@@ -32,8 +32,6 @@ internal class TaskFilteringTests {
             checkOutcome("compileJava", "NO-SOURCE")
 
             taskNotCalled(defaultTestTaskName(slice.type))
-
-            // reason must be printed
 
             // if task `test` is excluded from instrumentation then the binary report is not created for it
             checkDefaultBinReport(false)

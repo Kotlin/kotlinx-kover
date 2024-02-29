@@ -8,6 +8,7 @@ import kotlinx.kover.gradle.plugin.commons.ReportVariantType
 import kotlinx.kover.gradle.plugin.commons.TOTAL_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.commons.VariantNameAttr
 import kotlinx.kover.gradle.plugin.commons.VariantOriginAttr
+import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantConfigImpl
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.Project
@@ -19,8 +20,16 @@ internal class TotalVariantArtifacts(
     project: Project,
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration,
-    variantConfig: KoverVariantConfigImpl
-): AbstractVariantArtifacts(project, TOTAL_VARIANT_NAME, toolProvider, koverBucketConfiguration, variantConfig) {
+    variantConfig: KoverVariantConfigImpl,
+    projectExtension: KoverProjectExtensionImpl
+) : AbstractVariantArtifacts(
+    project,
+    TOTAL_VARIANT_NAME,
+    toolProvider,
+    koverBucketConfiguration,
+    variantConfig,
+    projectExtension
+) {
     init {
         producerConfiguration.configure {
             attributes {

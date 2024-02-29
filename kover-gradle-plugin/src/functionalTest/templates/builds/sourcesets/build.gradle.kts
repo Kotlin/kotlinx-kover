@@ -6,7 +6,7 @@ plugins {
 sourceSets.create("extra")
 
 kover {
-    variants {
+    currentProject {
         sources {
             excludedSourceSets.add("extra")
         }

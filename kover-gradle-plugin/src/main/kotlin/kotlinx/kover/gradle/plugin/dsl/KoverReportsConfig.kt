@@ -71,7 +71,7 @@ import org.gradle.api.provider.Provider
  *  }
  * ```
  */
-public interface KoverReportConfig {
+public interface KoverReportsConfig {
     /**
      * Specify common filters for all report variants, these filters will be inherited in HTML/XML/verification reports.
      * They can be redefined in the settings of a specific report variant.
@@ -116,12 +116,12 @@ public interface KoverReportConfig {
     }
 
     @Deprecated(
-        message = "Block was renamed to variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol androidReports was removed, use variant instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("variant"),
         level = DeprecationLevel.ERROR
     )
     public fun androidReports(variant: String, config: Action<KoverReportSetConfig>) {
-        throw KoverDeprecationException("Block androidReports was renamed to variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+        throw KoverDeprecationException("Kover renaming: Symbol androidReports was removed, use variant instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
     }
 
     /**
@@ -350,12 +350,20 @@ public interface KoverReportSetConfig {
      *      header = null
      *      format = "<entity> line coverage: <value>%"
      *      groupBy = GroupingEntityType.APPLICATION
-     *      coverageUnits = MetricType.LINE
+     *      coverageUnits = CoverageUnit.LINE
      *      aggregationForGroup = AggregationType.COVERED_PERCENTAGE
      *  }
      * ```
      */
     public fun log(config: Action<KoverLogTaskConfig>)
+
+    @Deprecated(
+        message = "Block mergeWith was removed, create custom reports variant and merge with specified variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        level = DeprecationLevel.ERROR
+    )
+    public fun mergeWith(otherVariant: String) {
+        throw throw KoverDeprecationException("Block mergeWith was removed, create custom reports variant and merge with specified variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+    }
 }
 
 /**
@@ -370,7 +378,7 @@ public interface KoverReportSetConfig {
  *      header = null
  *      format = "<entity> line coverage: <value>%"
  *      groupBy = GroupingEntityType.APPLICATION
- *      coverageUnits = MetricType.LINE
+ *      coverageUnits = CoverageUnit.LINE
  *      aggregationForGroup = AggregationType.COVERED_PERCENTAGE
  *  }
  * ```
@@ -420,9 +428,9 @@ public interface KoverLogTaskConfig {
     /**
      * The type of application code division (unit type) whose unit coverage will be considered independently.
      *
-     * [MetricType.LINE] by default.
+     * [CoverageUnit.LINE] by default.
      */
-    public val coverageUnits: Property<MetricType>
+    public val coverageUnits: Property<CoverageUnit>
 
     /**
      * Specifies aggregation function that will be calculated over all the units of the same group.
@@ -729,12 +737,12 @@ public interface KoverHtmlTaskConfig {
     public val onCheck: Property<Boolean>
 
     @Deprecated(
-        message = "Function was removed, use htmlDir property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol setReportDir was removed, use htmlDir instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("htmlDir"),
         level = DeprecationLevel.ERROR
     )
     public fun setReportDir(dir: Any) {
-        throw KoverDeprecationException("Function setReportDir(dir) was removed, use htmlDir property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+        throw KoverDeprecationException("Kover renaming: Symbol setReportDir was removed, use htmlDir instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
     }
 
     /**
@@ -786,12 +794,12 @@ public interface KoverXmlTaskConfig {
      * Specify file to generate XML report.
      */
     @Deprecated(
-        message = "Function was removed, use xmlFile property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol setReportFile was removed, use xmlFile instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("xmlFile"),
         level = DeprecationLevel.ERROR
     )
     public fun setReportFile(xmlFile: Any) {
-        throw KoverDeprecationException("Function xmlFile was removed, use xmlFile property. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+        throw KoverDeprecationException("Kover renaming: Symbol setReportFile was removed, use xmlFile instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
     }
 
     /**
@@ -936,7 +944,7 @@ public interface KoverVerifyRule {
      * Specifies that the rule is checked during verification.
      */
     @Deprecated(
-        message = "Property was renamed to disabled and inverted. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Property isEnabled was renamed to disabled and inverted. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         level = DeprecationLevel.ERROR
     )
     public var isEnabled: Boolean
@@ -948,7 +956,7 @@ public interface KoverVerifyRule {
         }
 
     @Deprecated(
-        message = "Property was renamed to groupBy. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol entity was removed, use groupBy instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("groupBy"),
         level = DeprecationLevel.ERROR
     )
@@ -977,8 +985,8 @@ public interface KoverVerifyRule {
      * // At least 75% of lines should be covered in order for build to pass
      * bound {
      *     aggregationForGroup = AggregationType.COVERED_PERCENTAGE // Default aggregation
-     *     metric = MetricType.LINE
-     *     min = 75
+     *     coverageUnits = CoverageUnit.LINE
+     *     minValue = 75
      * }
      * ```
      *
@@ -990,49 +998,49 @@ public interface KoverVerifyRule {
      * A shortcut for
      * ```
      * bound {
-     *     min = min
+     *     minValue = min
      * }
      * ```
      *
      * @see bound
      */
-    public fun minBound(min: Int)
+    public fun minBound(minValue: Int)
 
     /**
      * A shortcut for
      * ```
      * bound {
-     *     min = min
+     *     minValue = min
      * }
      * ```
      *
      * @see bound
      */
-    public fun minBound(min: Provider<Int>)
+    public fun minBound(minValue: Provider<Int>)
 
     /**
      * A shortcut for
      * ```
      * bound {
-     *     max = max
+     *     maxValue = maxValue
      * }
      * ```
      *
      * @see bound
      */
-    public fun maxBound(max: Int)
+    public fun maxBound(maxValue: Int)
 
     /**
      * A shortcut for
      * ```
      * bound {
-     *     max = max
+     *     maxValue = max
      * }
      * ```
      *
      * @see bound
      */
-    public fun maxBound(max: Provider<Int>)
+    public fun maxBound(maxValue: Provider<Int>)
 
     // Default parameters values supported only in Kotlin.
 
@@ -1040,7 +1048,7 @@ public interface KoverVerifyRule {
      * A shortcut for
      * ```
      * bound {
-     *     min = minValue
+     *     minValue = minValue
      *     coverageUnits = coverageUnits
      *     aggregationForGroup = aggregationForGroup
      * }
@@ -1050,7 +1058,7 @@ public interface KoverVerifyRule {
      */
     public fun minBound(
         minValue: Int,
-        coverageUnits: MetricType = MetricType.LINE,
+        coverageUnits: CoverageUnit = CoverageUnit.LINE,
         aggregationForGroup: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
@@ -1058,9 +1066,9 @@ public interface KoverVerifyRule {
      * A shortcut for
      * ```
      * bound {
-     *     max = maxValue
+     *     maxValue = maxValue
      *     coverageUnits = coverageUnits
-     *     aggregation = aggregation
+     *     aggregationForGroup = aggregation
      * }
      * ```
      *
@@ -1068,28 +1076,28 @@ public interface KoverVerifyRule {
      */
     public fun maxBound(
         maxValue: Int,
-        coverageUnits: MetricType = MetricType.LINE,
-        aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE
+        coverageUnits: CoverageUnit = CoverageUnit.LINE,
+        aggregationForGroup: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
     /**
      * A shortcut for
      * ```
      * bound {
-     *     max = max
-     *     min = min
+     *     maxValue = maxValue
+     *     minValue = minValue
      *     coverageUnits = coverageUnits
-     *     aggregation = aggregation
+     *     aggregationForGroup = aggregation
      * }
      * ```
      *
      * @see bound
      */
     public fun bound(
-        min: Int,
-        max: Int,
-        coverageUnits: MetricType = MetricType.LINE,
-        aggregation: AggregationType = AggregationType.COVERED_PERCENTAGE
+        minValue: Int,
+        maxValue: Int,
+        coverageUnits: CoverageUnit = CoverageUnit.LINE,
+        aggregationForGroup: AggregationType = AggregationType.COVERED_PERCENTAGE
     )
 
 }
@@ -1107,7 +1115,7 @@ public interface KoverVerifyBound {
      *
      * Absent by default.
      */
-    public val min: Property<Int>
+    public val minValue: Property<Int>
 
     /**
      * Specifies maximal value to compare with counter value.
@@ -1115,15 +1123,15 @@ public interface KoverVerifyBound {
      *
      * Absent by default.
      */
-    public val max: Property<Int>
+    public val maxValue: Property<Int>
 
     /**
      * The type of application code division (unit type) whose unit coverage will be considered independently.
      * It affects which blocks the value of the covered and missed units will be calculated for.
      *
-     * [MetricType.LINE] by default.
+     * [CoverageUnit.LINE] by default.
      */
-    public val coverageUnits: Property<MetricType>
+    public val coverageUnits: Property<CoverageUnit>
 
     /**
      * Specifies aggregation function that will be calculated over all the units of the same group.
@@ -1136,49 +1144,21 @@ public interface KoverVerifyBound {
      */
     public val aggregationForGroup: Property<AggregationType>
 
-
     @Deprecated(
-        message = "Property was renamed to min. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("min"),
-        level = DeprecationLevel.ERROR
-    )
-    public var minValue: Int?
-        get() {
-            throw KoverDeprecationException("Property minValue was renamed to min. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-        set(value) {
-            throw KoverDeprecationException("Property minValue was renamed to min. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-
-
-    @Deprecated(
-        message = "Property was renamed to max. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("max"),
-        level = DeprecationLevel.ERROR
-    )
-    public var maxValue: Int?
-        get() {
-            throw KoverDeprecationException("Property maxValue was renamed to max. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-        set(value) {
-            throw KoverDeprecationException("Property maxValue was renamed to max. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-
-    @Deprecated(
-        message = "Property was renamed to coverageUnits. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol metric was removed, use coverageUnits instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("coverageUnits"),
         level = DeprecationLevel.ERROR
     )
-    public var metric: MetricType
+    public var metric: CoverageUnit
         get() {
-            throw KoverDeprecationException("Property metric was renamed to coverageUnits. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+            throw KoverDeprecationException("Kover renaming: Symbol metric was removed, use coverageUnits instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
         }
         set(value) {
-            throw KoverDeprecationException("Property metric was renamed to coverageUnits. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
+            throw KoverDeprecationException("Kover renaming: Symbol metric was removed, use coverageUnits instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
         }
 
     @Deprecated(
-        message = "Property was renamed to aggregationForGroup. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+        message = "Kover renaming: Symbol aggregation was removed, use aggregationForGroup instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
         replaceWith = ReplaceWith("aggregationForGroup"),
         level = DeprecationLevel.ERROR
     )
@@ -1194,7 +1174,8 @@ public interface KoverVerifyBound {
 /**
  * Type of the metric to evaluate code coverage.
  */
-public enum class MetricType {
+public enum class CoverageUnit {
+
     /**
      * Number of lines.
      */
@@ -1208,6 +1189,17 @@ public enum class MetricType {
     /**
      * Number of branches covered.
      */
+    BRANCH
+}
+
+@Deprecated(
+    message = "Kover renaming: Symbol MetricType was removed, use CoverageUnit instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
+    replaceWith = ReplaceWith("pluginId"),
+    level = DeprecationLevel.ERROR
+)
+public enum class MetricType {
+    LINE,
+    INSTRUCTION,
     BRANCH
 }
 

@@ -18,15 +18,15 @@ import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
 
-internal abstract class KoverReportConfigImpl @Inject constructor(
+internal abstract class KoverReportsConfigImpl @Inject constructor(
     private val objects: ObjectFactory,
     private val layout: ProjectLayout,
     private val projectPath: String
-) : KoverReportConfig {
+) : KoverReportsConfig {
     private val rootFilters: KoverReportFiltersConfigImpl = objects.newInstance()
     private val rootVerify: KoverVerificationRulesConfigImpl = objects.newInstance()
 
-    internal val total: KoverReportSetConfigImpl = createVariant(TOTAL_VARIANT_NAME, projectPath)
+    internal val total: KoverReportSetConfigImpl = createReportSet(TOTAL_VARIANT_NAME, projectPath)
 
     internal val byName: MutableMap<String, KoverReportSetConfigImpl> = mutableMapOf()
 
@@ -44,12 +44,12 @@ internal abstract class KoverReportConfigImpl @Inject constructor(
 
     override fun variant(variant: String, config: Action<KoverReportSetConfig>) {
         val report = byName.getOrPut(variant) {
-            createVariant(variant, projectPath)
+            createReportSet(variant, projectPath)
         }
         config(report)
     }
 
-    internal fun createVariant(variantName: String, projectPath: String): KoverReportSetConfigImpl {
+    internal fun createReportSet(variantName: String, projectPath: String): KoverReportSetConfigImpl {
         val block =
             objects.newInstance<KoverReportSetConfigImpl>(objects, layout.buildDirectory, variantName, projectPath)
 
@@ -89,7 +89,7 @@ internal abstract class KoverReportSetConfigImpl @Inject constructor(
 
         log.format.convention("<entity> line coverage: <value>%")
         log.groupBy.convention(GroupingEntityType.APPLICATION)
-        log.coverageUnits.convention(MetricType.LINE)
+        log.coverageUnits.convention(CoverageUnit.LINE)
         log.aggregationForGroup.convention(AggregationType.COVERED_PERCENTAGE)
     }
 
@@ -169,52 +169,52 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
         groupBy.set(GroupingEntityType.APPLICATION)
     }
 
-    override fun minBound(minValue: Int, coverageUnits: MetricType, aggregationForGroup: AggregationType) {
+    override fun minBound(minValue: Int, coverageUnits: CoverageUnit, aggregationForGroup: AggregationType) {
         val newBound = createBound()
-        newBound.min.set(minValue)
+        newBound.minValue.set(minValue)
         newBound.coverageUnits.set(coverageUnits)
         newBound.aggregationForGroup.set(aggregationForGroup)
         bounds += newBound
     }
 
-    override fun minBound(min: Int) {
+    override fun minBound(minValue: Int) {
         val newBound = createBound()
-        newBound.min.set(min)
+        newBound.minValue.set(minValue)
         bounds += newBound
     }
 
-    override fun minBound(min: Provider<Int>) {
+    override fun minBound(minValue: Provider<Int>) {
         val newBound = createBound()
-        newBound.min.set(min)
+        newBound.minValue.set(minValue)
         bounds += newBound
     }
 
-    override fun maxBound(maxValue: Int, coverageUnits: MetricType, aggregation: AggregationType) {
+    override fun maxBound(maxValue: Int, coverageUnits: CoverageUnit, aggregationForGroup: AggregationType) {
         val newBound = createBound()
-        newBound.max.set(maxValue)
+        newBound.maxValue.set(maxValue)
         newBound.coverageUnits.set(coverageUnits)
-        newBound.aggregationForGroup.set(aggregation)
+        newBound.aggregationForGroup.set(aggregationForGroup)
         bounds += newBound
     }
 
-    override fun maxBound(max: Int) {
+    override fun maxBound(maxValue: Int) {
         val newBound = createBound()
-        newBound.max.set(max)
+        newBound.maxValue.set(maxValue)
         bounds += newBound
     }
 
-    override fun maxBound(max: Provider<Int>) {
+    override fun maxBound(maxValue: Provider<Int>) {
         val newBound = createBound()
-        newBound.max.set(max)
+        newBound.maxValue.set(maxValue)
         bounds += newBound
     }
 
-    override fun bound(min: Int, max: Int, coverageUnits: MetricType, aggregation: AggregationType) {
+    override fun bound(minValue: Int, maxValue: Int, coverageUnits: CoverageUnit, aggregationForGroup: AggregationType) {
         val newBound = createBound()
-        newBound.min.set(min)
-        newBound.max.set(max)
+        newBound.minValue.set(minValue)
+        newBound.maxValue.set(maxValue)
         newBound.coverageUnits.set(coverageUnits)
-        newBound.aggregationForGroup.set(aggregation)
+        newBound.aggregationForGroup.set(aggregationForGroup)
         bounds += newBound
     }
 
@@ -228,7 +228,7 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
 
     private fun createBound(): KoverVerifyBound {
         val newBound = objects.newInstance<KoverVerifyBound>()
-        newBound.coverageUnits.set(MetricType.LINE)
+        newBound.coverageUnits.set(CoverageUnit.LINE)
         newBound.aggregationForGroup.set(AggregationType.COVERED_PERCENTAGE)
         return newBound
     }

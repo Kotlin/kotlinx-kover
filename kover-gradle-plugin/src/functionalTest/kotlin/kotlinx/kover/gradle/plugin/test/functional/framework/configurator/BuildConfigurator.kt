@@ -10,7 +10,6 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.kotlinVersionCurrent
 import kotlinx.kover.gradle.plugin.test.functional.framework.mirroring.printGradleDsl
-import org.gradle.api.Project
 
 internal fun createConfigurator(): BuildConfigurator {
     return TestBuildConfigurator()
@@ -127,9 +126,9 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
         repositoriesConfigurator.also(block)
     }
 
-    override fun kover(config: KoverExtension.(Project) -> Unit) {
+    override fun kover(config: KoverProjectExtension.(ProjectScope) -> Unit) {
         rawBlocks += { slice, gradle ->
-            printGradleDsl<KoverExtension, Project>(slice.language, gradle, "kover", config)
+            printGradleDsl<KoverProjectExtension, ProjectScope>(slice.language, gradle, "kover", config)
         }
     }
 
@@ -147,7 +146,7 @@ internal class TestProjectConfigurator(private val name: String? = null) : Proje
         return rawBlocks + { slice, gradleVersion ->
             val vendor = slice.toolVendor
             if (vendor == CoverageToolVendor.JACOCO) {
-                printGradleDsl<KoverExtension>(slice.language, gradleVersion, "kover") {
+                printGradleDsl<KoverProjectExtension>(slice.language, gradleVersion, "kover") {
                     useJacoco()
                 }
             } else {

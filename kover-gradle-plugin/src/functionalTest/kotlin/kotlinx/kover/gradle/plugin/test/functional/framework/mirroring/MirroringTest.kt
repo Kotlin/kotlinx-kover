@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.mirroring
 
-import kotlinx.kover.gradle.plugin.dsl.KoverExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.ScriptLanguage
 import org.gradle.api.Project
 import org.junit.jupiter.api.Test
@@ -27,7 +27,7 @@ private val groovyExample = """
                     }
                     verify {
                         rule("my Rule") {
-                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.MetricType.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
+                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
                         }
                     }
                 }
@@ -51,7 +51,7 @@ private val ktsExample = """
                     }
                     verify {
                         rule("my Rule") {
-                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.MetricType.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
+                            bound(10, 20, kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
                         }
                     }
                 }
@@ -75,7 +75,7 @@ private val ktsAfter8Example = """
             }
             verify {
                 rule("my Rule") {
-                    bound(10, 20, kotlinx.kover.gradle.plugin.dsl.MetricType.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
+                    bound(10, 20, kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE, kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE)
                 }
             }
         }
@@ -87,18 +87,18 @@ class MirroringTest {
 
     @Test
     fun test() {
-        val groovyScript = printGradleDsl<KoverExtension, Project>(ScriptLanguage.GROOVY, "7.1.0", block = config)
+        val groovyScript = printGradleDsl<KoverProjectExtension, Project>(ScriptLanguage.GROOVY, "7.1.0", block = config)
         assertEquals(groovyExample, groovyScript)
 
-        val ktsScript = printGradleDsl<KoverExtension, Project>(ScriptLanguage.KTS, "7.1.0", block = config)
+        val ktsScript = printGradleDsl<KoverProjectExtension, Project>(ScriptLanguage.KTS, "7.1.0", block = config)
         assertEquals(ktsExample, ktsScript)
 
-        val ktsAfter8Script = printGradleDsl<KoverExtension, Project>(ScriptLanguage.KTS, "8.1.0", block = config)
+        val ktsAfter8Script = printGradleDsl<KoverProjectExtension, Project>(ScriptLanguage.KTS, "8.1.0", block = config)
         assertEquals(ktsAfter8Example, ktsAfter8Script)
     }
 
 
-    private val config: KoverExtension.(Project) -> Unit = {
+    private val config: KoverProjectExtension.(Project) -> Unit = {
 
         reports {
             total {

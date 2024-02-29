@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin
 
 import kotlinx.kover.gradle.plugin.appliers.finalizing
 import kotlinx.kover.gradle.plugin.appliers.prepare
+import kotlinx.kover.gradle.plugin.appliers.prepareMerging
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.MINIMUM_GRADLE_VERSION
 import kotlinx.kover.gradle.plugin.locators.ProvidedVariantsLocator
 import kotlinx.kover.gradle.plugin.util.SemVer
@@ -26,6 +27,9 @@ class KoverGradlePlugin : Plugin<Project> {
         target.gradle.checkVersion()
 
         val context = prepare(target)
+        target.afterEvaluate {
+            context.prepareMerging()
+        }
         ProvidedVariantsLocator(target) { provided ->
             // this code will be executed in after evaluate stage, after all used plugins are finalized
             context.finalizing(provided)

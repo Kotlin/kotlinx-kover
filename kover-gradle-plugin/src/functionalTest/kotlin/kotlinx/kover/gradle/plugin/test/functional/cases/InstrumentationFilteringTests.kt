@@ -3,7 +3,7 @@
  */
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultTestTaskName
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
@@ -15,7 +15,7 @@ internal class InstrumentationFilteringTests {
             sourcesFrom("simple")
 
             kover {
-                variants {
+                currentProject {
                     instrumentation {
                         excludedClasses.add("org.jetbrains.*Exa?ple*")
                     }
@@ -28,6 +28,46 @@ internal class InstrumentationFilteringTests {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
             }
+        }
+    }
+
+    @SlicedGeneratedTest(allLanguages = true)
+    fun BuildConfigurator.testDisableAll() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            kover {
+                currentProject {
+                    instrumentation {
+                        disabledForAll.set(true)
+                    }
+                }
+            }
+        }
+
+        run("build", "koverXmlReport") {
+            checkOutcome("test", "SUCCESS")
+            checkDefaultBinReport(false)
+        }
+    }
+
+    @SlicedGeneratedTest(allLanguages = true)
+    fun BuildConfigurator.testDisableByName() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            kover {
+                currentProject {
+                    instrumentation {
+                        disabledForTestTasks.add("test")
+                    }
+                }
+            }
+        }
+
+        run("build") {
+            checkOutcome("test", "SUCCESS")
+            checkDefaultBinReport(false)
         }
     }
 
