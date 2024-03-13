@@ -5,9 +5,11 @@
 package kotlinx.kover.gradle.plugin.tasks.services
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.*
-import org.gradle.api.tasks.*
-import javax.inject.*
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 
 internal abstract class KoverPrintLogTask : DefaultTask() {
     @get:InputFile
@@ -16,6 +18,7 @@ internal abstract class KoverPrintLogTask : DefaultTask() {
 
     @TaskAction
     fun printToLog() {
-        logger.lifecycle(fileWithMessage.asFile.get().readText())
+        // use QUIET to always print coverage, regardless of the build log level
+        logger.quiet(fileWithMessage.asFile.get().readText())
     }
 }
