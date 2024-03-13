@@ -4,10 +4,12 @@
 
 package kotlinx.kover.gradle.plugin.dsl.tasks
 
+import org.gradle.api.Task
+
 /**
  *  Common interface for all Kover report tasks.
  */
-interface KoverReport
+interface KoverReport: Task
 
 /**
  * Interface for Kover XML report generation tasks.
