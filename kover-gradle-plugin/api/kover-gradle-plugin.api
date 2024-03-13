@@ -301,7 +301,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverHtmlR
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverLogReport : kotlinx/kover/gradle/plugin/dsl/tasks/KoverReport {
 }
 
-public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverReport {
+public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverReport : org/gradle/api/Task {
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverVerifyReport : kotlinx/kover/gradle/plugin/dsl/tasks/KoverReport {
