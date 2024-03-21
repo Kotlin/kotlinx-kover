@@ -48,6 +48,9 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverCurrentProj
 	public abstract fun totalVariant (Lorg/gradle/api/Action;)V
 }
 
+public abstract interface annotation class kotlinx/kover/gradle/plugin/dsl/KoverGradlePluginDsl : java/lang/annotation/Annotation {
+}
+
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverHtmlTaskConfig {
 	public fun filters (Lorg/gradle/api/Action;)V
 	public abstract fun getCharset ()Lorg/gradle/api/provider/Property;

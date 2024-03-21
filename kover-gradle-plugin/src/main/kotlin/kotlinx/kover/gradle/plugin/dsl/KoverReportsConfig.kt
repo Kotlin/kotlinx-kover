@@ -71,6 +71,7 @@ import org.gradle.api.provider.Provider
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverReportsConfig {
     /**
      * Specify common filters for all report variants, these filters will be inherited in HTML/XML/verification reports.
@@ -202,6 +203,7 @@ public interface KoverReportsConfig {
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverReportSetConfig {
     /**
      * Specify common report filters, these filters will be inherited in HTML/XML/verification and other reports.
@@ -383,6 +385,7 @@ public interface KoverReportSetConfig {
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverLogTaskConfig {
     @Deprecated(
         message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -447,6 +450,7 @@ public interface KoverLogTaskConfig {
 /**
  * Filters to exclude classes from reports
  */
+@KoverGradlePluginDsl
 public interface KoverReportFiltersConfig {
     /**
      * Configures class filter in order to exclude classes and functions.
@@ -493,6 +497,7 @@ public interface KoverReportFiltersConfig {
  *      }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverReportFilter {
     /**
      * Add specified classes to current filters.
@@ -706,6 +711,7 @@ public interface KoverReportFilter {
  *  ...
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverHtmlTaskConfig {
     @Deprecated(
         message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -774,6 +780,7 @@ public interface KoverHtmlTaskConfig {
  *  ...
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverXmlTaskConfig {
     @Deprecated(
         message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -835,6 +842,7 @@ public interface KoverXmlTaskConfig {
  *  ...
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverBinaryTaskConfig {
     @Deprecated(
         message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -879,6 +887,7 @@ public interface KoverBinaryTaskConfig {
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverVerifyTaskConfig: KoverVerificationRulesConfig {
     /**
      * Verify coverage when running the `check` task.
@@ -904,6 +913,7 @@ public interface KoverVerifyTaskConfig: KoverVerificationRulesConfig {
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverVerificationRulesConfig {
     /**
      * Add new coverage verification rule to check after test task execution.
@@ -926,6 +936,7 @@ public interface KoverVerificationRulesConfig {
  * - What coverage bounds are enforced by current rules
  * - What kind of bounds (branches, lines, bytecode instructions) are checked by bound rules.
  */
+@KoverGradlePluginDsl
 public interface KoverVerifyRule {
     /**
      * Specifies by which entity the code for separate coverage evaluation will be grouped.
@@ -1108,6 +1119,7 @@ public interface KoverVerifyRule {
  * how coverage is aggregated (raw number or percents) and what numerical values of coverage
  * are acceptable.
  */
+@KoverGradlePluginDsl
 public interface KoverVerifyBound {
     /**
      * Specifies minimal value to compare with aggregated coverage value.

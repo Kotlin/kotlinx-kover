@@ -13,6 +13,7 @@ import org.gradle.api.provider.Property
 /**
  * Project extension for Kover Gradle Plugin.
  */
+@KoverGradlePluginDsl
 public interface KoverProjectExtension {
 
     /**
@@ -230,7 +231,7 @@ public interface KoverProjectExtension {
     }
 }
 
-
+@KoverGradlePluginDsl
 public interface KoverTestsExclusions {
     @Deprecated(
         message = "Kover renaming: Symbol tasks was removed, use excluded instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -251,6 +252,7 @@ public interface KoverTestsExclusions {
     }
 }
 
+@KoverGradlePluginDsl
 public interface SourceSetsExclusions {
     @Deprecated(
         message = "Kover renaming: Symbol names was removed, use excludedSourceSets instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -271,6 +273,7 @@ public interface SourceSetsExclusions {
     }
 }
 
+@KoverGradlePluginDsl
 public interface KoverInstrumentationExclusions {
     @Deprecated(
         message = "Kover renaming: Symbol classes was removed, use excludedClasses instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",

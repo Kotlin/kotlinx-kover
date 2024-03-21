@@ -91,16 +91,11 @@ internal class ReportsFilteringTests {
                     total {
                         filters {
                             excludes {
-                                classes("org.*")
+                                classes("org.jetbrains.*Exa?ple*")
                             }
                         }
 
                         verify {
-                            filters {
-                                excludes {
-                                    classes("org.jetbrains.*Exa?ple*")
-                                }
-                            }
                             rule {
                                 // without ExampleClass covered lines count = 2, but 4 with it
                                 maxBound(2, aggregationForGroup = AggregationType.COVERED_COUNT)
