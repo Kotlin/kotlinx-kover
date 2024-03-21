@@ -103,6 +103,9 @@ public interface KoverReportsConfig {
      *      rule("custom rule name") {
      *          // named verification rule
      *      }
+     *
+     *      // fail on verification error
+     *      warnOnFailure = false
      *  }
      * ```
      */
@@ -313,6 +316,9 @@ public interface KoverReportSetConfig {
      *      rule("Custom Name") {
      *          // ...
      *      }
+     *
+     *      // fail on verification error
+     *      warnOnFailure = false
      *  }
      * ```
      */
@@ -884,6 +890,9 @@ public interface KoverBinaryTaskConfig {
  *      rule("Custom Name") {
  *          // ...
  *      }
+ *
+ *      // fail on verification error
+ *      warnOnFailure = false
  *  }
  * ```
  */
@@ -910,6 +919,9 @@ public interface KoverVerifyTaskConfig: KoverVerificationRulesConfig {
  *      rule("custom rule name") {
  *          // named verification rule
  *      }
+ *
+ *      // fail on verification error
+ *      warnOnFailure = false
  *  }
  * ```
  */
@@ -926,6 +938,15 @@ public interface KoverVerificationRulesConfig {
      * The name will be displayed in case of a verification error if Kover Tool was used.
      */
     public fun rule(name: String, config: Action<KoverVerifyRule>)
+
+    /**
+     * In case of a verification error, print a message to the log with the warn level instead of the Gradle task execution error.
+     *
+     * Gradle task error if `false`, warn message if `true`.
+     *
+     * `false` by default.
+     */
+    public val warnOnFailure: Property<Boolean>
 }
 
 /**

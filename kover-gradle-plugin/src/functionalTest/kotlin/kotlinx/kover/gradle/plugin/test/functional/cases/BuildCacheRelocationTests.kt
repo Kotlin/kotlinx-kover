@@ -59,7 +59,9 @@ class BuildCacheRelocationTests {
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverXmlReport"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverHtmlReport"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverBinaryReport"))
-            assertEquals("FROM-CACHE", result2.taskOutcome(":koverVerify"))
+            assertEquals("FROM-CACHE", result2.taskOutcome(":koverCachedVerify"))
+            // should always be executed
+            assertEquals("SUCCESS", result2.taskOutcome(":koverVerify"))
         } catch (e: Throwable) {
             throw AssertionError("Build log \n${result2.output}",e)
         }

@@ -11,30 +11,13 @@ import kotlinx.kover.features.jvm.Rule
 import kotlinx.kover.features.jvm.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
-import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
-import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
+import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import kotlinx.kover.gradle.plugin.tools.kover.convert
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
 import org.gradle.internal.reflect.JavaMethod
-import java.io.File
 import java.math.BigDecimal
 import java.util.*
-
-
-internal fun ReportContext.jacocoVerify(
-    rules: List<VerificationRule>,
-    outputFile: File
-) {
-    val violations = doJacocoVerify(rules)
-
-    val errorMessage = generateErrorMessage(violations)
-    outputFile.writeText(errorMessage)
-
-    if (violations.isNotEmpty()) {
-        throw KoverVerificationException(errorMessage)
-    }
-}
 
 
 internal fun ReportContext.doJacocoVerify(rules: List<VerificationRule>): List<RuleViolations> {

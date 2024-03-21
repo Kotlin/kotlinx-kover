@@ -230,6 +230,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVariantSour
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerificationRulesConfig {
+	public abstract fun getWarnOnFailure ()Lorg/gradle/api/provider/Property;
 	public abstract fun rule (Ljava/lang/String;Lorg/gradle/api/Action;)V
 	public abstract fun rule (Lorg/gradle/api/Action;)V
 }

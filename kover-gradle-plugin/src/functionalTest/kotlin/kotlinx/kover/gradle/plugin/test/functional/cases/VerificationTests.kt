@@ -176,6 +176,71 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
     }
 
     @SlicedGeneratedTest(allLanguages = true, allTools = true)
+    fun BuildConfigurator.testRootRulesWarnOnFail() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            kover {
+                reports {
+                    verify {
+                        warnOnFailure.set(true)
+                        rule("root rule") {
+                            bound {
+                                minValue.set(99)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverVerify") {
+            taskOutput(":koverVerify") {
+                match {
+                    assertContains("Kover Verification Error")
+                    assertKoverContains("Rule 'root rule' violated: lines covered percentage is *, but expected minimum is 99\n")
+                    assertJaCoCoContains("Rule violated: lines covered percentage is *, but expected minimum is 99.0000\n")
+                }
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
+    fun BuildConfigurator.testRootRulesOverrideWarnOnFail() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            kover {
+                reports {
+                    verify {
+                        warnOnFailure.set(false)
+                    }
+                    total {
+                        verify {
+                            warnOnFailure.set(true)
+                            rule("root rule") {
+                                bound {
+                                    minValue.set(99)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverVerify") {
+            taskOutput(":koverVerify") {
+                match {
+                    assertContains("Kover Verification Error")
+                    assertKoverContains("Rule 'root rule' violated: lines covered percentage is *, but expected minimum is 99\n")
+                    assertJaCoCoContains("Rule violated: lines covered percentage is *, but expected minimum is 99.0000\n")
+                }
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(allLanguages = true, allTools = true)
     fun BuildConfigurator.testRootRulesOverride() {
         addProjectWithKover {
             sourcesFrom("simple")

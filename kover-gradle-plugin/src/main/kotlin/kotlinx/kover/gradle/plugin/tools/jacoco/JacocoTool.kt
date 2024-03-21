@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
+import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.tools.CoverageRequest
@@ -47,8 +48,8 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
         throw GradleException("It is not possible to generate an Kover binary report for JaCoCo. Please use Kover toolset")
     }
 
-    override fun verify(rules: List<VerificationRule>, outputFile: File, context: ReportContext) {
-        context.jacocoVerify(rules, outputFile)
+    override fun verify(rules: List<VerificationRule>, context: ReportContext): List<KoverLegacyFeatures.RuleViolations> {
+        return context.doJacocoVerify(rules)
     }
 
     override fun collectCoverage(

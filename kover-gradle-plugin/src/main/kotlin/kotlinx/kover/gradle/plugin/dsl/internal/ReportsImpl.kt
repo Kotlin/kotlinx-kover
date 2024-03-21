@@ -137,6 +137,11 @@ internal abstract class KoverVerificationRulesConfigImpl @Inject constructor(
 ) : KoverVerificationRulesConfig {
     internal abstract val rules: ListProperty<KoverVerifyRuleImpl>
 
+    init {
+        @Suppress("LeakingThis")
+        warnOnFailure.convention(false)
+    }
+
     override fun rule(config: Action<KoverVerifyRule>) {
         val newRule = objects.newInstance<KoverVerifyRuleImpl>(objects, "")
         config(newRule)
@@ -152,6 +157,7 @@ internal abstract class KoverVerificationRulesConfigImpl @Inject constructor(
 
     internal fun extendFrom(other: KoverVerificationRulesConfigImpl) {
         rules.addAll(other.rules)
+        warnOnFailure.convention(other.warnOnFailure)
     }
 
     internal fun clean() {

@@ -35,7 +35,7 @@ internal class VariantReportsSet(
     private val htmlTask: TaskProvider<KoverHtmlTask>
     private val xmlTask: TaskProvider<KoverXmlTask>
     private val binTask: TaskProvider<KoverBinaryTask>
-    private val verifyTask: TaskProvider<KoverVerifyTask>
+    private val doVerifyTask: TaskProvider<KoverDoVerifyTask>
     private val logTask: TaskProvider<KoverFormatCoverageTask>
 
     init {
@@ -52,10 +52,12 @@ internal class VariantReportsSet(
             "Task to generate binary coverage report in IntelliJ format for ${variantSuffix()}"
         )
 
-        verifyTask = project.tasks.createReportTask<KoverVerifyTask>(
-            verifyTaskName(variantName),
+        doVerifyTask = project.tasks.createReportTask<KoverDoVerifyTask>(
+            verifyCachedTaskName(variantName),
             "Task to validate coverage bounding rules for ${variantSuffix()}"
         )
+        val verifyTask = project.tasks.register<KoverVerifyTask>(verifyTaskName(variantName))
+
         logTask = project.tasks.createReportTask<KoverFormatCoverageTask>(
             logTaskName(variantName),
             "Task to print coverage to log for ${variantSuffix()}"
@@ -93,20 +95,37 @@ internal class VariantReportsSet(
             if (run) listOf(binTask) else emptyList()
         }
 
-        verifyTask.configure {
+
+        doVerifyTask.configure {
             val resultRules = config.verify.rules
             val converted = resultRules.map { rules -> rules.map { it.convert() } }
+
+            filters.set((config.filters).convert())
+            rules.addAll(converted)
 
             // path can't be changed
             resultFile.convention(project.layout.buildDirectory.file(verificationErrorsPath(variantName)))
 
-            filters.set((config.filters).convert())
-            rules.addAll(converted)
+            description = "Cacheable task for performing verification for ${variantSuffix()}"
+        }
+        verifyTask.configure {
+            warnOnFailure.convention(config.verify.warnOnFailure)
+            errorFile.convention(doVerifyTask.flatMap { it.resultFile })
 
             shouldRunAfter(htmlTask)
             shouldRunAfter(xmlTask)
             shouldRunAfter(binTask)
             shouldRunAfter(logTask)
+
+            dependsOn(doVerifyTask)
+
+            group = LifecycleBasePlugin.VERIFICATION_GROUP
+
+            // always execute
+            outputs.upToDateWhen { false }
+
+            val koverDisabledProvider = koverDisabled
+            onlyIf { !koverDisabledProvider.get() }
         }
         runOnCheck += config.verify.onCheck.map { run ->
             if (run) listOf(verifyTask) else emptyList()
@@ -117,6 +136,9 @@ internal class VariantReportsSet(
             onlyIf {
                 fileWithMessage.asFile.get().exists()
             }
+
+            // always execute
+            outputs.upToDateWhen { false }
         }
 
         logTask.configure {
@@ -146,7 +168,7 @@ internal class VariantReportsSet(
         htmlTask.assign(variant)
         xmlTask.assign(variant)
         binTask.assign(variant)
-        verifyTask.assign(variant)
+        doVerifyTask.assign(variant)
         logTask.assign(variant)
     }
 
