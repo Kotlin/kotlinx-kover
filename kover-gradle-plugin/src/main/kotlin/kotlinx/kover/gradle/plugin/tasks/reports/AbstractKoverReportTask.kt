@@ -84,13 +84,10 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:Inject
     protected abstract val obj: ObjectFactory
 
-    @get:Inject
-    protected abstract val workerExecutor: WorkerExecutor
-
     private val rootDir: File = project.rootDir
 
     protected fun context(): ReportContext {
-        val services = GradleReportServices(workerExecutor, ant, obj)
+        val services = GradleReportServices(ant, obj)
         return ReportContext(collectAllFiles(), filters.get(), reportClasspath, temporaryDir, projectPath, services)
     }
 

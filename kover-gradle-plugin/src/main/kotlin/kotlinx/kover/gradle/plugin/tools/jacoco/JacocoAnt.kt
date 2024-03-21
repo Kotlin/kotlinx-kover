@@ -6,8 +6,8 @@ package kotlinx.kover.gradle.plugin.tools.jacoco
 
 import groovy.lang.Closure
 import groovy.lang.GroovyObject
+import kotlinx.kover.features.jvm.KoverFeatures
 import kotlinx.kover.gradle.plugin.commons.ReportContext
-import kotlinx.kover.gradle.plugin.util.wildcardsToRegex
 import java.io.File
 
 
@@ -88,6 +88,6 @@ internal inline fun GroovyObject.invokeWithBody(
  */
 private fun String.wildcardsToClassFileRegex(): String {
     val filenameWithWildcards = this.replace('.', File.separatorChar) + ".class"
-    return filenameWithWildcards.wildcardsToRegex()
+    return KoverFeatures.koverWildcardToRegex(filenameWithWildcards)
 }
 

@@ -19,6 +19,20 @@ public class KoverFeatures {
     }
 
     /**
+     * Converts a Kover template string to a regular expression string.
+     * <p>
+     * Replaces characters *` or `.` to `.*`, `#` to `[^.]*` and `?` to `.` regexp characters.
+     * All special characters of regular expressions are also escaped.
+     * </p>
+     *
+     * @param template Template string in Kover format
+     * @return Regular expression corresponding given Kover template
+     */
+    public static String koverWildcardToRegex(String template) {
+        return Wildcards.wildcardsToRegex(template);
+    }
+
+    /**
      * Create instance to instrument already compiled class-files.
      *
      * @return instrumenter for offline instrumentation.

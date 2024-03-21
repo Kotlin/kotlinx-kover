@@ -5,13 +5,16 @@
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
 import groovy.lang.GroovyObject
+import kotlinx.kover.features.jvm.KoverLegacyFeatures.Bound
+import kotlinx.kover.features.jvm.KoverLegacyFeatures.BoundViolation
+import kotlinx.kover.features.jvm.KoverLegacyFeatures.Rule
+import kotlinx.kover.features.jvm.KoverLegacyFeatures.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
-import kotlinx.kover.gradle.plugin.tools.BoundViolations
-import kotlinx.kover.gradle.plugin.tools.RuleViolations
 import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
+import kotlinx.kover.gradle.plugin.tools.kover.convert
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
 import org.gradle.internal.reflect.JavaMethod
 import java.io.File
@@ -119,7 +122,11 @@ private fun GroovyObject.violations(): List<RuleViolations> {
         val isMax = match.groupValues[6].asIsMax(it)
         val expected = match.groupValues[7].asValue(it, agg)
 
-        RuleViolations(entityType, listOf(BoundViolations(isMax, expected, value, coverageUnits, agg, entityName)), "")
+        val bound =
+            Bound(if (!isMax) expected else null, if (isMax) expected else null, coverageUnits.convert(), agg.convert())
+        val rule = Rule("", entityType.convert(), listOf(bound))
+
+        RuleViolations(rule, listOf(BoundViolation(bound, isMax, value, entityName)))
     }.toList()
 }
 

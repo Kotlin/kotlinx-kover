@@ -16,7 +16,6 @@
 
 package kotlinx.kover.cli.commands
 
-import kotlinx.kover.cli.util.asRegex
 import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import kotlinx.kover.features.jvm.KoverLegacyFeatures.ClassFilters
 import org.kohsuke.args4j.Argument
@@ -78,9 +77,9 @@ internal class ReportCommand : Command {
 
     override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {
         val filters = ClassFilters(
-            includeClasses.asRegex().toSet(),
-            excludeClasses.asRegex().toSet(),
-            excludeAnnotation.asRegex().toSet()
+            includeClasses.toSet(),
+            excludeClasses.toSet(),
+            excludeAnnotation.toSet()
         )
 
         var fail = false
@@ -94,7 +93,7 @@ internal class ReportCommand : Command {
         }
         if (htmlDir != null) {
             try {
-                KoverLegacyFeatures.generateHtmlReport(htmlDir, binaryReports, outputRoots, sourceRoots, title ?: "Kover HTML Report", filters)
+                KoverLegacyFeatures.generateHtmlReport(htmlDir, null, binaryReports, outputRoots, sourceRoots, title ?: "Kover HTML Report", filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("HTML generation failed: " + e.message)
