@@ -93,12 +93,20 @@ internal abstract class KoverVariantCreateConfigImpl @Inject constructor(private
     internal val variantsByName: MutableMap<String, MergingOptionality> = mutableMapOf()
 
     override fun add(vararg variantNames: String, optional: Boolean) {
+        add(listOf(*variantNames), optional)
+    }
+
+    override fun addWithDependencies(vararg variantNames: String, optional: Boolean) {
+        addWithDependencies(listOf(*variantNames), optional)
+    }
+
+    override fun add(variantNames: Iterable<String>, optional: Boolean) {
         for (addedVariantName in variantNames) {
             addByName(addedVariantName, variantName, optional, withDependencies = false)
         }
     }
 
-    override fun addWithDependencies(vararg variantNames: String, optional: Boolean) {
+    override fun addWithDependencies(variantNames: Iterable<String>, optional: Boolean) {
         for (addedVariantName in variantNames) {
             addByName(addedVariantName, variantName, optional, withDependencies = true)
         }

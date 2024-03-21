@@ -216,4 +216,21 @@ public interface KoverVariantCreateConfig: KoverVariantConfig {
      * If [optional] is `true` and a variant with given name is not found in the current project - in this case, the variant will not be searched even in dependencies.
      */
     public fun addWithDependencies(vararg variantNames: String, optional: Boolean = false)
+    /**
+     * Add to created variant classes, tests and instrumented classes from report variant with name [variantNames].
+     * This variant is taken only from the current project.
+     *
+     * If [optional] is `false` and a variant with given name is not found in the current project, an error [KoverIllegalConfigException] is thrown.
+     */
+    public fun add(variantNames: Iterable<String>, optional: Boolean = false)
+
+    /**
+     * Add to created variant classes, tests and instrumented classes from report variant with name [variantNames].
+     * This variant is taken from the current project and all `kover(project("name"))` dependency projects.
+     *
+     * If [optional] is `false` and a variant with given name is not found in the current project, an error [KoverIllegalConfigException] is thrown.
+     *
+     * If [optional] is `true` and a variant with given name is not found in the current project - in this case, the variant will not be searched even in dependencies.
+     */
+    public fun addWithDependencies(variantNames: Iterable<String>, optional: Boolean = false)
 }
