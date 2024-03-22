@@ -8,6 +8,7 @@ import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
+import java.io.Closeable
 
 
 internal class ReportAnnotationFilterTests {
@@ -37,18 +38,50 @@ internal class ReportAnnotationFilterTests {
                 }
             }
         }
+    }
 
-        run("koverXmlReport", "check") {
+    class Foo : AutoCloseable {
+        fun function() {
+            println("function")
+        }
+
+        override fun close() {
+            println("foo")
+        }
+    }
+
+    @GeneratedTest
+    fun BuildConfigurator.testInclusions() {
+        addProjectWithKover {
+            sourcesFrom("annotations-mix")
+            kover {
+                reports {
+                    filters {
+                        excludes {
+                            classes("*ByName")
+                            annotatedBy("org.jetbrains.Exclude")
+                        }
+                        includes {
+                            annotatedBy("*.Include")
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverXmlReport") {
             xmlReport {
-                methodCounter("org.jetbrains.NotExcludedClass", "function").assertFullyCovered()
+                classCounter("org.jetbrains.NotAnnotatedClass").assertAbsent()
                 classCounter("org.jetbrains.ExcludedClass").assertAbsent()
-                methodCounter("org.jetbrains.PartiallyExcludedClass", "function1").assertFullyCovered()
-                methodCounter("org.jetbrains.PartiallyExcludedClass", "function2").assertAbsent()
-                methodCounter("org.jetbrains.PartiallyExcludedClass", "inlined").assertAbsent()
+                classCounter("org.jetbrains.ExcludedByName").assertAbsent()
+                classCounter("org.jetbrains.TogetherClass").assertAbsent()
 
-                methodCounter("org.jetbrains.SourcesKt", "inlinedExcluded").assertAbsent()
-                methodCounter("org.jetbrains.SourcesKt", "inlinedNotExcluded").assertFullyCovered()
-                methodCounter("org.jetbrains.SourcesKt", "notExcluded").assertFullyCovered()
+                classCounter("org.jetbrains.IncludedClass").assertFullyMissed()
+                methodCounter("org.jetbrains.IncludedClass", "function").assertFullyMissed()
+
+                classCounter("org.jetbrains.MixedClass").assertFullyMissed()
+                methodCounter("org.jetbrains.MixedClass", "function1").assertFullyMissed()
+                methodCounter("org.jetbrains.MixedClass", "function2").assertAbsent()
             }
         }
     }

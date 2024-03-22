@@ -65,7 +65,10 @@ internal class OfflineInstrumentCommand : Command {
         val filters = ClassFilters(
             includeClasses.toSet(),
             excludeClasses.toSet(),
-            excludeAnnotation.toSet()
+            excludeAnnotation.toSet(),
+            emptySet(),
+            emptySet(),
+            emptySet()
         )
 
         try {

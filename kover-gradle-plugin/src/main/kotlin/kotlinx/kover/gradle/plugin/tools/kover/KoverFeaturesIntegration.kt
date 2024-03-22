@@ -14,7 +14,10 @@ private typealias FeatureAggregationType = kotlinx.kover.features.jvm.Aggregatio
 internal fun ReportFilters.toKoverFeatures() = ClassFilters(
     includesClasses,
     excludesClasses,
-    excludesAnnotations
+    includesAnnotations,
+    excludesAnnotations,
+    includeInheritedFrom,
+    excludeInheritedFrom
 )
 
 internal fun VerificationRule.convert(): Rule {
