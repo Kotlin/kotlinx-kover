@@ -187,16 +187,61 @@ public class KoverLegacyFeatures {
         public final Set<String> excludeClasses;
 
         /**
+         * Classes that have at least one of the annotations specified in this field are presents in the report.
+         * All other classes that are not marked with at least one of the specified annotations are not included in the report.
+         */
+        public final Set<String> includeAnnotation;
+
+        /**
          * Classes that have at least one of the annotations specified in this field are not filtered.
          */
         public final Set<String> excludeAnnotation;
 
+        /**
+         * <p>Include only classes inheriting at least one of the specified classes or implementing at least one of the interfaces.</p>
+         * <p>
+         * The entire inheritance tree is analyzed, that is, a class may not inherit the specified class directly.
+         * Similarly, for the specified interfaces, it is checked that they are implemented directly in the class, or in one of its heirs.
+         * </p>
+         *
+         * The following classes and interfaces can be specified in arguments:
+         * <ul>
+         *  <li> classes and interfaces declared in the application </li>
+         *  <li> classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application</li>
+         *</ul>
+         * <p>If specified class or interface that is not declared in the application and that is not inherited/implemented directly by one of the application types, then such a filter will have no effect.</p>
+         */
+        public final Set<String> includeInheritedFrom;
+
+        /**
+         * <p>Exclude classes inheriting at least one of the specified classes or implementing at least one of the interfaces.</p>
+         * <p>
+         * The entire inheritance tree is analyzed, that is, a class may not inherit the specified class directly.
+         * Similarly, for the specified interfaces, it is checked that they are implemented directly in the class, or in one of its heirs.
+         * </p>
+         *
+         * The following classes and interfaces can be specified in arguments:
+         * <ul>
+         *  <li> classes and interfaces declared in the application </li>
+         *  <li> classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application</li>
+         *</ul>
+         * <p>If specified class or interface that is not declared in the application and that is not inherited/implemented directly by one of the application types, then such a filter will have no effect.</p>
+         */
+        public final Set<String> excludeInheritedFrom;
+
         public ClassFilters(Set<String> includeClasses,
                             Set<String> excludeClasses,
-                            Set<String> excludeAnnotation) {
+                            Set<String> includeAnnotation,
+                            Set<String> excludeAnnotation,
+                            Set<String> includeInheritedFrom,
+                            Set<String> excludeInheritedFrom
+        ) {
             this.includeClasses = includeClasses;
             this.excludeClasses = excludeClasses;
+            this.includeAnnotation = includeAnnotation;
             this.excludeAnnotation = excludeAnnotation;
+            this.includeInheritedFrom = includeInheritedFrom;
+            this.excludeInheritedFrom = excludeInheritedFrom;
         }
     }
 

@@ -12,7 +12,10 @@ import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 internal fun ReportFilters.toKoverFeatures() = KoverLegacyFeatures.ClassFilters(
     includesClasses,
     excludesClasses,
-    excludesAnnotations
+    includesAnnotations,
+    excludesAnnotations,
+    includeInheritedFrom,
+    excludeInheritedFrom
 )
 
 internal fun VerificationRule.convert(): KoverLegacyFeatures.Rule {
