@@ -38,6 +38,7 @@ internal class ReportInheritedFromFilterTests {
             }
         }
     }
+
     @GeneratedTest
     fun BuildConfigurator.testInclusions() {
         addProjectWithKover {
@@ -57,6 +58,8 @@ internal class ReportInheritedFromFilterTests {
             xmlReport {
                 classCounter("org.jetbrains.RegularClass").assertAbsent()
                 classCounter("org.jetbrains.CloseableClass").assertAbsent()
+                // error in reporter here
+                classCounter("org.jetbrains.A").assertAbsent()
 
                 classCounter("org.jetbrains.B").assertFullyMissed()
                 classCounter("org.jetbrains.C").assertFullyMissed()
@@ -68,4 +71,101 @@ internal class ReportInheritedFromFilterTests {
             }
         }
     }
+
+    @GeneratedTest
+    fun BuildConfigurator.testIncludeAndExclude() {
+        addProjectWithKover {
+            sourcesFrom("inherited-main")
+            kover {
+                reports {
+                    filters {
+                        includes {
+                            inheritedFrom("*.Interface", "org.jetbrains.A", "*AutoCloseable")
+                        }
+
+                        excludes {
+                            inheritedFrom("*.B", "*.AutoCloseable")
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverXmlReport") {
+            xmlReport {
+                classCounter("org.jetbrains.RegularClass").assertAbsent()
+                classCounter("org.jetbrains.CloseableClass").assertAbsent()
+                classCounter("org.jetbrains.BChild").assertAbsent()
+                classCounter("org.jetbrains.D").assertAbsent()
+                classCounter("org.jetbrains.DChild").assertAbsent()
+
+                // error in reporter here
+                classCounter("org.jetbrains.B").assertFullyMissed()
+                classCounter("org.jetbrains.C").assertFullyMissed()
+                classCounter("org.jetbrains.AChild").assertFullyMissed()
+                classCounter("org.jetbrains.CChild").assertFullyMissed()
+            }
+        }
+    }
+
+    @GeneratedTest
+    fun BuildConfigurator.testDifferentIncludeFilters() {
+        addProjectWithKover {
+            sourcesFrom("inherited-main")
+            kover {
+                reports {
+                    filters {
+                        includes {
+                            // for includes 'AND' rule should work
+                            inheritedFrom("org.jetbrains.A")
+                            classes("*.*Child")
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverXmlReport") {
+            xmlReport {
+                classCounter("org.jetbrains.A").assertAbsent()
+                classCounter("org.jetbrains.B").assertAbsent()
+
+                classCounter("org.jetbrains.AChild").assertFullyMissed()
+                classCounter("org.jetbrains.BChild").assertFullyMissed()
+            }
+        }
+    }
+    @GeneratedTest
+    fun BuildConfigurator.testDifferentExcludeFilters() {
+        addProjectWithKover {
+            sourcesFrom("inherited-main")
+            kover {
+                reports {
+                    filters {
+                        excludes {
+                            // for excludes 'OR' rule should work
+                            inheritedFrom("org.jetbrains.A")
+                            classes("*.*Child")
+                        }
+                    }
+                }
+            }
+        }
+
+        run("koverXmlReport") {
+            xmlReport {
+                // error in reporter here
+                classCounter("org.jetbrains.A").assertFullyMissed()
+
+                // excluded as inheritor of A
+                classCounter("org.jetbrains.B").assertAbsent()
+
+                // excluded by name
+                classCounter("org.jetbrains.AChild").assertAbsent()
+                classCounter("org.jetbrains.BChild").assertAbsent()
+                classCounter("org.jetbrains.CChild").assertAbsent()
+            }
+        }
+    }
+
 }

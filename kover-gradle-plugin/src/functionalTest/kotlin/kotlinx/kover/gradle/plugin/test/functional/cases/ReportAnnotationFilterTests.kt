@@ -40,16 +40,6 @@ internal class ReportAnnotationFilterTests {
         }
     }
 
-    class Foo : AutoCloseable {
-        fun function() {
-            println("function")
-        }
-
-        override fun close() {
-            println("foo")
-        }
-    }
-
     @GeneratedTest
     fun BuildConfigurator.testInclusions() {
         addProjectWithKover {
