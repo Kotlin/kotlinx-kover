@@ -58,9 +58,10 @@ koverReport {
                 // includes all classes located in specified package and it subpackages
                 packages("com.another.subpackage")
                 // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
-                // if this is specified, then no class that is not marked with an annotation will be included in the report
+                // if this is specified, then classes that are not marked with an annotation will not be included in the report
                 annotatedBy("*MarketToKover*")
-                // include all classes that inherit the specified class or implement the specified interface
+                // include all classes that inherit the specified class or implement the specified interface.
+                // other classes will not be included.
                 inheritedFrom("*Repository")
               }
             }
