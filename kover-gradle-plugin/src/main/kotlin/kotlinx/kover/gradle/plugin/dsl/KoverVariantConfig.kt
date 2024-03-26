@@ -38,6 +38,7 @@ import org.gradle.api.provider.SetProperty
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverCurrentProjectVariantsConfig: KoverVariantConfig {
     /**
      * Create custom report variant with name [variantName].
@@ -90,6 +91,7 @@ public interface KoverCurrentProjectVariantsConfig: KoverVariantConfig {
 /**
  * Common config for Kover report variants.
  */
+@KoverGradlePluginDsl
 public interface KoverVariantConfig {
     /**
      * Limit the classes that will be included in the reports.
@@ -128,6 +130,7 @@ public interface KoverVariantConfig {
  *     excludedSourceSets.addAll(excludedSourceSet)
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverVariantSources {
     /**
      * Exclude classes compiled by Java compiler from all reports
@@ -164,6 +167,7 @@ public interface KoverVariantSources {
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverProjectInstrumentation {
     /**
      * Disable instrumentation in all test tasks.
@@ -198,6 +202,7 @@ public interface KoverProjectInstrumentation {
  *  addWithDependencies("custom")
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverVariantCreateConfig: KoverVariantConfig {
     /**
      * Add to created variant classes, tests and instrumented classes from report variant with name [variantNames].

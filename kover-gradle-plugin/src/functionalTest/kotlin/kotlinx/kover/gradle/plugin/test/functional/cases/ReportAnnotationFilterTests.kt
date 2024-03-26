@@ -65,9 +65,6 @@ internal class ReportAnnotationFilterTests {
                         }
                     }
                     verify {
-                        filters {
-                            // clear all filters
-                        }
                         rule {
                             bound {
                                 coverageUnits.set(LINE)

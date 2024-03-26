@@ -87,6 +87,7 @@ import org.gradle.api.specs.Spec
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverMergingConfig {
 
     /**
@@ -191,6 +192,7 @@ public interface KoverMergingConfig {
 /**
  * Configuration scope.
  */
+@KoverGradlePluginDsl
 public interface KoverProjectAware {
     /**
      * The current project that is being configured.
@@ -213,6 +215,7 @@ public interface KoverProjectAware {
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverMergingVariantSources: KoverVariantSources, KoverProjectAware
 
 /**
@@ -230,6 +233,7 @@ public interface KoverMergingVariantSources: KoverVariantSources, KoverProjectAw
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverMergingInstrumentation: KoverProjectInstrumentation, KoverProjectAware
 
 /**
@@ -247,5 +251,6 @@ public interface KoverMergingInstrumentation: KoverProjectInstrumentation, Kover
  *  }
  * ```
  */
+@KoverGradlePluginDsl
 public interface KoverMergingVariantCreate: KoverVariantCreateConfig, KoverProjectAware
 

@@ -188,13 +188,13 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
                                 minValue.set(99)
                             }
                         }
+                    }
 
-                        total {
-                            verify {
-                                rule("root rule") {
-                                    bound {
-                                        minValue.set(10)
-                                    }
+                    total {
+                        verify {
+                            rule("root rule") {
+                                bound {
+                                    minValue.set(10)
                                 }
                             }
                         }
