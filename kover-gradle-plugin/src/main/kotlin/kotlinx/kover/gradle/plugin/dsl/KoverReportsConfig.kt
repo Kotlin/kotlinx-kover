@@ -703,16 +703,16 @@ public interface KoverReportFilter {
     val projects: SetProperty<String>
 
     /**
-     * Filter classes inheriting at least one of the specified classes or implementing at least one of the interfaces.
+     * Filter classes extending at least one of the specified classes or implementing at least one of the interfaces.
      *
-     * The entire inheritance tree is analyzed, that is, a class may not inherit the specified class directly.
+     * The entire inheritance tree is analyzed, that is, a class may not extend the specified class directly.
      * Similarly, for the specified interfaces, it is checked that they are implemented directly in the class, or in one of its heirs.
      *
      * The following classes and interfaces can be specified in arguments:
      *  - classes and interfaces declared in the application
      *  - classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application
      *
-     * If specified class or interface that is not declared in the application and that is not inherited/implemented directly by one of the application types, then such a filter will have no effect.
+     * If specified class or interface that is not declared in the application and that is not extended/implemented directly by one of the application types, then such a filter will have no effect.
      *
      * If this filter is specified, then the generation of the report may slow down, because it becomes necessary to analyze the inheritance tree.
      *
@@ -729,16 +729,16 @@ public interface KoverReportFilter {
     public fun inheritedFrom(vararg typeName: String)
 
     /**
-     * Filter classes inheriting at least one of the specified classes or implementing at least one of the interfaces.
+     * Filter classes extending at least one of the specified classes or implementing at least one of the interfaces.
      *
-     * The entire inheritance tree is analyzed, that is, a class may not inherit the specified class directly.
+     * The entire inheritance tree is analyzed, that is, a class may not extend the specified class directly.
      * Similarly, for the specified interfaces, it is checked that they are implemented directly in the class, or in one of its heirs.
      *
      * The following classes and interfaces can be specified in arguments:
      *  - classes and interfaces declared in the application
      *  - classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application
      *
-     * If specified class or interface that is not declared in the application and that is not inherited/implemented directly by one of the application types, then such a filter will have no effect.
+     * If specified class or interface that is not declared in the application and that is not extended/implemented directly by one of the application types, then such a filter will have no effect.
      *
      * If this filter is specified, then the generation of the report may slow down, because it becomes necessary to analyze the inheritance tree.
      *
