@@ -6,10 +6,7 @@ package kotlinx.kover.features.jvm;
 
 import com.intellij.rt.coverage.report.api.Filters;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 class Wildcards {
@@ -32,7 +29,10 @@ class Wildcards {
         return new Filters(
                 convert(filters.includeClasses),
                 convert(filters.excludeClasses),
-                convert(filters.excludeAnnotation)
+                convert(filters.includeAnnotation),
+                convert(filters.excludeAnnotation),
+                convert(filters.includeInheritedFrom),
+                convert(filters.excludeInheritedFrom)
         );
     }
 

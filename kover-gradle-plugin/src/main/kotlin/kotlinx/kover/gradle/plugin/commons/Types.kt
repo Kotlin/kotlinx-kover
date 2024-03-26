@@ -73,9 +73,13 @@ internal data class ReportFilters(
     @get:Input
     val includesAnnotations: Set<String> = emptySet(),
     @get:Input
+    val includeInheritedFrom: Set<String> = emptySet(),
+    @get:Input
     val excludesClasses: Set<String> = emptySet(),
     @get:Input
-    val excludesAnnotations: Set<String> = emptySet()
+    val excludesAnnotations: Set<String> = emptySet(),
+    @get:Input
+    val excludeInheritedFrom: Set<String> = emptySet()
 ): Serializable
 
 internal open class VerificationRule @Inject constructor(

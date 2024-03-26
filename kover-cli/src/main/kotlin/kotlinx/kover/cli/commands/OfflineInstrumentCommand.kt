@@ -64,7 +64,10 @@ internal class OfflineInstrumentCommand : Command {
         val filters = KoverLegacyFeatures.ClassFilters(
             includeClasses.toSet(),
             excludeClasses.toSet(),
-            excludeAnnotation.toSet()
+            excludeAnnotation.toSet(),
+            emptySet(),
+            emptySet(),
+            emptySet()
         )
 
         try {
