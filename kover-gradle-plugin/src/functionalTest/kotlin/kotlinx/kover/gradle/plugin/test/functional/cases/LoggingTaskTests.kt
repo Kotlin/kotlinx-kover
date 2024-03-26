@@ -10,6 +10,7 @@ import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.BuildConfigurator
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTest
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 internal class LoggingTaskTests {
@@ -153,6 +154,35 @@ internal class LoggingTaskTests {
                     this
                 )
             }
+        }
+    }
+
+
+    /**
+     * Check that coverage log is printed even if log level strictly limited (e.g. warn or quiet).
+     */
+    @GeneratedTest
+    fun BuildConfigurator.testLogLevel() {
+        val headerText = "MY HEADER"
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            kover {
+                reports {
+                    total {
+                        log {
+                            header.set(headerText)
+                        }
+                    }
+                }
+            }
+        }
+
+        run(":koverLog", "--quiet") {
+            assertContains(output, headerText)
+        }
+        run(":koverLog", "--warn") {
+            assertContains(output, headerText)
         }
     }
 
