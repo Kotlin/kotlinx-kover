@@ -207,7 +207,7 @@ public class KoverLegacyFeatures {
          * The following classes and interfaces can be specified in arguments:
          * <ul>
          *  <li> classes and interfaces declared in the application </li>
-         *  <li> classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application</li>
+         *  <li> classes and interfaces declared outside the application, if they are directly inherited or implemented by any type from the application</li>
          *</ul>
          * <p>If specified class or interface that is not declared in the application and that is not inherited/implemented directly by one of the application types, then such a filter will have no effect.</p>
          */
