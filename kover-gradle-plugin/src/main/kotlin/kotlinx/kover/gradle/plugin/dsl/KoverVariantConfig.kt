@@ -218,7 +218,7 @@ public interface KoverVariantCreateConfig: KoverVariantConfig {
     public fun addWithDependencies(vararg variantNames: String, optional: Boolean = false)
     /**
      * Add to created variant classes, tests and instrumented classes from report variant with name [variantNames].
-     * This variant is taken only from the current project.
+     * These variants are taken only from the current project.
      *
      * If [optional] is `false` and a variant with given name is not found in the current project, an error [KoverIllegalConfigException] is thrown.
      */
