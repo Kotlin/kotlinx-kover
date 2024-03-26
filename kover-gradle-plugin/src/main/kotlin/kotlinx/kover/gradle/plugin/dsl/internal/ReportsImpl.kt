@@ -139,7 +139,7 @@ internal abstract class KoverVerificationRulesConfigImpl @Inject constructor(
 
     init {
         @Suppress("LeakingThis")
-        warnOnFailure.convention(false)
+        warningInsteadOfFailure.convention(false)
     }
 
     override fun rule(config: Action<KoverVerifyRule>) {
@@ -157,7 +157,7 @@ internal abstract class KoverVerificationRulesConfigImpl @Inject constructor(
 
     internal fun extendFrom(other: KoverVerificationRulesConfigImpl) {
         rules.addAll(other.rules)
-        warnOnFailure.convention(other.warnOnFailure)
+        warningInsteadOfFailure.convention(other.warningInsteadOfFailure)
     }
 
     internal fun clean() {

@@ -6,7 +6,6 @@ package kotlinx.kover.gradle.plugin.tasks.reports
 
 import kotlinx.kover.gradle.plugin.commons.KoverVerificationException
 import kotlinx.kover.gradle.plugin.dsl.tasks.KoverVerifyReport
-import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -16,7 +15,7 @@ import org.gradle.work.DisableCachingByDefault
 @DisableCachingByDefault
 internal abstract class KoverVerifyTask : DefaultTask(), KoverVerifyReport {
     @get:Input
-    abstract val warnOnFailure: Property<Boolean>
+    abstract val warningInsteadOfFailure: Property<Boolean>
 
     @get:InputFile
     abstract val errorFile: RegularFileProperty
@@ -29,7 +28,7 @@ internal abstract class KoverVerifyTask : DefaultTask(), KoverVerifyReport {
             return
         }
 
-        if (warnOnFailure.get()) {
+        if (warningInsteadOfFailure.get()) {
             logger.warn("Kover Verification Error\n$errorMessage")
         } else {
             throw KoverVerificationException(errorMessage)

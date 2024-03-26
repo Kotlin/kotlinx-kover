@@ -183,7 +183,7 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
             kover {
                 reports {
                     verify {
-                        warnOnFailure.set(true)
+                        warningInsteadOfFailure.set(true)
                         rule("root rule") {
                             bound {
                                 minValue.set(99)
@@ -194,7 +194,7 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
             }
         }
 
-        run("koverVerify") {
+        run("koverVerify", errorExpected = false) {
             taskOutput(":koverVerify") {
                 match {
                     assertContains("Kover Verification Error")
@@ -213,11 +213,11 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
             kover {
                 reports {
                     verify {
-                        warnOnFailure.set(false)
+                        warningInsteadOfFailure.set(false)
                     }
                     total {
                         verify {
-                            warnOnFailure.set(true)
+                            warningInsteadOfFailure.set(true)
                             rule("root rule") {
                                 bound {
                                     minValue.set(99)
@@ -229,7 +229,7 @@ Rule violated: lines missed count for package 'org.jetbrains.kover.test.function
             }
         }
 
-        run("koverVerify") {
+        run("koverVerify", errorExpected = false) {
             taskOutput(":koverVerify") {
                 match {
                     assertContains("Kover Verification Error")

@@ -109,7 +109,7 @@ internal class VariantReportsSet(
             description = "Cacheable task for performing verification for ${variantSuffix()}"
         }
         verifyTask.configure {
-            warnOnFailure.convention(config.verify.warnOnFailure)
+            warningInsteadOfFailure.convention(config.verify.warningInsteadOfFailure)
             errorFile.convention(doVerifyTask.flatMap { it.resultFile })
 
             shouldRunAfter(htmlTask)

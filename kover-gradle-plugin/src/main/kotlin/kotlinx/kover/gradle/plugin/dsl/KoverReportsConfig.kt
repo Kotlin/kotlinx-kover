@@ -105,7 +105,7 @@ public interface KoverReportsConfig {
      *      }
      *
      *      // fail on verification error
-     *      warnOnFailure = false
+     *      warningInsteadOfFailure = false
      *  }
      * ```
      */
@@ -318,7 +318,7 @@ public interface KoverReportSetConfig {
      *      }
      *
      *      // fail on verification error
-     *      warnOnFailure = false
+     *      warningInsteadOfFailure = false
      *  }
      * ```
      */
@@ -892,7 +892,7 @@ public interface KoverBinaryTaskConfig {
  *      }
  *
  *      // fail on verification error
- *      warnOnFailure = false
+ *      warningInsteadOfFailure = false
  *  }
  * ```
  */
@@ -921,7 +921,7 @@ public interface KoverVerifyTaskConfig: KoverVerificationRulesConfig {
  *      }
  *
  *      // fail on verification error
- *      warnOnFailure = false
+ *      warningInsteadOfFailure = false
  *  }
  * ```
  */
@@ -946,7 +946,7 @@ public interface KoverVerificationRulesConfig {
      *
      * `false` by default.
      */
-    public val warnOnFailure: Property<Boolean>
+    public val warningInsteadOfFailure: Property<Boolean>
 }
 
 /**

@@ -30,7 +30,7 @@ koverReport {
     // verification rules for verification task
     verify {
         // fail on verification error
-        warnOnFailure = false
+        warningInsteadOfFailure = false
       
         // add common verification rule
         rule {
@@ -167,7 +167,7 @@ koverReport {
             onCheck = true
 
             // fail on verification error
-            warnOnFailure = false
+            warningInsteadOfFailure = false
         }
 
         // configure coverage logging
@@ -229,7 +229,7 @@ koverReport {
     // verification rules for verification tasks in all variants
     verify {
         // fail on verification error
-        warnOnFailure = false
+        warningInsteadOfFailure = false
       
         // add common verification rule
         rule {
@@ -366,7 +366,7 @@ koverReport {
 
 
             // fail on verification error
-            warnOnFailure = false
+            warningInsteadOfFailure = false
 
             // add verification rule
             rule {
