@@ -114,6 +114,9 @@ private fun KoverVariantCreateConfig.wrap(project: Project): KoverMergingVariant
         override fun sources(block: Action<KoverVariantSources>) = this@wrap.sources(block)
         override fun add(vararg variantNames: String, optional: Boolean) = this@wrap.add(*variantNames, optional = optional)
         override fun addWithDependencies(vararg variantNames: String, optional: Boolean) = this@wrap.addWithDependencies(*variantNames, optional = optional)
+        override fun add(variantNames: Iterable<String>, optional: Boolean) = this@wrap.add(variantNames, optional = optional)
+        override fun addWithDependencies(variantNames: Iterable<String>, optional: Boolean) = this@wrap.addWithDependencies(variantNames, optional = optional)
+
         override val project: Project = project
     }
 }

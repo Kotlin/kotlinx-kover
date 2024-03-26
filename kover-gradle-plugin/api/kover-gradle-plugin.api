@@ -211,9 +211,13 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVariantConf
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVariantCreateConfig : kotlinx/kover/gradle/plugin/dsl/KoverVariantConfig {
+	public abstract fun add (Ljava/lang/Iterable;Z)V
 	public abstract fun add ([Ljava/lang/String;Z)V
+	public static synthetic fun add$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVariantCreateConfig;Ljava/lang/Iterable;ZILjava/lang/Object;)V
 	public static synthetic fun add$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVariantCreateConfig;[Ljava/lang/String;ZILjava/lang/Object;)V
+	public abstract fun addWithDependencies (Ljava/lang/Iterable;Z)V
 	public abstract fun addWithDependencies ([Ljava/lang/String;Z)V
+	public static synthetic fun addWithDependencies$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVariantCreateConfig;Ljava/lang/Iterable;ZILjava/lang/Object;)V
 	public static synthetic fun addWithDependencies$default (Lkotlinx/kover/gradle/plugin/dsl/KoverVariantCreateConfig;[Ljava/lang/String;ZILjava/lang/Object;)V
 }
 
