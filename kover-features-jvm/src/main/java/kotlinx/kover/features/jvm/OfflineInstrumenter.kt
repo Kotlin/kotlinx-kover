@@ -1,7 +1,11 @@
-package kotlinx.kover.features.jvm;
+/*
+ * Copyright 2017-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
 
-import java.io.IOException;
-import java.io.InputStream;
+package kotlinx.kover.features.jvm
+
+import java.io.IOException
+import java.io.InputStream
 
 /**
  * Class for instrumentation of JVM byte code of already compiled class-files.
@@ -15,5 +19,6 @@ public interface OfflineInstrumenter {
      * @return instrumented byte code
      * @throws IOException in case of any instrumentation error
      */
-    byte[] instrument(InputStream originalClass, String debugName) throws IOException;
+    @Throws(IOException::class)
+    public fun instrument(originalClass: InputStream, debugName: String): ByteArray
 }

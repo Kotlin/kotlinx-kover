@@ -4,7 +4,6 @@
 
 package kotlinx.kover.gradle.plugin.tools.kover
 
-import kotlinx.kover.gradle.plugin.util.wildcardsToRegex
 import java.io.File
 
 internal fun buildJvmAgentArgs(

@@ -4,17 +4,19 @@
 
 package kotlinx.kover.gradle.plugin.tools
 
+import kotlinx.kover.features.jvm.*
 import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import java.io.File
 import java.io.Serializable
-import java.math.*
 import java.nio.charset.Charset
 
-internal fun CoverageMeasures.writeToFile(file: File, header: String?, lineFormat: String) {
+internal fun Iterable<CoverageValue>.writeToFile(file: File, header: String?, lineFormat: String) {
     file.bufferedWriter(Charset.forName("UTF-8")).use { writer ->
         header?.let { h -> writer.appendLine(h) }
 
-        values.forEach { coverage ->
+        forEach { coverage ->
             val entityName = coverage.entityName ?: "application"
             writer.appendLine(
                 lineFormat.replace("<value>", coverage.value.stripTrailingZeros().toPlainString())
@@ -40,42 +42,18 @@ internal data class CoverageRequest(
     val lineFormat: String,
 ): Serializable
 
-internal data class CoverageMeasures(
-    val values: List<CoverageValue>
-)
-
-internal data class CoverageValue(
-    val value: BigDecimal,
-    val entityName: String? = null,
-)
-
-internal data class RuleViolations(
-    val entityType: GroupingEntityType,
-    val bounds: List<BoundViolations>,
-    val name: String
-)
-
-internal data class BoundViolations(
-    val isMax: Boolean,
-    val expectedValue: BigDecimal,
-    val actualValue: BigDecimal,
-    val metric: CoverageUnit,
-    val aggregation: AggregationType,
-    val entityName: String? = null
-)
-
 internal fun generateErrorMessage(violations: List<RuleViolations>): String {
     val messageBuilder = StringBuilder()
 
     violations.forEach { rule ->
-        val namedRule = if (rule.name.isNotEmpty()) "Rule '${rule.name}'" else "Rule"
+        val namedRule = if (rule.rule.name.isNotEmpty()) "Rule '${rule.rule.name}'" else "Rule"
 
-        if (rule.bounds.size == 1) {
-            messageBuilder.appendLine("$namedRule violated: ${rule.bounds[0].format(rule)}")
+        if (rule.violations.size == 1) {
+            messageBuilder.appendLine("$namedRule violated: ${rule.violations[0].format(rule)}")
         } else {
             messageBuilder.appendLine("$namedRule violated:")
 
-            rule.bounds.forEach { bound ->
+            rule.violations.forEach { bound ->
                 messageBuilder.append("  ")
                 messageBuilder.appendLine(bound.format(rule))
             }
@@ -85,27 +63,32 @@ internal fun generateErrorMessage(violations: List<RuleViolations>): String {
     return messageBuilder.toString()
 }
 
-private fun BoundViolations.format(rule: RuleViolations): String {
+private fun BoundViolation.format(rule: RuleViolations): String {
     val directionText = if (isMax) "maximum" else "minimum"
 
-    val metricText = when (metric) {
-        CoverageUnit.LINE -> "lines"
-        CoverageUnit.INSTRUCTION -> "instructions"
-        CoverageUnit.BRANCH -> "branches"
+    val metricText = when (bound.coverageUnits) {
+        FeatureCoverageUnit.LINE -> "lines"
+        FeatureCoverageUnit.INSTRUCTION -> "instructions"
+        FeatureCoverageUnit.BRANCH -> "branches"
     }
 
-    val valueTypeText = when (aggregation) {
-        AggregationType.COVERED_COUNT -> "covered count"
-        AggregationType.MISSED_COUNT -> "missed count"
-        AggregationType.COVERED_PERCENTAGE -> "covered percentage"
-        AggregationType.MISSED_PERCENTAGE -> "missed percentage"
+    val valueTypeText = when (bound.aggregationForGroup) {
+        FeatureAggregationType.COVERED_COUNT -> "covered count"
+        FeatureAggregationType.MISSED_COUNT -> "missed count"
+        FeatureAggregationType.COVERED_PERCENTAGE -> "covered percentage"
+        FeatureAggregationType.MISSED_PERCENTAGE -> "missed percentage"
     }
 
-    val entityText = when (rule.entityType) {
-        GroupingEntityType.APPLICATION -> ""
-        GroupingEntityType.CLASS -> " for class '$entityName'"
-        GroupingEntityType.PACKAGE -> " for package '$entityName'"
+    val entityText = when (rule.rule.groupBy) {
+        GroupingBy.APPLICATION -> ""
+        GroupingBy.CLASS -> " for class '$entityName'"
+        GroupingBy.PACKAGE -> " for package '$entityName'"
     }
 
-    return "$metricText $valueTypeText$entityText is $actualValue, but expected $directionText is $expectedValue"
+    val expectedValue = if (isMax) bound.maxValue else bound.minValue
+
+    return "$metricText $valueTypeText$entityText is $value, but expected $directionText is $expectedValue"
 }
+
+private typealias FeatureCoverageUnit = kotlinx.kover.features.jvm.CoverageUnit
+private typealias FeatureAggregationType = kotlinx.kover.features.jvm.AggregationType

@@ -1,3 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright 2000-2024 JetBrains s.r.o.
  *
@@ -15,7 +19,8 @@
  */
 
 plugins {
-    java
+    kotlin("jvm")
+    alias(libs.plugins.kotlinx.binaryCompatibilityValidator)
     id("kover-publishing-conventions")
 }
 
@@ -24,8 +29,28 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.compileJava {
+    options.release.set(8)
+}
+
+// Workaround:
+// `kotlin-dsl` itself specifies the language version to ensure compatibility of the Kotlin DSL API
+// Since we ourselves guarantee and test compatibility with previous Gradle versions, we can override language version
+// The easiest way to do this now is to specify the version in the `afterEvaluate` block
+afterEvaluate {
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            allWarningsAsErrors.set(true)
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            languageVersion.set(KotlinVersion.KOTLIN_1_5)
+            apiVersion.set(KotlinVersion.KOTLIN_1_5)
+            freeCompilerArgs.addAll("-Xsuppress-version-warnings", "-Xjdk-release=1.8")
+        }
+    }
 }
 
 repositories {

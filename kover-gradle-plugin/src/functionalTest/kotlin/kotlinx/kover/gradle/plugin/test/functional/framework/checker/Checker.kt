@@ -4,11 +4,11 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.checker
 
+import kotlinx.kover.features.jvm.KoverFeatures
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.*
 import kotlinx.kover.gradle.plugin.tools.*
-import kotlinx.kover.gradle.plugin.util.*
 import org.opentest4j.*
 import org.w3c.dom.*
 import java.io.*
@@ -401,7 +401,7 @@ private class XmlReportCheckerImpl(val context: CheckerContextImpl, file: File) 
 private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val content: String) : VerifyReportChecker {
     override fun assertKoverResult(expected: String) {
         if (context.project.toolVariant.vendor != CoverageToolVendor.KOVER) return
-        val regex = expected.wildcardsToRegex().toRegex()
+        val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
         if (!content.matches(regex)) {
             throw AssertionError("Unexpected verification result for Kover Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
         }
@@ -409,7 +409,7 @@ private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val conte
 
     override fun assertJaCoCoResult(expected: String) {
         if (context.project.toolVariant.vendor != CoverageToolVendor.JACOCO) return
-        val regex = expected.wildcardsToRegex().toRegex()
+        val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
         if (!content.matches(regex)) {
             throw AssertionError("Unexpected verification result for JaCoCo Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
         }

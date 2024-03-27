@@ -17,10 +17,12 @@ import java.io.File
 
 
 internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTool {
-    override val jvmAgentDependency: String = "org.jetbrains.kotlinx:kover-jvm-agent:${KoverFeatures.getVersion()}"
+    override val jvmAgentDependency: String = "org.jetbrains.kotlinx:kover-jvm-agent:${KoverFeatures.version}"
 
-    override val jvmReporterDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-reporter:${variant.version}"
-    override val jvmReporterExtraDependency: String = "org.jetbrains.intellij.deps:intellij-coverage-reporter:${variant.version}"
+    // since Kover Features is in compile dependency and there is no need in additional dependency to reporter
+    // we can't just specify null dependency, so use agent as a mock
+    override val jvmReporterDependency: String = jvmAgentDependency
+    override val jvmReporterExtraDependency: String = jvmAgentDependency
 
 
     override fun findJvmAgentJar(classpath: FileCollection, archiveOperations: ArchiveOperations): File {

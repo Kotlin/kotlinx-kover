@@ -4,14 +4,13 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
+import kotlinx.kover.features.jvm.CoverageValue
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.VerificationBound
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.tools.*
-import kotlinx.kover.gradle.plugin.tools.CoverageMeasures
 import kotlinx.kover.gradle.plugin.tools.CoverageRequest
-import kotlinx.kover.gradle.plugin.tools.CoverageValue
 import kotlinx.kover.gradle.plugin.tools.writeToFile
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
 import java.io.File
@@ -28,15 +27,15 @@ internal fun ReportContext.printJacocoCoverage(request: CoverageRequest, outputF
     }
 
     val values = violations.flatMap { rule ->
-        if (rule.bounds.isEmpty()) {
+        if (rule.violations.isEmpty()) {
             throw KoverCriticalException("Expected at least one bound violation for JaCoCo")
         }
-        rule.bounds.map {
-            CoverageValue(it.actualValue, it.entityName)
+        rule.violations.map {
+            CoverageValue(it.entityName, it.value)
         }
     }
 
-    CoverageMeasures(values).writeToFile(
+    values.writeToFile(
         outputFile,
         request.header,
         request.lineFormat
