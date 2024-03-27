@@ -33,6 +33,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+tasks.compileJava {
+    options.release.set(8)
+}
+
 // Workaround:
 // `kotlin-dsl` itself specifies the language version to ensure compatibility of the Kotlin DSL API
 // Since we ourselves guarantee and test compatibility with previous Gradle versions, we can override language version
@@ -44,7 +48,7 @@ afterEvaluate {
             jvmTarget.set(JvmTarget.JVM_1_8)
             languageVersion.set(KotlinVersion.KOTLIN_1_5)
             apiVersion.set(KotlinVersion.KOTLIN_1_5)
-            freeCompilerArgs.add("-Xsuppress-version-warnings")
+            freeCompilerArgs.addAll("-Xsuppress-version-warnings", "-Xjdk-release=1.8")
         }
     }
 }
