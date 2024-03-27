@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+    alias(libs.plugins.kotlinx.binaryCompatibilityValidator)
     id("kover-publishing-conventions")
 }
 
@@ -27,10 +28,9 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
     description.set("Implementation of calling the main features of Kover programmatically")
 }
 
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 // Workaround:

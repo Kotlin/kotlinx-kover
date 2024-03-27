@@ -67,16 +67,16 @@ private fun BoundViolation.format(rule: RuleViolations): String {
     val directionText = if (isMax) "maximum" else "minimum"
 
     val metricText = when (bound.coverageUnits) {
-        kotlinx.kover.features.jvm.CoverageUnit.LINE -> "lines"
-        kotlinx.kover.features.jvm.CoverageUnit.INSTRUCTION -> "instructions"
-        kotlinx.kover.features.jvm.CoverageUnit.BRANCH -> "branches"
+        FeatureCoverageUnit.LINE -> "lines"
+        FeatureCoverageUnit.INSTRUCTION -> "instructions"
+        FeatureCoverageUnit.BRANCH -> "branches"
     }
 
     val valueTypeText = when (bound.aggregationForGroup) {
-        kotlinx.kover.features.jvm.AggregationType.COVERED_COUNT -> "covered count"
-        kotlinx.kover.features.jvm.AggregationType.MISSED_COUNT -> "missed count"
-        kotlinx.kover.features.jvm.AggregationType.COVERED_PERCENTAGE -> "covered percentage"
-        kotlinx.kover.features.jvm.AggregationType.MISSED_PERCENTAGE -> "missed percentage"
+        FeatureAggregationType.COVERED_COUNT -> "covered count"
+        FeatureAggregationType.MISSED_COUNT -> "missed count"
+        FeatureAggregationType.COVERED_PERCENTAGE -> "covered percentage"
+        FeatureAggregationType.MISSED_PERCENTAGE -> "missed percentage"
     }
 
     val entityText = when (rule.rule.groupBy) {
@@ -89,3 +89,6 @@ private fun BoundViolation.format(rule: RuleViolations): String {
 
     return "$metricText $valueTypeText$entityText is $value, but expected $directionText is $expectedValue"
 }
+
+private typealias FeatureCoverageUnit = kotlinx.kover.features.jvm.CoverageUnit
+private typealias FeatureAggregationType = kotlinx.kover.features.jvm.AggregationType

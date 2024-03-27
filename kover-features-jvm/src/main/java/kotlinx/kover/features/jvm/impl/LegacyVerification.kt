@@ -45,7 +45,7 @@ internal object LegacyVerification {
         for (ruleIndex in rules.indices) {
             val rule = rules[ruleIndex]
 
-            val bounds: MutableList<com.intellij.rt.coverage.verify.api.Bound> = ArrayList()
+            val bounds: MutableList<IntellijBound> = ArrayList()
             for (boundIndex in rule.bounds.indices) {
                 val b = rule.bounds[boundIndex]
 
@@ -70,6 +70,7 @@ internal object LegacyVerification {
 
         val ruleViolations = ArrayList<RuleViolations>()
         for (ruleViolation in violations) {
+            // TreeMap is using for getting stable order in result List - in this case, it is easier to write tests and Gradle build cache will not miss
             val resultBounds = TreeMap<ViolationId, BoundViolation>()
 
             val rule = rules[ruleViolation.id]
@@ -142,17 +143,15 @@ internal object LegacyVerification {
         return aggregationType == AggregationType.COVERED_PERCENTAGE || aggregationType == AggregationType.MISSED_PERCENTAGE
     }
 
-    private class ViolationId(private val index: Int, private val entityName: String?) : Comparable<ViolationId> {
+    private data class ViolationId(private val index: Int, private val entityName: String?) : Comparable<ViolationId> {
         override fun compareTo(other: ViolationId): Int {
             // first compared by index
-            if (index != other.index) {
-                return Integer.compare(index, other.index)
-            }
+            index.compareTo(other.index).takeIf { it != 0 }?.let { return it }
 
             // if indexes are equals then compare by entity name
             if (entityName == null) {
                 // bounds with empty entity names goes first
-                return if ((other.entityName == null)) 0 else -1
+                return if (other.entityName == null) 0 else -1
             }
 
             if (other.entityName == null) return 1

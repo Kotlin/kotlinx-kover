@@ -57,6 +57,11 @@ public enum class AggregationType {
     MISSED_PERCENTAGE
 }
 
+/**
+ * Evaluated coverage [value] for given entity with name [entityName].
+ *
+ * Entity could be class, package, etc
+ */
 public data class CoverageValue(val entityName: String?, val value: BigDecimal)
 
 /**

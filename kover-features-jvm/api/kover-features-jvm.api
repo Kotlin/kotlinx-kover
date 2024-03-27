@@ -1,0 +1,136 @@
+public final class kotlinx/kover/features/jvm/AggregationType : java/lang/Enum {
+	public static final field COVERED_COUNT Lkotlinx/kover/features/jvm/AggregationType;
+	public static final field COVERED_PERCENTAGE Lkotlinx/kover/features/jvm/AggregationType;
+	public static final field MISSED_COUNT Lkotlinx/kover/features/jvm/AggregationType;
+	public static final field MISSED_PERCENTAGE Lkotlinx/kover/features/jvm/AggregationType;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/features/jvm/AggregationType;
+	public static fun values ()[Lkotlinx/kover/features/jvm/AggregationType;
+}
+
+public final class kotlinx/kover/features/jvm/Bound {
+	public fun <init> (Ljava/math/BigDecimal;Ljava/math/BigDecimal;Lkotlinx/kover/features/jvm/CoverageUnit;Lkotlinx/kover/features/jvm/AggregationType;)V
+	public final fun component1 ()Ljava/math/BigDecimal;
+	public final fun component2 ()Ljava/math/BigDecimal;
+	public final fun component3 ()Lkotlinx/kover/features/jvm/CoverageUnit;
+	public final fun component4 ()Lkotlinx/kover/features/jvm/AggregationType;
+	public final fun copy (Ljava/math/BigDecimal;Ljava/math/BigDecimal;Lkotlinx/kover/features/jvm/CoverageUnit;Lkotlinx/kover/features/jvm/AggregationType;)Lkotlinx/kover/features/jvm/Bound;
+	public static synthetic fun copy$default (Lkotlinx/kover/features/jvm/Bound;Ljava/math/BigDecimal;Ljava/math/BigDecimal;Lkotlinx/kover/features/jvm/CoverageUnit;Lkotlinx/kover/features/jvm/AggregationType;ILjava/lang/Object;)Lkotlinx/kover/features/jvm/Bound;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getAggregationForGroup ()Lkotlinx/kover/features/jvm/AggregationType;
+	public final fun getCoverageUnits ()Lkotlinx/kover/features/jvm/CoverageUnit;
+	public final fun getMaxValue ()Ljava/math/BigDecimal;
+	public final fun getMinValue ()Ljava/math/BigDecimal;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kotlinx/kover/features/jvm/BoundViolation {
+	public fun <init> (Lkotlinx/kover/features/jvm/Bound;ZLjava/math/BigDecimal;Ljava/lang/String;)V
+	public final fun component1 ()Lkotlinx/kover/features/jvm/Bound;
+	public final fun component2 ()Z
+	public final fun component3 ()Ljava/math/BigDecimal;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun copy (Lkotlinx/kover/features/jvm/Bound;ZLjava/math/BigDecimal;Ljava/lang/String;)Lkotlinx/kover/features/jvm/BoundViolation;
+	public static synthetic fun copy$default (Lkotlinx/kover/features/jvm/BoundViolation;Lkotlinx/kover/features/jvm/Bound;ZLjava/math/BigDecimal;Ljava/lang/String;ILjava/lang/Object;)Lkotlinx/kover/features/jvm/BoundViolation;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBound ()Lkotlinx/kover/features/jvm/Bound;
+	public final fun getEntityName ()Ljava/lang/String;
+	public final fun getValue ()Ljava/math/BigDecimal;
+	public fun hashCode ()I
+	public final fun isMax ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kotlinx/kover/features/jvm/ClassFilters {
+	public fun <init> (Ljava/util/Set;Ljava/util/Set;Ljava/util/Set;)V
+	public final fun component1 ()Ljava/util/Set;
+	public final fun component2 ()Ljava/util/Set;
+	public final fun component3 ()Ljava/util/Set;
+	public final fun copy (Ljava/util/Set;Ljava/util/Set;Ljava/util/Set;)Lkotlinx/kover/features/jvm/ClassFilters;
+	public static synthetic fun copy$default (Lkotlinx/kover/features/jvm/ClassFilters;Ljava/util/Set;Ljava/util/Set;Ljava/util/Set;ILjava/lang/Object;)Lkotlinx/kover/features/jvm/ClassFilters;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getExcludeAnnotation ()Ljava/util/Set;
+	public final fun getExcludeClasses ()Ljava/util/Set;
+	public final fun getIncludeClasses ()Ljava/util/Set;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kotlinx/kover/features/jvm/CoverageUnit : java/lang/Enum {
+	public static final field BRANCH Lkotlinx/kover/features/jvm/CoverageUnit;
+	public static final field INSTRUCTION Lkotlinx/kover/features/jvm/CoverageUnit;
+	public static final field LINE Lkotlinx/kover/features/jvm/CoverageUnit;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/features/jvm/CoverageUnit;
+	public static fun values ()[Lkotlinx/kover/features/jvm/CoverageUnit;
+}
+
+public final class kotlinx/kover/features/jvm/CoverageValue {
+	public fun <init> (Ljava/lang/String;Ljava/math/BigDecimal;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/math/BigDecimal;
+	public final fun copy (Ljava/lang/String;Ljava/math/BigDecimal;)Lkotlinx/kover/features/jvm/CoverageValue;
+	public static synthetic fun copy$default (Lkotlinx/kover/features/jvm/CoverageValue;Ljava/lang/String;Ljava/math/BigDecimal;ILjava/lang/Object;)Lkotlinx/kover/features/jvm/CoverageValue;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEntityName ()Ljava/lang/String;
+	public final fun getValue ()Ljava/math/BigDecimal;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kotlinx/kover/features/jvm/GroupingBy : java/lang/Enum {
+	public static final field APPLICATION Lkotlinx/kover/features/jvm/GroupingBy;
+	public static final field CLASS Lkotlinx/kover/features/jvm/GroupingBy;
+	public static final field PACKAGE Lkotlinx/kover/features/jvm/GroupingBy;
+	public static fun valueOf (Ljava/lang/String;)Lkotlinx/kover/features/jvm/GroupingBy;
+	public static fun values ()[Lkotlinx/kover/features/jvm/GroupingBy;
+}
+
+public final class kotlinx/kover/features/jvm/KoverFeatures {
+	public static final field INSTANCE Lkotlinx/kover/features/jvm/KoverFeatures;
+	public final fun createOfflineInstrumenter ()Lkotlinx/kover/features/jvm/OfflineInstrumenter;
+	public final fun getVersion ()Ljava/lang/String;
+	public final fun koverWildcardToRegex (Ljava/lang/String;)Ljava/lang/String;
+}
+
+public final class kotlinx/kover/features/jvm/KoverLegacyFeatures {
+	public static final field INSTANCE Lkotlinx/kover/features/jvm/KoverLegacyFeatures;
+	public final fun aggregateIc (Ljava/io/File;Lkotlinx/kover/features/jvm/ClassFilters;Ljava/io/File;Ljava/util/List;Ljava/util/List;)V
+	public final fun evalCoverage (Lkotlinx/kover/features/jvm/GroupingBy;Lkotlinx/kover/features/jvm/CoverageUnit;Lkotlinx/kover/features/jvm/AggregationType;Ljava/io/File;Lkotlinx/kover/features/jvm/ClassFilters;Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+	public final fun generateHtmlReport (Ljava/io/File;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lkotlinx/kover/features/jvm/ClassFilters;)V
+	public final fun generateXmlReport (Ljava/io/File;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lkotlinx/kover/features/jvm/ClassFilters;)V
+	public final fun instrument (Ljava/io/File;Ljava/util/List;Lkotlinx/kover/features/jvm/ClassFilters;Z)V
+	public final fun verify (Ljava/util/List;Ljava/io/File;Lkotlinx/kover/features/jvm/ClassFilters;Ljava/util/List;Ljava/util/List;)Ljava/util/List;
+}
+
+public abstract interface class kotlinx/kover/features/jvm/OfflineInstrumenter {
+	public abstract fun instrument (Ljava/io/InputStream;Ljava/lang/String;)[B
+}
+
+public final class kotlinx/kover/features/jvm/Rule {
+	public fun <init> (Ljava/lang/String;Lkotlinx/kover/features/jvm/GroupingBy;Ljava/util/List;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lkotlinx/kover/features/jvm/GroupingBy;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Lkotlinx/kover/features/jvm/GroupingBy;Ljava/util/List;)Lkotlinx/kover/features/jvm/Rule;
+	public static synthetic fun copy$default (Lkotlinx/kover/features/jvm/Rule;Ljava/lang/String;Lkotlinx/kover/features/jvm/GroupingBy;Ljava/util/List;ILjava/lang/Object;)Lkotlinx/kover/features/jvm/Rule;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBounds ()Ljava/util/List;
+	public final fun getGroupBy ()Lkotlinx/kover/features/jvm/GroupingBy;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class kotlinx/kover/features/jvm/RuleViolations {
+	public fun <init> (Lkotlinx/kover/features/jvm/Rule;Ljava/util/List;)V
+	public final fun component1 ()Lkotlinx/kover/features/jvm/Rule;
+	public final fun component2 ()Ljava/util/List;
+	public final fun copy (Lkotlinx/kover/features/jvm/Rule;Ljava/util/List;)Lkotlinx/kover/features/jvm/RuleViolations;
+	public static synthetic fun copy$default (Lkotlinx/kover/features/jvm/RuleViolations;Lkotlinx/kover/features/jvm/Rule;Ljava/util/List;ILjava/lang/Object;)Lkotlinx/kover/features/jvm/RuleViolations;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getRule ()Lkotlinx/kover/features/jvm/Rule;
+	public final fun getViolations ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+

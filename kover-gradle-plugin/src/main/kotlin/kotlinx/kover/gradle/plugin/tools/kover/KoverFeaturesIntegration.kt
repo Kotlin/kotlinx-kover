@@ -8,6 +8,9 @@ import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 
+private typealias FeatureCoverageUnit = kotlinx.kover.features.jvm.CoverageUnit
+private typealias FeatureAggregationType = kotlinx.kover.features.jvm.AggregationType
+
 internal fun ReportFilters.toKoverFeatures() = ClassFilters(
     includesClasses,
     excludesClasses,
@@ -37,19 +40,19 @@ internal fun GroupingEntityType.convert(): GroupingBy {
 }
 
 
-internal fun CoverageUnit.convert(): kotlinx.kover.features.jvm.CoverageUnit {
+internal fun CoverageUnit.convert(): FeatureCoverageUnit {
     return when (this) {
-        CoverageUnit.LINE -> kotlinx.kover.features.jvm.CoverageUnit.LINE
-        CoverageUnit.BRANCH -> kotlinx.kover.features.jvm.CoverageUnit.BRANCH
-        CoverageUnit.INSTRUCTION -> kotlinx.kover.features.jvm.CoverageUnit.INSTRUCTION
+        CoverageUnit.LINE -> FeatureCoverageUnit.LINE
+        CoverageUnit.BRANCH -> FeatureCoverageUnit.BRANCH
+        CoverageUnit.INSTRUCTION -> FeatureCoverageUnit.INSTRUCTION
     }
 }
 
-internal fun AggregationType.convert(): kotlinx.kover.features.jvm.AggregationType {
+internal fun AggregationType.convert(): FeatureAggregationType {
     return when (this) {
-        AggregationType.COVERED_COUNT -> kotlinx.kover.features.jvm.AggregationType.COVERED_COUNT
-        AggregationType.COVERED_PERCENTAGE -> kotlinx.kover.features.jvm.AggregationType.COVERED_PERCENTAGE
-        AggregationType.MISSED_COUNT -> kotlinx.kover.features.jvm.AggregationType.MISSED_COUNT
-        AggregationType.MISSED_PERCENTAGE -> kotlinx.kover.features.jvm.AggregationType.MISSED_PERCENTAGE
+        AggregationType.COVERED_COUNT -> FeatureAggregationType.COVERED_COUNT
+        AggregationType.COVERED_PERCENTAGE -> FeatureAggregationType.COVERED_PERCENTAGE
+        AggregationType.MISSED_COUNT -> FeatureAggregationType.MISSED_COUNT
+        AggregationType.MISSED_PERCENTAGE -> FeatureAggregationType.MISSED_PERCENTAGE
     }
 }

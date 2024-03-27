@@ -19,5 +19,6 @@ public interface OfflineInstrumenter {
      * @return instrumented byte code
      * @throws IOException in case of any instrumentation error
      */
+    @Throws(IOException::class)
     public fun instrument(originalClass: InputStream, debugName: String): ByteArray
 }

@@ -31,10 +31,7 @@ public object KoverLegacyFeatures {
      * @param countHits    Flag indicating whether to count the number of executions to each block of code. `false` if it is enough to register only the fact of at least one execution
      */
     public fun instrument(
-        resultDir: File,
-        originalDirs: List<File?>,
-        filters: ClassFilters,
-        countHits: Boolean
+        resultDir: File, originalDirs: List<File?>, filters: ClassFilters, countHits: Boolean
     ) {
         val outputs = ArrayList<File>(originalDirs.size)
         for (i in originalDirs.indices) {
@@ -100,13 +97,7 @@ public object KoverLegacyFeatures {
         val oldFreemarkerLogger = System.setProperty(FREE_MARKER_LOGGER_PROPERTY_NAME, "none")
         try {
             ReportApi.htmlReport(
-                htmlDir,
-                title,
-                charsetName,
-                binaryReports,
-                classfileDirs,
-                sourceDirs,
-                filters.convert()
+                htmlDir, title, charsetName, binaryReports, classfileDirs, sourceDirs, filters.convert()
             )
         } finally {
             if (oldFreemarkerLogger == null) {
@@ -121,18 +112,15 @@ public object KoverLegacyFeatures {
     /**
      * Verify coverage by specified verification rules.
      *
+     * @param rules         List of the verification rules to check
      * @param tempDir       Directory to create temporary files
      * @param filters       Filters to limit the classes that will be verified
-     * @param binaryReports List of coverage binary binaryReports in IC format
+     * @param binaryReports List of coverage binary reports in IC format
      * @param classfileDirs List of root directories for compiled class-files
      * @return List of rule violation errors, empty list if there is no verification errors.
      */
     public fun verify(
-        rules: List<Rule>,
-        tempDir: File,
-        filters: ClassFilters,
-        binaryReports: List<File>,
-        classfileDirs: List<File>
+        rules: List<Rule>, tempDir: File, filters: ClassFilters, binaryReports: List<File>, classfileDirs: List<File>
     ): List<RuleViolations> {
         try {
             return LegacyVerification.verify(rules, tempDir, filters, binaryReports, classfileDirs)
@@ -147,15 +135,11 @@ public object KoverLegacyFeatures {
      * @param icFile        Target IC report file
      * @param filters       Filters to limit the classes that will be placed into result file
      * @param tempDir       Directory to create temporary files
-     * @param binaryReports List of coverage binary binaryReports in IC format
+     * @param binaryReports List of coverage binary reports in IC format
      * @param classfileDirs List of root directories for compiled class-files
      */
     public fun aggregateIc(
-        icFile: File,
-        filters: ClassFilters,
-        tempDir: File,
-        binaryReports: List<File>,
-        classfileDirs: List<File>
+        icFile: File, filters: ClassFilters, tempDir: File, binaryReports: List<File>, classfileDirs: List<File>
     ) {
         val smapFile = File(tempDir, "report.smap")
 
@@ -166,10 +150,13 @@ public object KoverLegacyFeatures {
     /**
      * Get coverage values from binary reports.
      *
-     * @param tempDir       Directory to create temporary files
-     * @param filters       Filters to limit the classes that will be placed into result coverage
-     * @param binaryReports List of coverage binary binaryReports in IC format
-     * @param classfileDirs List of root directories for compiled class-files
+     * @param groupBy             Code unit for which coverage will be aggregated
+     * @param coverageUnit        Specify which units to measure coverage for (line, branch, etc.)
+     * @param aggregationForGroup Aggregation function that will be calculated over all the elements of the same group
+     * @param tempDir             Directory to create temporary files
+     * @param filters             Filters to limit the classes that will be placed into result coverage
+     * @param binaryReports       List of coverage binary reports in IC format
+     * @param classfileDirs       List of root directories for compiled class-files
      * @return List of coverage values.
      */
     public fun evalCoverage(
