@@ -73,6 +73,7 @@ public object KoverLegacyFeatures {
      * Generate Kover HTML report.
      *
      * @param htmlDir       Output directory with result HTML report
+     * @param charsetName   Name of charset used in HTML report
      * @param binaryReports List of coverage binary reports in IC format
      * @param classfileDirs List of root directories for compiled class-files
      * @param sourceDirs    List of root directories for Java and Kotlin source files
@@ -141,7 +142,7 @@ public object KoverLegacyFeatures {
     public fun aggregateIc(
         icFile: File, filters: ClassFilters, tempDir: File, binaryReports: List<File>, classfileDirs: List<File>
     ) {
-        val smapFile = File(tempDir, "report.smap")
+        val smapFile = tempDir.resolve("report.smap")
 
         val request = Request(filters.convert(), icFile, smapFile)
         AggregatorApi.aggregate(listOf(request), binaryReports, classfileDirs)

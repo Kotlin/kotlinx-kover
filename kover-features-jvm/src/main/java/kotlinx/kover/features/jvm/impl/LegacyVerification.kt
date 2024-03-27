@@ -36,8 +36,8 @@ internal object LegacyVerification {
 
         val rulesArray = ArrayList<IntellijRule>()
 
-        val ic = File(tempDir, "agg-ic.ic")
-        val smap = File(tempDir, "agg-smap.smap")
+        val ic = tempDir.resolve("agg-ic.ic")
+        val smap = tempDir.resolve("agg-smap.smap")
 
         val requests = Request(intellijFilters, ic, smap)
         AggregatorApi.aggregate(listOf(requests), reports, outputs)
@@ -104,7 +104,7 @@ internal object LegacyVerification {
         }
     }
 
-    private fun targetToIntellij(rule: Rule): Target? {
+    private fun targetToIntellij(rule: Rule): Target {
         return when (rule.groupBy) {
             GroupingBy.APPLICATION -> Target.ALL
             GroupingBy.CLASS -> Target.CLASS
@@ -112,7 +112,7 @@ internal object LegacyVerification {
         }
     }
 
-    private fun counterToIntellij(bound: Bound): Counter? {
+    private fun counterToIntellij(bound: Bound): Counter {
         return when (bound.coverageUnits) {
             CoverageUnit.LINE -> Counter.LINE
             CoverageUnit.INSTRUCTION -> Counter.INSTRUCTION
@@ -120,7 +120,7 @@ internal object LegacyVerification {
         }
     }
 
-    private fun valueTypeToIntellij(bound: Bound): ValueType? {
+    private fun valueTypeToIntellij(bound: Bound): ValueType {
         return when (bound.aggregationForGroup) {
             AggregationType.COVERED_COUNT -> ValueType.COVERED
             AggregationType.MISSED_COUNT -> ValueType.MISSED
