@@ -16,6 +16,7 @@
 
 package kotlinx.kover.cli.commands
 
+import kotlinx.kover.features.jvm.ClassFilters
 import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.Option
@@ -61,7 +62,7 @@ internal class OfflineInstrumentCommand : Command {
 
 
     override fun call(output: PrintWriter, errorWriter: PrintWriter): Int {
-        val filters = KoverLegacyFeatures.ClassFilters(
+        val filters = ClassFilters(
             includeClasses.toSet(),
             excludeClasses.toSet(),
             excludeAnnotation.toSet()

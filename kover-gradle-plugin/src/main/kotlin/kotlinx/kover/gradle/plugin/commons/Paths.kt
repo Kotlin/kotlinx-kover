@@ -11,7 +11,7 @@ import java.io.File
 
 internal fun agentFilePath(toolVariant: CoverageToolVariant): String {
     return if (toolVariant.vendor == CoverageToolVendor.KOVER) {
-        "kover${separator}kover-jvm-agent-${KoverFeatures.getVersion()}.jar"
+        "kover${separator}kover-jvm-agent-${KoverFeatures.version}.jar"
     } else {
         "kover${separator}jacoco-coverage-agent-${toolVariant.version}.jar"
     }

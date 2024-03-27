@@ -4,10 +4,10 @@
 
 package kotlinx.kover.gradle.plugin.tools
 
-import kotlinx.kover.features.jvm.KoverLegacyFeatures
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.BoundViolation
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.CoverageValue
+import kotlinx.kover.features.jvm.*
 import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import java.io.File
 import java.io.Serializable
 import java.nio.charset.Charset
@@ -42,7 +42,7 @@ internal data class CoverageRequest(
     val lineFormat: String,
 ): Serializable
 
-internal fun generateErrorMessage(violations: List<KoverLegacyFeatures.RuleViolations>): String {
+internal fun generateErrorMessage(violations: List<RuleViolations>): String {
     val messageBuilder = StringBuilder()
 
     violations.forEach { rule ->
@@ -63,27 +63,26 @@ internal fun generateErrorMessage(violations: List<KoverLegacyFeatures.RuleViola
     return messageBuilder.toString()
 }
 
-@Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-private fun BoundViolation.format(rule: KoverLegacyFeatures.RuleViolations): String {
+private fun BoundViolation.format(rule: RuleViolations): String {
     val directionText = if (isMax) "maximum" else "minimum"
 
     val metricText = when (bound.coverageUnits) {
-        KoverLegacyFeatures.CoverageUnit.LINE -> "lines"
-        KoverLegacyFeatures.CoverageUnit.INSTRUCTION -> "instructions"
-        KoverLegacyFeatures.CoverageUnit.BRANCH -> "branches"
+        kotlinx.kover.features.jvm.CoverageUnit.LINE -> "lines"
+        kotlinx.kover.features.jvm.CoverageUnit.INSTRUCTION -> "instructions"
+        kotlinx.kover.features.jvm.CoverageUnit.BRANCH -> "branches"
     }
 
     val valueTypeText = when (bound.aggregationForGroup) {
-        KoverLegacyFeatures.AggregationType.COVERED_COUNT -> "covered count"
-        KoverLegacyFeatures.AggregationType.MISSED_COUNT -> "missed count"
-        KoverLegacyFeatures.AggregationType.COVERED_PERCENTAGE -> "covered percentage"
-        KoverLegacyFeatures.AggregationType.MISSED_PERCENTAGE -> "missed percentage"
+        kotlinx.kover.features.jvm.AggregationType.COVERED_COUNT -> "covered count"
+        kotlinx.kover.features.jvm.AggregationType.MISSED_COUNT -> "missed count"
+        kotlinx.kover.features.jvm.AggregationType.COVERED_PERCENTAGE -> "covered percentage"
+        kotlinx.kover.features.jvm.AggregationType.MISSED_PERCENTAGE -> "missed percentage"
     }
 
     val entityText = when (rule.rule.groupBy) {
-        KoverLegacyFeatures.GroupingBy.APPLICATION -> ""
-        KoverLegacyFeatures.GroupingBy.CLASS -> " for class '$entityName'"
-        KoverLegacyFeatures.GroupingBy.PACKAGE -> " for package '$entityName'"
+        GroupingBy.APPLICATION -> ""
+        GroupingBy.CLASS -> " for class '$entityName'"
+        GroupingBy.PACKAGE -> " for package '$entityName'"
     }
 
     val expectedValue = if (isMax) bound.maxValue else bound.minValue

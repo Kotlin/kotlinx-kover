@@ -1,3 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /*
  * Copyright 2000-2024 JetBrains s.r.o.
  *
@@ -15,7 +19,7 @@
  */
 
 plugins {
-    java
+    kotlin("jvm")
     id("kover-publishing-conventions")
 }
 
@@ -23,9 +27,26 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
     description.set("Implementation of calling the main features of Kover programmatically")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
+// Workaround:
+// `kotlin-dsl` itself specifies the language version to ensure compatibility of the Kotlin DSL API
+// Since we ourselves guarantee and test compatibility with previous Gradle versions, we can override language version
+// The easiest way to do this now is to specify the version in the `afterEvaluate` block
+afterEvaluate {
+    tasks.withType<KotlinCompile>().configureEach {
+        compilerOptions {
+            allWarningsAsErrors.set(true)
+            jvmTarget.set(JvmTarget.JVM_1_8)
+            languageVersion.set(KotlinVersion.KOTLIN_1_5)
+            apiVersion.set(KotlinVersion.KOTLIN_1_5)
+            freeCompilerArgs.add("-Xsuppress-version-warnings")
+        }
+    }
 }
 
 repositories {

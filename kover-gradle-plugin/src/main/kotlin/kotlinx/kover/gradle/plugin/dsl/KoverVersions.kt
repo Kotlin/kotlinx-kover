@@ -28,5 +28,5 @@ public object KoverVersions {
      * Current version of Kover Gradle Plugin
      */
     public val version: String
-        get() = KoverFeatures.getVersion()
+        get() = KoverFeatures.version
 }

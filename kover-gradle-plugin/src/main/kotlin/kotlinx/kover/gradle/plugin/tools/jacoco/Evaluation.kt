@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.CoverageValue
+import kotlinx.kover.features.jvm.CoverageValue
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.VerificationBound

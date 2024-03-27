@@ -5,10 +5,10 @@
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
 import groovy.lang.GroovyObject
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.Bound
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.BoundViolation
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.Rule
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.RuleViolations
+import kotlinx.kover.features.jvm.Bound
+import kotlinx.kover.features.jvm.BoundViolation
+import kotlinx.kover.features.jvm.Rule
+import kotlinx.kover.features.jvm.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType

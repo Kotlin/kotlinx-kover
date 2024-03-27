@@ -2,28 +2,25 @@
  * Copyright 2017-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
 
-package kotlinx.kover.features.jvm;
+package kotlinx.kover.features.jvm
 
-import com.intellij.rt.coverage.aggregate.api.AggregatorApi;
-import com.intellij.rt.coverage.aggregate.api.Request;
-import com.intellij.rt.coverage.instrument.api.OfflineInstrumentationApi;
-import com.intellij.rt.coverage.report.api.ReportApi;
-import com.intellij.rt.coverage.util.ErrorReporter;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import com.intellij.rt.coverage.aggregate.api.AggregatorApi
+import com.intellij.rt.coverage.aggregate.api.Request
+import com.intellij.rt.coverage.instrument.api.OfflineInstrumentationApi
+import com.intellij.rt.coverage.report.api.ReportApi
+import com.intellij.rt.coverage.util.ErrorReporter
+import kotlinx.kover.features.jvm.impl.ConDySettings
+import kotlinx.kover.features.jvm.impl.LegacyVerification
+import kotlinx.kover.features.jvm.impl.convert
+import java.io.File
+import java.io.IOException
+import java.math.BigDecimal
 
 /**
  * Kover Features for support Kover capabilities in Kover CLI via outdated API.
  */
-public class KoverLegacyFeatures {
-
-    private static final String FREE_MARKER_LOGGER_PROPERTY_NAME = "org.freemarker.loggerLibrary";
+public object KoverLegacyFeatures {
+    private const val FREE_MARKER_LOGGER_PROPERTY_NAME = "org.freemarker.loggerLibrary"
 
     /**
      * Generate modified class-files to measure the coverage.
@@ -31,23 +28,24 @@ public class KoverLegacyFeatures {
      * @param resultDir    Directory where the instrumented class-files will be placed
      * @param originalDirs Root directories where the original files are located, the coverage of which needs to be measured
      * @param filters      Filters to limit the classes that will be displayed in the report
-     * @param countHits    Flag indicating whether to count the number of executions to each block of code. {@code false} if it is enough to register only the fact of at least one execution
+     * @param countHits    Flag indicating whether to count the number of executions to each block of code. `false` if it is enough to register only the fact of at least one execution
      */
-    public static void instrument(File resultDir,
-                                  List<File> originalDirs,
-                                  ClassFilters filters,
-                                  boolean countHits
+    public fun instrument(
+        resultDir: File,
+        originalDirs: List<File?>,
+        filters: ClassFilters,
+        countHits: Boolean
     ) {
-        ArrayList<File> outputs = new ArrayList<>(originalDirs.size());
-        for (int i = 0; i < originalDirs.size(); i++) {
-            outputs.add(resultDir);
+        val outputs = ArrayList<File>(originalDirs.size)
+        for (i in originalDirs.indices) {
+            outputs.add(resultDir)
         }
 
-        String previousConDySetting = ConDySettings.disableConDy();
+        val previousConDySetting = ConDySettings.disableConDy()
         try {
-            OfflineInstrumentationApi.instrument(originalDirs, outputs, Wildcards.convertFilters(filters), countHits);
+            OfflineInstrumentationApi.instrument(originalDirs, outputs, filters.convert(), countHits)
         } finally {
-            ConDySettings.restoreConDy(previousConDySetting);
+            ConDySettings.restoreConDy(previousConDySetting)
         }
     }
 
@@ -62,15 +60,16 @@ public class KoverLegacyFeatures {
      * @param filters       Filters to limit the classes that will be displayed in the report
      * @throws IOException In case of a report generation error
      */
-    public static void generateXmlReport(
-            File xmlFile,
-            List<File> binaryReports,
-            List<File> classfileDirs,
-            List<File> sourceDirs,
-            String title,
-            ClassFilters filters
-    ) throws IOException {
-        ReportApi.xmlReport(xmlFile, title, binaryReports, classfileDirs, sourceDirs, Wildcards.convertFilters(filters));
+    @Throws(IOException::class)
+    public fun generateXmlReport(
+        xmlFile: File,
+        binaryReports: List<File>,
+        classfileDirs: List<File>,
+        sourceDirs: List<File>,
+        title: String,
+        filters: ClassFilters
+    ) {
+        ReportApi.xmlReport(xmlFile, title, binaryReports, classfileDirs, sourceDirs, filters.convert())
     }
 
     /**
@@ -84,31 +83,36 @@ public class KoverLegacyFeatures {
      * @param filters       Filters to limit the classes that will be displayed in the report.
      * @throws IOException In case of a report generation error
      */
-    public static void generateHtmlReport(
-            File htmlDir,
-            String charsetName,
-            List<File> binaryReports,
-            List<File> classfileDirs,
-            List<File> sourceDirs,
-            String title,
-            ClassFilters filters
-    ) throws IOException {
-        // repeat reading freemarker temple from resources if error occurred, see https://github.com/Kotlin/kotlinx-kover/issues/510
-        // the values are selected empirically so that the maximum report generation time is not much more than a second
-        ReportApi.setFreemarkerRetry(7, 150);
-
+    @Throws(IOException::class)
+    public fun generateHtmlReport(
+        htmlDir: File,
+        charsetName: String?,
+        binaryReports: List<File>,
+        classfileDirs: List<File>,
+        sourceDirs: List<File>,
+        title: String,
+        filters: ClassFilters
+    ) {
         // print to stdout only critical errors
-        ErrorReporter.setLogLevel(ErrorReporter.ERROR);
+        ErrorReporter.setLogLevel(ErrorReporter.ERROR)
 
         // disable freemarker logging to stdout for the time of report generation
-        String oldFreemarkerLogger = System.setProperty(FREE_MARKER_LOGGER_PROPERTY_NAME, "none");
+        val oldFreemarkerLogger = System.setProperty(FREE_MARKER_LOGGER_PROPERTY_NAME, "none")
         try {
-            ReportApi.htmlReport(htmlDir, title, charsetName, binaryReports, classfileDirs, sourceDirs, Wildcards.convertFilters(filters));
+            ReportApi.htmlReport(
+                htmlDir,
+                title,
+                charsetName,
+                binaryReports,
+                classfileDirs,
+                sourceDirs,
+                filters.convert()
+            )
         } finally {
             if (oldFreemarkerLogger == null) {
-                System.clearProperty(FREE_MARKER_LOGGER_PROPERTY_NAME);
+                System.clearProperty(FREE_MARKER_LOGGER_PROPERTY_NAME)
             } else {
-                System.setProperty(FREE_MARKER_LOGGER_PROPERTY_NAME, oldFreemarkerLogger);
+                System.setProperty(FREE_MARKER_LOGGER_PROPERTY_NAME, oldFreemarkerLogger)
             }
         }
     }
@@ -123,11 +127,17 @@ public class KoverLegacyFeatures {
      * @param classfileDirs List of root directories for compiled class-files
      * @return List of rule violation errors, empty list if there is no verification errors.
      */
-    public static List<RuleViolations> verify(List<KoverLegacyFeatures.Rule> rules, File tempDir, KoverLegacyFeatures.ClassFilters filters, List<File> binaryReports, List<File> classfileDirs) {
+    public fun verify(
+        rules: List<Rule>,
+        tempDir: File,
+        filters: ClassFilters,
+        binaryReports: List<File>,
+        classfileDirs: List<File>
+    ): List<RuleViolations> {
         try {
-            return LegacyVerification.verify(rules, tempDir, filters, binaryReports, classfileDirs);
-        } catch (IOException e) {
-            throw new RuntimeException("Kover features exception occurred while verification", e);
+            return LegacyVerification.verify(rules, tempDir, filters, binaryReports, classfileDirs)
+        } catch (e: IOException) {
+            throw RuntimeException("Kover features exception occurred while verification", e)
         }
     }
 
@@ -140,11 +150,17 @@ public class KoverLegacyFeatures {
      * @param binaryReports List of coverage binary binaryReports in IC format
      * @param classfileDirs List of root directories for compiled class-files
      */
-    public static void aggregateIc(File icFile, KoverLegacyFeatures.ClassFilters filters, File tempDir, List<File> binaryReports, List<File> classfileDirs) {
-        final File smapFile = new File(tempDir, "report.smap");
+    public fun aggregateIc(
+        icFile: File,
+        filters: ClassFilters,
+        tempDir: File,
+        binaryReports: List<File>,
+        classfileDirs: List<File>
+    ) {
+        val smapFile = File(tempDir, "report.smap")
 
-        Request request = new Request(Wildcards.convertFilters(filters), icFile, smapFile);
-        AggregatorApi.aggregate(Collections.singletonList(request), binaryReports, classfileDirs);
+        val request = Request(filters.convert(), icFile, smapFile)
+        AggregatorApi.aggregate(listOf(request), binaryReports, classfileDirs)
     }
 
     /**
@@ -156,170 +172,45 @@ public class KoverLegacyFeatures {
      * @param classfileDirs List of root directories for compiled class-files
      * @return List of coverage values.
      */
-    public static List<CoverageValue> evalCoverage(GroupingBy groupBy, CoverageUnit coverageUnit, AggregationType aggregationForGroup, File tempDir, KoverLegacyFeatures.ClassFilters filters, List<File> binaryReports, List<File> classfileDirs) {
-        Bound bound = new Bound(LegacyVerification.ONE_HUNDRED, BigDecimal.ZERO, coverageUnit, aggregationForGroup);
-        Rule rule = new Rule("", groupBy, Collections.singletonList(bound));
+    public fun evalCoverage(
+        groupBy: GroupingBy,
+        coverageUnit: CoverageUnit,
+        aggregationForGroup: AggregationType,
+        tempDir: File,
+        filters: ClassFilters,
+        binaryReports: List<File>,
+        classfileDirs: List<File>
+    ): List<CoverageValue> {
+        val bound = Bound(LegacyVerification.ONE_HUNDRED, BigDecimal.ZERO, coverageUnit, aggregationForGroup)
+        val rule = Rule("", groupBy, listOf(bound))
 
-        List<KoverLegacyFeatures.RuleViolations> violations = verify(Collections.singletonList(rule), tempDir, filters, binaryReports, classfileDirs);
-        ArrayList<KoverLegacyFeatures.CoverageValue> result = new ArrayList<>();
+        val violations = verify(listOf(rule), tempDir, filters, binaryReports, classfileDirs)
+        val result = ArrayList<CoverageValue>()
 
-        for (KoverLegacyFeatures.RuleViolations violation : violations) {
-            for (KoverLegacyFeatures.BoundViolation boundViolation : violation.violations) {
-                result.add(new KoverLegacyFeatures.CoverageValue(boundViolation.entityName, boundViolation.value));
+        for (violation in violations) {
+            for (boundViolation in violation.violations) {
+                result.add(CoverageValue(boundViolation.entityName, boundViolation.value))
             }
         }
 
-        return result;
+        return result
     }
-
-    /**
-     * Class filters.
-     */
-    public static class ClassFilters {
-        /**
-         * If specified, only the classes specified in this field are filtered.
-         */
-        public final Set<String> includeClasses;
-
-        /**
-         * The classes specified in this field are not filtered.
-         */
-        public final Set<String> excludeClasses;
-
-        /**
-         * Classes that have at least one of the annotations specified in this field are not filtered.
-         */
-        public final Set<String> excludeAnnotation;
-
-        public ClassFilters(Set<String> includeClasses,
-                            Set<String> excludeClasses,
-                            Set<String> excludeAnnotation) {
-            this.includeClasses = includeClasses;
-            this.excludeClasses = excludeClasses;
-            this.excludeAnnotation = excludeAnnotation;
-        }
-    }
-
-    /**
-     * Entity type for grouping code to coverage evaluation.
-     */
-    public enum GroupingBy {
-        /**
-         * Counts the coverage values for all code.
-         */
-        APPLICATION,
-        /**
-         * Counts the coverage values for each class separately.
-         */
-        CLASS,
-        /**
-         * Counts the coverage values for each package that has classes separately.
-         */
-        PACKAGE
-    }
-
-    /**
-     * Type of the metric to evaluate code coverage.
-     */
-    public enum CoverageUnit {
-        /**
-         * Number of lines.
-         */
-        LINE,
-        /**
-         * Number of JVM bytecode instructions.
-         */
-        INSTRUCTION,
-        /**
-         * Number of branches covered.
-         */
-        BRANCH
-    }
-
-    /**
-     * Type of counter value to compare with minimal and maximal values if them defined.
-     */
-    public enum AggregationType {
-        COVERED_COUNT,
-        MISSED_COUNT,
-        COVERED_PERCENTAGE,
-        MISSED_PERCENTAGE
-    }
-
-    public static class CoverageValue {
-        public final String entityName;
-        public final BigDecimal value;
-
-        public CoverageValue(String entityName, BigDecimal value) {
-            this.entityName = entityName;
-            this.value = value;
-        }
-    }
-
-    /**
-     * Describes a single bound for the verification rule to enforce
-     */
-    public static class Bound {
-        public final BigDecimal minValue;
-        public final BigDecimal maxValue;
-
-        public final CoverageUnit coverageUnits;
-        public final AggregationType aggregationForGroup;
-
-        public Bound(BigDecimal minValue, BigDecimal maxValue, CoverageUnit coverageUnits, AggregationType aggregationForGroup) {
-            this.minValue = minValue;
-            this.maxValue = maxValue;
-            this.coverageUnits = coverageUnits;
-            this.aggregationForGroup = aggregationForGroup;
-        }
-    }
-
-    /**
-     * Verification rule - a named set of bounds of coverage value to check.
-     */
-    public static class Rule {
-        public final String name;
-
-        public final GroupingBy groupBy;
-
-        public final List<Bound> bounds;
-
-        public Rule(String name, GroupingBy groupBy, List<Bound> bounds) {
-            this.name = name;
-            this.groupBy = groupBy;
-            this.bounds = bounds;
-        }
-    }
-
-    /**
-     * Violation of verification rule.
-     */
-    public static class RuleViolations {
-        public final Rule rule;
-
-        public final List<BoundViolation> violations;
-
-        public RuleViolations(Rule rule, List<BoundViolation> violations) {
-            this.rule = rule;
-            this.violations = violations;
-        }
-    }
-
-    /**
-     * Violation of verification bound.
-     */
-    public static class BoundViolation {
-        public final Bound bound;
-        public final boolean isMax;
-        public final BigDecimal value;
-        public final String entityName;
-
-        public BoundViolation(Bound bound, boolean isMax, BigDecimal value, String entityName) {
-            this.bound = bound;
-            this.isMax = isMax;
-            this.value = value;
-            this.entityName = entityName;
-        }
-    }
-
 }
+
+/**
+ * Class filters.
+ */
+public data class ClassFilters(
+    /**
+     * If specified, only the classes specified in this field are filtered.
+     */
+    public val includeClasses: Set<String>,
+    /**
+     * The classes specified in this field are not filtered.
+     */
+    public val excludeClasses: Set<String>,
+    /**
+     * Classes that have at least one of the annotations specified in this field are not filtered.
+     */
+    public val excludeAnnotation: Set<String>
+)

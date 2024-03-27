@@ -16,8 +16,8 @@
 
 package kotlinx.kover.cli.commands
 
+import kotlinx.kover.features.jvm.ClassFilters
 import kotlinx.kover.features.jvm.KoverLegacyFeatures
-import kotlinx.kover.features.jvm.KoverLegacyFeatures.ClassFilters
 import org.kohsuke.args4j.Argument
 import org.kohsuke.args4j.Option
 import java.io.File
@@ -85,7 +85,7 @@ internal class ReportCommand : Command {
         var fail = false
         if (xmlFile != null) {
             try {
-                KoverLegacyFeatures.generateXmlReport(xmlFile, binaryReports, outputRoots, sourceRoots, title ?: "Kover XML Report", filters)
+                KoverLegacyFeatures.generateXmlReport(xmlFile!!, binaryReports, outputRoots, sourceRoots, title ?: "Kover XML Report", filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("XML generation failed: " + e.message)
@@ -93,7 +93,7 @@ internal class ReportCommand : Command {
         }
         if (htmlDir != null) {
             try {
-                KoverLegacyFeatures.generateHtmlReport(htmlDir, null, binaryReports, outputRoots, sourceRoots, title ?: "Kover HTML Report", filters)
+                KoverLegacyFeatures.generateHtmlReport(htmlDir!!, null, binaryReports, outputRoots, sourceRoots, title ?: "Kover HTML Report", filters)
             } catch (e: IOException) {
                 fail = true
                 errorWriter.println("HTML generation failed: " + e.message)

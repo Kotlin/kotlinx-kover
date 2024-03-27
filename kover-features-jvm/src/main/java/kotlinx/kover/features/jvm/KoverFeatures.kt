@@ -1,35 +1,30 @@
-package kotlinx.kover.features.jvm;
+/*
+ * Copyright 2017-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+ */
 
-import java.io.InputStream;
-import java.util.Scanner;
+package kotlinx.kover.features.jvm
+
+import kotlinx.kover.features.jvm.impl.OfflineInstrumenterImpl
+import kotlinx.kover.features.jvm.impl.wildcardsToRegex
+import java.util.*
 
 /**
  * A class for using features via Java calls.
  */
-public class KoverFeatures {
-    private static final String koverVersion = readVersion();
-
+public object KoverFeatures {
     /**
-     * Getting the Kover version.
-     *
-     * @return The version of Kover used in these utilities.
+     * Getting version of Kover used in these utilities.
      */
-    public static String getVersion() {
-        return koverVersion;
-    }
+    public val version: String = readVersion()
 
     /**
-     * Converts a Kover template string to a regular expression string.
-     * <p>
-     * Replaces characters *` or `.` to `.*`, `#` to `[^.]*` and `?` to `.` regexp characters.
+     * Converts a Kover [template] string to a regular expression string.
+     *ё
+     * Replaces characters `*` to `.*`, `#` to `[^.]*` and `?` to `.` regexp characters.
      * All special characters of regular expressions are also escaped.
-     * </p>
-     *
-     * @param template Template string in Kover format
-     * @return Regular expression corresponding given Kover template
      */
-    public static String koverWildcardToRegex(String template) {
-        return Wildcards.wildcardsToRegex(template);
+    public fun koverWildcardToRegex(template: String): String {
+        return template.wildcardsToRegex()
     }
 
     /**
@@ -37,20 +32,22 @@ public class KoverFeatures {
      *
      * @return instrumenter for offline instrumentation.
      */
-    public static OfflineInstrumenter createOfflineInstrumenter() {
-        return new OfflineInstrumenterImpl(false);
+    public fun createOfflineInstrumenter(): OfflineInstrumenter {
+        return OfflineInstrumenterImpl(false)
     }
 
-    private static String readVersion() {
-        String version = "unrecognized";
+    private fun readVersion(): String {
+        var version = "unrecognized"
         // read version from file in resources
-        try (InputStream stream = KoverFeatures.class.getClassLoader().getResourceAsStream("kover.version")) {
-            if (stream != null) {
-                version = new Scanner(stream).nextLine();
+        try {
+            KoverFeatures::class.java.classLoader.getResourceAsStream("kover.version").use { stream ->
+                if (stream != null) {
+                    version = Scanner(stream).nextLine()
+                }
             }
-        } catch (Throwable e) {
+        } catch (e: Throwable) {
             // can't read
         }
-        return version;
+        return version
     }
 }
