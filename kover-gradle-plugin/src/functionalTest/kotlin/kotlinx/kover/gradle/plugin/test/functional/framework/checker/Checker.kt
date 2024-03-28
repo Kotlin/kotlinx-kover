@@ -117,6 +117,10 @@ private class CheckerContextImpl(
         VerifyReportCheckerImpl(this, verificationResultFile.readText()).checker()
     }
 
+    override fun String.match(matcher: TextMatcher.() -> Unit) {
+        TextMatcherImpl(this@CheckerContextImpl, this).matcher()
+    }
+
     override fun checkDefaultBinReport(mustExist: Boolean) {
         if (mustExist) {
             file(defaultBinReport) {
@@ -412,6 +416,31 @@ private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val conte
         val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
         if (!content.matches(regex)) {
             throw AssertionError("Unexpected verification result for JaCoCo Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
+        }
+    }
+}
+
+private class TextMatcherImpl(val context: CheckerContextImpl, val content: String) : TextMatcher {
+    override fun assertContains(expected: String) {
+        val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
+        if (!content.contains(regex)) {
+            throw AssertionError("Unexpected text.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
+        }
+    }
+
+    override fun assertKoverContains(expected: String) {
+        if (context.project.toolVariant.vendor != CoverageToolVendor.KOVER) return
+        val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
+        if (!content.contains(regex)) {
+            throw AssertionError("Unexpected text for Kover Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
+        }
+    }
+
+    override fun assertJaCoCoContains(expected: String) {
+        if (context.project.toolVariant.vendor != CoverageToolVendor.JACOCO) return
+        val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
+        if (!content.contains(regex)) {
+            throw AssertionError("Unexpected text for JaCoCo Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
         }
     }
 }

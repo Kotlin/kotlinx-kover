@@ -4,27 +4,35 @@
 
 package kotlinx.kover.gradle.plugin.tasks.reports
 
-import kotlinx.kover.gradle.plugin.commons.VerificationRule
+import kotlinx.kover.gradle.plugin.commons.KoverVerificationException
 import kotlinx.kover.gradle.plugin.dsl.tasks.KoverVerifyReport
+import org.gradle.api.DefaultTask
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.provider.ListProperty
-import org.gradle.api.tasks.CacheableTask
-import org.gradle.api.tasks.Nested
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.*
+import org.gradle.work.DisableCachingByDefault
 
-@CacheableTask
-internal abstract class KoverVerifyTask : AbstractKoverReportTask(), KoverVerifyReport {
-    @get:Nested
-    abstract val rules: ListProperty<VerificationRule>
+@DisableCachingByDefault
+internal abstract class KoverVerifyTask : DefaultTask(), KoverVerifyReport {
+    @get:Input
+    abstract val warningInsteadOfFailure: Property<Boolean>
 
-    @get:OutputFile
-    abstract val resultFile: RegularFileProperty
+    @get:InputFile
+    abstract val errorFile: RegularFileProperty
 
     @TaskAction
     fun verify() {
-        val enabledRules = rules.get().filter { it.isEnabled }
-        tool.get().verify(enabledRules, resultFile.get().asFile, context())
+        val errorMessage = errorFile.get().asFile.readText()
+        if (errorMessage.isEmpty()) {
+            // no errors
+            return
+        }
+
+        if (warningInsteadOfFailure.get()) {
+            logger.warn("Kover Verification Error\n$errorMessage")
+        } else {
+            throw KoverVerificationException(errorMessage)
+        }
     }
 
 }

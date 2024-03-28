@@ -5,6 +5,8 @@
 package kotlinx.kover.gradle.plugin.tools.kover
 
 import kotlinx.kover.features.jvm.KoverFeatures
+import kotlinx.kover.features.jvm.KoverLegacyFeatures
+import kotlinx.kover.features.jvm.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.tools.CoverageRequest
@@ -53,10 +55,15 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
 
     override fun verify(
         rules: List<VerificationRule>,
-        outputFile: File,
         context: ReportContext
-    ) {
-        context.koverVerify(rules, outputFile)
+    ): List<RuleViolations>{
+        return KoverLegacyFeatures.verify(
+            rules.map { it.convert() },
+            context.tempDir,
+            context.filters.toKoverFeatures(),
+            context.files.reports.toList(),
+            context.files.outputs.toList()
+        )
     }
 
     override fun collectCoverage(request: CoverageRequest, outputFile: File, context: ReportContext) {

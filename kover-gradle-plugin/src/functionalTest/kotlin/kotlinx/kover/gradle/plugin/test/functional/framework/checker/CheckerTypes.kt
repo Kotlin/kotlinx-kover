@@ -33,6 +33,8 @@ internal interface CheckerContext {
 
     fun verification(checker: VerifyReportChecker.() -> Unit)
 
+    fun String.match(matcher: TextMatcher.() -> Unit)
+
     val defaultBinReport: String
 
     fun checkXmlReport(variantName: String = "", mustExist: Boolean = true)
@@ -87,6 +89,12 @@ internal interface Counter {
 internal interface VerifyReportChecker {
     fun assertKoverResult(expected: String)
     fun assertJaCoCoResult(expected: String)
+}
+
+internal interface TextMatcher {
+    fun assertContains(expected: String)
+    fun assertKoverContains(expected: String)
+    fun assertJaCoCoContains(expected: String)
 }
 
 internal interface XmlReportChecker {

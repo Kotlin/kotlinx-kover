@@ -43,6 +43,9 @@ internal data class CoverageRequest(
 ): Serializable
 
 internal fun generateErrorMessage(violations: List<RuleViolations>): String {
+    if (violations.isEmpty()) {
+        return ""
+    }
     val messageBuilder = StringBuilder()
 
     violations.forEach { rule ->

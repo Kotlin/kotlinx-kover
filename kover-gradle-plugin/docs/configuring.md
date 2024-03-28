@@ -29,11 +29,14 @@ koverReport {
   
     // verification rules for verification task
     verify {
+        // fail on verification error
+        warningInsteadOfFailure = false
+      
         // add common verification rule
         rule {
             // check this rule during verification 
             disabled = false
-  
+          
             // specify the code unit for which coverage will be aggregated 
             groupBy = kotlinx.kover.gradle.plugin.dsl.GroupingEntityType.APPLICATION
   
@@ -162,6 +165,9 @@ koverReport {
         verify {
             //  verify coverage when running the `check` task
             onCheck = true
+
+            // fail on verification error
+            warningInsteadOfFailure = false
         }
 
         // configure coverage logging
@@ -222,6 +228,9 @@ koverReport {
 
     // verification rules for verification tasks in all variants
     verify {
+        // fail on verification error
+        warningInsteadOfFailure = false
+      
         // add common verification rule
         rule {
             // check this rule during verification 
@@ -354,6 +363,10 @@ koverReport {
         verify {
             //  verify coverage when running the `check` task
             onCheck = true
+
+
+            // fail on verification error
+            warningInsteadOfFailure = false
 
             // add verification rule
             rule {

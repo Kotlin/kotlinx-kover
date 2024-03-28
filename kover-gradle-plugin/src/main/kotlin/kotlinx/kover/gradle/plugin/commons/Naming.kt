@@ -85,6 +85,10 @@ internal fun xmlReportTaskName(variant: String) = "$XML_REPORT_NAME${variant.cap
 internal fun binaryReportTaskName(variant: String) = "$BINARY_REPORT_NAME${variant.capitalized()}"
 
 /**
+ * Name for cached verifying task for specified report namespace.
+ */
+internal fun verifyCachedTaskName(variant: String) = "koverCachedVerify${variant.capitalized()}"
+/**
  * Name for verifying task for specified report namespace.
  */
 internal fun verifyTaskName(variant: String) = "$VERIFY_REPORT_NAME${variant.capitalized()}"
