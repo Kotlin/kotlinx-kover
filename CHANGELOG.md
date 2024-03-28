@@ -1,3 +1,16 @@
+0.8.0-Beta2 / 2024-03-28
+===================
+## Kover Gradle Plugin
+### Features
+* [`#339`](https://github.com/Kotlin/kotlinx-kover/issues/339) Implemented warn on verification error
+* [`#572`](https://github.com/Kotlin/kotlinx-kover/issues/572) Added DslMarker to Kover public interfaces
+* [`#570`](https://github.com/Kotlin/kotlinx-kover/issues/570) Added overload for functions of KoverVariantCreateConfig
+### Bugfixes
+* [`#557`](https://github.com/Kotlin/kotlinx-kover/issues/557) Changed log level for print coverage task
+* [`#338`](https://github.com/Kotlin/kotlinx-kover/issues/338) Extended org.gradle.api.Task in KoverReport interface
+### Internal features
+* [`#567`](https://github.com/Kotlin/kotlinx-kover/issues/567) Used compile dependency to Kover Features in Kover Gradle Plugin
+
 0.8.0-Beta / 2024-02-29
 ===================
 ## Kover Gradle Plugin
