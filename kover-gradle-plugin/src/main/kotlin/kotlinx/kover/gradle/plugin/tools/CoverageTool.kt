@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.tools
 
-import kotlinx.kover.features.jvm.KoverLegacyFeatures
+import kotlinx.kover.features.jvm.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.*
@@ -113,7 +113,7 @@ internal interface CoverageTool {
     /**
      * Perform verification.
      */
-    fun verify(rules: List<VerificationRule>, context: ReportContext): List<KoverLegacyFeatures.RuleViolations>
+    fun verify(rules: List<VerificationRule>, context: ReportContext): List<RuleViolations>
 
     /**
      * Calculate coverage according to the specified parameters [request], for each grouped entity.

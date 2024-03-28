@@ -28,13 +28,10 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
     description.set("Implementation of calling the main features of Kover programmatically")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-tasks.compileJava {
-    options.release.set(8)
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
 }
 
 // Workaround:
@@ -48,7 +45,7 @@ afterEvaluate {
             jvmTarget.set(JvmTarget.JVM_1_8)
             languageVersion.set(KotlinVersion.KOTLIN_1_5)
             apiVersion.set(KotlinVersion.KOTLIN_1_5)
-            freeCompilerArgs.addAll("-Xsuppress-version-warnings", "-Xjdk-release=1.8")
+            freeCompilerArgs.addAll("-Xsuppress-version-warnings")
         }
     }
 }
