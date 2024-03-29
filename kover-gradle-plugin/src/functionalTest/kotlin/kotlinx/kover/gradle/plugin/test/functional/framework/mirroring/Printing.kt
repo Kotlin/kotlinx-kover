@@ -10,7 +10,7 @@ import kotlinx.kover.gradle.plugin.util.SemVer
 
 internal fun printCode(name: String?, language: ScriptLanguage, gradleVersion: String, block: CodeBlock): String {
     val builder = StringBuilder()
-    val context = PrintingContext(builder::append, language, SemVer.ofThreePartOrNull(gradleVersion)!!)
+    val context = PrintingContext(builder::append, language, SemVer.ofVariableOrNull(gradleVersion)!!)
 
     if (name != null) {
         context.print(name)
