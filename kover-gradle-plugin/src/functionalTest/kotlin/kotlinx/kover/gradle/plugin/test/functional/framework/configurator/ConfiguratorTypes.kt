@@ -11,7 +11,9 @@ import org.gradle.api.Project
 import org.gradle.api.Transformer
 import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
+import org.gradle.api.specs.Spec
 import java.io.File
 import java.util.function.BiFunction
 
@@ -122,6 +124,10 @@ private class FilePropertyFromBuildDir(private val relativePath: String): Regula
         throw KoverCriticalException("Operation not supported in functional test")
     }
 
+    override fun filter(spec: Spec<in RegularFile>): Provider<RegularFile> {
+        throw KoverCriticalException("Operation not supported in functional test")
+    }
+
     override fun <S : Any?> flatMap(transformer: Transformer<out Provider<out S>?, in RegularFile>): Provider<S> {
         throw KoverCriticalException("Operation not supported in functional test")
     }
@@ -162,6 +168,14 @@ private class FilePropertyFromBuildDir(private val relativePath: String): Regula
     }
 
     override fun disallowUnsafeRead() {
+        throw KoverCriticalException("Operation not supported in functional test")
+    }
+
+    override fun unset(): Property<RegularFile> {
+        throw KoverCriticalException("Operation not supported in functional test")
+    }
+
+    override fun unsetConvention(): Property<RegularFile> {
         throw KoverCriticalException("Operation not supported in functional test")
     }
 
