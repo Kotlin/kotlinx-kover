@@ -14,7 +14,7 @@ import java.net.URI
 @CacheableTask
 internal abstract class KoverHtmlTask : AbstractKoverReportTask(), KoverHtmlReport {
     @get:OutputDirectory
-    abstract val reportDir: DirectoryProperty
+    abstract override val reportDir: DirectoryProperty
 
     @get:Input
     abstract val title: Property<String>

@@ -5,6 +5,9 @@
 package kotlinx.kover.gradle.plugin.dsl.tasks
 
 import org.gradle.api.Task
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.OutputDirectory
 
 /**
  *  Common interface for all Kover report tasks.
@@ -19,7 +22,13 @@ interface KoverXmlReport: KoverReport
 /**
  * Interface for Kover HTML report generation tasks.
  */
-interface KoverHtmlReport: KoverReport
+interface KoverHtmlReport: KoverReport {
+    /**
+     * The directory where the HTML report will be saved.
+     */
+    @get:OutputDirectory
+    val reportDir: Provider<Directory>
+}
 
 /**
  * Interface for Kover tasks that print coverage to the build log.

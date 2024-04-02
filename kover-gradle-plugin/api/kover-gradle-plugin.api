@@ -304,6 +304,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverBinar
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverHtmlReport : kotlinx/kover/gradle/plugin/dsl/tasks/KoverReport {
+	public abstract fun getReportDir ()Lorg/gradle/api/provider/Provider;
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/tasks/KoverLogReport : kotlinx/kover/gradle/plugin/dsl/tasks/KoverReport {
