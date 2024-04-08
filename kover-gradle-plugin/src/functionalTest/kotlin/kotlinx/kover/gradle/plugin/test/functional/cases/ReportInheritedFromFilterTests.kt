@@ -129,9 +129,9 @@ internal class ReportInheritedFromFilterTests {
             xmlReport {
                 classCounter("org.jetbrains.A").assertAbsent()
                 classCounter("org.jetbrains.B").assertAbsent()
+                classCounter("org.jetbrains.BChild").assertAbsent()
 
                 classCounter("org.jetbrains.AChild").assertFullyMissed()
-                classCounter("org.jetbrains.BChild").assertFullyMissed()
             }
         }
     }
