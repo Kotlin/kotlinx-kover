@@ -13,9 +13,10 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import javax.annotation.Nullable
+import javax.inject.Inject
 
 @CacheableTask
-internal abstract class KoverFormatCoverageTask : AbstractKoverReportTask(), KoverLogReport {
+internal abstract class KoverFormatCoverageTask @Inject constructor(@get:Internal override val variantName: String) : AbstractKoverReportTask(), KoverLogReport {
     @get:Input
     @get:Optional
     @get:Nullable

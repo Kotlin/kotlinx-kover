@@ -7,12 +7,21 @@ package kotlinx.kover.gradle.plugin.dsl.tasks
 import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 
 /**
  *  Common interface for all Kover report tasks.
  */
-interface KoverReport: Task
+interface KoverReport: Task {
+    /**
+     * The name of the report variant for Kover Gradle task.
+     *
+     * Empty string for Kover total tasks.
+     */
+    @get:Internal
+    val variantName: String
+}
 
 /**
  * Interface for Kover XML report generation tasks.

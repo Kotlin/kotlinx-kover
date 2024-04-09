@@ -56,7 +56,7 @@ internal class VariantReportsSet(
             verifyCachedTaskName(variantName),
             "Task to validate coverage bounding rules for ${variantSuffix()}"
         )
-        val verifyTask = project.tasks.register<KoverVerifyTask>(verifyTaskName(variantName))
+        val verifyTask = project.tasks.register<KoverVerifyTask>(verifyTaskName(variantName), variantName)
 
         logTask = project.tasks.createReportTask<KoverFormatCoverageTask>(
             logTaskName(variantName),
@@ -176,7 +176,7 @@ internal class VariantReportsSet(
         name: String,
         taskDescription: String
     ): TaskProvider<T> {
-        val task = register<T>(name)
+        val task = register<T>(name, variantName)
         // extract property to variable so as not to create a closure to `this`
         val koverDisabledProvider = koverDisabled
         task.configure {

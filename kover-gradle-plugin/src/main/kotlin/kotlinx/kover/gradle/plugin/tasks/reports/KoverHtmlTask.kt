@@ -10,9 +10,10 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import java.io.File
 import java.net.URI
+import javax.inject.Inject
 
 @CacheableTask
-internal abstract class KoverHtmlTask : AbstractKoverReportTask(), KoverHtmlReport {
+internal abstract class KoverHtmlTask @Inject constructor(@get:Internal override val variantName: String) : AbstractKoverReportTask(), KoverHtmlReport {
     @get:OutputDirectory
     abstract override val reportDir: DirectoryProperty
 
