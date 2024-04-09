@@ -9,9 +9,10 @@ import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
+import javax.inject.Inject
 
 @CacheableTask
-internal abstract class KoverDoVerifyTask : AbstractKoverReportTask() {
+internal abstract class KoverDoVerifyTask @Inject constructor(@get:Internal override val variantName: String) : AbstractKoverReportTask() {
     @get:Nested
     abstract val rules: ListProperty<VerificationRule>
 

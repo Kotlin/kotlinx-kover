@@ -3,9 +3,12 @@
  */
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerContext
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.generateBuild
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
+import kotlinx.kover.gradle.plugin.test.functional.framework.starter.TemplateTest
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 internal class TaskInterfacesTests {
@@ -78,5 +81,36 @@ internal class TaskInterfacesTests {
 
         val result = build.runWithParams("checkDir")
         assertTrue(result.isSuccessful)
+    }
+
+    @TemplateTest("android-test-tasks-filtering", [":app:findAllTasks"])
+    fun CheckerContext.testTasksSearch() {
+        taskOutput(":app:findTotalTasks") {
+            assertEquals(
+                """
+                    XML=koverXmlReport
+                    HTML=koverHtmlReport
+                    Verify=koverVerify
+                    Log=koverLog
+                    Binary=koverBinaryReport
+                    
+                    """.trimIndent()
+                , this
+            )
+        }
+
+        taskOutput(":app:findDebugTasks") {
+            assertEquals(
+                """
+                    XML=koverXmlReportDebug
+                    HTML=koverHtmlReportDebug
+                    Verify=koverVerifyDebug
+                    Log=koverLogDebug
+                    Binary=koverBinaryReportDebug
+                    
+                    """.trimIndent(),
+                this
+            )
+        }
     }
 }

@@ -7,9 +7,10 @@ package kotlinx.kover.gradle.plugin.tasks.reports
 import kotlinx.kover.gradle.plugin.dsl.tasks.KoverBinaryReport
 import org.gradle.api.file.*
 import org.gradle.api.tasks.*
+import javax.inject.Inject
 
 @CacheableTask
-internal abstract class KoverBinaryTask : AbstractKoverReportTask(), KoverBinaryReport {
+internal abstract class KoverBinaryTask @Inject constructor(@get:Internal override val variantName: String) : AbstractKoverReportTask(), KoverBinaryReport {
     @get:OutputFile
     internal abstract val file: RegularFileProperty
 

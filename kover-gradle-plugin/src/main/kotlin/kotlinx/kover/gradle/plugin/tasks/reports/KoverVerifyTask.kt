@@ -11,9 +11,10 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
 import org.gradle.work.DisableCachingByDefault
+import javax.inject.Inject
 
 @DisableCachingByDefault
-internal abstract class KoverVerifyTask : DefaultTask(), KoverVerifyReport {
+internal abstract class KoverVerifyTask @Inject constructor(@get:Internal override val variantName: String) : DefaultTask(), KoverVerifyReport {
     @get:Input
     abstract val warningInsteadOfFailure: Property<Boolean>
 

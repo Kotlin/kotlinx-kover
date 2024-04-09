@@ -12,12 +12,14 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
-import org.gradle.workers.WorkerExecutor
 import java.io.File
 import javax.inject.Inject
 
 
 internal abstract class AbstractKoverReportTask : DefaultTask() {
+    @get:Internal
+    abstract val variantName: String
+
     @get:InputFile
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val localArtifact: RegularFileProperty

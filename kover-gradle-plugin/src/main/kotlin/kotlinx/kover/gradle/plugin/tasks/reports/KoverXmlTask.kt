@@ -8,9 +8,10 @@ import kotlinx.kover.gradle.plugin.dsl.tasks.KoverXmlReport
 import org.gradle.api.file.*
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import javax.inject.Inject
 
 @CacheableTask
-internal abstract class KoverXmlTask : AbstractKoverReportTask(), KoverXmlReport {
+internal abstract class KoverXmlTask @Inject constructor(@get:Internal override val variantName: String) : AbstractKoverReportTask(), KoverXmlReport {
     @get:OutputFile
     internal abstract val reportFile: RegularFileProperty
 
