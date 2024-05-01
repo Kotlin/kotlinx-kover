@@ -17,7 +17,7 @@ public object KoverVersions {
     /**
      * Kover coverage tool version.
      */
-    public const val KOVER_TOOL_VERSION = "1.0.752"
+    public const val KOVER_TOOL_VERSION = "1.0.753"
 
     /**
      * JaCoCo coverage tool version used by default.
