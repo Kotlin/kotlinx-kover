@@ -58,7 +58,6 @@ internal class ReportInheritedFromFilterTests {
             xmlReport {
                 classCounter("org.jetbrains.RegularClass").assertAbsent()
                 classCounter("org.jetbrains.CloseableClass").assertAbsent()
-                // error in reporter here
                 classCounter("org.jetbrains.A").assertAbsent()
 
                 classCounter("org.jetbrains.B").assertFullyMissed()
@@ -99,7 +98,6 @@ internal class ReportInheritedFromFilterTests {
                 classCounter("org.jetbrains.D").assertAbsent()
                 classCounter("org.jetbrains.DChild").assertAbsent()
 
-                // error in reporter here
                 classCounter("org.jetbrains.B").assertFullyMissed()
                 classCounter("org.jetbrains.C").assertFullyMissed()
                 classCounter("org.jetbrains.AChild").assertFullyMissed()
@@ -129,8 +127,8 @@ internal class ReportInheritedFromFilterTests {
             xmlReport {
                 classCounter("org.jetbrains.A").assertAbsent()
                 classCounter("org.jetbrains.B").assertAbsent()
-                classCounter("org.jetbrains.BChild").assertAbsent()
 
+                classCounter("org.jetbrains.BChild").assertFullyMissed()
                 classCounter("org.jetbrains.AChild").assertFullyMissed()
             }
         }
@@ -154,7 +152,6 @@ internal class ReportInheritedFromFilterTests {
 
         run("koverXmlReport") {
             xmlReport {
-                // error in reporter here
                 classCounter("org.jetbrains.A").assertFullyMissed()
 
                 // excluded as inheritor of A
