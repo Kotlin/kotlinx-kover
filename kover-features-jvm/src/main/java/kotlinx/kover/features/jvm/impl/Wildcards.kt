@@ -12,7 +12,10 @@ internal fun ClassFilters.convert(): Filters {
     return Filters(
         convert(includeClasses),
         convert(excludeClasses),
-        convert(excludeAnnotation)
+        emptyList(),
+        convert(excludeAnnotation),
+        emptyList(),
+        emptyList()
     )
 }
 
