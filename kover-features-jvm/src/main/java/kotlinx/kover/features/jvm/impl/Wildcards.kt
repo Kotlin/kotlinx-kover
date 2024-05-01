@@ -10,21 +10,17 @@ import java.util.regex.Pattern
 
 internal fun ClassFilters.convert(): Filters {
     return Filters(
-        convert(includeClasses),
-        convert(excludeClasses),
-        emptyList(),
-        convert(excludeAnnotation),
-        emptyList(),
-        emptyList()
+        includeClasses.asRegexp(),
+        excludeClasses.asRegexp(),
+        includeAnnotation.asRegexp(),
+        excludeAnnotation.asRegexp(),
+        includeInheritedFrom.asRegexp(),
+        excludeInheritedFrom.asRegexp()
     )
 }
 
-private fun convert(templates: Set<String>): List<Pattern> {
-    val patterns = ArrayList<Pattern>(templates.size)
-    for (template in templates) {
-        patterns.add(Pattern.compile(template.wildcardsToRegex()))
-    }
-    return patterns
+private fun Collection<String>.asRegexp(): List<Pattern> {
+    return map { template -> Pattern.compile(template.wildcardsToRegex()) }
 }
 
 /**
