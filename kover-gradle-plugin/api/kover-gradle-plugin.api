@@ -172,6 +172,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportFilte
 	public abstract fun classes (Lorg/gradle/api/provider/Provider;)V
 	public abstract fun classes ([Ljava/lang/String;)V
 	public abstract fun classes ([Lorg/gradle/api/provider/Provider;)V
+	public abstract fun getProjects ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun packages (Ljava/lang/Iterable;)V
 	public abstract fun packages (Lorg/gradle/api/provider/Provider;)V
 	public abstract fun packages ([Ljava/lang/String;)V

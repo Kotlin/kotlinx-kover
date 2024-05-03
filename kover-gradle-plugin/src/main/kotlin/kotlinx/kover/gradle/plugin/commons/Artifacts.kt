@@ -11,6 +11,7 @@ import java.io.Serializable
  * The contents of a single Kover artifact.
  */
 internal class ArtifactContent(
+    val path: String,
     val sources: Set<File>,
     val outputs: Set<File>,
     val reports: Set<File>
@@ -26,15 +27,20 @@ internal class ArtifactContent(
             reports += it.reports
         }
 
-        return ArtifactContent(sources, outputs, reports)
+        return ArtifactContent(path, sources, outputs, reports)
     }
 
     fun existing(): ArtifactContent {
         return ArtifactContent(
+            path,
             sources.filter { it.exists() }.toSet(),
             outputs.filter { it.exists() }.toSet(),
             reports.filter { it.exists() }.toSet()
         )
+    }
+
+    companion object {
+        val Empty = ArtifactContent("", emptySet(), emptySet(), emptySet())
     }
 }
 
@@ -47,22 +53,24 @@ internal fun ArtifactContent.write(artifactFile: File, rootDir: File) {
     val outputs = outputs.joinToString("\n") { it.toRelativeString(rootDir) }
     val reports = reports.joinToString("\n") { it.toRelativeString(rootDir) }
 
-    artifactFile.writeText("$sources\n\n$outputs\n\n$reports")
+    artifactFile.writeText("$path\n$sources\n\n$outputs\n\n$reports")
 }
 
 /**
  * Read Kover artifact content from the file.
  */
 internal fun File.parseArtifactFile(rootDir: File): ArtifactContent {
-    if (!exists() || !name.endsWith(".artifact")) return ArtifactContent(emptySet(), emptySet(), emptySet())
+    if (!exists() || !name.endsWith(".artifact")) return ArtifactContent.Empty
 
     val iterator = readLines().iterator()
+    val projectPath = iterator.next()
+    if (!projectPath.startsWith(':')) return ArtifactContent.Empty
 
     val sources = iterator.groupUntil { it.isEmpty() }.map { rootDir.resolve(it) }.toSet()
     val outputs = iterator.groupUntil { it.isEmpty() }.map { rootDir.resolve(it) }.toSet()
     val reports = iterator.groupUntil { it.isEmpty() }.map { rootDir.resolve(it) }.toSet()
 
-    return ArtifactContent(sources, outputs, reports)
+    return ArtifactContent(projectPath, sources, outputs, reports)
 }
 
 private fun <T> Iterator<T>.groupUntil(block: (T) -> Boolean): List<T> {

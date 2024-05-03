@@ -42,9 +42,11 @@ internal abstract class KoverArtifactGenerationTask : DefaultTask() {
 
     private val rootDir: File = project.rootDir
 
+    private val projectPath: String = project.path
+
     @TaskAction
     fun generate() {
-        val mainContent = ArtifactContent(sources.toSet(), outputDirs.toSet(), reports.toSet())
+        val mainContent = ArtifactContent(projectPath, sources.toSet(), outputDirs.toSet(), reports.toSet())
         val additional = additionalArtifacts.files.map { it.parseArtifactFile(rootDir) }
         mainContent.joinWith(additional).write(artifactFile.get().asFile, rootDir)
     }

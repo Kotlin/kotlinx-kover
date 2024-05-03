@@ -213,7 +213,8 @@ internal class VariantReportsSet(
         return project.provider {
             ReportFilters(
                 includesImpl.classes.get(), includesImpl.annotations.get(),
-                excludesImpl.classes.get(), excludesImpl.annotations.get()
+                excludesImpl.classes.get(), excludesImpl.annotations.get(),
+                includesImpl.projects.get(), excludesImpl.projects.get(),
             )
         }
     }
