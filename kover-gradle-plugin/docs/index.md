@@ -46,10 +46,15 @@ To make the minimal configuration of the plugin, determine the type of your Grad
 
 ## Build types
 ### Single module Kotlin JVM project
-Please refer to the [example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/jvm/single).
-
 #### Application of Kover plugin
-[Apply the plugin](#apply-kover-gradle-plugin-in-project) in a single project in the Gradle build.
+Add the following to your build file:
+
+```kotlin
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+}
+```
+For more information about application of the plugin, refer to the [relevant section](#apply-kover-gradle-plugin-in-project)
 
 After applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
 In order to learn more about instrumentation, and it's configuring, please refer to the [corresponded section](#instrumentation).
@@ -64,6 +69,9 @@ In order to learn more about instrumentation, and it's configuring, please refer
 Running one of these tasks automatically triggers the launch of all test tasks in the project.
 
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the project](TODO).
+
+#### Example
+The full example for single module project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/jvm/single).
 
 #### Adding verification rules
 ```kotlin
@@ -109,12 +117,18 @@ Please refer to the [example project](https://github.com/Kotlin/kotlinx-kover/tr
 ----
 
 ### Multi-module Kotlin JVM project
-Please refer to the [example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/jvm/merged).
-
 #### Application of Kover plugin
-[Apply the plugin](#apply-kover-gradle-plugin-in-project) in apply in each module of your Gradle build.
+Add the following to build file in each module of your Gradle build:
+
+```kotlin
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+}
+```
 It is recommended to apply the Kover Plugin in the root module, even if there is no source code or tests there.
 You [do not need to specify](#application-in-submodule-with-plugins-dsl) the plugin version in all submodules.
+
+For more information about application of the plugin, refer to the [relevant section](#apply-kover-gradle-plugin-in-project)
 
 After applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
 In order to learn more about instrumentation, and it's configuring, please refer to the [corresponded section](#instrumentation).
@@ -148,8 +162,10 @@ If a module with the path `:foo` was selected as the merging module, then you wi
 
 Running one of these tasks automatically triggers the launch of all test tasks from merging module and the modules specified in it as kover dependencies.
 
-To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the corresponded project](TODO).
+To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the corresponded project](#exclusion-of-test-tasks).
 
+#### Example
+The full example for multi-module Kotlin JVM project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/jvm/merged).
 
 #### Adding verification rules
 
@@ -196,14 +212,17 @@ Otherwise, the use of the plugin is identical to the use in the [multi-module Ko
 ----
 
 ### Kotlin single-module Android project
-
-Please refer to the [example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/minimal_kts).
-
 #### Application of Kover plugin
-[Apply the plugin](#apply-kover-gradle-plugin-in-project) in apply in single `app` module of your Gradle build.
-
+Add the following to build file in single `app` module of your Gradle build:
+```kotlin
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+}
+```
 After applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
 In order to learn more about instrumentation, and it's configuring, please refer to the [corresponded section](#instrumentation).
+
+For more information about application of the plugin, refer to the [relevant section](#apply-kover-gradle-plugin-in-project)
 
 #### Using Android Build Variants
 In the Android Gradle Plugin, the module is divided into different **build variants** (flavor + build type), which may have different source sets and tests.
@@ -253,6 +272,9 @@ If reports are needed for all classes in the `app` module, then:
 
 Running one of these tasks automatically triggers the launch of all test tasks in `app` module.
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the project](TODO).
+
+#### Example
+The full example for single-module Android project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/minimal_kts).
 
 #### Adding verification rules
 
@@ -335,12 +357,18 @@ Available configuration options are listed in a [separate section](#configuring-
 ----
 
 ### Kotlin multi-module Android project
-Please refer to the [example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject) and [second example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject-custom).
-
 #### Application of Kover plugin
-[Apply the plugin](#apply-kover-gradle-plugin-in-project) in apply in each module of your Gradle build.
+Add the following to build file in each module of your Gradle build:
+
+```kotlin
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+}
+```
 It is recommended to apply the Kover Plugin in the root module, even if there is no source code or tests there.
 You [do not need to specify](#application-in-submodule-with-plugins-dsl) the plugin version in all submodules.
+
+For more information about application of the plugin, refer to the [relevant section](#apply-kover-gradle-plugin-in-project)
 
 After applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
 In order to learn more about instrumentation, and it's configuring, please refer to the [corresponded section](#instrumentation).
@@ -425,6 +453,9 @@ If reports are needed for all classes in the merged modules, then:
 Running one of these tasks automatically triggers the launch of all test tasks in all merged module.
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the project](TODO).
 
+#### Example
+The full example for multi-module Kotlin JVM project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject) and [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject-custom).
+
 #### Adding verification rules
 
 To add verification rules which will be checked for each report variant and for all classes, it is necessary to specify the following in the build script file of the merging module (and only in it):
@@ -506,13 +537,18 @@ Available configuration options are listed in a [separate section](#configuring-
 ----
 
 ### Kotlin multiplatform mixed Android and JVM project
-
-Please refer to the [example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/jvm/with-jvm).
-
 #### Application of Kover plugin
-[Apply the plugin](#apply-kover-gradle-plugin-in-project) in apply in each module of your Gradle build.
+Add the following to build file in each module of your Gradle build:
+
+```kotlin
+plugins {
+     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+}
+```
 It is recommended to apply the Kover Plugin in the root module, even if there is no source code or tests there.
 You [do not need to specify](#application-in-submodule-with-plugins-dsl) the plugin version in all submodules.
+
+For more information about application of the plugin, refer to the [relevant section](#apply-kover-gradle-plugin-in-project)
 
 After applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
 In order to learn more about instrumentation, and it's configuring, please refer to the [corresponded section](#instrumentation).
@@ -582,6 +618,9 @@ If reports are needed for all classes in the merged modules, then:
 
 Running one of these tasks automatically triggers the launch of all test tasks in all merged module.
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the project](TODO).
+
+#### Example
+The full example for multi-module Kotlin JVM project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/with-jvm).
 
 #### Adding verification rules
 
@@ -1041,10 +1080,23 @@ kover {
 }
 ```
 
+### Exclusion of test tasks
+If some task does not test the coverage of application classes, 
+or it is necessary to exclude its coverage from reports, then specify this task in the excluded list.
 
-
-
-
+To do this, you need to specify in the build script of the module in which this task is located:
+```kotlin
+kover {
+    currentProject {
+        instrumentation {
+            // exclude 
+            disabledForTestTasks.add("test")
+        }
+    }
+}
+```
+As a result, the task `test` will not be instrumented, the coverage from this task will not be included in the report, 
+and when any Kover report generation task is started, this task will not be triggered.
 
 ## Extra info
 

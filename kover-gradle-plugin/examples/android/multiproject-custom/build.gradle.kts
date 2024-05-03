@@ -25,6 +25,13 @@ kover {
         }
 
         variant("custom") {
+            // verification ony for 'custom' report variant
+            verify {
+                rule {
+                    minBound(50)
+                }
+            }
+
             // filters for all report types only of 'custom' build type
             filters {
                 excludes {

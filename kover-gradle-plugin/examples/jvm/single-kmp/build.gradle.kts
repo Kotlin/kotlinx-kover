@@ -12,3 +12,13 @@ kotlin {
 dependencies {
     commonTestImplementation(kotlin("test"))
 }
+
+kover {
+    reports {
+        verify {
+            rule {
+                minBound(50)
+            }
+        }
+    }
+}

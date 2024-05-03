@@ -6,3 +6,13 @@ plugins {
 dependencies {
     testImplementation(kotlin("test"))
 }
+
+kover {
+    reports {
+        verify {
+            rule {
+                minBound(50)
+            }
+        }
+    }
+}

@@ -63,7 +63,14 @@ kover {
         }
 
         variant("release") {
-            // filters for all report types only of 'release' build type
+            // verification ony for 'release' build variant
+            verify {
+                rule {
+                    minBound(50)
+                }
+            }
+
+            // filters for all report types only for 'release' build variant
             filters {
                 excludes {
                     androidGeneratedClasses()
