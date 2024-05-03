@@ -56,3 +56,22 @@ object UsedObjectFun {
         println("Hello")
     }
 }
+
+object ConstantHolder {
+    const val STRING_CONST = "STRING_CONST"
+    const val INT_CONST = 42
+}
+
+interface InterfaceWithCompanion {
+    companion object {
+        const val STRING_CONST = "STRING_CONST"
+        const val INT_CONST = 42
+    }
+}
+
+interface InterfaceWithNamedCompanion {
+    companion object Named {
+        const val STRING_CONST = "STRING_CONST"
+        const val INT_CONST = 42
+    }
+}
