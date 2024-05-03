@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.tasks.reports
 
+import kotlinx.kover.features.jvm.KoverFeatures
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.tools.*
 import org.gradle.api.*
@@ -38,8 +39,8 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val externalSources: Provider<Set<File>> = externalArtifacts.elements.map {
-        val content = ArtifactContent(emptySet(), emptySet(), emptySet())
-        content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir) }).sources
+        val content = ArtifactContent.Empty
+        content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir).filterProjectSources() }).sources
     }
 
     /**
@@ -48,8 +49,8 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val externalReports: Provider<Set<File>> = externalArtifacts.elements.map {
-        val content = ArtifactContent(emptySet(), emptySet(), emptySet())
-        content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir) }).reports
+        val content = ArtifactContent.Empty
+        content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir).filterProjectSources() }).reports
     }
 
     /**
@@ -58,7 +59,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val localSources: Provider<Set<File>> = localArtifact.map {
-        it.asFile.parseArtifactFile(rootDir).sources
+        it.asFile.parseArtifactFile(rootDir).filterProjectSources().sources
     }
 
     /**
@@ -67,7 +68,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     internal val localReports: Provider<Set<File>> = localArtifact.map {
-        it.asFile.parseArtifactFile(rootDir).reports
+        it.asFile.parseArtifactFile(rootDir).filterProjectSources().reports
     }
 
     @get:Nested
@@ -94,8 +95,29 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     }
 
     private fun collectAllFiles(): ArtifactContent {
-        val local = localArtifact.get().asFile.parseArtifactFile(rootDir)
-        return local.joinWith(externalArtifacts.files.map { it.parseArtifactFile(rootDir) }).existing()
+        val local = localArtifact.get().asFile.parseArtifactFile(rootDir).filterProjectSources()
+        return local.joinWith(externalArtifacts.files.map { it.parseArtifactFile(rootDir).filterProjectSources() }).existing()
+    }
+
+    private fun ArtifactContent.filterProjectSources(): ArtifactContent {
+        val reportFilters = filters.get()
+        if (reportFilters.includeProjects.isNotEmpty()) {
+            val notIncluded = reportFilters.includeProjects.none { filter ->
+                KoverFeatures.koverWildcardToRegex(filter).toRegex().matches(path)
+            }
+            if (notIncluded) {
+                return ArtifactContent(path, emptySet(), emptySet(), reports)
+            }
+        }
+        if (reportFilters.excludeProjects.isNotEmpty()) {
+            val excluded = reportFilters.excludeProjects.any { filter ->
+                KoverFeatures.koverWildcardToRegex(filter).toRegex().matches(path)
+            }
+            if (excluded) {
+                return ArtifactContent(path, emptySet(), emptySet(), reports)
+            }
+        }
+        return this
     }
 }
 

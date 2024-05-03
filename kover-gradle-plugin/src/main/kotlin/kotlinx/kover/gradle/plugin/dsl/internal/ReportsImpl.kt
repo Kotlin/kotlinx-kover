@@ -326,11 +326,13 @@ internal abstract class KoverReportFilterImpl: KoverReportFilter {
     internal fun extendsFrom(other: KoverReportFilterImpl) {
         classes.addAll(other.classes)
         annotations.addAll(other.annotations)
+        projects.addAll(other.projects)
     }
 
     internal fun clean() {
         classes.empty()
         annotations.empty()
+        projects.empty()
     }
 
     private fun String.packageAsClass(): String = "$this.*"
