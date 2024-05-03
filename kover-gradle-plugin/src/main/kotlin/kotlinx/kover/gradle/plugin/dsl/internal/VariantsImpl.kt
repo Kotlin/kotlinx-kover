@@ -17,6 +17,7 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
     KoverVariantConfigImpl(objects), KoverCurrentProjectVariantsConfig {
     internal val customVariants: MutableMap<String, KoverVariantCreateConfigImpl> = mutableMapOf()
     internal val providedVariants: MutableMap<String, KoverVariantConfigImpl> = mutableMapOf()
+    internal val copyVariants: MutableMap<String, String> = mutableMapOf()
     internal val instrumentation: KoverProjectInstrumentation = objects.newInstance()
 
     init {
@@ -40,6 +41,13 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
         }
 
         block.execute(variantConfig)
+    }
+
+    override fun copyVariant(variantName: String, originalVariantName: String) {
+        if (variantName in copyVariants) {
+            throw KoverIllegalConfigException("The copy of custom variant with name $variantName already created.")
+        }
+        copyVariants[variantName] = originalVariantName
     }
 
     override fun providedVariant(variantName: String, block: Action<KoverVariantConfig>) {

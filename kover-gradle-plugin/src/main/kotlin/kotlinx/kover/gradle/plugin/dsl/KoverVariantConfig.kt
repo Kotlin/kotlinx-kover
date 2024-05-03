@@ -47,6 +47,12 @@ public interface KoverCurrentProjectVariantsConfig: KoverVariantConfig {
     public fun createVariant(variantName: String, block: Action<KoverVariantCreateConfig>)
 
     /**
+     * Create custom report variant as a copy of the [originalVariantName] variant, however, with the new name [variantName].
+     * You cannot add information from other variants to the new one.
+     */
+    public fun copyVariant(variantName: String, originalVariantName: String)
+
+    /**
      * Configure the variant with name [variantName] that is automatically created in the current project.
      * For example, `"jvm"` for JVM target or `"debug"` for Android build variant.
      */

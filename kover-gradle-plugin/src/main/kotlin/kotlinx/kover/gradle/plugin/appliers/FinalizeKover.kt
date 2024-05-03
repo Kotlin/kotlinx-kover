@@ -17,7 +17,6 @@ import kotlinx.kover.gradle.plugin.commons.ReportVariantType
 import kotlinx.kover.gradle.plugin.commons.TOTAL_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportSetConfigImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantCreateConfigImpl
-import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.newInstance
 
 
@@ -59,13 +58,6 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     jvmVariant?.let { variantArtifacts[JVM_VARIANT_NAME] = it }
     androidVariants.forEach { variantArtifacts[it.variantName] = it }
 
-    val availableVariants = variantArtifacts.keys + projectExtension.current.customVariants.keys
-    projectExtension.reports.byName.forEach { (requestedVariant, _) ->
-        if (requestedVariant !in availableVariants) {
-            throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
-        }
-    }
-
     val totalVariant =
         TotalVariantArtifacts(project, toolProvider, koverBucketConfiguration, variantConfig(TOTAL_VARIANT_NAME), projectExtension)
     variantArtifacts.values.forEach { totalVariant.mergeWith(it) }
@@ -103,6 +95,8 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             }
         }
 
+        variantArtifacts[name] = customVariant
+
         VariantReportsSet(
             project,
             name,
@@ -112,7 +106,21 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             reporterClasspath,
             projectExtension.koverDisabled
         ).assign(customVariant)
+    }
 
+    projectExtension.current.copyVariants.forEach { (name, originVariantName) ->
+        val originalVariant = variantArtifacts[originVariantName]
+            ?: throw KoverIllegalConfigException("The error of creating a variant '$name', the original variant '$originVariantName' does not exist.")
+
+        VariantReportsSet(
+            project,
+            name,
+            ReportVariantType.CUSTOM,
+            toolProvider,
+            reportsConfig(name, project.path),
+            reporterClasspath,
+            projectExtension.koverDisabled
+        ).assign(originalVariant)
     }
 
     androidVariants.forEach { androidVariant ->
@@ -125,6 +133,12 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             reporterClasspath,
             projectExtension.koverDisabled
         ).assign(androidVariant)
+    }
+
+    projectExtension.reports.byName.forEach { (requestedVariant, _) ->
+        if (requestedVariant !in variantArtifacts && requestedVariant !in projectExtension.current.copyVariants) {
+            throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
+        }
     }
 }
 
