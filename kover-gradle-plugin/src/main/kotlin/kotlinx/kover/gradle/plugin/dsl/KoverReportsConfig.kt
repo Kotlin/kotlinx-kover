@@ -468,7 +468,7 @@ public interface KoverReportFiltersConfig {
      *      classes("com.example.FooBar?", "com.example.*Bar")
      *      packages("com.example.subpackage")
      *      annotatedBy("*Generated*")
-     *      projects.add(":my:project-path")
+     *      projects.add(":my:lib*")
      *  }
      *  ```
      * Excludes have priority over includes.
@@ -483,7 +483,7 @@ public interface KoverReportFiltersConfig {
      *  includes {
      *      classes("com.example.FooBar?", "com.example.*Bar")
      *      packages("com.example.subpackage")
-     *      projects.add(":my:project-path")
+     *      projects.add(":my:lib*")
      *  }
      *  ```
      * Excludes have priority over includes.
@@ -503,7 +503,7 @@ public interface KoverReportFiltersConfig {
  *          val somePackages =
  *          packages(listOf("foo.b?r", "com.*.example"))
  *          annotatedBy("*Generated*", "com.example.KoverExclude")
- *          projects.add(":my:project-path")
+ *          projects.add(":my:lib*")
  *      }
  * ```
  */
@@ -684,7 +684,7 @@ public interface KoverReportFilter {
      *
      * Example:
      * ```
-     *  projects.add(":my:project-path")
+     *  projects.add(":my:lib*")
      * ```
      */
     val projects: SetProperty<String>
