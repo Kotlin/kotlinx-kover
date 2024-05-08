@@ -411,20 +411,37 @@ Kover also creates a special **report variant**, which includes all classes and 
 The names of the **report variants** are used when configuring the report and when running report generation tasks.
 
 #### Different Build Variants in different modules
-if the build variants differ between modules, then a custom report variant should be created in each module.
-At the same time, in each module, the necessary variants that are present in corresponded module must be added to the custom variant
+Suppose you have two modules, `:app1`, `:app2` and build variants differ between these unrelated modules.
+Let it be `debug` and `release` in the `:app1`, and `mainDebug`, `extraDebug` and `release` in the `:app2`.
+
+If you need to create a report containing classes from these two modules at the same time, 
+but a limited set of build variants, then you should create a custom report variant in each module.
+
+For example, you need classes from `debug` build variant from `:app1`, and `extraDebug` from `:app2`.
+Then you need to add these variants to the custom one in the appropriate modules:
+
+In `:app1`
 ```kotlin
 kover {
     currentProject {
         createVariant("custom") {
-            add("libDebug")
-            add("appDebug")
+            add("debug")
+        }  
+    }
+}
+```
+And in `:app2`
+```kotlin
+kover {
+    currentProject {
+        createVariant("custom") {
+            add("extraDebug")
         }  
     }
 }
 ```
 
-After that, you should use the report generation tasks only for this custom variant.
+After that, you should use the report generation tasks only for this custom variant, e.g. `koverHtmlReportCustom`.
 
 #### Merging reports from different modules
 In multi-module projects, it is often the case that code in some module (let's name it A) is being tested by tests in some other module B.
