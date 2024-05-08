@@ -62,8 +62,8 @@ In order to learn more about instrumentation, and it's configuring, please refer
 #### Generating reports
 - To generate JaCoCo-compatible XML report, call `koverXmlReport` Gradle task
 - To generate HTML report, call `koverHtmlReport` Gradle task
-- To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `koverVerify` Gradle task
-- To generate binary report in IC format, call `koverBinaryReport` Gradle task
+ To validate verification rules specified in the project in [verification block](#specify-verification-rules-for-total-variant), call `koverVerify` Gradle task
+- To generate the binary report in IC format, call `koverBinaryReport` Gradle task
 - To print coverage to the log, call `koverLog` Gradle task
 
 Running one of these tasks automatically triggers the launch of all test tasks in the project.
@@ -71,7 +71,7 @@ Running one of these tasks automatically triggers the launch of all test tasks i
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the project](TODO).
 
 #### Example
-The full example for single module project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/jvm/single).
+The full example for a single module project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/jvm/single).
 
 #### Adding verification rules
 ```kotlin
@@ -107,8 +107,8 @@ Available configuration options are listed in a [separate section](#configuring-
 
 ### Single module Kotlin multiplatform project
 Kover supports coverage measurement only for JVM targets. 
-Source code specified not in the common and not JVM source sets are ignored. 
-As well as coverage from non-JVM tests is also not taken into account.
+Source code outside of the common and JVM source sets is ignored. 
+Therefore, coverage for non-JVM tests is not collected.
 
 Otherwise, the use of the plugin is identical to the use in the [single module Kotlin JVM project](#single-module-kotlin-jvm-project).
 
@@ -118,7 +118,7 @@ Please refer to the [example project](https://github.com/Kotlin/kotlinx-kover/tr
 
 ### Multi-module Kotlin JVM project
 #### Application of Kover plugin
-Add the following to build file in each module of your Gradle build:
+Add the following line to build file in each module of your Gradle build:
 
 ```kotlin
 plugins {
@@ -139,7 +139,8 @@ In order for classes from all necessary modules to be included in the report, as
 For this:
 1. select the module that will collect information about all classes and from which the report generation will be launched.
   let's call such a module **merging module**. We recommend using the root module (root Gradle project) as a **merging module**.
-2. add dependencies in the **merging module** to all other modules whose classes should be included in the merged report
+  Note: running `koverHtmlReport` in merging module will automatically run tests in all dependent modules.
+2. add dependencies in the **merging module** to all other modules whose classes and coverage counters should be included in the merged report
 ```kotlin
 dependencies {
     kover(project(":moduleA"))
@@ -158,7 +159,7 @@ Suppose if we chose the root module as the merging module, then
 
 If a module with the path `:foo` was selected as the merging module, then you will need to call commands like `:foo:koverXmlReport`, etc.
 
-**To generate reports, call commands only by the full path, do not use short names, like `koverXmlReport`.**
+It is recommended to use only full path commands since short names like `koverXmlReport` will run all tests in all projects, even if they are not specified as `kover` dependencies.
 
 Running one of these tasks automatically triggers the launch of all test tasks from merging module and the modules specified in it as kover dependencies.
 
@@ -228,12 +229,12 @@ For more information about application of the plugin, refer to the [relevant sec
 In the Android Gradle Plugin, the module is divided into different **build variants** (flavor + build type), which may have different source sets and tests.
 For each Gradle Build Variant, Kover creates its own **report variant** that have the same names.
 
-The **report variant** includes only the classes declared in the corresponding **build variant**, and also runs only tests this **build variant**.
+The **report variant** includes only the classes declared in the corresponding **build variant**, and also runs only tests for this **build variant**.
 Kover also creates a special **report variant**, which includes all classes and all tests of the module. This variant is called the **total variant** - and it does not have a special name.
 The names of the **report variants** are used when configuring the report and when running report generation tasks.
 
 
-If there is a need to generate  report from classes of several **build variants**, then you could create custom **report variant**:
+If there is a need to generate a report from classes of several **build variants**, then you can create custom **report variant**:
 ```kotlin
 kover {
     currentProject {
@@ -253,7 +254,7 @@ Reports can be generated for a single build variant, or for all at once.
 Let's say we want to generate a report for the `debug` build variant and the Android application module has the name `app`:
 - To generate JaCoCo-compatible XML report, call `:app:koverXmlReportDebug` Gradle task
 - To generate HTML report, call `:app:koverHtmlReportDebug` Gradle task
-- To validate verification rule specified in project in [verification block](#specify-verification-rules-for-named-variant), call `:app:koverVerifyDebug` Gradle task
+- To validate verification rules specified in the project in [verification block](#specify-verification-rules-for-named-variant), call `:app:koverVerifyDebug` Gradle task
 - To generate binary report in IC format, call `:app:koverBinaryReportDebug` Gradle task
 - To print coverage to the log, call `:app:koverLogDebug` Gradle task
 
@@ -278,7 +279,7 @@ The full example for single-module Android project can be found [here](https://g
 
 #### Adding verification rules
 
-To add verification rules which will be checked for each build variant and for the entire `app` module, it is necessary to specify the following:
+To add verification rules which will be checked for each build/report variant and for the entire `app` module, it is necessary to specify the following:
 ```kotlin
 kover {
     reports {
@@ -309,7 +310,7 @@ kover {
 ```
 in this example, a verification rule is added for the `debug` build variant report
 
-If it is necessary that a verification rule be added for a report on all classes, but does not affect reports on specific build variants, then:
+You can also add a verification rule for a total variant, but leave specific build/report variants without such rule:
 ```kotlin
 kover {
     reports {
@@ -329,7 +330,7 @@ You can read more about creating verification rules in the [corresponding sectio
 
 
 #### Configuring Reports
-The configuration of the report generation for `debud` build variant: 
+The configuration of the report generation for `debug` build variant: 
 
 ```kotlin
 kover {
@@ -454,7 +455,7 @@ Running one of these tasks automatically triggers the launch of all test tasks i
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the project](TODO).
 
 #### Example
-The full example for multi-module Kotlin JVM project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject) and [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject-custom).
+The full example for multi-module Kotlin+Android project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject) and [here — with custom report variants](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/multiproject-custom).
 
 #### Adding verification rules
 
@@ -556,7 +557,7 @@ In order to learn more about instrumentation, and it's configuring, please refer
 #### Create custom Report Variants
 The module with Android Gradle Plugin or Kotlin multiplatform with android target is divided into different **build variants** (flavor + build type), which may have different source sets and tests.
 For each Gradle Build Variant, Kover creates its own **report variant** that have the same names.
-Such **report variant** includes only the classes declared in the corresponding **build variant**, and also runs only tests this **build variant**.
+Such **report variant** includes only the classes declared in the corresponding **build variant**, and also runs only tests in this **build variant**.
 
 For JVM target in Kotlin multiplatform module or for Kotlin JVM module Kover creates special **report variant** with name `jvm`. 
 Reports for `jvm` **report variant** contains classes and JVM tests from JVM target or all classes from Kotlin JVM module. 
@@ -620,7 +621,7 @@ Running one of these tasks automatically triggers the launch of all test tasks i
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the project](TODO).
 
 #### Example
-The full example for multi-module Kotlin JVM project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/with-jvm).
+The full example for Kotlin multiplatform mixed Android and JVM project can be found [here](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-gradle-plugin/examples/android/with-jvm).
 
 #### Adding verification rules
 
@@ -847,14 +848,14 @@ verifyAppend {
 
 ### Verification
 #### Coverage value
-During verification, the entire code is divided into units of code for which it determines whether it was covered (executed) or skipped (not executed).
+During verification, the entire code is divided into units for which Kover determines whether it was covered (executed) or skipped (not executed).
 For example, an entire line from source code or a specific JVM instruction from compiled byte-code can be executed or not.
 
 All units are grouped into one or more groups.
 Based on amount of the executed and non-executed code units, one number (coverage value) will be calculated for each group using the aggregation function.
 
 Type `CoverageUnit` determines for which types of units the coverage will be measured.
-It is:
+It can be:
 - `LINE`
 - `INSTRUCTION`
 - `BRANCH`
