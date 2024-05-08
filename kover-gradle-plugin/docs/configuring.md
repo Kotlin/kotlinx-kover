@@ -531,8 +531,8 @@ If inclusion and exclusion rules are specified at the same time, then excludes h
 This means that even if a class is specified in both the inclusion and exclusion rules, it will be excluded from the report (e.g. class `com.example.Class1` above).
 
 It is acceptable to filter a class from the report by its fully-qualified name - using `classes` or `packages`. 
-Also, it is acceptable additional filter types:
- - classes, functions or getters marked with the specified annotation - `annotatedBy`
+Also, you can have additional filter types:
+ - declarations marked with the specified annotation - `annotatedBy`
  - classes extending specified class or implementing specified interface - `inheritedFrom`
 
 **_Additional filters does not work for JaCoCo coverage library_**

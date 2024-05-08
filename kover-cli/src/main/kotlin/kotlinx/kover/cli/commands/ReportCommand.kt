@@ -72,7 +72,7 @@ internal class ReportCommand : Command {
 
     @Option(
         name = "--includeAnnotation",
-        usage = "filter to include classes marked by this annotation, wildcards `*` and `?` are acceptable. Excludes have priority over includes",
+        usage = "filter to include classes marked by this annotation, wildcards `*` and `?` are acceptable. Excludes have priority over includes.",
         metaVar = "<include-annotation-name>"
     )
     private var includeAnnotation: MutableList<String> = ArrayList()
