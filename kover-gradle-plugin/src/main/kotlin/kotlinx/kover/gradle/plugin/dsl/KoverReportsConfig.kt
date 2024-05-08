@@ -704,9 +704,9 @@ public interface KoverReportFilter {
 
     /**
      * Filter classes extending at least one of the specified classes or implementing at least one of the interfaces.
+     * The class itself with the specified name is not taken into account.
      *
-     * The entire inheritance tree is analyzed, that is, a class may not extend the specified class directly.
-     * Similarly, for the specified interfaces, it is checked that they are implemented directly in the class, or in one of its heirs.
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside the application (see below).
      *
      * The following classes and interfaces can be specified in arguments:
      *  - classes and interfaces declared in the application
@@ -730,9 +730,9 @@ public interface KoverReportFilter {
 
     /**
      * Filter classes extending at least one of the specified classes or implementing at least one of the interfaces.
+     * The class itself with the specified name is not taken into account.
      *
-     * The entire inheritance tree is analyzed, that is, a class may not extend the specified class directly.
-     * Similarly, for the specified interfaces, it is checked that they are implemented directly in the class, or in one of its heirs.
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside the application (see below).
      *
      * The following classes and interfaces can be specified in arguments:
      *  - classes and interfaces declared in the application

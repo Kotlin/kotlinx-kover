@@ -27,6 +27,7 @@ internal class ReportInheritedFromFilterTests {
             xmlReport {
                 classCounter("org.jetbrains.RegularClass").assertFullyMissed()
                 classCounter("org.jetbrains.CloseableClass").assertFullyMissed()
+                classCounter("org.jetbrains.A").assertFullyMissed()
 
                 classCounter("org.jetbrains.B").assertAbsent()
                 classCounter("org.jetbrains.C").assertAbsent()
@@ -95,6 +96,7 @@ internal class ReportInheritedFromFilterTests {
                 classCounter("org.jetbrains.RegularClass").assertAbsent()
                 classCounter("org.jetbrains.CloseableClass").assertAbsent()
                 classCounter("org.jetbrains.BChild").assertAbsent()
+                classCounter("org.jetbrains.A").assertAbsent()
                 classCounter("org.jetbrains.D").assertAbsent()
                 classCounter("org.jetbrains.DChild").assertAbsent()
 

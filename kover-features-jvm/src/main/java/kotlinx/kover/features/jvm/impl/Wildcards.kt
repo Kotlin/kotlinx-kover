@@ -10,16 +10,16 @@ import java.util.regex.Pattern
 
 internal fun ClassFilters.convert(): Filters {
     return Filters(
-        includeClasses.asRegexp(),
-        excludeClasses.asRegexp(),
-        includeAnnotation.asRegexp(),
-        excludeAnnotation.asRegexp(),
-        includeInheritedFrom.asRegexp(),
-        excludeInheritedFrom.asRegexp()
+        includeClasses.toRegexp(),
+        excludeClasses.toRegexp(),
+        includeAnnotation.toRegexp(),
+        excludeAnnotation.toRegexp(),
+        includeInheritedFrom.toRegexp(),
+        excludeInheritedFrom.toRegexp()
     )
 }
 
-private fun Collection<String>.asRegexp(): List<Pattern> {
+private fun Collection<String>.toRegexp(): List<Pattern> {
     return map { template -> Pattern.compile(template.wildcardsToRegex()) }
 }
 

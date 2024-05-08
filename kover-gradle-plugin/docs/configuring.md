@@ -530,7 +530,7 @@ Exclusion rules are names of the classes that must be excluded from the report. 
 If inclusion and exclusion rules are specified at the same time, then excludes have priority over includes.
 This means that even if a class is specified in both the inclusion and exclusion rules, it will be excluded from the report (e.g. class `com.example.Class1` above).
 
-It is acceptable to filter a class from the report by its fully-qualified name - using `classes` or `packages`. 
+It is acceptable to filter a class from the report by its fully-qualified name - using `classes`. 
 Also, you can have additional filter types:
  - declarations marked with the specified annotation - `annotatedBy`
  - classes extending specified class or implementing specified interface - `inheritedFrom`

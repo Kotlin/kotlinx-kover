@@ -22,21 +22,22 @@ For information about offline instrumentation, [see](../offline-instrumentation#
 | --include <class-name>                | instrument only specified classes, wildcards `*` and `?` are acceptable                                                    |          |    +     |
 
 ### Generating reports
+
 Allows you to generate HTML and XML reports from the existing binary report.
 
 `java -jar kover-cli.jar report [<binary-report-path> ...] --classfiles <class-file-path> [--exclude <class-name>] [--excludeAnnotation <annotation-name>] [--html <html-dir>] [--include <class-name>] --src <sources-path> [--title <html-title>] [--xml <xml-file-path>]`
 
-| Option                                         | Description                                                                                                                                  | Required | Multiple |
-|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:--------:|
-| `<binary-report-path>`                         | list of binary reports files                                                                                                                 |          |    +     |
-| --classfiles <class-file-path>                 | location of the compiled class-files root (must be original and not instrumented)                                                            |    +     |    +     |
-| --exclude <class-name>                         | filter to exclude classes, wildcards `*` and `?` are acceptable                                                                              |          |    +     |
+| Option                                         | Description                                                                                                                                   | Required | Multiple |
+|------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|:--------:|:--------:|
+| `<binary-report-path>`                         | list of binary reports files                                                                                                                  |          |    +     |
+| --classfiles <class-file-path>                 | location of the compiled class-files root (must be original and not instrumented)                                                             |    +     |    +     |
+| --exclude <class-name>                         | filter to exclude classes, wildcards `*` and `?` are acceptable                                                                               |          |    +     |
+| --include <class-name>                         | filter to include classes, wildcards `*` and `?` are acceptable                                                                               |          |    +     |
 | --excludeAnnotation <exclude-annotation-name>  | filter to exclude classes and functions marked by this annotation, wildcards `*` and `?` are acceptable. Excludes have priority over includes |          |    +     |
-| --includeAnnotation <include-annotation-name>  | filter to include classes marked by this annotation, wildcards `*` and `?` are acceptable                                                    |          |    +     |
-| --excludeInheritedFrom <exclude-ancestor-name> | filter to exclude classes extending the specified class or implementing an interface, wildcards `*` and `?` are acceptable                   |          |    +     |
-| --includeInheritedFrom <include-ancestor-name> | filter to include only classes extending the specified class or implementing an interface, wildcards `*` and `?` are acceptable              |          |    +     |
-| --html <html-dir>                              | generate a HTML report in the specified path                                                                                                 |          |          |
-| --include <class-name>                         | filter to include classes, wildcards `*` and `?` are acceptable                                                                              |          |    +     |
-| --src <sources-path>                           | location of the source files root                                                                                                            |    +     |    +     |
-| --title <html-title>                           | title in the HTML report                                                                                                                     |          |          |
-| --xml <xml-file-path>                          | generate a XML report in the specified path                                                                                                  |          |          |
+| --includeAnnotation <include-annotation-name>  | filter to include classes marked by this annotation, wildcards `*` and `?` are acceptable                                                     |          |    +     |
+| --excludeInheritedFrom <exclude-ancestor-name> | filter to exclude classes extending the specified class or implementing an interface, wildcards `*` and `?` are acceptable                    |          |    +     |
+| --includeInheritedFrom <include-ancestor-name> | filter to include only classes extending the specified class or implementing an interface, wildcards `*` and `?` are acceptable               |          |    +     |
+| --html <html-dir>                              | generate a HTML report in the specified path                                                                                                  |          |          |
+| --src <sources-path>                           | location of the source files root                                                                                                             |    +     |    +     |
+| --title <html-title>                           | title in the HTML report                                                                                                                      |          |          |
+| --xml <xml-file-path>                          | generate a XML report in the specified path                                                                                                   |          |          |
