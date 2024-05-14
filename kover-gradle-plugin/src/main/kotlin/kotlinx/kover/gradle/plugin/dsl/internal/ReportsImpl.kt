@@ -270,6 +270,7 @@ internal open class KoverReportFiltersConfigImpl @Inject constructor(
 internal abstract class KoverReportFilterImpl: KoverReportFilter {
     internal abstract val classes: SetProperty<String>
     internal abstract val annotations: SetProperty<String>
+    internal abstract val inheritedFrom: SetProperty<String>
 
     override fun classes(vararg names: String) {
         classes.addAll(*names)
@@ -322,16 +323,27 @@ internal abstract class KoverReportFilterImpl: KoverReportFilter {
             annotations.add(nameProvider)
         }
     }
+    override fun inheritedFrom(vararg typeName: String) {
+        inheritedFrom.addAll(*typeName)
+    }
+
+    override fun inheritedFrom(vararg typeName: Provider<String>) {
+        typeName.forEach { nameProvider ->
+            inheritedFrom.add(nameProvider)
+        }
+    }
 
     internal fun extendsFrom(other: KoverReportFilterImpl) {
         classes.addAll(other.classes)
         annotations.addAll(other.annotations)
         projects.addAll(other.projects)
+        inheritedFrom.addAll(other.inheritedFrom)
     }
 
     internal fun clean() {
         classes.empty()
         annotations.empty()
+        inheritedFrom.empty()
         projects.empty()
     }
 

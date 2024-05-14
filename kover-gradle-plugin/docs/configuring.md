@@ -49,12 +49,20 @@ koverReport {
                 packages("com.another.subpackage")
                 // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                 annotatedBy("*Generated*")
+                // exclude all classes that extend the specified class or implement the specified interface
+                inheritedFrom("*Repository")
               }
               includes {
                 // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
                 classes("com.example.*")
                 // includes all classes located in specified package and it subpackages
                 packages("com.another.subpackage")
+                // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available 
+                // if this is specified, then classes that are not marked with an annotation will not be included in the report
+                annotatedBy("*MarkerToKover*")
+                // include all classes that extend the specified class or implement the specified interface.
+                // other classes will not be included.
+                inheritedFrom("*MyInterface")
               }
             }
   
@@ -113,6 +121,8 @@ koverReport {
                     packages("com.another.subpackage")
                     // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
+                    // exclude all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*Repository")
                 }
 
                 // inclusions for XML reports
@@ -121,6 +131,11 @@ koverReport {
                     classes("com.example.*")
                     // includes all classes located in specified package and it subpackages
                     packages("com.another.subpackage")
+                    // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                    // if this is specified, then no class that is not marked with an annotation will be included in the report
+                    annotatedBy("*MarkerToKover*")
+                    // include all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*MyInterface")
                 }
             }
         }
@@ -149,6 +164,8 @@ koverReport {
                     packages("com.another.subpackage")
                     // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
+                    // exclude all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*Repository")
                 }
 
                 // inclusions for HTML reports
@@ -157,6 +174,11 @@ koverReport {
                     classes("com.example.*")
                     // includes all classes located in specified package and it subpackages
                     packages("com.another.subpackage")
+                    // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                    // if this is specified, then no class that is not marked with an annotation will be included in the report
+                    annotatedBy("*MarkerToKover*")
+                    // include all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*MyInterface")
                 }
             }
         }
@@ -185,6 +207,8 @@ koverReport {
                   packages("com.another.subpackage")
                   // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                   annotatedBy("*Generated*")
+                  // exclude all classes that extend the specified class or implement the specified interface
+                  inheritedFrom("*Repository")
                 }
     
                 // inclusions for logging reports
@@ -193,6 +217,11 @@ koverReport {
                   classes("com.example.*")
                   // includes all classes located in specified package and it subpackages
                   packages("com.another.subpackage")
+                  // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                  // if this is specified, then no class that is not marked with an annotation will be included in the report
+                  annotatedBy("*MarkerToKover*")
+                  // include all classes that extend the specified class or implement the specified interface
+                  inheritedFrom("*MyInterface")
                 }
             }
             // Add a header line to the output before the lines with coverage
@@ -248,12 +277,19 @@ koverReport {
                     packages("com.another.subpackage")
                     // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
+                    // exclude all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*Repository")
                 }
                 includes {
                     // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
                     classes("com.example.*")
                     // includes all classes located in specified package and it subpackages
                     packages("com.another.subpackage")
+                    // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                    // if this is specified, then no class that is not marked with an annotation will be included in the report
+                    annotatedBy("*MarkerToKover*")
+                    // include all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*MyInterface")
                 }
             }
 
@@ -311,6 +347,8 @@ koverReport {
                     packages("com.another.subpackage")
                     // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
+                    // exclude all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*Repository")
                 }
 
                 // inclusions for XML reports
@@ -319,6 +357,11 @@ koverReport {
                     classes("com.example.*")
                     // includes all classes located in specified package and it subpackages
                     packages("com.another.subpackage")
+                    // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                    // if this is specified, then no class that is not marked with an annotation will be included in the report
+                    annotatedBy("*MarkerToKover*")
+                    // include all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*MyInterface")
                 }
             }
         }
@@ -347,6 +390,8 @@ koverReport {
                     packages("com.another.subpackage")
                     // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                     annotatedBy("*Generated*")
+                    // exclude all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*Repository")
                 }
 
                 // inclusions for HTML reports
@@ -355,6 +400,11 @@ koverReport {
                     classes("com.example.*")
                     // includes all classes located in specified package and it subpackages
                     packages("com.another.subpackage")
+                    // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                    // if this is specified, then no class that is not marked with an annotation will be included in the report
+                    annotatedBy("*MarkerToKover*")
+                    // include all classes that extend the specified class or implement the specified interface
+                    inheritedFrom("*MyInterface")
                 }
             }
         }
@@ -385,12 +435,19 @@ koverReport {
                         packages("com.another.subpackage")
                         // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                         annotatedBy("*Generated*")
+                        // exclude all classes that extend the specified class or implement the specified interface
+                        inheritedFrom("*Repository")
                     }
                     includes {
                         // includes class by fully-qualified JVM class name, wildcards '*' and '?' are available
                         classes("com.example.*")
                         // includes all classes located in specified package and it subpackages
                         packages("com.another.subpackage")
+                        // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                        // if this is specified, then no class that is not marked with an annotation will be included in the report
+                        annotatedBy("*MarkerToKover*")
+                        // include all classes that extend the specified class or implement the specified interface
+                        inheritedFrom("*MyInterface")
                     }
                 }
 
@@ -432,6 +489,8 @@ koverReport {
                 packages("com.another.subpackage")
                 // excludes all classes and functions, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
                 annotatedBy("*Generated*")
+                // exclude all classes that extend the specified class or implement the specified interface
+                inheritedFrom("*Repository")
               }
     
               // inclusions for logging reports
@@ -440,6 +499,11 @@ koverReport {
                 classes("com.example.*")
                 // includes all classes located in specified package and it subpackages
                 packages("com.another.subpackage")
+                // include all classes, annotated by specified annotations (with BINARY or RUNTIME AnnotationRetention), wildcards '*' and '?' are available
+                // if this is specified, then no class that is not marked with an annotation will be included in the report
+                annotatedBy("*MarkerToKover*")
+                // include all classes that extend the specified class or implement the specified interface
+                inheritedFrom("*MyInterface")
               }
             }
             // Add a header line to the output before the lines with coverage
@@ -466,11 +530,16 @@ Exclusion rules are names of the classes that must be excluded from the report. 
 If inclusion and exclusion rules are specified at the same time, then excludes have priority over includes.
 This means that even if a class is specified in both the inclusion and exclusion rules, it will be excluded from the report (e.g. class `com.example.Class1` above).
 
-It is acceptable to filter a class from the report by its fully-qualified name - using `classes` or `packages`. Also acceptable to filter a class, function or getter marked with the specified annotation - `annotatedBy`.
+It is acceptable to filter a class from the report by its fully-qualified name - using `classes`. 
+Also, you can have additional filter types:
+ - declarations marked with the specified annotation - `annotatedBy`
+ - classes extending specified class or implementing specified interface - `inheritedFrom`
+
+**_Additional filters do not work for JaCoCo coverage library_**
 
 **Kover supports filtering by annotations having `AnnotationRetention` `BINARY` or `RUNTIME`.**
 
-[Wildcards](#class-name-with-wildcards) `*` and `?` are allowed in class names.
+[Wildcards](#class-name-with-wildcards) `*` and `?` are allowed in filters.
 
 There are several levels where you can define filters. Each of the levels has its own priority.
 ```kotlin

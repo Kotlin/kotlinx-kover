@@ -198,7 +198,56 @@ public data class ClassFilters(
      */
     public val excludeClasses: Set<String>,
     /**
-     * Classes that have at least one of the annotations specified in this field are not filtered.
+     * Classes that have at least one of the annotations specified in this field are present in the report.
+     * All other classes that are not marked with at least one of the specified annotations are not included in the report.
+     *
+     *
+     * If inclusion and exclusion rules are specified at the same time, then excludes have priority over includes.
+     * This means that even if a class is annotated with both annotations from 'exclude' and 'include', it will be excluded from the report.
+     *
      */
-    public val excludeAnnotation: Set<String>
+    public val includeAnnotation: Set<String>,
+    /**
+     * Classes that have at least one of the annotations specified in this field are not present in the report.
+     *
+     *
+     * If inclusion and exclusion rules are specified at the same time, then excludes have priority over includes.
+     * This means that even if a class is annotated with both annotations from 'exclude' and 'include', it will be excluded from the report.
+     *
+     */
+    public val excludeAnnotation: Set<String>,
+    /**
+     *
+     * Include only classes extending at least one of the specified classes or implementing at least one of the interfaces.
+     * The class itself with the specified name is not included in the report.
+     *
+     *
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).
+     *
+     *
+     * The following classes and interfaces can be specified in arguments:
+     *
+     *  *  classes and interfaces declared in the application
+     *  *  classes and interfaces declared outside the application, if they are directly inherited or implemented by any type from the application
+     *
+     *
+     * Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.
+     */
+    public val includeInheritedFrom: Set<String>,
+    /**
+     *
+     * Exclude classes extending at least one of the specified classes or implementing at least one of the interfaces.
+     * The class itself with the specified name is not excluded from the report.
+     *
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).
+     *
+     * The following classes and interfaces can be specified in arguments:
+     *
+     *  *  classes and interfaces declared in the application
+     *  *  classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application
+     *
+     *
+     * Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.
+     */
+    public val excludeInheritedFrom: Set<String>
 )

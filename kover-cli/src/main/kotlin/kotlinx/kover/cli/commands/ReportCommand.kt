@@ -65,10 +65,31 @@ internal class ReportCommand : Command {
 
     @Option(
         name = "--excludeAnnotation",
-        usage = "filter to exclude classes and functions marked by this annotation, wildcards `*` and `?` are acceptable",
-        metaVar = "<annotation-name>"
+        usage = "filter to exclude classes and functions marked by this annotation, wildcards `*` and `?` are acceptable. Excludes have priority over includes",
+        metaVar = "<exclude-annotation-name>"
     )
     private var excludeAnnotation: MutableList<String> = ArrayList()
+
+    @Option(
+        name = "--includeAnnotation",
+        usage = "filter to include classes marked by this annotation, wildcards `*` and `?` are acceptable. Excludes have priority over includes.",
+        metaVar = "<include-annotation-name>"
+    )
+    private var includeAnnotation: MutableList<String> = ArrayList()
+
+    @Option(
+        name = "--excludeInheritedFrom",
+        usage = "filter to exclude classes extending the specified class or implementing an interface, wildcards `*` and `?` are acceptable. Excludes have priority over includes",
+        metaVar = "<exclude-ancestor-name>"
+    )
+    private var excludeInheritedFrom: MutableList<String> = ArrayList()
+
+    @Option(
+        name = "--includeInheritedFrom",
+        usage = "filter to include only classes extending the specified class or implementing an interface, wildcards `*` and `?` are acceptable. Excludes have priority over includes",
+        metaVar = "<include-ancestor-name>"
+    )
+    private var includeInheritedFrom: MutableList<String> = ArrayList()
 
     override val name: String = "report"
 
@@ -79,7 +100,10 @@ internal class ReportCommand : Command {
         val filters = ClassFilters(
             includeClasses.toSet(),
             excludeClasses.toSet(),
-            excludeAnnotation.toSet()
+            includeAnnotation.toSet(),
+            excludeAnnotation.toSet(),
+            includeInheritedFrom.toSet(),
+            excludeInheritedFrom.toSet()
         )
 
         var fail = false
