@@ -658,12 +658,12 @@ public interface KoverReportFilter {
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
      *
+     * **_Does not work for JaCoCo_**
+     *
      * Example:
      * ```
      *  annotatedBy("*Generated*", "com.example.KoverExclude")
      * ```
-     *
-     * **_Does not work for JaCoCo_**
      */
     public fun annotatedBy(vararg annotationName: String)
 
@@ -679,13 +679,13 @@ public interface KoverReportFilter {
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
      *
+     * **_Does not work for JaCoCo_**
+     *
      * Example:
      * ```
      *  val annotation: Provider<String> = ...
      *  annotatedBy(annotation)
      * ```
-     *
-     * **_Does not work for JaCoCo_**
      */
     public fun annotatedBy(vararg annotationName: Provider<String>)
 
@@ -706,7 +706,7 @@ public interface KoverReportFilter {
      * Filter classes extending at least one of the specified classes or implementing at least one of the interfaces.
      * The class itself with the specified name is not taken into account.
      *
-     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside the application (see below).
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).
      *
      * The following classes and interfaces can be specified in arguments:
      *  - classes and interfaces declared in the application
@@ -719,12 +719,12 @@ public interface KoverReportFilter {
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
      *
+     * **_Does not work for JaCoCo_**
+     *
      * Example:
      * ```
      *  inheritedFrom("*Repository")
      * ```
-     *
-     * **_Does not work for JaCoCo_**
      */
     public fun inheritedFrom(vararg typeName: String)
 
@@ -732,7 +732,7 @@ public interface KoverReportFilter {
      * Filter classes extending at least one of the specified classes or implementing at least one of the interfaces.
      * The class itself with the specified name is not taken into account.
      *
-     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside the application (see below).
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).
      *
      * The following classes and interfaces can be specified in arguments:
      *  - classes and interfaces declared in the application
@@ -747,12 +747,12 @@ public interface KoverReportFilter {
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
      *
+     * **_Does not work for JaCoCo_**
+     *
      * Example:
      * ```
      *  inheritedFrom("*Repository")
      * ```
-     *
-     * **_Does not work for JaCoCo_**
      */
     public fun inheritedFrom(vararg typeName: Provider<String>)
 

@@ -222,7 +222,7 @@ public data class ClassFilters(
      * The class itself with the specified name is not included in the report.
      *
      *
-     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside the application (see below).
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).
      *
      *
      * The following classes and interfaces can be specified in arguments:
@@ -239,7 +239,7 @@ public data class ClassFilters(
      * Exclude classes extending at least one of the specified classes or implementing at least one of the interfaces.
      * The class itself with the specified name is not excluded from the report.
      *
-     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside the application (see below).
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).
      *
      * The following classes and interfaces can be specified in arguments:
      *
