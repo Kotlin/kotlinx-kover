@@ -712,7 +712,7 @@ public interface KoverReportFilter {
      *  - classes and interfaces declared in the application
      *  - classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application
      *
-     * If specified class or interface that is not declared in the application and that is not extended/implemented directly by one of the application types, then such a filter will have no effect.
+     * Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.
      *
      * If this filter is specified, then the generation of the report may slow down, because it becomes necessary to analyze the inheritance tree.
      *
@@ -738,7 +738,7 @@ public interface KoverReportFilter {
      *  - classes and interfaces declared in the application
      *  - classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application
      *
-     * If specified class or interface that is not declared in the application and that is not extended/implemented directly by one of the application types, then such a filter will have no effect.
+     * Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.
      *
      * If this filter is specified, then the generation of the report may slow down, because it becomes necessary to analyze the inheritance tree.
      *

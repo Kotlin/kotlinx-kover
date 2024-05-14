@@ -535,7 +535,7 @@ Also, you can have additional filter types:
  - declarations marked with the specified annotation - `annotatedBy`
  - classes extending specified class or implementing specified interface - `inheritedFrom`
 
-**_Additional filters does not work for JaCoCo coverage library_**
+**_Additional filters do not work for JaCoCo coverage library_**
 
 **Kover supports filtering by annotations having `AnnotationRetention` `BINARY` or `RUNTIME`.**
 
