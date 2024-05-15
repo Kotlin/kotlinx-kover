@@ -890,24 +890,24 @@ Based on amount of the executed and non-executed code units, one number (coverag
 Type `CoverageUnit` determines for which types of units the coverage will be measured.
 It can be:
 - `LINE`. This is a default value.
-- `INSTRUCTION`
-- `BRANCH`
+- `INSTRUCTION`.
+- `BRANCH`.
 
 For comparison with the specified boundaries, the number of covered (executed) or skipped (not executed) units should be aggregated into one number.
 `AggregationType` determines exactly how the current measurement value will be calculated:
-- `COVERED_COUNT` - the total number of units of code that were executed
-- `MISSED_COUNT` - the total number of units of code that were not executed
+- `COVERED_COUNT` - the total number of units of code that were executed.
+- `MISSED_COUNT` - the total number of units of code that were not executed.
 - `COVERED_PERCENTAGE` - is the number of covered units divided by the number of all units and multiplied by 100. This is a default value.
-- `MISSED_PERCENTAGE` - is the number of uncovered units divided by the number of all units and multiplied by 100
+- `MISSED_PERCENTAGE` - is the number of uncovered units divided by the number of all units and multiplied by 100.
 
 To calculate the coverage value, units are grouped by various entities.
 By default, all application units of code are grouped by a single application entity, so one coverage value is calculated for the entire application using the aggregating function.
 
 But you can group code units by other named entities.
 The `GroupingEntityType` type is used for this:
-- `APPLICATION` - one current coverage value for the entire application will be calculated. This is a default value
-- `CLASS` - the coverage value will be calculated individually for each class. So the bounds will be checked for each class
-- `PACKAGE` - the coverage value will be calculated individually for all classes in each package. So the bounds will be checked for each package
+- `APPLICATION` - one current coverage value for the entire application will be calculated. This is a default value.
+- `CLASS` - the coverage value will be calculated individually for each class. So the bounds will be checked for each class.
+- `PACKAGE` - the coverage value will be calculated individually for all classes in each package. So the bounds will be checked for each package.
 
 #### Verification rules
 Verification rule - is a set of restrictions on the coverage value for each group.
