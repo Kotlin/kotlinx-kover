@@ -158,10 +158,10 @@ dependencies {
 #### Generating reports
 Suppose if we chose the root module as the merging module, then
 
-- To generate JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
+- To generate a JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
 - To generate an HTML report, call `:koverHtmlReport` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `:koverVerify` Gradle task
-- To generate binary report in IC format, call `:koverBinaryReport` Gradle task, for more info refer to the [relevant section](#binary-reports)
+- To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReport` Gradle task
 - To print coverage to the log, call `:koverLog` Gradle task
 
 If a module with the path `:foo` was selected as the merging module, then you will need to call commands like `:foo:koverXmlReport`, etc.
@@ -266,7 +266,7 @@ The names of the **report variants** are used when configuring the report and wh
 Reports can be generated for a single build variant, or for all at once.
 
 Let's say we want to generate a report for the `debug` build variant and the Android application module has the name `app`:
-- To generate JaCoCo-compatible XML report, call `:app:koverXmlReportDebug` Gradle task
+- To generate a JaCoCo-compatible XML report, call `:app:koverXmlReportDebug` Gradle task
 - To generate an HTML report, call `:app:koverHtmlReportDebug` Gradle task
 - To validate verification rules specified in the project in [verification block](#specify-verification-rules-for-named-variant), call `:app:koverVerifyDebug` Gradle task
 - To generate binary report in IC format, call `:app:koverBinaryReportDebug` Gradle task, for more info refer to the [relevant section](#binary-reports)
@@ -476,7 +476,7 @@ Let's say we want to generate a report for the `debug` report:
 - To generate binary report in IC format, call `:koverBinaryReportDebug` Gradle task, for more info refer to the [relevant section](#binary-reports)
 - To print coverage to the log, call `:koverLogDebug` Gradle task
 
-*the general rule is that the name of the report variant is always added at the end
+The general rule is that the name of the report variant is always added at the end.
 
 Running one of these tasks automatically triggers the launch of all test tasks for `debug` report variant in all merged module.
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the corresponding project](#exclusion-of-test-tasks). Exclusion of specific classes or annotations can be configured through [report filtering](#filtering-reports).
@@ -645,7 +645,7 @@ Let's say we want to generate a report for the `custom` report:
 - To generate binary report in IC format, call `:koverBinaryReportCustom` Gradle task, for more info refer to the [relevant section](#binary-reports)
 - To print coverage to the log, call `:koverLogCustom` Gradle task
 
-*the general rule is that the name of the report variant is always added at the end
+The general rule is that the name of the report variant is always added at the end.
 
 Running one of these tasks automatically triggers the launch of all test tasks for `custom` report variant in all merged module.
 To exclude the automatic launch of a certain task and never take into account the coverage of this task, you should additionally [configure the corresponding project](#exclusion-of-test-tasks). Exclusion of specific classes or annotations can be configured through [report filtering](#filtering-reports).
@@ -889,7 +889,7 @@ Based on amount of the executed and non-executed code units, one number (coverag
 
 Type `CoverageUnit` determines for which types of units the coverage will be measured.
 It can be:
-- `LINE`
+- `LINE`. This is a default value.
 - `INSTRUCTION`
 - `BRANCH`
 
