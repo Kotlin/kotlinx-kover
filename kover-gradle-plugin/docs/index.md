@@ -981,7 +981,7 @@ kover {
              */
             
             // disable instrumentation of specified test tasks in current project
-            disableForTestTasks.add("test")
+            disableForTestTasks.add("nightlyLoadTest")
             // disable instrumentation of all test tasks in current project
             disableForAll = true
         }
