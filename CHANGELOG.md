@@ -1,8 +1,8 @@
 0.8.0 / 2024-05-15
 ===================
-This release introduce DSL rework in order to simplify the work with Android build variants, adds the possibility of lazy configuration, adds the ability to create custom report variants, expands the ability of reports filtering.
+This release introduces DSL rework to simplify the work with Android build variants, adds the possibility of lazy configuration, allows for the creation of custom report variants, and expands the ability of reports filtering.
 
-It is incompatible with the previous version, and we provide best-effort migration assistance as well as [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.8.0/docs/gradle-plugin/migrations/migration-to-0.8.0.md)
+It is incompatible with the previous version, and we provide best-effort migration assistance as well as the [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.8.0/docs/gradle-plugin/migrations/migration-to-0.8.0.md).
 
 ## Kover Gradle Plugin
 ### Features
