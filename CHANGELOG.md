@@ -1,3 +1,62 @@
+0.8.0 / 2024-05-15
+===================
+This release introduce DSL rework in order to simplify the work with Android build variants, adds the possibility of lazy configuration, adds the ability to create custom report variants, expands the ability of reports filtering.
+
+It is incompatible with the previous version, and we provide best-effort migration assistance as well as [migration guide](https://github.com/Kotlin/kotlinx-kover/blob/v0.8.0/docs/gradle-plugin/migrations/migration-to-0.8.0.md)
+
+## Kover Gradle Plugin
+### Features
+* [`#461`](https://github.com/Kotlin/kotlinx-kover/issues/461) Implemented DSL revision 4
+* [`#410`](https://github.com/Kotlin/kotlinx-kover/issues/410) Add possibility of lazy configuration of Kover extensions
+* [`#462`](https://github.com/Kotlin/kotlinx-kover/issues/462) Redesign the concept of default reports
+* [`#463`](https://github.com/Kotlin/kotlinx-kover/issues/463) Add the ability to create custom report variants
+* [`#338`](https://github.com/Kotlin/kotlinx-kover/issues/338) Create an interface for Kover tasks
+* [`#66`](https://github.com/Kotlin/kotlinx-kover/issues/66) Added support for the publishing plugin to Gradle Plugin Portal
+* [`#466`](https://github.com/Kotlin/kotlinx-kover/issues/466) Implemented multi-project shortcuts
+* [`#339`](https://github.com/Kotlin/kotlinx-kover/issues/339) Implemented warn on verification error
+* [`#572`](https://github.com/Kotlin/kotlinx-kover/issues/572) Added DslMarker to Kover public interfaces
+* [`#570`](https://github.com/Kotlin/kotlinx-kover/issues/570) Added overload for functions of KoverVariantCreateConfig
+* [`#590`](https://github.com/Kotlin/kotlinx-kover/issues/590) Expose reportDir property in KoverHtmlReport interface
+* [`#587`](https://github.com/Kotlin/kotlinx-kover/issues/587) Added property variantName to KoverReport interface
+* [`#584`](https://github.com/Kotlin/kotlinx-kover/issues/584) Added project filter for reports
+* [`#274`](https://github.com/Kotlin/kotlinx-kover/issues/274) Allow for classes to be Included by annotation
+* [`#454`](https://github.com/Kotlin/kotlinx-kover/issues/454) Added a report filter by parent class or interface
+### Bugfixes
+* [`#557`](https://github.com/Kotlin/kotlinx-kover/issues/557) Changed log level for print coverage task
+* [`#520`](https://github.com/Kotlin/kotlinx-kover/issues/520) Fixed error: Kover requires extension with name 'androidComponents'
+
+### Internal features
+* [`#567`](https://github.com/Kotlin/kotlinx-kover/issues/567) Used compile dependency to Kover Features in Kover Gradle Plugin
+### Documentation
+* [`#531`](https://github.com/Kotlin/kotlinx-kover/issues/531) Added explanations about applying of the plugin
+* [`#486`](https://github.com/Kotlin/kotlinx-kover/issues/486) Increased the readability of the Kover documentation
+
+## Kover JVM Agent
+### Features
+* [`#464`](https://github.com/Kotlin/kotlinx-kover/issues/464) Repacked the intellij-agent artifact to kover-jvm-agent
+
+### Bugfixes
+* [`#583`](https://github.com/Kotlin/kotlinx-kover/issues/583) Excluded from report companion objects with only constants
+* [`#548`](https://github.com/Kotlin/kotlinx-kover/issues/548) Fixed coverage drop in case of using different classloaders for same class
+
+## Changelog relative to version `0.8.0-Beta2`
+### Kover Gradle Plugin
+#### Features
+* [`#590`](https://github.com/Kotlin/kotlinx-kover/issues/590) Expose reportDir property in KoverHtmlReport interface
+* [`#587`](https://github.com/Kotlin/kotlinx-kover/issues/587) Added property variantName to KoverReport interface
+* [`#584`](https://github.com/Kotlin/kotlinx-kover/issues/584) Added project filter for reports
+* [`#274`](https://github.com/Kotlin/kotlinx-kover/issues/274) Allow for classes to be Included by annotation
+* [`#454`](https://github.com/Kotlin/kotlinx-kover/issues/454) Added a report filter by parent class or interface
+
+#### Documentation
+* [`#486`](https://github.com/Kotlin/kotlinx-kover/issues/486) Increased the readability of the Kover documentation for 0.8.0
+
+### Kover JVM Agent
+#### Bugfixes
+* [`#583`](https://github.com/Kotlin/kotlinx-kover/issues/583) Excluded from report companion objects with only constants
+* [`#548`](https://github.com/Kotlin/kotlinx-kover/issues/548) Fixed coverage drop in case of using different classloaders for same class
+
+
 0.8.0-Beta2 / 2024-03-28
 ===================
 ## Kover Gradle Plugin
