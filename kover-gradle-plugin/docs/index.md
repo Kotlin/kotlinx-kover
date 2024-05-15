@@ -269,7 +269,7 @@ Let's say we want to generate a report for the `debug` build variant and the And
 - To generate a JaCoCo-compatible XML report, call `:app:koverXmlReportDebug` Gradle task
 - To generate an HTML report, call `:app:koverHtmlReportDebug` Gradle task
 - To validate verification rules specified in the project in [verification block](#specify-verification-rules-for-named-variant), call `:app:koverVerifyDebug` Gradle task
-- To generate binary report in IC format, call `:app:koverBinaryReportDebug` Gradle task, for more info refer to the [relevant section](#binary-reports)
+- To generate [a binary report](#binary-reports) in IC format, call `:app:koverBinaryReportDebug` Gradle task
 - To print coverage to the log, call `:app:koverLogDebug` Gradle task
 
 The general rule is that the name of the build variant is always added at the end
@@ -282,7 +282,7 @@ If you need a total report for the `app` module (all classes from all build vari
 - To generate JaCoCo-compatible XML report, call `:app:koverXmlReport` Gradle task
 - To generate an HTML report, call `:app:koverHtmlReport` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `:app:koverVerify` Gradle task
-- To generate binary report in IC format, call `:app:koverBinaryReport` Gradle task, for more info refer to the [relevant section](#binary-reports)
+- To generate [a binary report](#binary-reports) in IC format, call `:app:koverBinaryReport` Gradle task
 - To print coverage to the log, call `:app:koverLog` Gradle task
 
 Running one of these tasks automatically triggers the launch of all test tasks in `app` module.
@@ -473,7 +473,7 @@ Let's say we want to generate a report for the `debug` report:
 - To generate JaCoCo-compatible XML report, call `:koverXmlReportDebug` Gradle task
 - To generate an HTML report, call `:koverHtmlReportDebug` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-named-variant), call `:koverVerifyDebug` Gradle task
-- To generate binary report in IC format, call `:koverBinaryReportDebug` Gradle task, for more info refer to the [relevant section](#binary-reports)
+- To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReportDebug` Gradle task
 - To print coverage to the log, call `:koverLogDebug` Gradle task
 
 The general rule is that the name of the report variant is always added at the end.
@@ -486,7 +486,7 @@ If reports are needed for all classes in the merged modules, then:
 - To generate JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
 - To generate an HTML report, call `:koverHtmlReport` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `:koverVerify` Gradle task
-- To generate binary report in IC format, call `:koverBinaryReport` Gradle task, for more info refer to the [relevant section](#binary-reports)
+- To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReport` Gradle task
 - To print coverage to the log, call `:koverLog` Gradle task
 
 Running one of these tasks automatically triggers the launch of all test tasks in all merged module.
@@ -642,7 +642,7 @@ Let's say we want to generate a report for the `custom` report:
 - To generate JaCoCo-compatible XML report, call `:koverXmlReportCustom` Gradle task
 - To generate an HTML report, call `:koverHtmlReportCustom` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-named-variant), call `:koverVerifyCustom` Gradle task
-- To generate binary report in IC format, call `:koverBinaryReportCustom` Gradle task, for more info refer to the [relevant section](#binary-reports)
+- To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReportCustom` Gradle task
 - To print coverage to the log, call `:koverLogCustom` Gradle task
 
 The general rule is that the name of the report variant is always added at the end.
@@ -655,7 +655,7 @@ If reports are needed for all classes in the merged modules, then:
 - To generate JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
 - To generate an HTML report, call `:koverHtmlReport` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `:koverVerify` Gradle task
-- To generate binary report in IC format, call `:koverBinaryReport` Gradle task, for more info refer to the [relevant section](#binary-reports)
+- To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReport` Gradle task
 - To print coverage to the log, call `:koverLog` Gradle task
 
 Running one of these tasks automatically triggers the launch of all test tasks in all merged module.
@@ -897,7 +897,7 @@ For comparison with the specified boundaries, the number of covered (executed) o
 `AggregationType` determines exactly how the current measurement value will be calculated:
 - `COVERED_COUNT` - the total number of units of code that were executed
 - `MISSED_COUNT` - the total number of units of code that were not executed
-- `COVERED_PERCENTAGE` - is the number of covered units divided by the number of all units and multiplied by 100
+- `COVERED_PERCENTAGE` - is the number of covered units divided by the number of all units and multiplied by 100. This is a default value
 - `MISSED_PERCENTAGE` - is the number of uncovered units divided by the number of all units and multiplied by 100
 
 To calculate the coverage value, units are grouped by various entities.
@@ -905,7 +905,7 @@ By default, all application units of code are grouped by a single application en
 
 But you can group code units by other named entities.
 The `GroupingEntityType` type is used for this:
-- `APPLICATION` - one current coverage value for the entire application will be calculated
+- `APPLICATION` - one current coverage value for the entire application will be calculated. This is a default value
 - `CLASS` - the coverage value will be calculated individually for each class. So the bounds will be checked for each class
 - `PACKAGE` - the coverage value will be calculated individually for all classes in each package. So the bounds will be checked for each package
 
@@ -958,8 +958,6 @@ kover {
 }
 ```
 
-You can read more about creating verification rules in the [corresponding section](#verification).
-
 ### Instrumentation
 To collect code coverage for JVM applications, Kover uses instrumentation - modification of the bytecode in order to place entry counters in certain blocks of the code.
 
@@ -974,6 +972,18 @@ kover {
     currentProject {
         instrumentation {
             excludedClasses.add("com.example.UnInstrumented*")
+
+
+            /* 
+            Instrumentation also may affect tests performance. 
+            In case you have some performance-sensitive scenarios, 
+            you may want to disable instrumentation conditionally, e.g., for set of test tasks or all of them
+             */
+            
+            // disable instrumentation of specified test tasks in current project
+            disableForTestTasks.add("test")
+            // disable instrumentation of all test tasks in current project
+            disableForAll = true
         }
     }
 }
