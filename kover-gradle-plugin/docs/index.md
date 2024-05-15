@@ -279,7 +279,7 @@ To exclude the automatic launch of a certain task and never take into account th
 
 
 If you need a total report for the `app` module (all classes from all build variants), then:
-- To generate JaCoCo-compatible XML report, call `:app:koverXmlReport` Gradle task
+- To generate a JaCoCo-compatible XML report, call `:app:koverXmlReport` Gradle task
 - To generate an HTML report, call `:app:koverHtmlReport` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `:app:koverVerify` Gradle task
 - To generate [a binary report](#binary-reports) in IC format, call `:app:koverBinaryReport` Gradle task
@@ -470,7 +470,7 @@ Reports can be generated for a single report variant, or for all classes.
 
 Suppose if we chose the root module as the merging module.
 Let's say we want to generate a report for the `debug` report:
-- To generate JaCoCo-compatible XML report, call `:koverXmlReportDebug` Gradle task
+- To generate a JaCoCo-compatible XML report, call `:koverXmlReportDebug` Gradle task
 - To generate an HTML report, call `:koverHtmlReportDebug` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-named-variant), call `:koverVerifyDebug` Gradle task
 - To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReportDebug` Gradle task
@@ -483,7 +483,7 @@ To exclude the automatic launch of a certain task and never take into account th
 
 
 If reports are needed for all classes in the merged modules, then:
-- To generate JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
+- To generate a JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
 - To generate an HTML report, call `:koverHtmlReport` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `:koverVerify` Gradle task
 - To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReport` Gradle task
@@ -639,7 +639,7 @@ Reports can be generated for a single report variant, or for all classes.
 
 Suppose if we chose the root module as the merging module.
 Let's say we want to generate a report for the `custom` report:
-- To generate JaCoCo-compatible XML report, call `:koverXmlReportCustom` Gradle task
+- To generate a JaCoCo-compatible XML report, call `:koverXmlReportCustom` Gradle task
 - To generate an HTML report, call `:koverHtmlReportCustom` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-named-variant), call `:koverVerifyCustom` Gradle task
 - To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReportCustom` Gradle task
@@ -652,7 +652,7 @@ To exclude the automatic launch of a certain task and never take into account th
 
 
 If reports are needed for all classes in the merged modules, then:
-- To generate JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
+- To generate a JaCoCo-compatible XML report, call `:koverXmlReport` Gradle task
 - To generate an HTML report, call `:koverHtmlReport` Gradle task
 - To validate verification rule specified in project in [verification block](#specify-verification-rules-for-total-variant), call `:koverVerify` Gradle task
 - To generate [a binary report](#binary-reports) in IC format, call `:koverBinaryReport` Gradle task
@@ -897,7 +897,7 @@ For comparison with the specified boundaries, the number of covered (executed) o
 `AggregationType` determines exactly how the current measurement value will be calculated:
 - `COVERED_COUNT` - the total number of units of code that were executed
 - `MISSED_COUNT` - the total number of units of code that were not executed
-- `COVERED_PERCENTAGE` - is the number of covered units divided by the number of all units and multiplied by 100. This is a default value
+- `COVERED_PERCENTAGE` - is the number of covered units divided by the number of all units and multiplied by 100. This is a default value.
 - `MISSED_PERCENTAGE` - is the number of uncovered units divided by the number of all units and multiplied by 100
 
 To calculate the coverage value, units are grouped by various entities.
