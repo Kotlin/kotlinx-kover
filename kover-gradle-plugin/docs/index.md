@@ -28,6 +28,7 @@ Gradle plugin that measures the coverage for tests running on the JVM and genera
     * [HTML report description](#html-report-description)
     * [Using JaCoCo](#using-jacoco)
     * [Implicit plugin dependencies](#implicit-plugin-dependencies)
+    * [DSL reference](dokka)
 
 ## Features
 
@@ -54,7 +55,7 @@ Add the following to your build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 }
 ```
 For more information about application of the plugin, refer to the [relevant section](#apply-kover-gradle-plugin-in-project)
@@ -126,7 +127,7 @@ Add the following line to build file in each module of your Gradle build:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 }
 ```
 It is recommended to apply the Kover Plugin in the root module, even if there is no source code or tests there.
@@ -224,7 +225,7 @@ Otherwise, the use of the plugin is identical to the use in the [multi-module Ko
 Add the following to the build file only in the `app` module of your Gradle build:
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 }
 ```
 
@@ -377,7 +378,7 @@ Add the following to build file in each module of your Gradle build:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 }
 ```
 It is recommended to apply the Kover Plugin in the root module, even if there is no source code or tests there.
@@ -581,7 +582,7 @@ Add the following to build file in each module of your Gradle build:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 }
 ```
 It is recommended to apply the Kover Plugin in the root module, even if there is no source code or tests there.
@@ -758,7 +759,7 @@ Add the following to your build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 }
 ```
 
@@ -776,7 +777,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.6")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.8.0")
     }
 }
 
@@ -792,7 +793,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.6'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.8.0'
     }
 }
   

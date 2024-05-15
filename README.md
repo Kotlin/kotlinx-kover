@@ -14,10 +14,7 @@ Kover Toolset:
 - [Kover features artifact](#kover-features-artifact)
 
 ## Kover Gradle Plugin
-For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation of the latest stable release](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
-
-A beta version of the plugin is also available. The DSL of this version is unstable and can be changed after receiving feedback.
-Detailed documentation is in the process of being written, please refer to the [migration guide](/kover-gradle-plugin/docs/migrations/migration-to-0.8.0.md).
+For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
 
 ### Features
 
@@ -41,7 +38,7 @@ Add the following to your top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.7.6"
+     id("org.jetbrains.kotlinx.kover") version "0.8.0"
 }
 ```
 </details>
@@ -51,13 +48,13 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.7.6'
+    id 'org.jetbrains.kotlinx.kover' version '0.8.0'
 }
 ```
 </details>
 
-After you applied Kover Gradle plugin, [Kover tasks](https://kotlin.github.io/kotlinx-kover/gradle-plugin#kover-tasks) will be created for generating reports and verification. 
-E.g. to generate HTML report for non-Android project run `./gradlew koverHtmlReport` - this will automatically start code compilation, execution of instrumented tests, and an HTML report will be generated with measurement results in the build folder.
+After you applied Kover Gradle plugin, Kover tasks will be created for generating reports and verification. 
+E.g. to generate HTML report run `./gradlew koverHtmlReport` - this will automatically start code compilation, execution of instrumented tests, and an HTML report will be generated with measurement results in the build folder.
 
 It is also important that after applying Kover Gradle plugin, during the running tests, the classes are modified (instrumented) when loaded into the JVM which may lead to some performance degradation, or affect concurrent tests.
 
@@ -76,7 +73,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.7.6")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.8.0")
     }
 }
 
@@ -95,7 +92,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.7.6'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.8.0'
     }
 }
   
@@ -119,7 +116,7 @@ in this case report will be generated for current project joined with `:another:
 ## Kover CLI
 Standalone JVM application used for offline instrumentation and generation of human-readable reports.
 
-[Documentation of the latest stable release](https://kotlin.github.io/kotlinx-kover/cli).
+[Documentation of the Kover CLI](https://kotlin.github.io/kotlinx-kover/cli).
 
 ## Kover offline instrumentation
 Offline instrumentation is the modification of class-files stored on disk to measure their coverage.
@@ -128,13 +125,12 @@ The ways of offline instrumentation and running of the instrumented applications
 
 ## Kover JVM agent
 JVM agent is a jar file that modifies the bytecode of loaded into the JVM classes in order to measure coverage.
-
-It was added in the beta version. [documentations](/kover-jvm-agent/docs/index.md)
+[Documentations](https://kotlin.github.io/kotlinx-kover/jvm-agent).
 
 ## Kover features artifact
 A JVM dependency that allows to programmatically instrument class-files on a disk.
 
-[Documentation of the latest stable release](https://kotlin.github.io/kotlinx-kover/offline-instrumentation/#instrumentation-by-kover-features)
+[Documentation of Kover features artifact](https://kotlin.github.io/kotlinx-kover/offline-instrumentation/#instrumentation-by-kover-features)
 
 ## Building locally and Contributing
 
