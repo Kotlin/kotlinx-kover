@@ -14,8 +14,13 @@ internal class ExamplesBuildTests {
         // build only
     }
 
-    @ExamplesTest("jvm/minimal")
-    fun CheckerContext.jvmMinimal() {
+    @ExamplesTest("jvm/single")
+    fun CheckerContext.jvmSingle() {
+        // build only
+    }
+
+    @ExamplesTest("jvm/single-kmp")
+    fun CheckerContext.jvmSingleKmp() {
         // build only
     }
 
@@ -31,6 +36,16 @@ internal class ExamplesBuildTests {
 
     @ExamplesTest("android/multiproject")
     fun CheckerContext.androidMultiProject() {
+        // build only
+    }
+
+    @ExamplesTest("android/multiproject-custom", [":koverHtmlReportCustom"])
+    fun CheckerContext.androidMultiProjectWithCustomVariant() {
+        // build only
+    }
+
+    @ExamplesTest("android/with-jvm", [":koverHtmlReportCustom"])
+    fun CheckerContext.androidWithJvm() {
         // build only
     }
 }

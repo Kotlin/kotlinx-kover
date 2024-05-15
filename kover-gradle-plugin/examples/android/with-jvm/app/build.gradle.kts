@@ -1,7 +1,7 @@
 plugins {
-    id ("com.android.application")
-    id ("org.jetbrains.kotlin.android")
-    id ("org.jetbrains.kotlinx.kover")
+    id("com.android.application")
+    kotlin("android")
+    id("org.jetbrains.kotlinx.kover")
 }
 
 android {
@@ -48,39 +48,10 @@ dependencies {
  * Kover configs
  */
 
-dependencies {
-    kover(project(":lib"))
-}
-
-
 kover {
-    reports {
-        // filters for all report types of all build variants
-        filters {
-            excludes {
-                androidGeneratedClasses()
-            }
+    currentProject {
+        createVariant("custom") {
+            add("release")
         }
-
-        variant("release") {
-            // verification ony for 'release' build variant
-            verify {
-                rule {
-                    minBound(50)
-                }
-            }
-
-            // filters for all report types only for 'release' build variant
-            filters {
-                excludes {
-                    androidGeneratedClasses()
-                    classes(
-                        // excludes debug classes
-                        "*.DebugUtil"
-                    )
-                }
-            }
-        }
-
     }
 }
