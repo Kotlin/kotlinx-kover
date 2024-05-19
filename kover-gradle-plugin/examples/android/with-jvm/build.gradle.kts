@@ -26,7 +26,7 @@ kover {
         }
 
         variant("custom") {
-            // verification ony for 'custom' report variant
+            // verification only for 'custom' report variant
             verify {
                 rule {
                     minBound(50)
