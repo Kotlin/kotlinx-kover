@@ -53,7 +53,7 @@ kover {
         }
 
         variant("release") {
-            // verification ony for 'release' build variant
+            // verification only for 'release' build variant
             verify {
                 rule {
                     minBound(50)
