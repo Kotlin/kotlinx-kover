@@ -81,6 +81,13 @@ public interface KoverProjectExtension {
     public fun currentProject(block: Action<KoverCurrentProjectVariantsConfig>)
 
     /**
+     * Instance to configuring of report variants shared by the current project.
+     *
+     * See details in [currentProject].
+     */
+    public val currentProject: KoverCurrentProjectVariantsConfig
+
+    /**
      * Configuration of Kover reports.
      *
      * An individual set of reports is created for each Kover report variant.
@@ -119,6 +126,13 @@ public interface KoverProjectExtension {
      * ```
      */
     public fun reports(block: Action<KoverReportsConfig>)
+
+    /**
+     * Instance to configuring of Kover reports.
+     *
+     * See details in [reports].
+     */
+    public val reports: KoverReportsConfig
 
     /**
      * Configuring a merged report.
@@ -200,6 +214,13 @@ public interface KoverProjectExtension {
      * ```
      */
     public fun merge(block: Action<KoverMergingConfig>)
+
+    /**
+     * Instance to configuring a merged report.
+     *
+     * See details in [merge].
+     */
+    public val merge: KoverMergingConfig
 
     @Deprecated(
         message = "Function excludeJavaCode was removed, to exclude all Java sources write here `currentProject { sources { excludeJava = true } }` or `currentProject { sources { excludeJava.set(true) } } instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",

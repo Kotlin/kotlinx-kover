@@ -212,14 +212,14 @@ internal class VariantReportsSet(
     private fun KoverReportFiltersConfigImpl.convert(): Provider<ReportFilters> {
         return project.provider {
             ReportFilters(
-                includesImpl.classes.get(),
-                includesImpl.annotations.get(),
-                includesImpl.inheritedFrom.get(),
-                includesImpl.projects.get(),
-                excludesImpl.classes.get(),
-                excludesImpl.annotations.get(),
-                excludesImpl.inheritedFrom.get(),
-                excludesImpl.projects.get()
+                includes.classes.get(),
+                includes.annotatedBy.get(),
+                includes.inheritedFrom.get(),
+                includes.projects.get(),
+                excludes.classes.get(),
+                excludes.annotatedBy.get(),
+                excludes.inheritedFrom.get(),
+                excludes.projects.get()
             )
         }
     }

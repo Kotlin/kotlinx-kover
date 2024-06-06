@@ -17,25 +17,31 @@ internal abstract class KoverMergingConfigImpl: KoverMergingConfig {
     internal var instrumentationAction: Action<KoverMergingInstrumentation>? = null
     internal val variantsAction: MutableMap<String, Action<KoverMergingVariantCreate>> = mutableMapOf()
 
+    internal var configured: Boolean = false
 
     override fun subprojects() {
         subprojectsFilters += Spec<Project> { true }
+        configured = true
     }
 
     override fun subprojects(filter: Spec<Project>) {
         subprojectsFilters += filter
+        configured = true
     }
 
     override fun allProjects() {
         allProjectsFilters += Spec<Project> { true }
+        configured = true
     }
 
     override fun allProjects(filter: Spec<Project>) {
         allProjectsFilters += filter
+        configured = true
     }
 
     override fun projects(vararg projectNameOrPath: String) {
         allProjectsFilters += Spec<Project> { project -> project.name in projectNameOrPath || project.path in projectNameOrPath }
+        configured = true
     }
 
     override fun sources(config: Action<KoverMergingVariantSources>) {
@@ -43,6 +49,7 @@ internal abstract class KoverMergingConfigImpl: KoverMergingConfig {
             throw KoverIllegalConfigException("An attempt to re-invoke the 'sources' block in merging config. Only one usage is allowed")
         }
         sourcesAction = config
+        configured = true
     }
 
     override fun instrumentation(config: Action<KoverMergingInstrumentation>) {
@@ -50,6 +57,7 @@ internal abstract class KoverMergingConfigImpl: KoverMergingConfig {
             throw KoverIllegalConfigException("An attempt to re-invoke the 'instrumentation' block in merging config. Only one usage is allowed")
         }
         instrumentationAction = config
+        configured = true
     }
 
     override fun createVariant(variantName: String, config: Action<KoverMergingVariantCreate>) {
@@ -57,6 +65,7 @@ internal abstract class KoverMergingConfigImpl: KoverMergingConfig {
         if (prev != null) {
             throw KoverIllegalConfigException("Variant '$variantName' has already been added in merging config. Re-creating a variant with the same name is not allowed")
         }
+        configured = true
     }
 
 }

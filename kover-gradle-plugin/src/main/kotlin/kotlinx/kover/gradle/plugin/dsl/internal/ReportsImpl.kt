@@ -23,19 +23,18 @@ internal abstract class KoverReportsConfigImpl @Inject constructor(
     private val layout: ProjectLayout,
     private val projectPath: String
 ) : KoverReportsConfig {
-    private val rootFilters: KoverReportFiltersConfigImpl = objects.newInstance()
-    private val rootVerify: KoverVerificationRulesConfigImpl = objects.newInstance()
-
-    internal val total: KoverReportSetConfigImpl = createReportSet(TOTAL_VARIANT_NAME, projectPath)
+    override val filters: KoverReportFiltersConfigImpl = objects.newInstance()
+    override val verify: KoverVerificationRulesConfigImpl = objects.newInstance()
+    override val total: KoverReportSetConfigImpl = createReportSet(TOTAL_VARIANT_NAME, projectPath)
 
     internal val byName: MutableMap<String, KoverReportSetConfigImpl> = mutableMapOf()
 
     override fun filters(config: Action<KoverReportFiltersConfig>) {
-        rootFilters.also { config(it) }
+        filters.also { config(it) }
     }
 
     override fun verify(config: Action<KoverVerificationRulesConfig>) {
-        rootVerify.also { config(it) }
+        verify.also { config(it) }
     }
 
     override fun total(config: Action<KoverReportSetConfig>) {
@@ -53,8 +52,8 @@ internal abstract class KoverReportsConfigImpl @Inject constructor(
         val block =
             objects.newInstance<KoverReportSetConfigImpl>(objects, layout.buildDirectory, variantName, projectPath)
 
-        block.filters.extendsFrom(rootFilters)
-        block.verify.extendFrom(rootVerify)
+        block.filters.extendsFrom(filters)
+        block.verify.extendFrom(verify)
 
         return block
     }
@@ -66,13 +65,13 @@ internal abstract class KoverReportSetConfigImpl @Inject constructor(
     variantName: String,
     projectPath: String
 ) : KoverReportSetConfig {
-    internal val filters: KoverReportFiltersConfigImpl = objects.newInstance()
-    internal val verify: KoverVerifyTaskConfigImpl = objects.newInstance()
+    override val filters: KoverReportFiltersConfigImpl = objects.newInstance()
+    override val verify: KoverVerifyTaskConfigImpl = objects.newInstance()
 
-    internal val html: KoverHtmlTaskConfig = objects.newInstance()
-    internal val xml: KoverXmlTaskConfig = objects.newInstance()
-    internal val binary: KoverBinaryTaskConfig = objects.newInstance()
-    internal val log: KoverLogTaskConfig = objects.newInstance()
+    override val html: KoverHtmlTaskConfig = objects.newInstance()
+    override val xml: KoverXmlTaskConfig = objects.newInstance()
+    override val binary: KoverBinaryTaskConfig = objects.newInstance()
+    override val log: KoverLogTaskConfig = objects.newInstance()
 
     init {
         xml.xmlFile.convention(buildDir.file(xmlReportPath(variantName)))
@@ -244,33 +243,33 @@ internal abstract class KoverVerifyRuleImpl @Inject constructor(private val obje
 internal open class KoverReportFiltersConfigImpl @Inject constructor(
     objects: ObjectFactory
 ) : KoverReportFiltersConfig {
-    internal val excludesImpl: KoverReportFilterImpl = objects.newInstance()
-    internal val includesImpl: KoverReportFilterImpl = objects.newInstance()
+    override val excludes: KoverReportFilterImpl = objects.newInstance()
+    override val includes: KoverReportFilterImpl = objects.newInstance()
 
     override fun excludes(config: Action<KoverReportFilter>) {
-        config(excludesImpl)
+        config(excludes)
     }
 
     override fun includes(config: Action<KoverReportFilter>) {
-        config(includesImpl)
+        config(includes)
     }
 
     internal fun clean() {
-        excludesImpl.clean()
-        includesImpl.clean()
+        excludes.clean()
+        includes.clean()
     }
 
     internal fun extendsFrom(other: KoverReportFiltersConfigImpl) {
-        excludesImpl.extendsFrom(other.excludesImpl)
-        includesImpl.extendsFrom(other.includesImpl)
+        excludes.extendsFrom(other.excludes)
+        includes.extendsFrom(other.includes)
     }
 }
 
 
 internal abstract class KoverReportFilterImpl: KoverReportFilter {
-    internal abstract val classes: SetProperty<String>
-    internal abstract val annotations: SetProperty<String>
-    internal abstract val inheritedFrom: SetProperty<String>
+    abstract override val classes: SetProperty<String>
+    abstract override val annotatedBy: SetProperty<String>
+    abstract override val inheritedFrom: SetProperty<String>
 
     override fun classes(vararg names: String) {
         classes.addAll(*names)
@@ -315,12 +314,12 @@ internal abstract class KoverReportFilterImpl: KoverReportFilter {
     }
 
     override fun annotatedBy(vararg annotationName: String) {
-        annotations.addAll(*annotationName)
+        annotatedBy.addAll(*annotationName)
     }
 
     override fun annotatedBy(vararg annotationName: Provider<String>) {
         annotationName.forEach { nameProvider ->
-            annotations.add(nameProvider)
+            annotatedBy.add(nameProvider)
         }
     }
     override fun inheritedFrom(vararg typeName: String) {
@@ -335,14 +334,14 @@ internal abstract class KoverReportFilterImpl: KoverReportFilter {
 
     internal fun extendsFrom(other: KoverReportFilterImpl) {
         classes.addAll(other.classes)
-        annotations.addAll(other.annotations)
+        annotatedBy.addAll(other.annotatedBy)
         projects.addAll(other.projects)
         inheritedFrom.addAll(other.inheritedFrom)
     }
 
     internal fun clean() {
         classes.empty()
-        annotations.empty()
+        annotatedBy.empty()
         inheritedFrom.empty()
         projects.empty()
     }

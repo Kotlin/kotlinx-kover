@@ -95,6 +95,13 @@ public interface KoverCurrentProjectVariantsConfig: KoverVariantConfig {
      * ```
      */
     public fun instrumentation(block: Action<KoverProjectInstrumentation>)
+
+    /**
+     * Instance to configuring of instrumentation for the current Gradle project.
+     *
+     * See details in [instrumentation].
+     */
+    public val instrumentation: KoverProjectInstrumentation
 }
 
 /**

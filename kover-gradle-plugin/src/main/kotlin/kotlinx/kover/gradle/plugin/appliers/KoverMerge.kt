@@ -15,7 +15,7 @@ import org.gradle.api.provider.SetProperty
 import org.gradle.api.specs.Spec
 
 internal fun KoverContext.prepareMerging() {
-    if (!projectExtension.isMerged) return
+    if (!projectExtension.merge.configured) return
 
     val projects = selectProjects()
     configSelectedProjects(projects)
@@ -23,7 +23,7 @@ internal fun KoverContext.prepareMerging() {
 
 
 private fun KoverContext.selectProjects(): List<Project> {
-    val result = linkedMapOf<String, Project>(project.path to project)
+    val result = linkedMapOf(project.path to project)
 
     fun addProjectIfFiltered(project: Project, filters: List<Spec<Project>>) {
         if (result.containsKey(project.path)) return
@@ -83,10 +83,10 @@ private fun KoverProjectExtensionImpl.configBeforeFinalize(targetProject: Projec
             targetExtension.jacocoVersion.set(jacocoVersion)
         }
 
-        merge.sourcesAction?.execute(targetExtension.current.sources.wrap(targetProject))
-        merge.instrumentationAction?.execute(targetExtension.current.instrumentation.wrap(targetProject))
+        merge.sourcesAction?.execute(targetExtension.currentProject.sources.wrap(targetProject))
+        merge.instrumentationAction?.execute(targetExtension.currentProject.instrumentation.wrap(targetProject))
         merge.variantsAction.forEach { (variantName, action) ->
-            targetExtension.current.createVariant(variantName) {
+            targetExtension.currentProject.createVariant(variantName) {
                 action.execute(wrap(targetProject))
             }
         }

@@ -4,8 +4,10 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
-import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
-import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.KoverCurrentProjectVariantsConfig
+import kotlinx.kover.gradle.plugin.dsl.KoverMergingConfig
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverReportsConfig
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
 import org.gradle.api.Action
 import org.gradle.api.file.ProjectLayout
@@ -20,12 +22,12 @@ internal abstract class KoverProjectExtensionImpl @Inject constructor(
     layout: ProjectLayout,
     projectPath: String
 ): KoverProjectExtension {
-    internal val current: KoverCurrentProjectVariantsConfigImpl = objects.newInstance()
-    internal val reports: KoverReportsConfigImpl = objects.newInstance(objects, layout, projectPath)
-    internal val merge: KoverMergingConfigImpl = objects.newInstance()
     internal abstract val koverDisabled: Property<Boolean>
-    internal var isMerged: Boolean = false
     internal val finalizeActions: MutableList<() -> Unit> = mutableListOf()
+
+    override val reports: KoverReportsConfigImpl = objects.newInstance(objects, layout, projectPath)
+    override val merge: KoverMergingConfigImpl = objects.newInstance()
+    override val currentProject: KoverCurrentProjectVariantsConfigImpl = objects.newInstance()
 
     init {
         @Suppress("LeakingThis")
@@ -50,7 +52,7 @@ internal abstract class KoverProjectExtensionImpl @Inject constructor(
     }
 
     override fun currentProject(block: Action<KoverCurrentProjectVariantsConfig>) {
-        block.execute(current)
+        block.execute(currentProject)
     }
 
     override fun reports(block: Action<KoverReportsConfig>) {
@@ -58,11 +60,9 @@ internal abstract class KoverProjectExtensionImpl @Inject constructor(
     }
 
     override fun merge(block: Action<KoverMergingConfig>) {
-        if (isMerged) {
-            throw KoverIllegalConfigException("An attempt to re-invoke the 'merge' block. Only one merging config is allowed")
-        }
-        isMerged = true
         block.execute(merge)
+
+        merge.configured = true
     }
 
     internal fun beforeFinalize(action: () -> Unit) {

@@ -91,6 +91,12 @@ public interface KoverReportsConfig {
      */
     public fun filters(config: Action<KoverReportFiltersConfig>)
 
+    /**
+     * Instance to configuring of common filters for all report variants.
+     *
+     * See details in [filters].
+     */
+    public val filters: KoverReportFiltersConfig
 
     /**
      * Specify common verification rules for all report variants: JVM and Android build variants.
@@ -111,6 +117,13 @@ public interface KoverReportsConfig {
      * ```
      */
     public fun verify(config: Action<KoverVerificationRulesConfig>)
+
+    /**
+     * Instance to configuring of common verification rules for all report variants.
+     *
+     * See details in [verify].
+     */
+    public val verify: KoverVerificationRulesConfig
 
     @Deprecated(
         message = "Default reports was removed, the concepts of total and custom reports are now used. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -155,6 +168,13 @@ public interface KoverReportsConfig {
      * ```
      */
     public fun total(config: Action<KoverReportSetConfig>)
+
+    /**
+     * Instance to configuring of reports for all code of current project and `kover` dependencies.
+     *
+     * See details in [total].
+     */
+    public val total: KoverReportSetConfig
 
     /**
      * Configure reports for classes of specified named Kover report variant.
@@ -230,6 +250,13 @@ public interface KoverReportSetConfig {
     public fun filters(config: Action<KoverReportFiltersConfig>)
 
     /**
+     * Instance to configuring of common report filters.
+     *
+     * See details in [filters].
+     */
+    public val filters: KoverReportFiltersConfig
+
+    /**
      * Specify common report filters, these filters will be inherited in HTML/XML/verification and other reports.
      *
      * Using this block will add additional filters to those that were inherited and specified earlier.
@@ -268,6 +295,13 @@ public interface KoverReportSetConfig {
     public fun html(config: Action<KoverHtmlTaskConfig>)
 
     /**
+     * Instance to configuring of HTML report for current report variant.
+     *
+     * See details in [html].
+     */
+    public val html: KoverHtmlTaskConfig
+
+    /**
      * Configure XML report for current report variant.
      * ```
      * xml {
@@ -285,6 +319,13 @@ public interface KoverReportSetConfig {
     public fun xml(config: Action<KoverXmlTaskConfig>)
 
     /**
+     * Instance to configuring of XML report for current report variant.
+     *
+     * See details in [xml].
+     */
+    public val xml: KoverXmlTaskConfig
+
+    /**
      * Configure Kover binary report for current report variant.
      * ```
      * binary {
@@ -299,6 +340,13 @@ public interface KoverReportSetConfig {
      * Kover binary report is compatible with IntelliJ Coverage report (ic)
      */
     public fun binary(config: Action<KoverBinaryTaskConfig>)
+
+    /**
+     * Instance to configuring of Kover binary report for current report variant.
+     *
+     * See details in [binary].
+     */
+    public val binary: KoverBinaryTaskConfig
 
     /**
      * Configure coverage verification for current report variant.
@@ -324,6 +372,13 @@ public interface KoverReportSetConfig {
      * ```
      */
     public fun verify(config: Action<KoverVerifyTaskConfig>)
+
+    /**
+     * Instance to configuring of coverage verification for current report variant.
+     *
+     * See details in [verify].
+     */
+    public val verify: KoverVerifyTaskConfig
 
     /**
      * Configure coverage verification for current report variant.
@@ -365,6 +420,13 @@ public interface KoverReportSetConfig {
      * ```
      */
     public fun log(config: Action<KoverLogTaskConfig>)
+
+    /**
+     * Instance to configuring of  coverage printing to the log for current report variant.
+     *
+     * See details in [log].
+     */
+    public val log: KoverLogTaskConfig
 
     @Deprecated(
         message = "Block mergeWith was removed, create custom reports variant and merge with specified variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
@@ -476,6 +538,13 @@ public interface KoverReportFiltersConfig {
     public fun excludes(config: Action<KoverReportFilter>)
 
     /**
+     * Instance to configuring of class filter in order to exclude classes and functions.
+     *
+     * See details in [excludes].
+     */
+    public val excludes: KoverReportFilter
+
+    /**
      * Configures class filter in order to include classes.
      *
      * Example:
@@ -490,6 +559,13 @@ public interface KoverReportFiltersConfig {
      * Excludes have priority over includes.
      */
     public fun includes(config: Action<KoverReportFilter>)
+
+    /**
+     * Instance to configuring of class filter in order to include classes.
+     *
+     * See details in [includes].
+     */
+    public val includes: KoverReportFilter
 }
 
 /**
@@ -578,6 +654,19 @@ public interface KoverReportFilter {
      * ```
      */
     public fun classes(names: Provider<Iterable<String>>)
+
+    /**
+     * Classes of current filter.
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * Example:
+     * ```
+     *  classes.addAll("*.foo.Bar", "*.M?Class")
+     * ```
+     */
+    public val classes: SetProperty<String>
 
     /**
      * Add all classes in specified package and its subpackages to current filters.
@@ -690,6 +779,25 @@ public interface KoverReportFilter {
     public fun annotatedBy(vararg annotationName: Provider<String>)
 
     /**
+     * Filters for classes and functions marked by specified annotations.
+     *
+     * Use cases:
+     *  - in case of exclusion filters all classes or function marked by at least one of the specified annotation will be excluded from the report
+     *  - in case of inclusion filters only classes marked by at least one of the specified annotations will be included in the report
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * **_Does not work for JaCoCo_**
+     *
+     * Example:
+     * ```
+     *  annotatedBy.addAll("*Generated*", "com.example.KoverExclude")
+     * ```
+     */
+    public val annotatedBy: SetProperty<String>
+
+    /**
      * Add all classes in specified project. Only the project path is used (starts with a colon).
      *
      * It is acceptable to use `*` and `?` wildcards,
@@ -755,6 +863,32 @@ public interface KoverReportFilter {
      * ```
      */
     public fun inheritedFrom(vararg typeName: Provider<String>)
+
+    /**
+     * Filter classes extending at least one of the specified classes or implementing at least one of the interfaces.
+     * The class itself with the specified name is not taken into account.
+     *
+     * The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).
+     *
+     * The following classes and interfaces can be specified in arguments:
+     *  - classes and interfaces declared in the application
+     *  - classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application
+     *
+     * Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.
+     *
+     * If this filter is specified, then the generation of the report may slow down, because it becomes necessary to analyze the inheritance tree.
+     *
+     * It is acceptable to use `*` and `?` wildcards,
+     * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
+     *
+     * **_Does not work for JaCoCo_**
+     *
+     * Example:
+     * ```
+     *  inheritedFrom.add("*Repository")
+     * ```
+     */
+    public val inheritedFrom: SetProperty<String>
 
     /**
      * Add all classes generated by Android plugin to filters.

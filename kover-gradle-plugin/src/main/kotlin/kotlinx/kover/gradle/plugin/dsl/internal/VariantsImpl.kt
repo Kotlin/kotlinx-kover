@@ -17,7 +17,8 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
     internal val customVariants: MutableMap<String, KoverVariantCreateConfigImpl> = mutableMapOf()
     internal val providedVariants: MutableMap<String, KoverVariantConfigImpl> = mutableMapOf()
     internal val variantsToCopy: MutableMap<String, String> = mutableMapOf()
-    internal val instrumentation: KoverProjectInstrumentation = objects.newInstance()
+
+    final override val instrumentation: KoverProjectInstrumentation = objects.newInstance()
 
     init {
         sources.excludeJava.convention(false)
