@@ -3,7 +3,7 @@
 ## Kover Gradle Plugin
 
 ### Features
-* [`#600`](https://github.com/Kotlin/kotlinx-kover/issues/600) Added DSL to copy one report variant
+* [`#600`](https://github.com/Kotlin/kotlinx-kover/issues/600) Apply recommendations for improving DSL
 * Added DSL to copy one report variant
 
 ### Bugfixes
