@@ -108,7 +108,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
         ).assign(customVariant)
     }
 
-    projectExtension.current.copyVariants.forEach { (name, originVariantName) ->
+    projectExtension.current.variantsToCopy.forEach { (name, originVariantName) ->
         val originalVariant = variantArtifacts[originVariantName]
             ?: throw KoverIllegalConfigException("Cannot create a variant '$name': the original variant '$originVariantName' does not exist.")
 
@@ -136,7 +136,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     }
 
     projectExtension.reports.byName.forEach { (requestedVariant, _) ->
-        if (requestedVariant !in variantArtifacts && requestedVariant !in projectExtension.current.copyVariants) {
+        if (requestedVariant !in variantArtifacts && requestedVariant !in projectExtension.current.variantsToCopy) {
             throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
         }
     }
