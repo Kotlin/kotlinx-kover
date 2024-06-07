@@ -6,7 +6,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.starter.TemplateTes
 internal class FinalizingEnqueueTests {
     @TemplateTest("android-subproject-apply", [":app:koverHtmlReportDebug"])
     fun CheckerContext.testPluginsOrder() {
-        // if Kotlin Gradle Plugin is applied before any Android Gradle Plugin and Kover is applied from `subprojects` block, then `Attempt to queue after finalizing` error occurs
+        // if Kotlin Gradle Plugin is applied before any Android Gradle Plugin and Kover is applied from `subprojects` block, `Attempt to queue after finalizing` error should not occur
         // see https://github.com/Kotlin/kotlinx-kover/issues/610
     }
 }
