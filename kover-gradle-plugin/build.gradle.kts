@@ -14,6 +14,7 @@ plugins {
     alias(libs.plugins.gradle.pluginPublish)
     id("kover-publishing-conventions")
     id("kover-docs-conventions")
+    id("kover-release-conventions")
 }
 
 repositories {

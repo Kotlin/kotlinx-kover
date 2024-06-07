@@ -1,3 +1,14 @@
+0.8.1 / 2024-06-07
+===================
+## Kover Gradle Plugin
+
+### Features
+* [`#600`](https://github.com/Kotlin/kotlinx-kover/issues/600) Added DSL to copy one report variant
+* Added DSL to copy one report variant
+
+### Bugfixes
+* [`#610`](https://github.com/Kotlin/kotlinx-kover/issues/610) Fixed `KoverCriticalException` with a certain order of applying of plugins
+
 0.8.0 / 2024-05-15
 ===================
 This release introduces DSL rework to simplify the work with Android build variants, adds the possibility of lazy configuration, allows for the creation of custom report variants, and expands the ability of reports filtering.

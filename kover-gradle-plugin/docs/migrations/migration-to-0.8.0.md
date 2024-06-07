@@ -1,4 +1,4 @@
-# Kover migration guide from 0.7.x to 0.8.0
+# Kover migration guide from 0.7.x to 0.8.1
 
 - [Migration steps](#migration-steps)
 - [Conceptual changes](#conceptual-changes)
@@ -124,7 +124,7 @@ If you use the extensions property to access the extension
 The `0.7.x` version used two project extensions named `kover` and `koverReports`.
 This was confusing and made it difficult to search through documentation or examples.
 
-Since `0.8.0`, there is only one `kover` extension left.
+Since `0.8.1`, there is only one `kover` extension left.
 All the settings that used to be in `koverReports` are now located in
 ```kotlin
 kover {
@@ -156,7 +156,7 @@ kover {
 }
 ```
 
-Since `0.8.0` looks like:
+Since `0.8.1` looks like:
 ```kotlin
 kover {
     currentProject {
@@ -192,11 +192,11 @@ koverReport {
 }
 ```
 
-Starting with the `0.8.0` version, these features have been removed.
+Starting with the `0.8.1` version, these features have been removed.
 However, to implement similar capabilities, the concepts of _Total reports_ and _Custom reports_ were introduced.
 
 ### Total reports
-Since `0.8.0` tasks `koverHtmlReport`, `koverXmlReport`, `koverVerify`, `koverLog`, `koverBinaryReport` are designed 
+Since `0.8.1` tasks `koverHtmlReport`, `koverXmlReport`, `koverVerify`, `koverLog`, `koverBinaryReport` are designed 
 to generate reports on all classes and tests of the project.
 For JVM projects, nothing changes compared to the `0.7.x` version, however, for Android projects, 
 running one of these tasks will result running tests  for all build variants present in the project.
@@ -205,7 +205,7 @@ running one of these tasks will result running tests  for all build variants pre
 In the `0.7.x` version, it was allowed to merge a report for several Android build variants only into default reports,
 it was not possible to create several combinations with the arbitrary inclusion of different build variants.
 
-Since `0.8.0` in order to merge several Android build variants, you need to create a custom reports variant.
+Since `0.8.1` in order to merge several Android build variants, you need to create a custom reports variant.
 
 The newly created variant is initially empty, in order for classes to appear in the report and tests to be executed 
 when generating it, need to add existing variants provided from Kotlin targets to it: it can be a `jvm` variant, or any of an Android build variant.
@@ -252,7 +252,7 @@ However, if you call a task for a named variant, for example `:koverHtmlReportRe
 and generate a report for classes of `release` variant from merging project and `:lib` project.
 
 At the same time, it is recommended that variant `release` is also present in the `:lib` project, however, 
-for technical reasons, such a check may not be implemented in `0.8.0` and subsequent versions.
+for technical reasons, such a check may not be implemented in `0.8.1` and subsequent versions.
 
 ### The format-specific reports filters has been removed
 Previously, it was acceptable to override filters for each report format (XML, HTML, etc.), like
@@ -277,7 +277,7 @@ koverReport {
 
 This is very confusing, because there are 3 levels in which you can write `filters { }` also it is difficult for users to understand exactly where to write filters - which leads to the fact of copy-paste the same filters are specified for all types of reports (inside xml, html, verify blocks).
 
-Since `0.8.0`, specifying filters for specific type of report (HTML or XML) is deprecated. It is now possible to create custom variants of reports, if it is necessary to generate a report with a different set of filters.
+Since `0.8.1`, specifying filters for specific type of report (HTML or XML) is deprecated. It is now possible to create custom variants of reports, if it is necessary to generate a report with a different set of filters.
 In this case, it is better to create a new custom variant and override the filters in it:
 ```kotlin
 kover {
