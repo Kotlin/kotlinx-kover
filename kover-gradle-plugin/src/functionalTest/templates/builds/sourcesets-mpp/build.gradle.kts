@@ -3,13 +3,7 @@ plugins {
     id("org.jetbrains.kotlinx.kover") version "0.7.0"
 }
 
-kover {
-    currentProject {
-        sources {
-            excludedSourceSets.add("extra")
-        }
-    }
-}
+kover.currentProject.sources.excludedSourceSets.add("extra")
 
 sourceSets.create("extra")
 

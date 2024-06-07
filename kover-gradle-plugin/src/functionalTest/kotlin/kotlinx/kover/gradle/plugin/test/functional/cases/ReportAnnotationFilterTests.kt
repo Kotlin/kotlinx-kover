@@ -51,9 +51,7 @@ internal class ReportAnnotationFilterTests {
                             classes("*ByName")
                             annotatedBy("org.jetbrains.Exclude")
                         }
-                        includes {
-                            annotatedBy("*.Include")
-                        }
+                        includes.annotatedBy("*.Include")
                     }
                 }
             }

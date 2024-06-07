@@ -58,18 +58,25 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     jvmVariant?.let { variantArtifacts[JVM_VARIANT_NAME] = it }
     androidVariants.forEach { variantArtifacts[it.variantName] = it }
 
+    val availableVariants = variantArtifacts.keys + projectExtension.currentProject.customVariants.keys
+    projectExtension.reports.byName.forEach { (requestedVariant, _) ->
+        if (requestedVariant !in availableVariants) {
+            throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
+        }
+    }
+
     val totalVariant =
         TotalVariantArtifacts(project, toolProvider, koverBucketConfiguration, variantConfig(TOTAL_VARIANT_NAME), projectExtension)
     variantArtifacts.values.forEach { totalVariant.mergeWith(it) }
     totalReports.assign(totalVariant)
 
-    projectExtension.current.providedVariants.forEach { (name, _) ->
+    projectExtension.currentProject.providedVariants.forEach { (name, _) ->
         if (name !in variantArtifacts) {
             throw KoverIllegalConfigException("It is unacceptable to configure provided variant '$name', since there is no such variant in the project.\nAcceptable variants: ${variantArtifacts.keys}")
         }
     }
 
-    projectExtension.current.customVariants.forEach { (name, config) ->
+    projectExtension.currentProject.customVariants.forEach { (name, config) ->
         if (name == JVM_VARIANT_NAME) {
             throw KoverIllegalConfigException("It is unacceptable to create a custom reports variant '$JVM_VARIANT_NAME', because this name is reserved for JVM code")
         }
@@ -108,7 +115,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
         ).assign(customVariant)
     }
 
-    projectExtension.current.variantsToCopy.forEach { (name, originVariantName) ->
+    projectExtension.currentProject.variantsToCopy.forEach { (name, originVariantName) ->
         val originalVariant = variantArtifacts[originVariantName]
             ?: throw KoverIllegalConfigException("Cannot create a variant '$name': the original variant '$originVariantName' does not exist.")
 
@@ -136,16 +143,16 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     }
 
     projectExtension.reports.byName.forEach { (requestedVariant, _) ->
-        if (requestedVariant !in variantArtifacts && requestedVariant !in projectExtension.current.variantsToCopy) {
+        if (requestedVariant !in variantArtifacts && requestedVariant !in projectExtension.currentProject.variantsToCopy) {
             throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
         }
     }
 }
 
 private fun KoverContext.variantConfig(variantName: String): KoverVariantCreateConfigImpl {
-    return projectExtension.current.customVariants.getOrElse(variantName) {
-        val variantConfig = projectExtension.current.objects.newInstance<KoverVariantCreateConfigImpl>(variantName)
-        variantConfig.deriveFrom(projectExtension.current)
+    return projectExtension.currentProject.customVariants.getOrElse(variantName) {
+        val variantConfig = projectExtension.currentProject.objects.newInstance<KoverVariantCreateConfigImpl>(variantName)
+        variantConfig.deriveFrom(projectExtension.currentProject)
         variantConfig
     }
 }
@@ -160,7 +167,7 @@ private fun JvmVariantOrigin.createVariant(
     koverContext: KoverContext,
     config: KoverVariantCreateConfigImpl,
 ): JvmVariantArtifacts {
-    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.current)
+    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.currentProject)
     return JvmVariantArtifacts(
         koverContext.project,
         koverContext.toolProvider,
@@ -175,7 +182,7 @@ private fun AndroidVariantOrigin.createVariant(
     koverContext: KoverContext,
     config: KoverVariantCreateConfigImpl,
 ): AndroidVariantArtifacts {
-    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.current)
+    tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.currentProject)
     return AndroidVariantArtifacts(
         koverContext.project,
         buildVariant.buildVariant,

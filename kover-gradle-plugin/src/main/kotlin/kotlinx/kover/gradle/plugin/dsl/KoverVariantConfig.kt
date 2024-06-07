@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.dsl
 
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import org.gradle.api.Action
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 
@@ -95,6 +96,13 @@ public interface KoverCurrentProjectVariantsConfig: KoverVariantConfig {
      * ```
      */
     public fun instrumentation(block: Action<KoverProjectInstrumentation>)
+
+    /**
+     * Instance to configuring of instrumentation for the current Gradle project.
+     *
+     * See details in [instrumentation].
+     */
+    public val instrumentation: KoverProjectInstrumentation
 }
 
 /**
@@ -120,6 +128,13 @@ public interface KoverVariantConfig {
      * ```
      */
     public fun sources(block: Action<KoverVariantSources>)
+
+    /**
+     * Instance to limit the classes that will be included in the reports.
+     *
+     * See details in [sources].
+     */
+    public val sources: KoverVariantSources
 }
 
 /**

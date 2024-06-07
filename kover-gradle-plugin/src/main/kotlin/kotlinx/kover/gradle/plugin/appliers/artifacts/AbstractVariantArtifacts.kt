@@ -68,8 +68,8 @@ internal sealed class AbstractVariantArtifacts(
     }
 
     protected fun fromOrigin(origin: VariantOrigin, compilationFilter: (String) -> Boolean = { true }) {
-        val excludedTasks = projectExtension.current.instrumentation.disabledForTestTasks
-        val disabledInstrumentation = projectExtension.current.instrumentation.disabledForAll
+        val excludedTasks = projectExtension.currentProject.instrumentation.disabledForTestTasks
+        val disabledInstrumentation = projectExtension.currentProject.instrumentation.disabledForAll
 
         val tests = origin.tests.matching {
             !disabledInstrumentation.get()

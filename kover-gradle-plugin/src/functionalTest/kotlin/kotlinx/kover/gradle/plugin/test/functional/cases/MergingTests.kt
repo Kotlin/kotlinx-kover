@@ -62,6 +62,35 @@ internal class MergingTests {
     }
 
     @GeneratedTest
+    fun BuildConfigurator.testRootSubprojectsWithProperty() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+            kover {
+                // merge with all subprojects
+                merge.subprojects()
+            }
+        }
+        addProjectWithKover(":one") {
+            sourcesFrom("one")
+        }
+        addProjectWithKover(":two") {
+            sourcesFrom("two")
+        }
+
+        run(":koverXmlReport") {
+            checkOutcome(":koverGenerateArtifact", "SUCCESS")
+            checkOutcome(":one:koverGenerateArtifact", "SUCCESS")
+            checkOutcome(":two:koverGenerateArtifact", "SUCCESS")
+
+            xmlReport {
+                classCounter("org.jetbrains.ExampleClass").assertCovered()
+                classCounter("org.jetbrains.one.OneClass").assertCovered()
+                classCounter("org.jetbrains.two.TwoClass").assertCovered()
+            }
+        }
+    }
+
+    @GeneratedTest
     fun BuildConfigurator.testRootSubprojectsByPath() {
         addProjectWithKover {
             sourcesFrom("simple")
