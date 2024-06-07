@@ -1,7 +1,6 @@
 plugins {
-    id ("org.jetbrains.kotlinx.kover")
-    id ("com.android.application")
     id ("org.jetbrains.kotlin.android")
+    id ("com.android.application")
 }
 
 android {
@@ -44,18 +43,4 @@ dependencies {
 }
 
 
-/*
- * Kover configs
- */
 
-kover {
-    reports {
-        verify {
-            rule {
-                // always fails
-                minBound(100)
-                maxBound(0)
-            }
-        }
-    }
-}
