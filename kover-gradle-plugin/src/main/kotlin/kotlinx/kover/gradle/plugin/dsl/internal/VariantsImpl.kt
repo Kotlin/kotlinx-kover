@@ -81,7 +81,7 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
 }
 
 internal abstract class KoverVariantConfigImpl @Inject constructor(objects: ObjectFactory) : KoverVariantConfig {
-    internal val sources: KoverVariantSources = objects.newInstance()
+    override val sources: KoverVariantSources = objects.newInstance()
 
     override fun sources(block: Action<KoverVariantSources>) {
         block.execute(sources)

@@ -111,6 +111,7 @@ private fun KoverProjectInstrumentation.wrap(project: Project): KoverMergingInst
 }
 private fun KoverVariantCreateConfig.wrap(project: Project): KoverMergingVariantCreate {
     return object : KoverMergingVariantCreate {
+        override val sources: KoverVariantSources = this@wrap.sources
         override fun sources(block: Action<KoverVariantSources>) = this@wrap.sources(block)
         override fun add(vararg variantNames: String, optional: Boolean) = this@wrap.add(*variantNames, optional = optional)
         override fun addWithDependencies(vararg variantNames: String, optional: Boolean) = this@wrap.addWithDependencies(*variantNames, optional = optional)

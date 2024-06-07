@@ -7,12 +7,6 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
-kover {
-    reports {
-        verify {
-            rule {
-                minBound(50)
-            }
-        }
-    }
+kover.reports.verify.rule {
+    minBound(50)
 }

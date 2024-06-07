@@ -56,29 +56,21 @@ dependencies {
 kover {
     reports {
         // filters for all report types of all build variants
-        filters {
-            excludes {
-                androidGeneratedClasses()
-            }
-        }
+        filters.excludes.androidGeneratedClasses()
 
         variant("release") {
             // verification only for 'release' build variant
-            verify {
-                rule {
-                    minBound(50)
-                }
+            verify.rule {
+                minBound(50)
             }
 
             // filters for all report types only for 'release' build variant
-            filters {
-                excludes {
-                    androidGeneratedClasses()
-                    classes(
-                        // excludes debug classes
-                        "*.DebugUtil"
-                    )
-                }
+            filters.excludes {
+                androidGeneratedClasses()
+                classes(
+                    // excludes debug classes
+                    "*.DebugUtil"
+                )
             }
         }
 

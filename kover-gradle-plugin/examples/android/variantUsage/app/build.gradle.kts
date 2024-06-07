@@ -68,9 +68,7 @@ kover {
     reports {
         // filters for all report types of all build variants
         filters {
-            excludes {
-                androidGeneratedClasses()
-            }
+            excludes.androidGeneratedClasses()
         }
 
         variant("release") {
