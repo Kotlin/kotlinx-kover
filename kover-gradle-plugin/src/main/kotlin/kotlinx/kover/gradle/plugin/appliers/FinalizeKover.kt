@@ -110,7 +110,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
 
     projectExtension.current.copyVariants.forEach { (name, originVariantName) ->
         val originalVariant = variantArtifacts[originVariantName]
-            ?: throw KoverIllegalConfigException("The error of creating a variant '$name', the original variant '$originVariantName' does not exist.")
+            ?: throw KoverIllegalConfigException("Cannot create a variant '$name': the original variant '$originVariantName' does not exist.")
 
         VariantReportsSet(
             project,
