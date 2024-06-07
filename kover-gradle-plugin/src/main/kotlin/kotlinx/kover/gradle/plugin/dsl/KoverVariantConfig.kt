@@ -48,7 +48,10 @@ public interface KoverCurrentProjectVariantsConfig: KoverVariantConfig {
 
     /**
      * Create custom report variant as a copy of the [originalVariantName] variant, however, with the new name [variantName].
-     * You cannot add information from other variants to the new one.
+     * 
+     * Copying variants is useful when you have a single variant with coverage information but want to apply different filters for it: 
+     * You cannot configure the copied variant with [KoverVariantCreateConfig], i.e., add information from other variants to the new one.
+     * However, you can define report filters and rules for it using `reports { variant(variantName) { ... }}`. 
      */
     public fun copyVariant(variantName: String, originalVariantName: String)
 
