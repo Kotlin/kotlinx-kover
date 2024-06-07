@@ -9,7 +9,6 @@ import kotlinx.kover.gradle.plugin.commons.TOTAL_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.dsl.*
 import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
@@ -17,6 +16,7 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
     KoverVariantConfigImpl(objects), KoverCurrentProjectVariantsConfig {
     internal val customVariants: MutableMap<String, KoverVariantCreateConfigImpl> = mutableMapOf()
     internal val providedVariants: MutableMap<String, KoverVariantConfigImpl> = mutableMapOf()
+    internal val variantsToCopy: MutableMap<String, String> = mutableMapOf()
     internal val instrumentation: KoverProjectInstrumentation = objects.newInstance()
 
     init {
@@ -40,6 +40,13 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
         }
 
         block.execute(variantConfig)
+    }
+
+    override fun copyVariant(variantName: String, originalVariantName: String) {
+        if (variantName in variantsToCopy) {
+            throw KoverIllegalConfigException("The copy of custom variant with name $variantName already created.")
+        }
+        variantsToCopy[variantName] = originalVariantName
     }
 
     override fun providedVariant(variantName: String, block: Action<KoverVariantConfig>) {

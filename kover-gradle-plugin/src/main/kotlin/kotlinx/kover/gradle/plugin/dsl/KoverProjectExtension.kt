@@ -61,6 +61,9 @@ public interface KoverProjectExtension {
      *          // ...
      *      }
      *
+     *      // copy report variant with different name but the same content
+     *      copyVariant("copyName", "custom")
+     *
      *      // Configure the variant that is automatically created in the current project
      *      // For example, "jvm" for JVM target or "debug" for Android build variant
      *      providedVariant("jvm") {
