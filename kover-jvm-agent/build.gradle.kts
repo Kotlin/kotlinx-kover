@@ -19,6 +19,7 @@ plugins {
     id("kover-publishing-conventions")
     id("kover-fat-jar-conventions")
     id("kover-docs-conventions")
+    id("kover-release-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {

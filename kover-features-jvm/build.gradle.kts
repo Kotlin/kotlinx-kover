@@ -22,6 +22,7 @@ plugins {
     kotlin("jvm")
     alias(libs.plugins.kotlinx.binaryCompatibilityValidator)
     id("kover-publishing-conventions")
+    id("kover-release-conventions")
 }
 
 extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
