@@ -36,4 +36,13 @@ internal class CountersValueTests {
             methodCounter("org.jetbrains.Different", "helloWorld").assertTotal(4)
         }
     }
+
+    @TemplateTest("k2-counters", ["koverXmlReport"])
+    fun CheckerContext.testK2() {
+        xmlReport {
+            // test enums
+            classCounter("org.jetbrains.K2Enum", type = "LINE").assertFullyCovered()
+        }
+    }
+
 }
