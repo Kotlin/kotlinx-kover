@@ -24,9 +24,19 @@ internal class ExamplesBuildTests {
         // build only
     }
 
-    @ExamplesTest("jvm/copy-variant", ["koverHtmlReportFirst", "koverHtmlReportSecond"])
+    @ExamplesTest("jvm/copy-variant", ["koverXmlReportFirst", "koverXmlReportSecond"])
     fun CheckerContext.jvmCopyVariant() {
-        // build only
+        xmlReport("first") {
+            // only classes from `first` project are present
+            classCounter("kotlinx.kover.examples.merged.SubprojectFirstClass").assertCovered()
+            classCounter("kotlinx.kover.examples.merged.ClassFromSecondProject").assertAbsent()
+        }
+
+        xmlReport("second") {
+            // only classes from `second` project are present
+            classCounter("kotlinx.kover.examples.merged.SubprojectFirstClass").assertAbsent()
+            classCounter("kotlinx.kover.examples.merged.ClassFromSecondProject").assertCovered()
+        }
     }
 
     @ExamplesTest("android/minimal_groovy")

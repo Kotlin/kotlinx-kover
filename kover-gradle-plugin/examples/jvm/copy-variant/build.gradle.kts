@@ -25,10 +25,10 @@ kover {
 
     reports {
         variant("first") {
-            filters.includes.projects.add("first")
+            filters.includes.projects.add(":first")
         }
         variant("second") {
-            filters.includes.projects.add("second")
+            filters.includes.projects.add(":second")
         }
     }
 }
