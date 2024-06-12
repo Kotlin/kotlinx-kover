@@ -58,13 +58,6 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     jvmVariant?.let { variantArtifacts[JVM_VARIANT_NAME] = it }
     androidVariants.forEach { variantArtifacts[it.variantName] = it }
 
-    val availableVariants = variantArtifacts.keys + projectExtension.currentProject.customVariants.keys
-    projectExtension.reports.byName.forEach { (requestedVariant, _) ->
-        if (requestedVariant !in availableVariants) {
-            throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
-        }
-    }
-
     val totalVariant =
         TotalVariantArtifacts(project, toolProvider, koverBucketConfiguration, variantConfig(TOTAL_VARIANT_NAME), projectExtension)
     variantArtifacts.values.forEach { totalVariant.mergeWith(it) }

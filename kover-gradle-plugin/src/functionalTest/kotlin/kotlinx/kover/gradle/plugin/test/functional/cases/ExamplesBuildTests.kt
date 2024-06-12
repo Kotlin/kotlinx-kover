@@ -24,6 +24,11 @@ internal class ExamplesBuildTests {
         // build only
     }
 
+    @ExamplesTest("jvm/copy-variant", ["koverHtmlReportFirst", "koverHtmlReportSecond"])
+    fun CheckerContext.jvmCopyVariant() {
+        // build only
+    }
+
     @ExamplesTest("android/minimal_groovy")
     fun CheckerContext.androidGroovy() {
         // build only
