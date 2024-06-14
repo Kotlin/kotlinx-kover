@@ -42,7 +42,8 @@ internal abstract class KoverArtifactGenerationTask : DefaultTask() {
 
     private val rootDir: File = project.rootDir
 
-    private val projectPath: String = project.path
+    @get:Input
+    internal val projectPath: String = project.path
 
     @TaskAction
     fun generate() {

@@ -26,6 +26,20 @@ internal class ArtifactGenerationTests {
     }
 
     /**
+     * Kover generation tasks compute a cache key based on the content of the relative paths
+     * in their input field. If there are no additional inputs defiend that differentiate task input
+     * between projects then the cache key of the generate tasks in one project is the same as the cache key
+     * in other projects.
+     */
+    @GeneratedTest
+    fun BuildConfigurator.testBuildCacheEntriesAreNotReusedAmongEmptyProjects() {
+        addProjectWithKover { }
+        addProjectWithKover(":project-a", "project-a") {}
+        addProjectWithKover(":project-b", "project-b") {}
+        run("check", "--build-cache") {}
+    }
+
+    /**
      * Check that Kover artifact files are not resolved during the task dependency tree construction process.
      *
      * The task tree is built at the configuration stage, so getting artifacts from dependencies can lead to premature task launches, deadlocks, and performance degradation.
