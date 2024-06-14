@@ -6,7 +6,7 @@ package kotlinx.kover.gradle.plugin.tools.jacoco
 
 import groovy.lang.Closure
 import groovy.lang.GroovyObject
-import kotlinx.kover.features.jvm.KoverFeatures
+import kotlinx.kover.features.jvm.KoverFeatures.koverWildcardToRegex
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import java.io.File
 
@@ -25,24 +25,27 @@ internal fun ReportContext.callAntReport(
         )
     )
 
-
-    val filteredOutput = if (filters.excludesClasses.isNotEmpty() || filters.includesClasses.isNotEmpty()) {
-        val excludeRegexes = filters.excludesClasses.map { Regex(it.wildcardsToClassFileRegex()) }
-        val includeRegexes = filters.includesClasses.map { Regex(it.wildcardsToClassFileRegex()) }
-
-        val outputCollections = files.outputs.map { output ->
-            services.objects.fileCollection().from(output).asFileTree.filter { file ->
-                // the `canonicalPath` is used because a `File.separatorChar` was used to construct the class-file regex
-                val path = file.toRelativeString(output)
-                // if the inclusion rules are declared, then the file must fit at least one of them
-                (includeRegexes.isEmpty() || includeRegexes.any { regex -> path.matches(regex) })
-                        // if the exclusion rules are declared, then the file should not fit any of them
-                        && excludeRegexes.none { regex -> path.matches(regex) }
+    val filesByClassName = mutableMapOf<String, File>()
+    files.outputs.forEach { output ->
+        output.walk().forEach { file ->
+            if (file.isFile && file.name.endsWith(CLASS_FILE_EXTENSION)) {
+                val className = file.toRelativeString(output).filenameToClassname()
+                filesByClassName[className] = file
             }
         }
-        services.objects.fileCollection().from(outputCollections)
+    }
+
+    val classes = if (filters.excludesClasses.isNotEmpty() || filters.includesClasses.isNotEmpty()) {
+        val excludeRegexes = filters.excludesClasses.map { koverWildcardToRegex(it).toRegex() }
+        val includeRegexes = filters.includesClasses.map { koverWildcardToRegex(it).toRegex() }
+
+        filesByClassName.filterKeys { className ->
+            ((includeRegexes.isEmpty() || includeRegexes.any { regex -> className.matches(regex) })
+                    // if the exclusion rules are declared, then the file should not fit any of them
+                    && excludeRegexes.none { regex -> className.matches(regex) })
+        }.values
     } else {
-        services.objects.fileCollection().from(files.outputs)
+        filesByClassName.values
     }
 
 
@@ -55,7 +58,7 @@ internal fun ReportContext.callAntReport(
                 services.objects.fileCollection().from(files.sources).addToAntBuilder(this, "resources")
             }
             invokeWithBody("classfiles") {
-                filteredOutput.addToAntBuilder(this, "resources")
+                services.objects.fileCollection().from(classes).addToAntBuilder(this, "resources")
             }
         }
         block()
@@ -84,10 +87,13 @@ internal inline fun GroovyObject.invokeWithBody(
 }
 
 /**
- * Replaces characters `.` to `|` or `\` and added `.class` as postfix and `.* /` or `.*\` as prefix.
+ * Replaces characters `|` or `\` to `.` and remove postfix `.class`.
  */
-private fun String.wildcardsToClassFileRegex(): String {
-    val filenameWithWildcards = this.replace('.', File.separatorChar) + ".class"
-    return KoverFeatures.koverWildcardToRegex(filenameWithWildcards)
+private fun String.filenameToClassname(): String {
+    return this.replace(File.separatorChar, '.').removeSuffix(CLASS_FILE_EXTENSION)
 }
 
+/**
+ * Extension of class-files.
+ */
+private const val CLASS_FILE_EXTENSION = ".class"
