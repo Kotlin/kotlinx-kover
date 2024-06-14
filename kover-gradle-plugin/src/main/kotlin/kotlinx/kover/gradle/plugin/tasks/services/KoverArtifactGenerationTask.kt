@@ -19,7 +19,6 @@ import javax.inject.*
  *
  * This artifact that will be shared between projects through dependencies for creating merged reports.
  */
-@CacheableTask
 internal abstract class KoverArtifactGenerationTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
