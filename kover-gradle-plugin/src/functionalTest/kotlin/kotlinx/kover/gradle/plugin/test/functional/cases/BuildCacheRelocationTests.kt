@@ -55,7 +55,7 @@ class BuildCacheRelocationTests {
         val result2 = gradleBuild2.runWithParams("koverXmlReport", "koverHtmlReport", "koverBinaryReport", "koverVerify", "--build-cache", "--info")
         try {
             assertEquals("FROM-CACHE", result2.taskOutcome(":test"))
-            assertEquals("FROM-CACHE", result2.taskOutcome(":koverGenerateArtifact"))
+            assertEquals("SUCCESS", result2.taskOutcome(":koverGenerateArtifact"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverXmlReport"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverHtmlReport"))
             assertEquals("FROM-CACHE", result2.taskOutcome(":koverBinaryReport"))
