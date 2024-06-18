@@ -11,6 +11,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
+import org.gradle.work.DisableCachingByDefault
 import java.io.*
 import javax.inject.*
 
@@ -19,6 +20,7 @@ import javax.inject.*
  *
  * This artifact that will be shared between projects through dependencies for creating merged reports.
  */
+@DisableCachingByDefault(because = "The task action is so quick that cache does not provide a benefit")
 internal abstract class KoverArtifactGenerationTask : DefaultTask() {
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
