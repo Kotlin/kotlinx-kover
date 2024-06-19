@@ -36,7 +36,7 @@ internal class CountersValueTests {
             methodCounter("org.jetbrains.Different", "helloWorld").assertTotal(4)
 
             // Test on try with resources in Java
-            methodCounter("org.jetbrains.TryWithResources", "test").assertFullyCovered()
+            methodCounter("org.jetbrains.TryWithResources", "test", "LINE").assertFullyCovered()
             methodCounter("org.jetbrains.TryWithResources", "test", "BRANCH").assertFullyCovered()
 
             methodCounter("org.jetbrains.TryFinally", "testWithCatch", "LINE").assertCovered(2, 1)
