@@ -24,4 +24,13 @@ class TestClass {
         UsedObjectWithFun.toString()
         UsedObjectFun.hello()
     }
+
+    @Test
+    fun testTryWithResources() {
+        TryWithResources.test()
+    }
+    @Test
+    fun testTryFinally() {
+        TryFinally.testWithCatch {}
+    }
 }

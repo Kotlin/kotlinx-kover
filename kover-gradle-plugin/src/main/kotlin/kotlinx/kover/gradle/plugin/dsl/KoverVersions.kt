@@ -15,11 +15,6 @@ public object KoverVersions {
     public const val MINIMUM_GRADLE_VERSION = "6.8"
 
     /**
-     * Kover coverage tool version.
-     */
-    public const val KOVER_TOOL_VERSION = "1.0.755"
-
-    /**
      * JaCoCo coverage tool version used by default.
      */
     public const val JACOCO_TOOL_DEFAULT_VERSION = "0.8.11"

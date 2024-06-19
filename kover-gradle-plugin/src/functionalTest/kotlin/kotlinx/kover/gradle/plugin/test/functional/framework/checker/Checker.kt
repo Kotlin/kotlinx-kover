@@ -512,6 +512,10 @@ private class CounterImpl(
 
     override fun assertFullyCovered() {
         assertNotNull(values, "Counter '$symbol' with type '$type' is absent so fully covered can't be checked")
+
+        // skip empty branches
+        if (values.covered == 0 && values.missed == 0) return
+
         assertTrue(values.covered > 0, "Counter '$symbol' with type '$type' isn't fully covered")
         assertEquals(0, values.missed, "Counter '$symbol' with type '$type' isn't fully covered")
     }
