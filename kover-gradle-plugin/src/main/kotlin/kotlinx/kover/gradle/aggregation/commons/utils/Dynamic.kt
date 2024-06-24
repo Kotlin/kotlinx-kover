@@ -20,11 +20,6 @@ internal class DynamicBean(private val origin: Any?) {
         return notNull as? T ?: throw IllegalStateException("Invalid property value type, expected ${T::class.qualifiedName}, found ${notNull::class.qualifiedName}")
     }
 
-    inline fun <reified T> orNull(): T? {
-        if (origin == null) return null
-        return value<T>()
-    }
-
     fun sequence(): Sequence<DynamicBean> {
         return value<Iterable<*>>().asSequence().map { it.bean() }
     }

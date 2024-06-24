@@ -81,9 +81,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
                 pluginManager.hasPlugin(KOTLIN_JVM_PLUGIN_ID) -> {
                     val kotlin = exts.findByName("kotlin")?.bean()
                         ?: throw KoverCriticalException("Kotlin JVM extension not found")
-                    kotlin["target"]["compilations"].sequence().filter { compilation ->
-                        compilation["name"].value<String>() != "test"
-                    }
+                    kotlin["target"]["compilations"].sequence()
                 }
 
                 pluginManager.hasPlugin(KOTLIN_MULTIPLATFORM_PLUGIN_ID) -> {

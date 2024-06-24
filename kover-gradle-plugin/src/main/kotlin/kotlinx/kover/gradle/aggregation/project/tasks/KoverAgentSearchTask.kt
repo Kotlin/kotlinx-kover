@@ -12,9 +12,7 @@ import org.gradle.api.tasks.*
 import org.gradle.work.DisableCachingByDefault
 
 /**
- * Task to get online instrumentation agent jar file by specified coverage tool.
- *
- * The task is cached, so in general there should not be a performance issue on large projects.
+ * Task to get on-the-wly JVM instrumentation agent's jar file for Kover coverage tool.
  */
 @DisableCachingByDefault(because = "This task only copies one file")
 internal abstract class KoverAgentSearchTask : DefaultTask() {

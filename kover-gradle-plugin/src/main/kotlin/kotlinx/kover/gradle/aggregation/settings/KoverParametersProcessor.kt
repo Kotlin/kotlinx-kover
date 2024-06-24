@@ -28,7 +28,6 @@ internal object KoverParametersProcessor {
             if (!arg.append) {
                 empty()
             }
-            println("Property '$propertyName' = ${arg.values}")
             addAll(arg.values)
         }
     }
