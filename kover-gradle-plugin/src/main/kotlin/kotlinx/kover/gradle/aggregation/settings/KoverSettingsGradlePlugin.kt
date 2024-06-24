@@ -7,6 +7,7 @@ package kotlinx.kover.gradle.aggregation.settings
 import kotlinx.kover.gradle.aggregation.commons.artifacts.KoverContentAttr
 import kotlinx.kover.gradle.aggregation.commons.artifacts.asConsumer
 import kotlinx.kover.gradle.aggregation.commons.artifacts.asDependency
+import kotlinx.kover.gradle.aggregation.commons.names.KoverPaths
 import kotlinx.kover.gradle.aggregation.settings.dsl.KoverNames
 import kotlinx.kover.gradle.aggregation.settings.dsl.intern.KoverSettingsExtensionImpl
 import kotlinx.kover.gradle.aggregation.commons.names.SettingsNames
@@ -82,10 +83,10 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
             includedClasses.convention(settingsExtension.reports.includedClasses)
             title.convention(projectPath)
 
-            htmlDir.convention(layout.buildDirectory.dir("reports/kover/html"))
+            htmlDir.convention(layout.buildDirectory.dir(KoverPaths.htmlReportPath()))
 
             this.onlyIf {
-                logger.quiet("HTML report dir file://${htmlDir.get().asFile.resolve("index.html")}")
+                printPath()
                 true
             }
         }
@@ -101,7 +102,7 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
             includedClasses.convention(settingsExtension.reports.includedClasses)
             title.convention(projectPath)
 
-            reportFile.convention(layout.buildDirectory.file("reports/kover/report.xml"))
+            reportFile.convention(layout.buildDirectory.file(KoverPaths.xmlReportPath()))
         }
     }
 

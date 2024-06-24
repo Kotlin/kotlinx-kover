@@ -7,6 +7,14 @@ package kotlinx.kover.gradle.aggregation.commons.names
 import java.io.File
 
 internal object KoverPaths {
+    internal fun htmlReportPath(): String {
+        return "reports${separator}kover${separator}html"
+    }
+
+    internal fun xmlReportPath(): String {
+        return "reports${separator}kover${separator}report.xml"
+    }
+
     internal fun binReportPath(taskName: String): String {
         return "${binReportsRootPath()}$separator${binReportName(taskName)}"
     }

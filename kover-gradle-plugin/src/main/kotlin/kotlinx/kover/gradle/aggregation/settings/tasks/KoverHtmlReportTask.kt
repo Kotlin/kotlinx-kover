@@ -9,6 +9,8 @@ import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
+import java.io.File
+import java.net.URI
 
 @CacheableTask
 internal abstract class KoverHtmlReportTask : AbstractKoverTask() {
@@ -22,6 +24,8 @@ internal abstract class KoverHtmlReportTask : AbstractKoverTask() {
     @get:Optional
     abstract val charset: Property<String>
 
+    private val projectPath = project.path
+
     @TaskAction
     fun generate() {
         KoverLegacyFeatures.generateHtmlReport(
@@ -33,6 +37,17 @@ internal abstract class KoverHtmlReportTask : AbstractKoverTask() {
             title.get(),
             ClassFilters(includedClasses.get(), excludedClasses.get(), emptySet(), emptySet(), emptySet(), emptySet())
         )
+    }
+
+    fun printPath() {
+        val clickablePath = URI(
+            "file",
+            "",
+            File(htmlDir.get().asFile.canonicalPath, "index.html").toURI().path,
+            null,
+            null,
+        ).toASCIIString()
+        logger.lifecycle("Kover: HTML report for '$projectPath' $clickablePath")
     }
 
 }
