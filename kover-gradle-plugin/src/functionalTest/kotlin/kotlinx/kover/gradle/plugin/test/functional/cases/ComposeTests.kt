@@ -8,7 +8,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerCont
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.TemplateTest
 
 internal class ComposeTests {
-    @TemplateTest("android-compose", [":app:koverXmlReportDebug"])
+    @TemplateTest("android-compose", [":app:koverXmlReportDebug", ":app:koverHtmlReportDebug"])
     fun CheckerContext.testCompose() {
         subproject("app") {
             xmlReport("debug") {
