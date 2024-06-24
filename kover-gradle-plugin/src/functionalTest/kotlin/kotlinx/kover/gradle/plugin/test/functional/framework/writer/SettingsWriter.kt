@@ -15,6 +15,7 @@ internal fun FormattedWriter.writePluginManagement(language: ScriptLanguage,
     call("resolutionStrategy") {
         call("eachPlugin") {
             line("if (requested.id.id == \"org.jetbrains.kotlinx.kover\") { useVersion(\"$koverVersion\") }")
+            line("if (requested.id.id == \"org.jetbrains.kotlinx.kover.settings\") { useVersion(\"$koverVersion\") }")
             if (overrideKotlinVersion != null) {
                 line("if (requested.id.id == \"org.jetbrains.kotlin.jvm\") useVersion(\"$overrideKotlinVersion\")")
                 line("if (requested.id.id == \"org.jetbrains.kotlin.multiplatform\") useVersion(\"$overrideKotlinVersion\")")

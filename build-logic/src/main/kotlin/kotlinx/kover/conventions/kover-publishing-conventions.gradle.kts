@@ -210,3 +210,8 @@ val Project.sourceSets: SourceSetContainer
 
 val SourceSetContainer.main: NamedDomainObjectProvider<SourceSet>
     get() = named<SourceSet>("main")
+
+signing {
+    // disable signing if private key isn't passed
+    isRequired = findProperty("libs.sign.key.private") != null
+}
