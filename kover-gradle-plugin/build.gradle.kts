@@ -108,7 +108,7 @@ val functionalTest by tasks.registering(Test::class) {
         systemProperties["junit.jupiter.execution.parallel.config.fixed.parallelism"] =
             junitParallelism?.toIntOrNull()?.toString() ?: "2"
         // this is necessary if tests are run for debugging, in this case it is more difficult to stop at the test you need when they are executed in parallel and you are not sure on which test the execution will pause
-        systemProperties["junit.jupiter.execution.parallel.enabled"] = if (junitParallelism == "no") "false" else "false"
+        systemProperties["junit.jupiter.execution.parallel.enabled"] = if (junitParallelism == "no") "false" else "true"
 
 
         // customizing functional tests
