@@ -4,11 +4,11 @@
 
 package kotlinx.kover.gradle.plugin.tools
 
+import kotlinx.kover.features.jvm.KoverFeatures
 import kotlinx.kover.features.jvm.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.dsl.KoverVersions.KOVER_TOOL_VERSION
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tools.jacoco.JacocoTool
 import kotlinx.kover.gradle.plugin.tools.kover.KoverTool
@@ -48,7 +48,7 @@ internal sealed class CoverageToolVariant(
 }
 
 internal class KoverToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.KOVER, version)
-internal object KoverToolBuiltin: CoverageToolVariant(CoverageToolVendor.KOVER, KOVER_TOOL_VERSION)
+internal object KoverToolBuiltin: CoverageToolVariant(CoverageToolVendor.KOVER, KoverFeatures.version)
 
 internal class JacocoToolVariant(version: String): CoverageToolVariant(CoverageToolVendor.JACOCO, version)
 
