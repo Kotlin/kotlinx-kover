@@ -86,6 +86,7 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
             htmlDir.convention(layout.buildDirectory.dir(KoverPaths.htmlReportPath()))
 
             this.onlyIf {
+                // `onlyIf` is used to ensure that the path is always printed, even when the task is not running and has the FROM-CACHE outcome
                 printPath()
                 true
             }

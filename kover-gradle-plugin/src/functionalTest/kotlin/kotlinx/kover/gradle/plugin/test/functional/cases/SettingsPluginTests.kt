@@ -67,7 +67,7 @@ internal class SettingsPluginTests {
         }
     }
 
-    @TemplateTest("settings-plugin", ["-Pkover", "test", "koverXmlReport", "-Pkover.classes.from.excludes=:subproject", "-Dorg.gradle.unsafe.isolated-projects=true", "--configuration-cache", "--build-cache"])
+    @TemplateTest("settings-plugin", ["-Pkover", "test", "koverXmlReport", "-Pkover.projects.excludes=:subproject", "-Dorg.gradle.unsafe.isolated-projects=true", "--configuration-cache", "--build-cache"])
     fun CheckerContext.testExcludeSubproject() {
         xmlReport {
             classCounter("tests.settings.root.RootClass").assertFullyCovered()

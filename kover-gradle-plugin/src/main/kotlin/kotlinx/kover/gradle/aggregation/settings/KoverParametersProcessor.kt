@@ -11,12 +11,14 @@ import org.gradle.api.provider.ProviderFactory
 
 internal object KoverParametersProcessor {
     fun process(settingsExtension: KoverSettingsExtensionImpl, providers: ProviderFactory) {
-        if (providers.gradleProperty("kover").isPresent) {
-            settingsExtension.coverageIsEnabled.set(true)
+        val koverProperty = providers.gradleProperty("kover")
+        if (koverProperty.isPresent) {
+            val disabled = koverProperty.get().equals("false", ignoreCase = true)
+            settingsExtension.coverageIsEnabled.set(!disabled)
         }
 
-        settingsExtension.reports.includedProjects.readAppendableArgument(providers, "kover.classes.from")
-        settingsExtension.reports.excludedProjects.readAppendableArgument(providers, "kover.classes.from.excludes")
+        settingsExtension.reports.includedProjects.readAppendableArgument(providers, "kover.projects.includes")
+        settingsExtension.reports.excludedProjects.readAppendableArgument(providers, "kover.projects.excludes")
         settingsExtension.reports.excludedClasses.readAppendableArgument(providers, "kover.classes.excludes")
         settingsExtension.reports.includedClasses.readAppendableArgument(providers, "kover.classes.includes")
     }

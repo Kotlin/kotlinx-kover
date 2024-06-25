@@ -37,10 +37,10 @@ kover {
     enableCoverage()
     
     reports {
-        // -Pkover.classes.from=:a
+        // -Pkover.projects.includes=:a
         includedProjects.add(":a")
         
-        // -Pkover.classes.from.excludes=:b
+        // -Pkover.projects.excludes=:b
         excludedProjects.add(":b")
 
         // -Pkover.classes.includes=classes.to.exclude.*
