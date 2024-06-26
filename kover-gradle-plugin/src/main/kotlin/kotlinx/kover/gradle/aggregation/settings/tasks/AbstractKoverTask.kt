@@ -27,6 +27,10 @@ internal abstract class AbstractKoverTask : DefaultTask() {
     abstract val includedClasses: SetProperty<String>
     @get:Input
     abstract val excludedClasses: SetProperty<String>
+    @get:Input
+    abstract val includesAnnotatedBy: SetProperty<String>
+    @get:Input
+    abstract val excludesAnnotatedBy: SetProperty<String>
 
     @get:Nested
     val data: Provider<Map<String, ProjectArtifactInfo>> = artifacts.elements.map { elements ->

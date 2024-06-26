@@ -8,7 +8,7 @@ The main difference from the existing Kover Gradle Plugin is the reactive conten
 To use the plugin, just add into a `settings.gradle.kts` file 
 ```kotlin
 plugins {
-    id("org.jetbrains.kotlinx.kover.settings") version "0.8.1"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "0.8.1"
 }
 ```
 **There is no need to apply Kover plugin in other places, the `org.jetbrains.kotlinx.kover` plug-in should not be applied anywhere.**
@@ -48,6 +48,12 @@ kover {
 
         // -Pkover.classes.excludes=classes.to.include.*
         excludedClasses.add("classes.to.exclude.*")
+
+        // -Pkover.classes.excludesAnnotated=*.Generated*
+        excludesAnnotatedBy.add("*.Generated*")
+        
+        // -Pkover.classes.includesAnnotated=*Included*
+        includesAnnotatedBy.add("*Included*")
     }
 }
 ```

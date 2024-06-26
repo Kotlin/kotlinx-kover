@@ -6,7 +6,7 @@ pluginManagement {
 }
 
 plugins {
-    id("org.jetbrains.kotlinx.kover.settings") version "SNAPSHOT"
+    id("org.jetbrains.kotlinx.kover.aggregation") version "SNAPSHOT"
 }
 
 buildCache {

@@ -21,6 +21,8 @@ internal object KoverParametersProcessor {
         settingsExtension.reports.excludedProjects.readAppendableArgument(providers, "kover.projects.excludes")
         settingsExtension.reports.excludedClasses.readAppendableArgument(providers, "kover.classes.excludes")
         settingsExtension.reports.includedClasses.readAppendableArgument(providers, "kover.classes.includes")
+        settingsExtension.reports.excludesAnnotatedBy.readAppendableArgument(providers, "kover.classes.excludesAnnotated")
+        settingsExtension.reports.includesAnnotatedBy.readAppendableArgument(providers, "kover.classes.includesAnnotated")
     }
 
     private fun HasMultipleValues<String>.readAppendableArgument(providers: ProviderFactory, propertyName: String) {

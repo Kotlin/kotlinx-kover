@@ -20,8 +20,6 @@ internal abstract class KoverSettingsExtensionImpl @Inject constructor(
 
     override val reports: ReportsSettings = objects.newInstance<ReportsSettings>()
 
-    //    abstract override val variants: NamedDomainObjectContainer<VariantI>
-
     init {
         coverageIsEnabled.convention(false)
     }

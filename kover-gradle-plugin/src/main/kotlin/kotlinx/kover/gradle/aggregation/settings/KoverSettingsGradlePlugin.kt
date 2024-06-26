@@ -81,6 +81,8 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
             excludedProjects.convention(settingsExtension.reports.excludedProjects)
             excludedClasses.convention(settingsExtension.reports.excludedClasses)
             includedClasses.convention(settingsExtension.reports.includedClasses)
+            excludesAnnotatedBy.convention(settingsExtension.reports.excludesAnnotatedBy)
+            includesAnnotatedBy.convention(settingsExtension.reports.includesAnnotatedBy)
             title.convention(projectPath)
 
             htmlDir.convention(layout.buildDirectory.dir(KoverPaths.htmlReportPath()))
@@ -101,6 +103,8 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
             excludedProjects.convention(settingsExtension.reports.excludedProjects)
             excludedClasses.convention(settingsExtension.reports.excludedClasses)
             includedClasses.convention(settingsExtension.reports.includedClasses)
+            excludesAnnotatedBy.convention(settingsExtension.reports.excludesAnnotatedBy)
+            includesAnnotatedBy.convention(settingsExtension.reports.includesAnnotatedBy)
             title.convention(projectPath)
 
             reportFile.convention(layout.buildDirectory.file(KoverPaths.xmlReportPath()))

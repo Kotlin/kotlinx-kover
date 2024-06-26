@@ -22,4 +22,6 @@ public interface ReportsSettings {
     val excludedProjects: SetProperty<String>
     val excludedClasses: SetProperty<String>
     val includedClasses: SetProperty<String>
+    val excludesAnnotatedBy: SetProperty<String>
+    val includesAnnotatedBy: SetProperty<String>
 }

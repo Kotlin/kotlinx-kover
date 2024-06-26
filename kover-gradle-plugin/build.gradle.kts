@@ -222,10 +222,10 @@ gradlePlugin {
 
     plugins {
         create("KoverSettingsPlugin") {
-            id = "org.jetbrains.kotlinx.kover.settings"
+            id = "org.jetbrains.kotlinx.kover.aggregation"
             implementationClass = "kotlinx.kover.gradle.aggregation.settings.KoverSettingsGradlePlugin"
-            displayName = "Gradle Plugin for Kotlin Code Coverage Tools"
-            description = "Evaluate code coverage for projects written in Kotlin"
+            displayName = "Gradle Settings Plugin for Kotlin Code Coverage Tools"
+            description = "Evaluate code coverage for projects written in Kotlin, applied only inside settings.gradle[.kts] files"
             tags.addAll("kover", "kotlin", "coverage", "settings plugin")
         }
     }
