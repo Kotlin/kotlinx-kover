@@ -1,3 +1,18 @@
+public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/KoverSettingsExtension {
+	public abstract fun enableCoverage ()V
+	public abstract fun getReports ()Lkotlinx/kover/gradle/aggregation/settings/dsl/ReportsSettings;
+	public abstract fun reports (Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/ReportsSettings {
+	public abstract fun getExcludedClasses ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getExcludedProjects ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getExcludesAnnotatedBy ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getIncludedClasses ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getIncludedProjects ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getIncludesAnnotatedBy ()Lorg/gradle/api/provider/SetProperty;
+}
+
 public final class kotlinx/kover/gradle/plugin/KoverGradlePlugin : org/gradle/api/Plugin {
 	public fun <init> ()V
 	public synthetic fun apply (Ljava/lang/Object;)V

@@ -113,6 +113,12 @@ in this case report will be generated for current project joined with `:another:
 
 **More examples of Gradle plugin applying can be found in [example folder](kover-gradle-plugin/examples)**
 
+## Kover Aggregated Plugin
+Kover Aggregated Plugin as a prototype of Gradle Settings plugin, created to simplify the setup of multi-project builds. 
+It is in its infancy, it is recommended to use it only for test or pet projects.
+
+Refer to the [documentation](https://kotlin.github.io/kotlinx-kover/gradle-plugin/aggregated.html) for details. 
+
 ## Kover CLI
 Standalone JVM application used for offline instrumentation and generation of human-readable reports.
 

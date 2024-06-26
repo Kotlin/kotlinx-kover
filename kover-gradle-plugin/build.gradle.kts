@@ -42,6 +42,7 @@ val functionalTestImplementation = "functionalTestImplementation"
 
 dependencies {
     implementation(project(":kover-features-jvm"))
+    implementation(project(":kover-jvm-agent"))
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
     compileOnly(libs.gradlePlugin.kotlin)
@@ -52,6 +53,13 @@ dependencies {
 
     snapshotRelease(project(":kover-features-jvm"))
     snapshotRelease(project(":kover-jvm-agent"))
+
+    functionalTestImplementation(gradleTestKit())
+    // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
+    functionalTestImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$embeddedKotlinVersion")
+    functionalTestImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$embeddedKotlinVersion")
+    functionalTestImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$embeddedKotlinVersion")
+
 }
 
 kotlin {
@@ -70,7 +78,20 @@ val functionalTest by tasks.registering(Test::class) {
     useJUnitPlatform()
 
     dependsOn(tasks.collectRepository)
+
+    // While gradle testkit supports injection of the plugin classpath it doesn't allow using dependency notation
+    // to determine the actual runtime classpath for the plugin. It uses isolation, so plugins applied by the build
+    // script are not visible in the plugin classloader. This means optional dependencies (dependent on applied plugins -
+    // for example kotlin multiplatform) are not visible even if they are in regular gradle use. This hack will allow
+    // extending the classpath. It is based upon: https://docs.gradle.org/6.0/userguide/test_kit.html#sub:test-kit-classpath-injection
+    // Create a configuration to register the dependencies against
     doFirst {
+        val file = File(temporaryDir, "plugin-classpath.txt")
+        file.writeText(sourceSets["functionalTest"].compileClasspath
+            .filter { it.name.startsWith("stdlib") }
+            .joinToString("\n"))
+        systemProperties["plugin-classpath"] = file.absolutePath
+
         // basic build properties
         setSystemPropertyFromProject("kover.test.kotlin.version")
 
@@ -180,11 +201,6 @@ extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtensi
     addPublication.set(false)
 }
 
-signing {
-    // disable signing if private key isn't passed
-    isRequired = findProperty("libs.sign.key.private") != null
-}
-
 gradlePlugin {
     website.set("https://github.com/Kotlin/kotlinx-kover")
     vcsUrl.set("https://github.com/Kotlin/kotlinx-kover.git")
@@ -196,6 +212,21 @@ gradlePlugin {
             displayName = "Gradle Plugin for Kotlin Code Coverage Tools"
             description = "Evaluate code coverage for projects written in Kotlin"
             tags.addAll("kover", "kotlin", "coverage")
+        }
+    }
+}
+
+gradlePlugin {
+    website.set("https://github.com/Kotlin/kotlinx-kover")
+    vcsUrl.set("https://github.com/Kotlin/kotlinx-kover.git")
+
+    plugins {
+        create("KoverSettingsPlugin") {
+            id = "org.jetbrains.kotlinx.kover.aggregation"
+            implementationClass = "kotlinx.kover.gradle.aggregation.settings.KoverSettingsGradlePlugin"
+            displayName = "Gradle Settings Plugin for Kotlin Code Coverage Tools"
+            description = "Evaluate code coverage for projects written in Kotlin, applied only inside settings.gradle[.kts] files"
+            tags.addAll("kover", "kotlin", "coverage", "settings plugin")
         }
     }
 }
