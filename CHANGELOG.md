@@ -1,3 +1,24 @@
+0.8.2 / 2024-06-27
+===================
+## Kover Aggregation Plugin
+Implemented prototype of Kover Aggregation Plugin - an alternative to the existing Kover Gradle Plugin, it makes it easier to set up a configuration and collect coverage reactively, depending on the compilation and test tasks running.
+
+**This is not a production-ready plugin, it is in an incubation state.**
+
+Please refer to the [GitHub issue](https://github.com/Kotlin/kotlinx-kover/issues/608) and [documentation](https://kotlin.github.io/kotlinx-kover/gradle-plugin/aggregated.html) for details.
+
+## Kover Gradle Plugin
+### Bugfixes
+* [`#621`](https://github.com/Kotlin/kotlinx-kover/issues/621) Fixed coverage evaluation for enum in K2
+* [`#633`](https://github.com/Kotlin/kotlinx-kover/issues/633) Fix issue with identical cache keys between projects
+* [`#634`](https://github.com/Kotlin/kotlinx-kover/issues/634)[`#613`](https://github.com/Kotlin/kotlinx-kover/issues/613) Fixed JaCoCo error: Can't add different class with same name
+* [`#601`](https://github.com/Kotlin/kotlinx-kover/issues/601) Fixed support of Compose functions
+* [`#646`](https://github.com/Kotlin/kotlinx-kover/issues/646) Fixed reusing of configuration cache
+* [`#628`](https://github.com/Kotlin/kotlinx-kover/issues/628) Fixed coverage evaluation of try-finally and try-with-resources for Java code
+
+### Features
+* Disable caching on kover artifact tasks
+
 0.8.1 / 2024-06-07
 ===================
 ## Kover Gradle Plugin
