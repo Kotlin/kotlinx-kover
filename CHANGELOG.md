@@ -11,7 +11,7 @@ Please refer to the [GitHub issue](https://github.com/Kotlin/kotlinx-kover/issue
 ### Bugfixes
 * [`#621`](https://github.com/Kotlin/kotlinx-kover/issues/621) Fixed coverage evaluation for enum in K2
 * [`#633`](https://github.com/Kotlin/kotlinx-kover/issues/633) Fix issue with identical cache keys between projects
-* [`#634`](https://github.com/Kotlin/kotlinx-kover/issues/634)[`#613`](https://github.com/Kotlin/kotlinx-kover/issues/613) Fixed JaCoCo error: Can't add different class with same name
+* [`#613`](https://github.com/Kotlin/kotlinx-kover/issues/613) Fixed JaCoCo error: Can't add different class with same name
 * [`#601`](https://github.com/Kotlin/kotlinx-kover/issues/601) Fixed support of Compose functions
 * [`#646`](https://github.com/Kotlin/kotlinx-kover/issues/646) Fixed reusing of configuration cache
 * [`#628`](https://github.com/Kotlin/kotlinx-kover/issues/628) Fixed coverage evaluation of try-finally and try-with-resources for Java code
