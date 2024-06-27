@@ -29,6 +29,19 @@ internal class ConfigurationCacheTests {
             "koverVerify",
             "--configuration-cache",
         )
+
+        // test reusing configuration cache
+        run(
+            "build",
+            "koverXmlReport",
+            "koverHtmlReport",
+            "koverVerify",
+            "--configuration-cache",
+        ) {
+            output.match {
+                assertContains("Reusing configuration cache.")
+            }
+        }
     }
 
     @GeneratedTest

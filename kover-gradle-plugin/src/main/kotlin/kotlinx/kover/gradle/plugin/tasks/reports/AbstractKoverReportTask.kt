@@ -21,13 +21,9 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:Internal
     abstract val variantName: String
 
-    @get:InputFile
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val localArtifact: RegularFileProperty
-
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val externalArtifacts: ConfigurableFileCollection
+    abstract val artifacts: ConfigurableFileCollection
 
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -38,7 +34,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
      */
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal val externalSources: Provider<Set<File>> = externalArtifacts.elements.map {
+    internal val sources: Provider<Set<File>> = artifacts.elements.map {
         val content = ArtifactContent.Empty
         content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir).filterProjectSources() }).sources
     }
@@ -48,27 +44,9 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
      */
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal val externalReports: Provider<Set<File>> = externalArtifacts.elements.map {
+    internal val reports: Provider<Set<File>> = artifacts.elements.map {
         val content = ArtifactContent.Empty
         content.joinWith(it.map { file -> file.asFile.parseArtifactFile(rootDir).filterProjectSources() }).reports
-    }
-
-    /**
-     * This will cause the task to be considered out-of-date when source files of this project have changed.
-     */
-    @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal val localSources: Provider<Set<File>> = localArtifact.map {
-        it.asFile.parseArtifactFile(rootDir).filterProjectSources().sources
-    }
-
-    /**
-     * This will cause the task to be considered out-of-date when coverage measurements of this project have changed.
-     */
-    @get:InputFiles
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    internal val localReports: Provider<Set<File>> = localArtifact.map {
-        it.asFile.parseArtifactFile(rootDir).filterProjectSources().reports
     }
 
     @get:Nested
@@ -95,8 +73,8 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     }
 
     private fun collectAllFiles(): ArtifactContent {
-        val local = localArtifact.get().asFile.parseArtifactFile(rootDir).filterProjectSources()
-        return local.joinWith(externalArtifacts.files.map { it.parseArtifactFile(rootDir).filterProjectSources() }).existing()
+        val local = ArtifactContent(projectPath, emptySet(), emptySet(), emptySet())
+        return local.joinWith(artifacts.files.map { it.parseArtifactFile(rootDir).filterProjectSources() }).existing()
     }
 
     private fun ArtifactContent.filterProjectSources(): ArtifactContent {
