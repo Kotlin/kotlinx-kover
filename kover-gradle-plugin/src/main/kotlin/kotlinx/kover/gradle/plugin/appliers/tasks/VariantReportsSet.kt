@@ -192,11 +192,8 @@ internal class VariantReportsSet(
 
     private fun <T : AbstractKoverReportTask> TaskProvider<T>.assign(variant: AbstractVariantArtifacts) {
         configure {
-            dependsOn(variant.artifactGenTask)
             dependsOn(variant.consumerConfiguration)
-
-            localArtifact.set(variant.artifactGenTask.flatMap { task -> task.artifactFile })
-            externalArtifacts.from(variant.consumerConfiguration)
+            artifacts.from(variant.consumerConfiguration)
         }
     }
 

@@ -23,6 +23,9 @@ internal fun prepare(project: Project): KoverContext {
         asBucket()
     }
 
+    // Project always consumes its own artifacts
+    project.dependencies.add(KOVER_DEPENDENCY_NAME, project)
+
     val projectExtension = project.extensions.create<KoverProjectExtensionImpl>(
         KOVER_PROJECT_EXTENSION_NAME,
         project.objects,
