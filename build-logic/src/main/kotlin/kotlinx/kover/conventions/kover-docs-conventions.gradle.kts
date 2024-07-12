@@ -26,7 +26,7 @@ extension.callDokkaHtml.convention(false)
 
 tasks.register("releaseDocs") {
     dependsOn(
-        tasks.matching { extension.callDokkaHtml.get() && it.name == "dokkaHtml" }
+        tasks.named { it == "dokkaHtml" }.matching { extension.callDokkaHtml.get() }
     )
 
     doLast {

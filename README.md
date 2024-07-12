@@ -8,6 +8,7 @@ Kover is a set of solutions for collecting test coverage of Kotlin code compiled
 
 Kover Toolset:
 - [Kover Gradle Plugin](#kover-gradle-plugin)
+- [Kover Maven Plugin](#kover-maven-plugin)
 - [Kover CLI](#kover-cli)
 - [Kover offline instrumentation](#kover-offline-instrumentation)
 - [Kover JVM agent](#kover-jvm-agent)
@@ -118,6 +119,21 @@ Kover Aggregated Plugin as a prototype of Gradle Settings plugin, created to sim
 It is in its infancy, it is recommended to use it only for test or pet projects.
 
 Refer to the [documentation](https://kotlin.github.io/kotlinx-kover/gradle-plugin/aggregated.html) for details. 
+
+## Kover Maven Plugin
+The Kover Maven Plugin can be applied by specifying build plugin
+```xml
+<plugin>
+    <groupId>org.jetbrains.kotlinx</groupId>
+    <artifactId>kover-maven-plugin</artifactId>
+    <version>0.8.2</version>
+</plugin>
+```
+
+List of Kover goals specified in [document section](https://kotlin.github.io/kotlinx-kover/maven-plugin#goals)
+
+For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation](https://kotlin.github.io/kotlinx-kover/maven-plugin).
+
 
 ## Kover CLI
 Standalone JVM application used for offline instrumentation and generation of human-readable reports.

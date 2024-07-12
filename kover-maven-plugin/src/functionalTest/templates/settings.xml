@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2017-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+   http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <activeProfiles>
+        <activeProfile>functional-test</activeProfile>
+    </activeProfiles>
+
+    <profiles>
+        <profile>
+            <id>functional-test</id>
+
+            <repositories>
+                <repository>
+                    <id>mavenCentral</id>
+                    <url>https://repo1.maven.org/maven2/</url>
+                </repository>
+
+                <repository>
+                    <id>snapshot-dependencies</id>
+                    <url>file://${snapshotRepository}</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </repository>
+            </repositories>
+
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>snapshot-plugins</id>
+                    <url>file://${snapshotRepository}</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+
+        </profile>
+    </profiles>
+</settings>

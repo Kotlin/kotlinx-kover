@@ -6,6 +6,11 @@ kotlinx-bcv = "0.13.2"
 kotlinx-dokka = "1.8.10"
 args4j = "2.33"
 gradle-plugin-publish = "1.2.1"
+maven-plugin-development = "0.4.3"
+maven-embedder = "3.9.8"
+maven-api = "3.0"
+maven-resolver = "1.9.21"
+maven-slf4j = "1.7.36"
 
 [libraries]
 
@@ -20,9 +25,26 @@ junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref 
 
 args4j = { module = "args4j:args4j", version.ref = "args4j" }
 
-gradlePlugin-kotlin =  { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" }
+gradlePlugin-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin" }
+
+maven-embedder = { module = "org.apache.maven:maven-embedder", version.ref = "maven-embedder" }
+maven-compat = { module = "org.apache.maven:maven-compat", version.ref = "maven-embedder" }
+maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", version.ref = "maven-embedder" }
+
+maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-api" }
+maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
+maven-reporting-api = { module = "org.apache.maven.reporting:maven-reporting-api", version.ref = "maven-api" }
+
+maven-resolver-basic = { module = "org.apache.maven.resolver:maven-resolver-connector-basic", version.ref = "maven-resolver" }
+maven-resolver-file = { module = "org.apache.maven.resolver:maven-resolver-transport-file", version.ref = "maven-resolver" }
+maven-resolver-http = { module = "org.apache.maven.resolver:maven-resolver-transport-http", version.ref = "maven-resolver" }
+
+maven-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "maven-slf4j" }
+
 
 [plugins]
-gradle-pluginPublish =  { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
 kotlinx-binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "kotlinx-bcv" }
 kotlinx-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinx-dokka" }
+mavenPluginDevelopment = { id = "de.benediktritter.maven-plugin-development", version.ref = "maven-plugin-development" }
+

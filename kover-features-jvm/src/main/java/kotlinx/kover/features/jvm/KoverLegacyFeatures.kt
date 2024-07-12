@@ -183,6 +183,30 @@ public object KoverLegacyFeatures {
 
         return result
     }
+
+    public fun violationMessage(violations: List<RuleViolations>): String {
+        if (violations.isEmpty()) {
+            return ""
+        }
+        val messageBuilder = StringBuilder()
+
+        violations.forEach { rule ->
+            val namedRule = if (rule.rule.name.isNotEmpty()) "Rule '${rule.rule.name}'" else "Rule"
+
+            if (rule.violations.size == 1) {
+                messageBuilder.appendLine("$namedRule violated: ${rule.violations[0].format(rule)}")
+            } else {
+                messageBuilder.appendLine("$namedRule violated:")
+
+                rule.violations.forEach { bound ->
+                    messageBuilder.append("  ")
+                    messageBuilder.appendLine(bound.format(rule))
+                }
+            }
+        }
+
+        return messageBuilder.toString()
+    }
 }
 
 /**
@@ -251,3 +275,30 @@ public data class ClassFilters(
      */
     public val excludeInheritedFrom: Set<String>
 )
+
+private fun BoundViolation.format(rule: RuleViolations): String {
+    val directionText = if (isMax) "maximum" else "minimum"
+
+    val metricText = when (bound.coverageUnits) {
+        CoverageUnit.LINE -> "lines"
+        CoverageUnit.INSTRUCTION -> "instructions"
+        CoverageUnit.BRANCH -> "branches"
+    }
+
+    val valueTypeText = when (bound.aggregationForGroup) {
+        AggregationType.COVERED_COUNT -> "covered count"
+        AggregationType.MISSED_COUNT -> "missed count"
+        AggregationType.COVERED_PERCENTAGE -> "covered percentage"
+        AggregationType.MISSED_PERCENTAGE -> "missed percentage"
+    }
+
+    val entityText = when (rule.rule.groupBy) {
+        GroupingBy.APPLICATION -> ""
+        GroupingBy.CLASS -> " for class '$entityName'"
+        GroupingBy.PACKAGE -> " for package '$entityName'"
+    }
+
+    val expectedValue = if (isMax) bound.maxValue else bound.minValue
+
+    return "$metricText $valueTypeText$entityText is $value, but expected $directionText is $expectedValue"
+}
