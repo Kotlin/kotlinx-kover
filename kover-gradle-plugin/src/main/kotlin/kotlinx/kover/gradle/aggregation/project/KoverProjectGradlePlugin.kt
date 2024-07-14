@@ -100,7 +100,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
 
             compilations.filter { compilation ->
                 val compilationName = compilation["name"].value<String>()
-                if (compilationName == "test") return@filter false
+                if (compilationName == "test" || compilationName.endsWith("Test")) return@filter false
 
                 val taskPath = projectPath + (if (projectPath == Project.PATH_SEPARATOR) "" else Project.PATH_SEPARATOR) + compilation["compileTaskProvider"]["name"].value<String>()
                 taskGraph.hasTask(taskPath)
