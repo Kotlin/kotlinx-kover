@@ -20,6 +20,7 @@ import kotlinx.kover.gradle.aggregation.project.instrumentation.InstrumentationF
 import kotlinx.kover.gradle.aggregation.project.instrumentation.JvmOnFlyInstrumenter
 import kotlinx.kover.gradle.aggregation.project.tasks.ArtifactGenerationTask
 import kotlinx.kover.gradle.aggregation.project.tasks.KoverAgentSearchTask
+import kotlinx.kover.gradle.plugin.commons.KOTLIN_ANDROID_PLUGIN_ID
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import org.gradle.api.Plugin
 import org.gradle.api.Project

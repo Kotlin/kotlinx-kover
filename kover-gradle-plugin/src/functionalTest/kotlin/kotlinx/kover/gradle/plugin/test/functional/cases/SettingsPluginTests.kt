@@ -82,4 +82,14 @@ internal class SettingsPluginTests {
             classCounter("tests.settings.subproject.SubprojectClass").assertAbsent()
         }
     }
+
+    @TemplateTest("settings-plugin-android", ["-Pkover", ":app:testDebugUnitTest", "koverXmlReport"])
+    fun CheckerContext.testAndroid() {
+        xmlReport {
+            classCounter("kotlinx.kover.test.android.MainClass").assertCovered()
+            classCounter("kotlinx.kover.test.android.DebugClass").assertFullyMissed()
+            classCounter("kotlinx.kover.test.android.ReleaseClass").assertAbsent()
+            classCounter("kotlinx.kover.test.android.LocalTests").assertAbsent()
+        }
+    }
 }
