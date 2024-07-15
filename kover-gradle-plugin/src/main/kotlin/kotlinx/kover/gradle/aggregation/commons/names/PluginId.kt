@@ -6,5 +6,6 @@ package kotlinx.kover.gradle.aggregation.commons.names
 
 internal object PluginId {
     const val KOTLIN_JVM_PLUGIN_ID = "org.jetbrains.kotlin.jvm"
+    const val KOTLIN_ANDROID_PLUGIN_ID = "org.jetbrains.kotlin.android"
     const val KOTLIN_MULTIPLATFORM_PLUGIN_ID = "org.jetbrains.kotlin.multiplatform"
 }

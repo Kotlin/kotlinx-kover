@@ -78,7 +78,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
 
         val compilations = project.layout.buildDirectory.map {
             val compilations = when {
-                pluginManager.hasPlugin(KOTLIN_JVM_PLUGIN_ID) -> {
+                pluginManager.hasPlugin(KOTLIN_JVM_PLUGIN_ID) || pluginManager.hasPlugin(KOTLIN_ANDROID_PLUGIN_ID) -> {
                     val kotlin = exts.findByName("kotlin")?.bean()
                         ?: throw KoverCriticalException("Kotlin JVM extension not found")
                     kotlin["target"]["compilations"].sequence()
@@ -100,7 +100,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
 
             compilations.filter { compilation ->
                 val compilationName = compilation["name"].value<String>()
-                if (compilationName == "test") return@filter false
+                if (compilationName == "test" || compilationName.endsWith("Test")) return@filter false
 
                 val taskPath = projectPath + (if (projectPath == Project.PATH_SEPARATOR) "" else Project.PATH_SEPARATOR) + compilation["compileTaskProvider"]["name"].value<String>()
                 taskGraph.hasTask(taskPath)
