@@ -14,6 +14,7 @@ import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.INST
 import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.LOG_TASK_NAME
 import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.VERIFY_TASK_NAME
 import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.XML_TASK_NAME
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -110,12 +111,36 @@ fun CheckerContext.assertHtmlReportExists(path: String, shouldExists: Boolean = 
 
 fun CheckerContext.assertKoverLogIs(taskName: String, text: String) {
     val taskLog = koverGoalLog(taskName)
-    assertTrue(taskLog.contains(text), "Task '$taskName' log differs, expected:\n'$text'\nactual:\n$taskLog")
+    assertTrue(taskLog.contains(text), "Task '$taskName' log differs, expected:\n$text\nactual:\n$taskLog")
 }
 
 fun CheckerContext.assertLogContains(vararg text: String) {
     text.forEach { searchedText ->
         assertTrue(searchedText in log, "Substring '$searchedText' is expected to be present in the logs")
     }
+}
+
+fun CheckerContext.assertDefaultHtmlTitle(title: String) {
+    assertHtmlTitle(DEFAULT_HTML_REPORT_PATH, title)
+}
+
+fun CheckerContext.assertHtmlTitle(path: String, title: String) {
+    val report = findFile(path)
+    val indexPage = report.resolve("index.html")
+
+    val actual = indexPage.readText().substringAfter("Current scope: ").substringBefore("<span")
+    assertEquals(title, actual, "Incorrect title in HTML, $path")
+}
+
+fun CheckerContext.assertDefaultXmlTitle(title: String) {
+    assertXmlTitle(DEFAULT_XML_REPORT_PATH, title)
+}
+
+fun CheckerContext.assertXmlTitle(path: String, title: String) {
+    val report = findFile(path)
+
+    // <report name="foo">
+    val actual = report.readText().substringAfter("<report name=\"").substringBefore("\"")
+    assertEquals(title, actual, "Incorrect title in XML, $path")
 }
 

@@ -22,7 +22,7 @@ plugins {
     id("kover-release-conventions")
 }
 
-extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
+koverPublication {
     description.set("Compiled dependency to ensure the operation of the code that has been instrumented offline")
 }
 
@@ -40,7 +40,7 @@ dependencies {
     fatJar(libs.intellij.offline)
 }
 
-extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+koverDocs {
     docsDirectory.set("offline-instrumentation")
     description.set("Kover offline instrumentation")
     callDokkaHtml.set(true)

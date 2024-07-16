@@ -94,7 +94,7 @@ tasks.check {
     dependsOn(functionalTest)
 }
 
-extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+koverDocs {
     docsDirectory.set("maven-plugin")
     description.set("Kover Maven Plugin")
     callDokkaHtml.set(false)

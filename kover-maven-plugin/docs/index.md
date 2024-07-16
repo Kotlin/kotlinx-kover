@@ -328,4 +328,6 @@ All available configuration options are shown below:
 - Using Kover Maven Plugin in `site` lifecycle (`reporting` block) [project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/site)
 - Skip Kover goals by configuration: [project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/skip-config) 
 - Adding coverage verification rules: [project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/verify-error) 
-- Print warning instead of verification error: [project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/verify-warn) 
+- Print warning instead of verification error: [project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/verify-warn)
+- Configure coverage logging: [project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/logs)
+- Exclude class from instrumentation: [project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/exclude-instrumentation)

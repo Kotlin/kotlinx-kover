@@ -189,13 +189,13 @@ tasks.dokkaHtml {
     }
 }
 
-extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+koverDocs {
     docsDirectory.set("gradle-plugin")
     description.set("Kover Gradle Plugin")
     callDokkaHtml.set(true)
 }
 
-extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
+koverPublication {
     description.set("Kover Gradle Plugin - Kotlin code coverage")
     //`java-gradle-plugin` plugin already creates publication with name `pluginMaven`
     addPublication.set(false)

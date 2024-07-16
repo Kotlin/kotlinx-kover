@@ -230,4 +230,30 @@ Rule violated:
         assertDefaultIcReportExists(false)
     }
 
+    @Test
+    fun testTitleOverride() = runAndCheckExample("titles", "verify") {
+        assertBuildIsSuccessful()
+        assertDefaultXmlTitle("Custom XML")
+        assertDefaultHtmlTitle("Custom HTML")
+    }
+
+
+    @Test
+    fun testLogTaskConfig() = runAndCheckExample("logs", "verify") {
+        assertBuildIsSuccessful()
+        assertKoverLogIs(
+            LOG_TASK_NAME,
+            """1 branches covered in kotlinx.kover.maven.plugin.testing.Main"""
+        )
+    }
+
+    @Test
+    fun testExcludeFromInstrumentation() = runAndCheckExample("exclude-instrumentation", "verify") {
+        assertBuildIsSuccessful()
+        checkDefaultXmlReport {
+            classCounter("kotlinx.kover.maven.plugin.testing.Main", LINE) assert IsFullyMissed
+            classCounter("kotlinx.kover.maven.plugin.testing.SecondClass", LINE) assert IsCovered
+        }
+    }
+
 }

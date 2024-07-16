@@ -32,11 +32,11 @@ class KoverInstrumentMojo : AbstractKoverMojo() {
     @Parameter
     var uninstrumentedClasses: List<String>? = null
 
-    @Parameter(defaultValue = "\${project.build.directory}/${Constants.BIN_REPORT_PATH}")
+    @Parameter(defaultValue = "\${project.build.directory}/${Constants.BIN_REPORT_PATH}", readonly = true)
     lateinit var binaryReportFile: File
 
     override fun doExecute() {
-        val propertyName = agentPropertyName ?: Constants.AGENT_ARG_PARAMETER
+        val propertyName = agentPropertyName
         val agentArg = buildAgentArgument()
 
         val oldValue = project.properties.getProperty(propertyName)
