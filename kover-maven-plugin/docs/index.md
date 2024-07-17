@@ -13,17 +13,17 @@ Maven plugin to measure test coverage and generate human-readable reports with c
 
 ## Requirements
 - Maven 3.0 or higher
-- Java 1.8 for Maven runtime
+- Java 1.8 or higher for Maven runtime
 
 ## Current limitations
-- instrumentation of only tests in `test` goal is supported, `it-tests` tests are not supported yet
+- only instrumentation of tests in `test` goal is supported; `it-tests` tests are not supported yet
 - if several Kover JVM agents are specified when running the tests, then only the first one will work
 - simultaneous use of several instrumentation agents can lead to unpredictable consequences and unstable operation
 
 ## Quickstart
 To use Kover coverage measurement it is necessary to add plugin `org.jetbrains.kotlinx:kover-maven-plugin:0.8.2` to build configuration in `pom.xml` and create executions for used goals.
 
-By the following configuration HTML, XML report will be generated and verification rules will be checked on `verify` phase:
+With the following configuration HTML and XML reports will be generated, and verification rules will be checked on `verify` phase:
 ```xml
     <build>
         <!-- other build configs -->
@@ -87,13 +87,13 @@ If the project consists of several modules, then the source classes and tests ca
 
 In this case, it becomes necessary to generate reports for several modules at once.
 
-In order to activate the creation of reports on several projects, you need to add the following configuration
+In order to activate the creation of reports on several projects, you need to add this configuration flag:
 `<aggregate>true</aggregate>` into the Kover Plugin `configuration` block.
 
 Then, the classes in the report will be collected for all modules specified in the `dependencies` block, except for those for which the scope is `test`.
 And the coverage will be collected from tests located in modules that are also in the `dependencies` block, including dependencies with the `test` scope.
 
-See full [example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/merged-report)
+See the full [example project](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/merged-report).
 
 ## Configuration
 
@@ -239,7 +239,7 @@ All available configuration options are shown below:
         <!-- File, default: ${project.reporting.outputDirectory}/kover/report.xml -->
         <xmlFile>${project.build.directory}/custom.xml</xmlFile>
 
-        <!-- Specifies by which entity the code for separate coverage evaluation will be grouped. -->
+        <!-- Specifies by which entity the code for particular coverage evaluation will be grouped. -->
         <!-- Enum value of {APPLICATION, CLASS, PACKAGE}, default: APPLICATION -->
         <logGroupBy>APPLICATION</logGroupBy>
 
