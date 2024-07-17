@@ -14,6 +14,7 @@ import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.INST
 import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.LOG_TASK_NAME
 import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.VERIFY_TASK_NAME
 import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.XML_TASK_NAME
+import java.nio.charset.Charset
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -120,15 +121,15 @@ fun CheckerContext.assertLogContains(vararg text: String) {
     }
 }
 
-fun CheckerContext.assertDefaultHtmlTitle(title: String) {
-    assertHtmlTitle(DEFAULT_HTML_REPORT_PATH, title)
+fun CheckerContext.assertDefaultHtmlTitle(title: String, charset: String = "UTF-8") {
+    assertHtmlTitle(DEFAULT_HTML_REPORT_PATH, title, charset)
 }
 
-fun CheckerContext.assertHtmlTitle(path: String, title: String) {
+fun CheckerContext.assertHtmlTitle(path: String, title: String, charset: String = "UTF-8") {
     val report = findFile(path)
     val indexPage = report.resolve("index.html")
 
-    val actual = indexPage.readText().substringAfter("Current scope: ").substringBefore("<span")
+    val actual = indexPage.readText(Charset.forName(charset)).substringAfter("Current scope: ").substringBefore("<span")
     assertEquals(title, actual, "Incorrect title in HTML, $path")
 }
 

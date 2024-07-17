@@ -256,4 +256,10 @@ Rule violated:
         }
     }
 
+    @Test
+    fun testHtmlCharset() = runAndCheckExample("charset", "verify") {
+        assertBuildIsSuccessful()
+        assertDefaultHtmlTitle("charset", "UTF-16BE")
+    }
+
 }
