@@ -130,7 +130,7 @@ The Kover Maven Plugin can be applied by specifying build plugin
 </plugin>
 ```
 
-List of Kover goals specified in [document section](https://kotlin.github.io/kotlinx-kover/maven-plugin#goals)
+The list of Kover goals is specified in [this document section](https://kotlin.github.io/kotlinx-kover/maven-plugin#goals).
 
 For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation](https://kotlin.github.io/kotlinx-kover/maven-plugin).
 
