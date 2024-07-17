@@ -20,7 +20,7 @@ import java.util.*
  * Mojo to generate Kover HTML report.
  */
 @Mojo(name = "report-html", defaultPhase = LifecyclePhase.VERIFY)
-class HtmReportMojo: AbstractReportTaskMojo() {
+class HtmlReportMojo: AbstractReportTaskMojo() {
     @Parameter(defaultValue = Constants.HTML_REPORT_DIR_NAME)
     private lateinit var htmlDirName: String
 

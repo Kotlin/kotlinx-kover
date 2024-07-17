@@ -9,6 +9,7 @@ Maven plugin to measure test coverage and generate human-readable reports with c
  * [Maven Goals](#goals)
  * [Multi-module projects](#multi-module-projects)
  * [Configuration](#configuration)
+ * [Coverage values](#coverage-values)
  * [Examples](#examples)
 
 ## Requirements
@@ -188,8 +189,15 @@ All available configuration options are shown below:
                     <!-- List of String values, default: empty list -->
                     <annotatedBy>*.Generated</annotatedBy>
 
+
+                    
                     <!-- Exclude classes inherited from the specified classes, or implementing the specified interfaces. -->
                     <!-- Using fully-qualified JVM class names, wildcards `*` and `?` are acceptable. -->
+                    <!--  The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).-->
+                    <!--  The following classes and interfaces can be specified in arguments:-->
+                    <!--    *  classes and interfaces declared in the application-->
+                    <!--    *  classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application-->
+                    <!--  Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.-->
                     <!-- List of String values, default: empty list -->  
                     <inheritedFrom>java.lang.AutoCloseable</inheritedFrom>
 
@@ -240,16 +248,19 @@ All available configuration options are shown below:
         <xmlFile>${project.build.directory}/custom.xml</xmlFile>
 
         <!-- Specifies by which entity the code for particular coverage evaluation will be grouped. -->
+        <!-- For more information refer to the section 'Coverage values' -->
         <!-- Enum value of {APPLICATION, CLASS, PACKAGE}, default: APPLICATION -->
         <logGroupBy>APPLICATION</logGroupBy>
 
         <!-- The type of application code division (unit type) whose unit coverage will be considered independently. -->
+        <!-- For more information refer to the section 'Coverage values' -->
         <!-- Enum value of {LINE, INSTRUCTION, BRANCH}, default: LINE -->
         <logCoverageUnit>BRANCH</logCoverageUnit>
 
         <!-- Specifies aggregation function that will be calculated over all the units of the same group.  -->
         <!-- This function used to calculate the aggregated coverage value, it uses the values of the covered and uncovered units of type logCoverageUnit as arguments. -->
         <!-- Result value will be printed. -->
+        <!-- For more information refer to the section 'Coverage values' -->
         <!-- Enum value of {COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE}, default: COVERED_PERCENTAGE -->
         <logAggregationForGroup>MISSED_COUNT</logAggregationForGroup>
 
@@ -275,6 +286,7 @@ All available configuration options are shown below:
                 <name>package covered lines</name>
                 
                 <!-- Specifies by which entity the code for separate coverage evaluation will be grouped. -->
+                <!-- For more information refer to the section 'Coverage values' -->
                 <!-- Enum value of {APPLICATION, CLASS, PACKAGE}, default: APPLICATION -->
                 <groupBy>PACKAGE</groupBy>
                 
@@ -292,11 +304,13 @@ All available configuration options are shown below:
                         <!-- Specifies aggregation function that will be calculated over all the units of the same group.-->
                         <!-- This function used to calculate the aggregated coverage value, it uses the values of the covered and uncovered units of type [coverageUnits] as arguments.-->
                         <!-- Result value will be compared with the bounds.-->
+                        <!-- For more information refer to the section 'Coverage values' -->
                         <!-- Enum value of {COVERED_COUNT, MISSED_COUNT, COVERED_PERCENTAGE, MISSED_PERCENTAGE}, default: COVERED_PERCENTAGE -->
                         <aggregationForGroup>MISSED_COUNT</aggregationForGroup>
 
                         <!-- The type of application code division (unit type) whose unit coverage will be considered independently.-->
                         <!-- It affects which blocks the value of the covered and missed units will be calculated for.-->
+                        <!-- For more information refer to the section 'Coverage values' -->
                         <!-- Enum value of {LINE, INSTRUCTION, BRANCH}, default: LINE -->
                         <coverageUnits>LINE</coverageUnits>
 
@@ -316,6 +330,35 @@ All available configuration options are shown below:
     </configuration>
 </plugin>
 ```
+
+### Coverage values
+During verification, the entire code is divided into units for which Kover determines whether it was covered (executed) or skipped (not executed).
+For example, an entire line from source code or a specific JVM instruction from compiled byte-code can be executed or not.
+
+All units are grouped into one or more groups.
+Based on amount of the executed and non-executed code units, one number (coverage value) will be calculated for each group using the aggregation function.
+
+Type `CoverageUnit` determines for which types of units the coverage will be measured.
+It can be:
+- `LINE`. This is a default value.
+- `INSTRUCTION`.
+- `BRANCH`.
+
+For comparison with the specified boundaries, the number of covered (executed) or skipped (not executed) units should be aggregated into one number.
+`AggregationType` determines exactly how the current measurement value will be calculated:
+- `COVERED_COUNT` - the total number of units of code that were executed.
+- `MISSED_COUNT` - the total number of units of code that were not executed.
+- `COVERED_PERCENTAGE` - is the number of covered units divided by the number of all units and multiplied by 100. This is a default value.
+- `MISSED_PERCENTAGE` - is the number of uncovered units divided by the number of all units and multiplied by 100.
+
+To calculate the coverage value, units are grouped by various entities.
+By default, all application units of code are grouped by a single application entity, so one coverage value is calculated for the entire application using the aggregating function.
+
+But you can group code units by other named entities.
+The `GroupingEntityType` type is used for this:
+- `APPLICATION` - one current coverage value for the entire application will be calculated. This is a default value.
+- `CLASS` - the coverage value will be calculated individually for each class. So the bounds will be checked for each class.
+- `PACKAGE` - the coverage value will be calculated individually for all classes in each package. So the bounds will be checked for each package.
 
 ## Examples
 - Enable all Kover goals in Kotlin project: [directory](https://github.com/Kotlin/kotlinx-kover/tree/main/kover-maven-plugin/examples/all-goals)
