@@ -1,4 +1,4 @@
-# Kover migration guide from 0.7.x to 0.8.2
+# Kover migration guide from 0.7.x to 0.8.3
 
 - [Migration steps](#migration-steps)
 - [Conceptual changes](#conceptual-changes)
