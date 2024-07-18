@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.aggregation.settings
 
+import kotlinx.kover.gradle.aggregation.settings.dsl.VerificationRuleSettings
 import kotlinx.kover.gradle.aggregation.settings.dsl.intern.KoverSettingsExtensionImpl
 import org.gradle.api.provider.HasMultipleValues
 import org.gradle.api.provider.ProviderFactory
@@ -16,6 +17,33 @@ internal object KoverParametersProcessor {
             val disabled = koverProperty.get().equals("false", ignoreCase = true)
             settingsExtension.coverageIsEnabled.set(!disabled)
         }
+        val verifyWarn = providers.gradleProperty("kover.verify.warn")
+        if (verifyWarn.isPresent) {
+            verifyWarn.get().lowercase().toBooleanStrictOrNull()?.also { warn ->
+                settingsExtension.reports.verify.warningInsteadOfFailure.set(warn)
+            }
+        }
+        val ruleSettings: MutableList<VerificationRuleSettings.() -> Unit> = mutableListOf()
+        val minVerify = providers.gradleProperty("kover.verify.min")
+        if (minVerify.isPresent) {
+            minVerify.get().toIntOrNull()?.also { min ->
+                ruleSettings += { bound { minValue.set(min) } }
+            }
+        }
+        val maxVerify = providers.gradleProperty("kover.verify.max")
+        if (maxVerify.isPresent) {
+            maxVerify.get().toIntOrNull()?.also { max ->
+                ruleSettings += { bound { maxValue.set(max) } }
+            }
+        }
+        if (ruleSettings.isNotEmpty()) {
+            settingsExtension.reports.verify.rule("CLI parameters") {
+                ruleSettings.forEach { setting -> setting() }
+            }
+        }
+
+
+
 
         settingsExtension.reports.includedProjects.readAppendableArgument(providers, "kover.projects.includes")
         settingsExtension.reports.excludedProjects.readAppendableArgument(providers, "kover.projects.excludes")

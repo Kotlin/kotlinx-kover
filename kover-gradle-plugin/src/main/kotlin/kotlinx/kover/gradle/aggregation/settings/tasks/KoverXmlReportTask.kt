@@ -4,7 +4,6 @@
 
 package kotlinx.kover.gradle.aggregation.settings.tasks
 
-import kotlinx.kover.features.jvm.ClassFilters
 import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
@@ -14,7 +13,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 @CacheableTask
-internal abstract class KoverXmlReportTask : AbstractKoverTask() {
+internal abstract class KoverXmlReportTask : AbstractKoverReportTask() {
     @get:OutputFile
     internal abstract val reportFile: RegularFileProperty
 
@@ -32,7 +31,7 @@ internal abstract class KoverXmlReportTask : AbstractKoverTask() {
             outputs,
             sources,
             title.get(),
-            ClassFilters(includedClasses.get(), excludedClasses.get(), emptySet(), emptySet(), emptySet(), emptySet())
+            filters.get().toExternalFilters()
         )
     }
 
