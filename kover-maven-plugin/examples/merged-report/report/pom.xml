@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2017-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>report</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>merged-report</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>child1</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>child1-tests</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>child2</artifactId>
+            <version>(1.0-SNAPSHOT,)</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jetbrains.kotlinx</groupId>
+                <artifactId>kover-maven-plugin</artifactId>
+                <version>${kover.version}</version>
+                <executions>
+                    <execution>
+                        <id>kover-xml</id>
+                        <goals>
+                            <goal>report-xml</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>kover-log</id>
+                        <goals>
+                            <goal>log</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>print-artifact</id>
+                        <goals>
+                            <goal>print-artifact-info</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>kover-verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <aggregate>true</aggregate>
+
+                    <logGroupBy>CLASS</logGroupBy>
+
+                    <warningInsteadOfFailure>true</warningInsteadOfFailure>
+                    <rules>
+                        <rule>
+                            <groupBy>CLASS</groupBy>
+                            <bounds>
+                                <bound>
+                                    <aggregationForGroup>COVERED_COUNT</aggregationForGroup>
+                                    <minValue>100</minValue>
+                                </bound>
+                            </bounds>
+                        </rule>
+                    </rules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>

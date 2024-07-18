@@ -4,8 +4,8 @@
 
 package kotlinx.kover.gradle.plugin.tasks.reports
 
+import kotlinx.kover.features.jvm.KoverLegacyFeatures
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
-import kotlinx.kover.gradle.plugin.tools.generateErrorMessage
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.*
@@ -24,7 +24,7 @@ internal abstract class KoverDoVerifyTask @Inject constructor(@get:Internal over
         val enabledRules = rules.get().filter { it.isEnabled }
         val violations = tool.get().verify(enabledRules, context())
 
-        val errorMessage = generateErrorMessage(violations)
+        val errorMessage = KoverLegacyFeatures.violationMessage(violations)
         resultFile.get().asFile.writeText(errorMessage)
     }
 

@@ -22,11 +22,11 @@ plugins {
     id("kover-release-conventions")
 }
 
-extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
+koverPublication {
     description.set("Kover JVM instrumentation agent")
 }
 
-extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+koverDocs {
     docsDirectory.set("jvm-agent")
     description.set("Kover JVM instrumentation agent")
 }

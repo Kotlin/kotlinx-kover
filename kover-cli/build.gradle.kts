@@ -24,7 +24,7 @@ plugins {
     id("kover-release-conventions")
 }
 
-extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
+koverPublication {
     description.set("Command Line Interface for Kotlin Coverage Toolchain")
 }
 
@@ -65,7 +65,7 @@ repositories {
     mavenCentral()
 }
 
-extensions.configure<Kover_docs_conventions_gradle.KoverDocsExtension> {
+koverDocs {
     docsDirectory.set("cli")
     description.set("Kover Command Line Interface")
 }

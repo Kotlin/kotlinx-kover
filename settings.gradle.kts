@@ -17,5 +17,6 @@ rootProject.name = "kover"
 include(":kover-jvm-agent")
 include(":kover-features-jvm")
 include(":kover-gradle-plugin")
+include(":kover-maven-plugin")
 include(":kover-cli")
 include(":kover-offline-runtime")

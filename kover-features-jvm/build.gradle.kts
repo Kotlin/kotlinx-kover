@@ -25,7 +25,7 @@ plugins {
     id("kover-release-conventions")
 }
 
-extensions.configure<Kover_publishing_conventions_gradle.KoverPublicationExtension> {
+koverPublication {
     description.set("Implementation of calling the main features of Kover programmatically")
 }
 
