@@ -18,7 +18,7 @@ Maven plugin to measure test coverage and generate human-readable reports with c
 
 ## Current limitations
 - only instrumentation of tests in `test` goal is supported; `it-tests` tests are not supported yet
-- if several Kover JVM agents are specified when running the tests, then only the first one will work
+- if several Kover JVM agents are specified when running the tests, then only the first one will work. This situation may happen when the plugin is used during `site` lifecycle (see in examples below), so use such a setup with caution.
 - simultaneous use of several instrumentation agents can lead to unpredictable consequences and unstable operation
 
 ## Quickstart
