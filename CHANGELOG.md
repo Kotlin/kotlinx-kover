@@ -1,3 +1,11 @@
+0.8.3 / 2024-07-18
+===================
+## Kover Aggregation Plugin
+* Added support for Android projects in Kover Aggregation Plugin
+
+## Kover Maven Plugin
+* [`#51`](https://github.com/Kotlin/kotlinx-kover/issues/51) Implemented Kover Maven Plugin
+
 0.8.2 / 2024-06-27
 ===================
 ## Kover Aggregation Plugin

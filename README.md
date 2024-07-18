@@ -39,7 +39,7 @@ Add the following to your top-level build file:
 
 ```kotlin
 plugins {
-     id("org.jetbrains.kotlinx.kover") version "0.8.2"
+     id("org.jetbrains.kotlinx.kover") version "0.8.3"
 }
 ```
 </details>
@@ -49,7 +49,7 @@ plugins {
 
 ```groovy
 plugins {
-    id 'org.jetbrains.kotlinx.kover' version '0.8.2'
+    id 'org.jetbrains.kotlinx.kover' version '0.8.3'
 }
 ```
 </details>
@@ -74,7 +74,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.8.2")
+        classpath("org.jetbrains.kotlinx:kover-gradle-plugin:0.8.3")
     }
 }
 
@@ -93,7 +93,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.8.2'
+        classpath 'org.jetbrains.kotlinx:kover-gradle-plugin:0.8.3'
     }
 }
   
@@ -126,7 +126,7 @@ The Kover Maven Plugin can be applied by specifying build plugin
 <plugin>
     <groupId>org.jetbrains.kotlinx</groupId>
     <artifactId>kover-maven-plugin</artifactId>
-    <version>0.8.2</version>
+    <version>0.8.3</version>
 </plugin>
 ```
 
