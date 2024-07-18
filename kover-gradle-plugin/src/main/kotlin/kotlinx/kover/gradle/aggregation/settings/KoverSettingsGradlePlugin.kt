@@ -13,7 +13,9 @@ import kotlinx.kover.gradle.aggregation.settings.dsl.KoverNames
 import kotlinx.kover.gradle.aggregation.settings.dsl.intern.KoverSettingsExtensionImpl
 import kotlinx.kover.gradle.aggregation.commons.names.SettingsNames
 import kotlinx.kover.gradle.aggregation.project.KoverProjectGradlePlugin
+import kotlinx.kover.gradle.aggregation.settings.tasks.*
 import kotlinx.kover.gradle.aggregation.settings.tasks.KoverHtmlReportTask
+import kotlinx.kover.gradle.aggregation.settings.tasks.KoverVerifyTask
 import kotlinx.kover.gradle.aggregation.settings.tasks.KoverXmlReportTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,6 +28,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.serviceOf
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 public class KoverSettingsGradlePlugin: Plugin<Settings> {
 
@@ -87,12 +90,7 @@ public class KoverSettingsGradlePlugin: Plugin<Settings> {
             dependsOn(artifacts)
             this.artifacts.from(artifacts)
             group = "verification"
-            includedProjects.convention(settingsExtension.reports.includedProjects)
-            excludedProjects.convention(settingsExtension.reports.excludedProjects)
-            excludedClasses.convention(settingsExtension.reports.excludedClasses)
-            includedClasses.convention(settingsExtension.reports.includedClasses)
-            excludesAnnotatedBy.convention(settingsExtension.reports.excludesAnnotatedBy)
-            includesAnnotatedBy.convention(settingsExtension.reports.includesAnnotatedBy)
+            filters.convention(settingsExtension.reports.asInput())
             title.convention(projectPath)
 
             htmlDir.convention(layout.buildDirectory.dir(KoverPaths.htmlReportPath()))
@@ -109,15 +107,27 @@ public class KoverSettingsGradlePlugin: Plugin<Settings> {
             dependsOn(artifacts)
             this.artifacts.from(artifacts)
             group = "verification"
-            includedProjects.convention(settingsExtension.reports.includedProjects)
-            excludedProjects.convention(settingsExtension.reports.excludedProjects)
-            excludedClasses.convention(settingsExtension.reports.excludedClasses)
-            includedClasses.convention(settingsExtension.reports.includedClasses)
-            excludesAnnotatedBy.convention(settingsExtension.reports.excludesAnnotatedBy)
-            includesAnnotatedBy.convention(settingsExtension.reports.includesAnnotatedBy)
+            filters.convention(settingsExtension.reports.asInput())
             title.convention(projectPath)
 
             reportFile.convention(layout.buildDirectory.file(KoverPaths.xmlReportPath()))
+        }
+
+        val verifyTask = tasks.register<KoverVerifyTask>("koverVerify")
+        verifyTask.configure {
+            dependsOn(artifacts)
+            this.artifacts.from(artifacts)
+            group = "verification"
+            warningInsteadOfFailure.convention(settingsExtension.reports.verify.warningInsteadOfFailure)
+            rules.convention(
+                settingsExtension.reports.verify.rules.map { it.map { rule -> rule.asInput() } }
+            )
+        }
+        // dependency on check
+        tasks.configureEach {
+            if (name == LifecycleBasePlugin.CHECK_TASK_NAME) {
+                dependsOn(verifyTask)
+            }
         }
     }
 
