@@ -170,9 +170,6 @@ fun MavenPublication.addMetadata() {
         if (!name.isPresent) {
             name.set(artifactId)
         }
-        if (hasProperty("releaseVersion")) {
-            version = property("releaseVersion") as String
-        }
         groupId = "org.jetbrains.kotlinx"
         description.set(extension.description)
 

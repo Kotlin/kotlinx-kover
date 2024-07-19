@@ -45,12 +45,6 @@ dependencies {
     fatJar(libs.intellij.agent)
 }
 
-val targetVersion = if (project.hasProperty("releaseVersion")) {
-    project.property("releaseVersion").toString()
-} else {
-    project.version.toString()
-}
-
 tasks.jar {
     manifest {
         attributes(
@@ -58,7 +52,7 @@ tasks.jar {
             "Can-Retransform-Classes" to "true",
             // We need to pass this parameter, because IntelliJ agent collects data in the bootstrap class loader
             // it is not possible to use other loaders because some of them (for example, FilteredClassLoader) restrict access to agent classes
-            "Boot-Class-Path" to "${project.name}-$targetVersion.jar"
+            "Boot-Class-Path" to "${project.name}-${project.version}.jar"
         )
     }
 }

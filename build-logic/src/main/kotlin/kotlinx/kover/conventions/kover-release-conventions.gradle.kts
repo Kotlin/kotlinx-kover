@@ -10,10 +10,10 @@ import java.time.format.DateTimeFormatter
 // ====================
 tasks.register("prepareRelease") {
     doLast {
-        if (!project.hasProperty("releaseVersion")) {
-            throw GradleException("Property 'releaseVersion' is required to run this task")
+        if (project.version.toString().endsWith("-SNAPSHOT")) {
+            throw GradleException("Version shouldn't be snapshot")
         }
-        val releaseVersion = project.property("releaseVersion") as String
+        val releaseVersion = project.version.toString()
         val prevReleaseVersion = project.property("kover.release.version") as String
 
         val projectDir = layout.projectDirectory
@@ -30,8 +30,6 @@ tasks.register("prepareRelease") {
             // replace versions in docs
             projectDir.dir("docs").patchDocs(releaseVersion, prevReleaseVersion)
         }
-
-
     }
 }
 

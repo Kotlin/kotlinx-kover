@@ -56,16 +56,10 @@ repositories {
 }
 
 tasks.processResources {
-    val version = if (project.hasProperty("releaseVersion")) {
-        project.property("releaseVersion").toString()
-    } else {
-        project.version.toString()
-    }
-
     val file = destinationDir.resolve("kover.version")
 
     doLast {
-        file.writeText(version)
+        file.writeText(project.version.toString())
     }
 }
 
