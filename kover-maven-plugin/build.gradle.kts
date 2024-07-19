@@ -25,6 +25,9 @@ sourceSets {
 // name of configuration for functionalTest source set with implementation dependencies
 val functionalTestImplementation = "functionalTestImplementation"
 
+koverPublication {
+    description.set("Kover Maven Plugin - Kotlin code coverage tool")
+}
 
 dependencies {
     implementation(project(":kover-features-jvm"))
