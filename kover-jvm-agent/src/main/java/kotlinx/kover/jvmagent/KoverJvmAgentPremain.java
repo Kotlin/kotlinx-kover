@@ -70,18 +70,17 @@ public class KoverJvmAgentPremain {
                     settings.exclusions.add(line.substring(EXCLUDE_WITH_REGEX_ARGUMENT.length()));
                 } else if (line.startsWith(INCLUDE_WITH_WILDCARDS_ARGUMENT)) {
                     String wildcards = line.substring(INCLUDE_WITH_WILDCARDS_ARGUMENT.length());
-                    settings.exclusions.add(wildcardsToRegex(wildcards));
+                    settings.inclusions.add(wildcardsToRegex(wildcards));
                 } else if (line.startsWith(INCLUDE_WITH_REGEX_ARGUMENT)) {
-                    settings.exclusions.add(line.substring(INCLUDE_WITH_REGEX_ARGUMENT.length()));
+                    settings.inclusions.add(line.substring(INCLUDE_WITH_REGEX_ARGUMENT.length()));
                 } else if (line.startsWith(APPEND_ARGUMENT)) {
                     String value = line.substring(APPEND_ARGUMENT.length());
                     if (!isBoolean(value)) {
                         throw new IllegalArgumentException("Incorrect value for argument " + APPEND_ARGUMENT + " in Kover JVM agent arguments file, expected true or false");
                     }
                     settings.appendToReportFile = Boolean.parseBoolean(value);
-                } else if (line.length() == 0) {
+                } else if (!line.isEmpty()) {
                     // skip empty line
-                } else {
                     throw new IllegalArgumentException("Unrecognized line in Kover arguments file: " + line
                             + ". Line must start with one of prefixes: " + arguments);
                 }
