@@ -29,6 +29,10 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val reportClasspath: ConfigurableFileCollection
 
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val additionalBinaryReports: SetProperty<File>
+
     /**
      * This will cause the task to be considered out-of-date when source files of dependencies have changed.
      */
@@ -73,7 +77,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     }
 
     private fun collectAllFiles(): ArtifactContent {
-        val local = ArtifactContent(projectPath, emptySet(), emptySet(), emptySet())
+        val local = ArtifactContent(projectPath, emptySet(), emptySet(), additionalBinaryReports.get())
         return local.joinWith(artifacts.files.map { it.parseArtifactFile(rootDir).filterProjectSources() }).existing()
     }
 

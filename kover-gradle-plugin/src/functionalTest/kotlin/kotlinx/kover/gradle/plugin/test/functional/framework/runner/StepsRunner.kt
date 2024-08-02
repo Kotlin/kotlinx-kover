@@ -46,6 +46,11 @@ ${this.targetDir.buildScript()}
                 file.writeText(step.editor())
             }
 
+            is TestFileCopyStep -> {
+                val file = projectFile(step.filePath, description)
+                step.origin.copyTo(file, overwrite = true)
+            }
+
             is TestFileDeleteStep -> {
                 val file = projectFile(step.filePath, description)
                 file.delete()

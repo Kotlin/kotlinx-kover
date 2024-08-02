@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.test.functional.framework.mirroring
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.ScriptLanguage
 import kotlinx.kover.gradle.plugin.util.SemVer
+import java.io.File
 
 
 internal fun printCode(name: String?, language: ScriptLanguage, gradleVersion: String, block: CodeBlock): String {
@@ -132,6 +133,7 @@ private fun handleValueLiteral(context: PrintingContext, expression: ValueLitera
         is String -> context.print("\"${expression.value}\"")
         is Int -> context.print(expression.value.toString())
         is Boolean -> context.print(expression.value.toString())
+        is File -> context.print("file(\"${expression.value}\")")
         else -> throw IllegalStateException("Value '${expression.value}' with type ${expression.value.javaClass} unsupported as argument")
     }
 }

@@ -14,6 +14,7 @@ import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
+import java.io.File
 
 /**
  * Configuration of Kover reports.
@@ -427,6 +428,9 @@ public interface KoverReportSetConfig {
      * See details in [log].
      */
     public val log: KoverLogTaskConfig
+
+
+    public val additionalBinaryReports: SetProperty<File>
 
     @Deprecated(
         message = "Block mergeWith was removed, create custom reports variant and merge with specified variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",

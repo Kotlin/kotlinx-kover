@@ -69,6 +69,7 @@ internal class VariantReportsSet(
         htmlTask.configure {
             onlyIf { printPath(); true }
 
+            additionalBinaryReports.convention(config.additionalBinaryReports)
             reportDir.convention(config.html.htmlDir)
             title.convention(config.html.title.orElse(project.name))
             charset.convention(config.html.charset)
@@ -79,6 +80,8 @@ internal class VariantReportsSet(
         }
 
         xmlTask.configure {
+            additionalBinaryReports.convention(config.additionalBinaryReports)
+
             reportFile.convention(config.xml.xmlFile)
             title.convention(config.xml.title)
             filters.set((config.filters).convert())
@@ -88,6 +91,8 @@ internal class VariantReportsSet(
         }
 
         binTask.configure {
+            additionalBinaryReports.convention(config.additionalBinaryReports)
+
             file.convention(config.binary.file)
             filters.set((config.filters).convert())
         }
@@ -97,6 +102,8 @@ internal class VariantReportsSet(
 
 
         doVerifyTask.configure {
+            additionalBinaryReports.convention(config.additionalBinaryReports)
+
             val resultRules = config.verify.rules
             val converted = resultRules.map { rules -> rules.map { it.convert() } }
 
@@ -142,6 +149,8 @@ internal class VariantReportsSet(
         }
 
         logTask.configure {
+            additionalBinaryReports.convention(config.additionalBinaryReports)
+
             header.convention(config.log.header)
             lineFormat.convention(config.log.format)
             groupBy.convention(config.log.groupBy)

@@ -29,6 +29,8 @@ internal interface BuildConfigurator {
 
     fun add(filePath: String, editor: () -> String)
 
+    fun copy(from: File, filePath: String)
+
     fun delete(filePath: String)
 
     fun useLocalCache(use: Boolean = true)
@@ -83,6 +85,10 @@ internal abstract class BuilderConfiguratorWrapper(private val origin: BuildConf
 
     override fun add(filePath: String, editor: () -> String) {
         origin.add(filePath, editor)
+    }
+
+    override fun copy(from: File, filePath: String) {
+        origin.copy(from, filePath)
     }
 
     override fun delete(filePath: String) {
