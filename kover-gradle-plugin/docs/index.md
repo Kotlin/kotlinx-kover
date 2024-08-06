@@ -856,6 +856,9 @@ verify {
 verifyAppend {
     // add verification rules
 }
+
+// use coverage from external binary reports in IC format
+additionalBinaryReports.add(file("path/to/the/file.ic"))
 ```
 
 This is available both from the total report settings

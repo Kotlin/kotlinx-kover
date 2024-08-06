@@ -163,6 +163,8 @@ public interface KoverReportsConfig {
      *              verify {
      *                  // configure coverage verification all code of current project and `kover` dependencies.
      *              }
+     *
+     *              additionalBinaryReports.add(file("path/to/the/file.ic"))
      *          }
      *      }
      * }
@@ -200,6 +202,8 @@ public interface KoverReportsConfig {
      *              verify {
      *                  // configure coverage verification for 'debug' variant
      *              }
+     *
+     *              additionalBinaryReports.add(file("path/to/the/file.ic"))
      *          }
      *      }
      * }
@@ -226,6 +230,8 @@ public interface KoverReportsConfig {
  *  verify {
  *      // configure coverage verification
  *  }
+ *
+ *  additionalBinaryReports.add(file("path/to/the/file.ic"))
  * ```
  */
 @KoverGradlePluginDsl
@@ -429,7 +435,11 @@ public interface KoverReportSetConfig {
      */
     public val log: KoverLogTaskConfig
 
-
+    /**
+     * Use coverage from external files in binary IC format.
+     *
+     * Coverage from specified classes will be use in corresponding Kover reports.
+     */
     public val additionalBinaryReports: SetProperty<File>
 
     @Deprecated(
