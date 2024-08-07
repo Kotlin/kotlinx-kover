@@ -4,121 +4,180 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
-import groovy.lang.GroovyObject
-import kotlinx.kover.features.jvm.Bound
-import kotlinx.kover.features.jvm.BoundViolation
-import kotlinx.kover.features.jvm.Rule
-import kotlinx.kover.features.jvm.RuleViolations
+import kotlinx.kover.features.jvm.*
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import kotlinx.kover.gradle.plugin.tools.kover.convert
 import kotlinx.kover.gradle.plugin.util.ONE_HUNDRED
-import org.gradle.internal.reflect.JavaMethod
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
+import org.gradle.workers.WorkAction
+import org.gradle.workers.WorkQueue
+import org.jacoco.core.analysis.ICounter.CounterValue
+import org.jacoco.core.analysis.ICoverageNode
+import org.jacoco.core.analysis.ICoverageNode.CounterEntity
+import org.jacoco.report.check.IViolationsOutput
+import org.jacoco.report.check.Limit
+import org.jacoco.report.check.RulesChecker
+import java.io.File
 import java.math.BigDecimal
-import java.util.*
+
+typealias JacocoRule = org.jacoco.report.check.Rule
+
+internal fun ReportContext.doJacocoVerify(rules: List<VerificationRule>, output: File) {
+    val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
+        classpath.from(this@doJacocoVerify.classpath)
+    }
+
+    workQueue.submit(JacocoVerifyAction::class.java) {
+        outputFile.set(output)
+        rulesProperty.convention(rules)
+
+        fillCommonParameters(this@doJacocoVerify)
+    }
+
+}
+
+internal interface VerifyParameters: AbstractVerifyParameters {
+    val outputFile: RegularFileProperty
+}
+
+internal abstract class JacocoVerifyAction : AbstractJacocoVerifyAction<VerifyParameters>() {
+    override fun processResult(violations: List<RuleViolations>) {
+        val errorMessage = KoverLegacyFeatures.violationMessage(violations)
+        val outputFile = parameters.outputFile.get().asFile
+        outputFile.writeText(errorMessage)
+    }
+}
 
 
-internal fun ReportContext.doJacocoVerify(rules: List<VerificationRule>): List<RuleViolations> {
 
-    callAntReport(projectPath) {
-        invokeWithBody("check", mapOf("failonviolation" to "false", "violationsproperty" to "jacocoErrors")) {
-            rules.forEach {
-                val entityType = when (it.entityType) {
-                    GroupingEntityType.APPLICATION -> "BUNDLE"
-                    GroupingEntityType.CLASS -> "CLASS"
-                    GroupingEntityType.PACKAGE -> "PACKAGE"
-                }
-                invokeWithBody("rule", mapOf("element" to entityType)) {
-                    it.bounds.forEach { b ->
-                        val limitArgs = mutableMapOf<String, String>()
-                        limitArgs["counter"] = when (b.metric) {
-                            CoverageUnit.LINE -> "LINE"
-                            CoverageUnit.INSTRUCTION -> "INSTRUCTION"
-                            CoverageUnit.BRANCH -> "BRANCH"
-                        }
 
-                        var min: BigDecimal? = b.minValue
-                        var max: BigDecimal? = b.maxValue
-                        when (b.aggregation) {
-                            AggregationType.COVERED_COUNT -> {
-                                limitArgs["value"] = "COVEREDCOUNT"
-                            }
+internal abstract class AbstractJacocoVerifyAction<T: AbstractVerifyParameters>: WorkAction<T> {
 
-                            AggregationType.MISSED_COUNT -> {
-                                limitArgs["value"] = "MISSEDCOUNT"
-                            }
+    override fun execute() {
+        val rulesPairs = parameters.rulesProperty.get().toJacoco()
 
-                            AggregationType.COVERED_PERCENTAGE -> {
-                                limitArgs["value"] = "COVEREDRATIO"
-                                min = min?.divide(ONE_HUNDRED)?.setScale(4)
-                                max = max?.divide(ONE_HUNDRED)?.setScale(4)
-                            }
+        val violationListener = ViolationListener(rulesPairs)
 
-                            AggregationType.MISSED_PERCENTAGE -> {
-                                limitArgs["value"] = "MISSEDRATIO"
-                                min = min?.divide(ONE_HUNDRED)?.setScale(4)
-                                max = max?.divide(ONE_HUNDRED)?.setScale(4)
-                            }
-                        }
+        val formatter = RulesChecker()
+        formatter.setRules(rulesPairs.map { it.origin })
+        val visitor = formatter.createVisitor(violationListener)
+        visitor.loadContent("application", parameters.files.get(), parameters.filters.get())
+        visitor.visitEnd()
 
-                        if (min != null) {
-                            limitArgs["minimum"] = min.toPlainString()
-                        }
+        processResult(violationListener.violations())
+    }
 
-                        if (max != null) {
-                            limitArgs["maximum"] = max.toPlainString()
-                        }
-                        invokeMethod("limit", limitArgs)
-                    }
-                }
-            }
+    abstract fun processResult(violations: List<RuleViolations>)
+}
+
+internal interface AbstractVerifyParameters : CommonJacocoParameters {
+    val rulesProperty: ListProperty<VerificationRule>
+}
+
+private class ViolationListener(rulesPairs: List<JacocoRuleWrapper>): IViolationsOutput {
+    private val violations: Map<JacocoRuleWrapper, MutableList<BoundViolation>> =
+        rulesPairs.associateWith { mutableListOf() }
+
+    override fun onViolation(node: ICoverageNode, rule: JacocoRule, limit: Limit, message: String) {
+        val bounds = violations.filterKeys { key -> key.isRule(rule) }.values.singleOrNull()
+            ?: throw KoverCriticalException("Rules not mapped for JaCoCo")
+
+        val match = errorMessageRegex.find(message)
+            ?: throw KoverCriticalException("Can't parse JaCoCo verification error string:\n$message")
+
+        val entityName = match.groupValues[2].run { if (this == ":") null else this }
+        val coverageUnits = match.groupValues[3].asCoverageUnit(message)
+        val agg = match.groupValues[4].asAggType(message)
+        val value = match.groupValues[5].asValue(message, agg)
+        val isMax = match.groupValues[6].asIsMax(message)
+        val expected = match.groupValues[7].asValue(message, agg)
+
+        val bound = Bound(if (!isMax) expected else null, if (isMax) expected else null, coverageUnits.convert(), agg.convert())
+        bounds += BoundViolation(bound, isMax, value, entityName)
+    }
+
+    fun violations() : List<RuleViolations> {
+        return violations.mapNotNull { v ->
+            if (v.value.isEmpty()) return@mapNotNull null
+            RuleViolations(v.key.koverRule, v.value)
         }
     }
 
-    return services.antBuilder.violations()
+}
+
+private class JacocoRuleWrapper(val origin: JacocoRule, val koverRule: Rule) {
+    fun isRule(rule: JacocoRule): Boolean = origin === rule
+}
+
+private fun List<VerificationRule>.toJacoco(): List<JacocoRuleWrapper> {
+    return map { rule -> JacocoRuleWrapper(rule.toJacoco(), rule.convert()) }
+}
+
+private fun VerificationRule.toJacoco(): JacocoRule {
+    val rule = JacocoRule()
+
+    rule.element = when(this.entityType) {
+        GroupingEntityType.APPLICATION -> ICoverageNode.ElementType.BUNDLE
+        GroupingEntityType.CLASS -> ICoverageNode.ElementType.CLASS
+        GroupingEntityType.PACKAGE -> ICoverageNode.ElementType.PACKAGE
+    }
+
+    rule.limits = bounds.map { bound -> bound.toJacoco() }
+
+    return rule
+}
+
+private fun VerificationBound.toJacoco(): Limit {
+    val limit = Limit()
+
+    val entity = when (metric) {
+        CoverageUnit.LINE -> CounterEntity.LINE
+        CoverageUnit.INSTRUCTION -> CounterEntity.INSTRUCTION
+        CoverageUnit.BRANCH -> CounterEntity.BRANCH
+    }
+    limit.setCounter(entity.name)
+    var min: BigDecimal? = minValue
+    var max: BigDecimal? = maxValue
+    val value: CounterValue
+    when (aggregation) {
+        AggregationType.COVERED_COUNT -> {
+            value = CounterValue.COVEREDCOUNT
+        }
+
+        AggregationType.MISSED_COUNT -> {
+            value = CounterValue.MISSEDCOUNT
+        }
+
+        AggregationType.COVERED_PERCENTAGE -> {
+            value = CounterValue.COVEREDRATIO
+            min = min?.divide(ONE_HUNDRED)?.setScale(4)
+            max = max?.divide(ONE_HUNDRED)?.setScale(4)
+        }
+
+        AggregationType.MISSED_PERCENTAGE -> {
+            value = CounterValue.MISSEDRATIO
+            min = min?.divide(ONE_HUNDRED)?.setScale(4)
+            max = max?.divide(ONE_HUNDRED)?.setScale(4)
+        }
+    }
+    limit.setValue(value.name)
+    if (min != null) {
+        limit.minimum = min.toPlainString()
+    }
+    if (max != null) {
+        limit.maximum = max.toPlainString()
+    }
+    return limit
 }
 
 
 private val errorMessageRegex =
     "Rule violated for (\\w+) (.+): (\\w+) (.+) is ([\\d\\.]+), but expected (\\w+) is ([\\d\\.]+)".toRegex()
 
-private fun GroovyObject.violations(): List<RuleViolations> {
-    val project = getProperty("project")
-    val properties = JavaMethod.of(
-        project,
-        Hashtable::class.java, "getProperties"
-    ).invoke(project, *arrayOfNulls(0))
-    val allErrorsString = properties["jacocoErrors"] as String? ?: return emptyList()
-
-    // sorting lines to get a stable order of errors
-    return allErrorsString.lines().sorted().map {
-        val match = errorMessageRegex.find(it)
-            ?: throw KoverCriticalException("Can't parse JaCoCo verification error string:\n$it")
-
-        val entityType = match.groupValues[1].asEntityType(it)
-        val entityName = match.groupValues[2].run { if (this == ":") null else this }
-        val coverageUnits = match.groupValues[3].asCoverageUnit(it)
-        val agg = match.groupValues[4].asAggType(it)
-        val value = match.groupValues[5].asValue(it, agg)
-        val isMax = match.groupValues[6].asIsMax(it)
-        val expected = match.groupValues[7].asValue(it, agg)
-
-        val bound =
-            Bound(if (!isMax) expected else null, if (isMax) expected else null, coverageUnits.convert(), agg.convert())
-        val rule = Rule("", entityType.convert(), listOf(bound))
-
-        RuleViolations(rule, listOf(BoundViolation(bound, isMax, value, entityName)))
-    }.toList()
-}
-
-private fun String.asEntityType(line: String): GroupingEntityType = when (this) {
-    "bundle" -> GroupingEntityType.APPLICATION
-    "class" -> GroupingEntityType.CLASS
-    "package" -> GroupingEntityType.PACKAGE
-    else -> throw KoverCriticalException("Unknown JaCoCo entity type '$this' in verification error:\n$line")
-}
 
 private fun String.asCoverageUnit(line: String): CoverageUnit = when (this) {
     "lines" -> CoverageUnit.LINE
@@ -146,11 +205,8 @@ private fun String.asValue(line: String, aggregationType: AggregationType): BigD
         ?: throw KoverCriticalException("Illegal JaCoCo metric value '$this' in verification error:\n$line")
 
     return if (aggregationType.isPercentage) {
-        value * ONE_HUNDRED
+        (value * ONE_HUNDRED).stripTrailingZeros()
     } else {
         value
     }
 }
-
-
-
