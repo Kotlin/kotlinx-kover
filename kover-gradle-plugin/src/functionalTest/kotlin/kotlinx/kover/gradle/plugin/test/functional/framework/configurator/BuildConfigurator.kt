@@ -10,6 +10,7 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.kotlinVersionCurrent
 import kotlinx.kover.gradle.plugin.test.functional.framework.mirroring.printGradleDsl
+import java.io.File
 
 internal fun createConfigurator(): BuildConfigurator {
     return TestBuildConfigurator()
@@ -48,6 +49,13 @@ internal data class TestFileAddStep(
     val editor: () -> String
 ): TestExecutionStep() {
     override val name: String = "Add file: $filePath"
+}
+
+internal data class TestFileCopyStep(
+    val origin: File,
+    val filePath: String,
+): TestExecutionStep() {
+    override val name: String = "Copy file $origin to $filePath"
 }
 
 internal data class TestFileDeleteStep(val filePath: String): TestExecutionStep() {
@@ -90,6 +98,10 @@ private open class TestBuildConfigurator : BuildConfigurator {
 
     override fun add(filePath: String, editor: () -> String) {
         steps += TestFileAddStep(filePath, editor)
+    }
+
+    override fun copy(from: File, filePath: String) {
+        steps += TestFileCopyStep(from, filePath)
     }
 
     override fun delete(filePath: String) {

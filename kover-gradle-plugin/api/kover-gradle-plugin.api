@@ -215,6 +215,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverReportSetCo
 	public abstract fun binary (Lorg/gradle/api/Action;)V
 	public abstract fun filters (Lorg/gradle/api/Action;)V
 	public abstract fun filtersAppend (Lorg/gradle/api/Action;)V
+	public abstract fun getAdditionalBinaryReports ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getBinary ()Lkotlinx/kover/gradle/plugin/dsl/KoverBinaryTaskConfig;
 	public abstract fun getFilters ()Lkotlinx/kover/gradle/plugin/dsl/KoverReportFiltersConfig;
 	public abstract fun getHtml ()Lkotlinx/kover/gradle/plugin/dsl/KoverHtmlTaskConfig;
