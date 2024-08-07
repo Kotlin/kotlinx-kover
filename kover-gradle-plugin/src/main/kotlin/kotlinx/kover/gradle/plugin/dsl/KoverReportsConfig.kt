@@ -438,7 +438,7 @@ public interface KoverReportSetConfig {
     /**
      * Use coverage from external files in binary IC format.
      *
-     * Coverage from specified classes will be use in corresponding Kover reports.
+     * Coverage results from specified binary reports will be included in produced Kover reports.
      */
     public val additionalBinaryReports: SetProperty<File>
 
