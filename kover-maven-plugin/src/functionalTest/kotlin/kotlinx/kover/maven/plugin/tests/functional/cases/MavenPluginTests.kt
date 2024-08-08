@@ -13,6 +13,7 @@ import kotlinx.kover.maven.plugin.tests.functional.framework.BuildConstants.VERI
 import kotlinx.kover.maven.plugin.tests.functional.framework.CounterAssert.*
 import kotlinx.kover.maven.plugin.tests.functional.framework.CounterType.LINE
 import org.junit.jupiter.api.Test
+import java.io.File
 import kotlin.test.assertTrue
 
 class MavenPluginTests {
@@ -123,6 +124,7 @@ Rule 'package covered lines' violated: lines missed count for package 'kotlinx.k
 
     @Test
     fun testMultiDirectory() {
+        val s = File.separator
         runAndCheckExample("multidir", "verify") {
             assertBuildIsSuccessful()
             assertBinaryReportExists()
@@ -130,15 +132,15 @@ Rule 'package covered lines' violated: lines missed count for package 'kotlinx.k
                 ARTIFACT_TASK_NAME, """Kover artifact
 
 Binary reports
-target/kover/test.ic
+target${s}kover${s}test.ic
 
 Source root directories
-src/main/kotlin
-target/generated-sources/annotations
-src/extra
+src${s}main${s}kotlin
+target${s}generated-sources${s}annotations
+src${s}extra
 
 Target root directories
-target/classes
+target${s}classes
 """
             )
         }
