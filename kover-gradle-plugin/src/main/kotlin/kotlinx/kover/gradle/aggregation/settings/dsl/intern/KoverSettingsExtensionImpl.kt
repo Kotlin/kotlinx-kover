@@ -18,7 +18,7 @@ internal abstract class KoverSettingsExtensionImpl @Inject constructor(
 ) : KoverSettingsExtension {
     abstract val coverageIsEnabled: Property<Boolean>
 
-    override val reports: ReportsSettings = objects.newInstance<ReportsSettings>()
+    override val reports: ReportsSettings = objects.newInstance<ReportsSettingsImpl>()
 
     init {
         coverageIsEnabled.convention(false)

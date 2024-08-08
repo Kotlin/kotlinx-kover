@@ -13,7 +13,7 @@ import java.io.File
 import java.net.URI
 
 @CacheableTask
-internal abstract class KoverHtmlReportTask : AbstractKoverTask() {
+internal abstract class KoverHtmlReportTask : AbstractKoverReportTask() {
     @get:OutputDirectory
     abstract val htmlDir: DirectoryProperty
 
@@ -24,8 +24,6 @@ internal abstract class KoverHtmlReportTask : AbstractKoverTask() {
     @get:Optional
     abstract val charset: Property<String>
 
-    private val projectPath = project.path
-
     @TaskAction
     fun generate() {
         KoverLegacyFeatures.generateHtmlReport(
@@ -35,7 +33,7 @@ internal abstract class KoverHtmlReportTask : AbstractKoverTask() {
             outputs,
             sources,
             title.get(),
-            ClassFilters(includedClasses.get(), excludedClasses.get(), emptySet(), emptySet(), emptySet(), emptySet())
+            filters.get().toExternalFilters()
         )
     }
 
