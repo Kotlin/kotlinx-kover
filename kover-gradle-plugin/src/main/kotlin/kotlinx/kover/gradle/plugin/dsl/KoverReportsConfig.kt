@@ -126,22 +126,6 @@ public interface KoverReportsConfig {
      */
     public val verify: KoverVerificationRulesConfig
 
-    @Deprecated(
-        message = "Default reports was removed, the concepts of total and custom reports are now used. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public fun defaults(config: Action<*>) {
-        throw KoverDeprecationException("Default reports was removed, the concepts of total and custom reports are now used. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
-
-    @Deprecated(
-        message = "Kover renaming: Symbol androidReports was removed, use variant instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("variant"),
-        level = DeprecationLevel.ERROR
-    )
-    public fun androidReports(variant: String, config: Action<KoverReportSetConfig>) {
-        throw KoverDeprecationException("Kover renaming: Symbol androidReports was removed, use variant instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
 
     /**
      * Configure reports for all code of current project and `kover` dependencies.
@@ -441,14 +425,6 @@ public interface KoverReportSetConfig {
      * Coverage results from specified binary reports will be included in produced Kover reports.
      */
     public val additionalBinaryReports: SetProperty<File>
-
-    @Deprecated(
-        message = "Block mergeWith was removed, create custom reports variant and merge with specified variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public fun mergeWith(otherVariant: String) {
-        throw throw KoverDeprecationException("Block mergeWith was removed, create custom reports variant and merge with specified variant. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
 }
 
 /**
@@ -470,14 +446,6 @@ public interface KoverReportSetConfig {
  */
 @KoverGradlePluginDsl
 public interface KoverLogTaskConfig {
-    @Deprecated(
-        message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public fun filters(config: Action<KoverReportFiltersConfig>) {
-        throw KoverDeprecationException("It is forbidden to override filters for the log report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
-
     /**
      * Print coverage when running the `check` task.
      *
@@ -951,14 +919,6 @@ public interface KoverReportFilter {
  */
 @KoverGradlePluginDsl
 public interface KoverHtmlTaskConfig {
-    @Deprecated(
-        message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public fun filters(config: Action<KoverReportFiltersConfig>) {
-        throw KoverDeprecationException("It is forbidden to override filters for the HTML report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
-
     /**
      * Specify header in HTML reports.
      *
@@ -979,15 +939,6 @@ public interface KoverHtmlTaskConfig {
      * `false` by default.
      */
     public val onCheck: Property<Boolean>
-
-    @Deprecated(
-        message = "Kover renaming: Symbol setReportDir was removed, use htmlDir instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("htmlDir"),
-        level = DeprecationLevel.ERROR
-    )
-    public fun setReportDir(dir: Any) {
-        throw KoverDeprecationException("Kover renaming: Symbol setReportDir was removed, use htmlDir instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
 
     /**
      * HTML report directory.
@@ -1020,32 +971,12 @@ public interface KoverHtmlTaskConfig {
  */
 @KoverGradlePluginDsl
 public interface KoverXmlTaskConfig {
-    @Deprecated(
-        message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public fun filters(config: Action<KoverReportFiltersConfig>) {
-        throw KoverDeprecationException("It is forbidden to override filters for the XML report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
-
     /**
      * Generate an XML report when running the `check` task.
      *
      * `false` by default.
      */
     public val onCheck: Property<Boolean>
-
-    /**
-     * Specify file to generate XML report.
-     */
-    @Deprecated(
-        message = "Kover renaming: Symbol setReportFile was removed, use xmlFile instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("xmlFile"),
-        level = DeprecationLevel.ERROR
-    )
-    public fun setReportFile(xmlFile: Any) {
-        throw KoverDeprecationException("Kover renaming: Symbol setReportFile was removed, use xmlFile instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
 
     /**
      * File for saving generated XML report.
@@ -1082,14 +1013,6 @@ public interface KoverXmlTaskConfig {
  */
 @KoverGradlePluginDsl
 public interface KoverBinaryTaskConfig {
-    @Deprecated(
-        message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public fun filters(config: Action<KoverReportFiltersConfig>) {
-        throw KoverDeprecationException("It is forbidden to override filters for the binary report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
-
     /**
      * Generate binary report when running the `check` task.
      *
@@ -1203,42 +1126,6 @@ public interface KoverVerifyRule {
      * `false` by default.
      */
     public val disabled: Property<Boolean>
-
-    /**
-     * Specifies that the rule is checked during verification.
-     */
-    @Deprecated(
-        message = "Property isEnabled was renamed to disabled and inverted. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public var isEnabled: Boolean
-        get() {
-            throw KoverDeprecationException("Property isEnabled was renamed to disabled and inverted. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-        set(value) {
-            throw KoverDeprecationException("Property isEnabled was renamed to disabled and inverted. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-
-    @Deprecated(
-        message = "Kover renaming: Symbol entity was removed, use groupBy instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("groupBy"),
-        level = DeprecationLevel.ERROR
-    )
-    public var entity: GroupingEntityType
-        get() {
-            throw KoverDeprecationException("Property entity was renamed to groupBy. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-        set(value) {
-            throw KoverDeprecationException("Property entity was renamed to groupBy. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-
-    @Deprecated(
-        message = "It is forbidden to override filters for a specific report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        level = DeprecationLevel.ERROR
-    )
-    public fun filters(config: Action<KoverReportFiltersConfig>) {
-        throw KoverDeprecationException("It is forbidden to override filters for the verification report, use custom report variants to create reports with a different set of filters. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-    }
 
     /**
      * Specifies the set of verification rules that control the
@@ -1408,32 +1295,6 @@ public interface KoverVerifyBound {
      * [AggregationType.COVERED_PERCENTAGE] by default.
      */
     public val aggregationForGroup: Property<AggregationType>
-
-    @Deprecated(
-        message = "Kover renaming: Symbol metric was removed, use coverageUnits instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("coverageUnits"),
-        level = DeprecationLevel.ERROR
-    )
-    public var metric: CoverageUnit
-        get() {
-            throw KoverDeprecationException("Kover renaming: Symbol metric was removed, use coverageUnits instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-        set(value) {
-            throw KoverDeprecationException("Kover renaming: Symbol metric was removed, use coverageUnits instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-
-    @Deprecated(
-        message = "Kover renaming: Symbol aggregation was removed, use aggregationForGroup instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-        replaceWith = ReplaceWith("aggregationForGroup"),
-        level = DeprecationLevel.ERROR
-    )
-    public var aggregation: AggregationType
-        get() {
-            throw KoverDeprecationException("Property aggregation was renamed to aggregationForGroup. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
-        set(value) {
-            throw KoverDeprecationException("Property aggregation was renamed to aggregationForGroup. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}")
-        }
 }
 
 /**
@@ -1454,17 +1315,6 @@ public enum class CoverageUnit {
     /**
      * Number of branches covered.
      */
-    BRANCH
-}
-
-@Deprecated(
-    message = "Kover renaming: Symbol MetricType was removed, use CoverageUnit instead. Please refer to migration guide in order to migrate: ${KoverMigrations.MIGRATION_0_7_TO_0_8}",
-    replaceWith = ReplaceWith("pluginId"),
-    level = DeprecationLevel.ERROR
-)
-public enum class MetricType {
-    LINE,
-    INSTRUCTION,
     BRANCH
 }
 
