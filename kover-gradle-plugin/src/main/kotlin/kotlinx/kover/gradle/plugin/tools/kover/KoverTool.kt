@@ -53,17 +53,17 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
         context.koverBinaryReport(binary)
     }
 
-    override fun verify(
-        rules: List<VerificationRule>,
-        context: ReportContext
-    ): List<RuleViolations>{
-        return KoverLegacyFeatures.verify(
+    override fun verify(rules: List<VerificationRule>, output: File, context: ReportContext) {
+        val violations = KoverLegacyFeatures.verify(
             rules.map { it.convert() },
             context.tempDir,
             context.filters.toKoverFeatures(),
             context.files.reports.toList(),
             context.files.outputs.toList()
         )
+
+        val errorMessage = KoverLegacyFeatures.violationMessage(violations)
+        output.writeText(errorMessage)
     }
 
     override fun collectCoverage(request: CoverageRequest, outputFile: File, context: ReportContext) {

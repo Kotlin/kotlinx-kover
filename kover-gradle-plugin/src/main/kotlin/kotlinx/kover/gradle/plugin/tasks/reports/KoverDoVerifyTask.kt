@@ -22,10 +22,7 @@ internal abstract class KoverDoVerifyTask @Inject constructor(@get:Internal over
     @TaskAction
     fun verify() {
         val enabledRules = rules.get().filter { it.isEnabled }
-        val violations = tool.get().verify(enabledRules, context())
-
-        val errorMessage = KoverLegacyFeatures.violationMessage(violations)
-        resultFile.get().asFile.writeText(errorMessage)
+        tool.get().verify(enabledRules, resultFile.get().asFile, context())
     }
 
 }

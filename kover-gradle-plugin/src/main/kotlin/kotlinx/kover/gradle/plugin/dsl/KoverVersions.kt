@@ -17,7 +17,7 @@ public object KoverVersions {
     /**
      * JaCoCo coverage tool version used by default.
      */
-    public const val JACOCO_TOOL_DEFAULT_VERSION = "0.8.11"
+    public const val JACOCO_TOOL_DEFAULT_VERSION = "0.8.12"
 
     /**
      * Current version of Kover Gradle Plugin

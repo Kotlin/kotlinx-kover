@@ -87,8 +87,7 @@ internal interface Counter {
 }
 
 internal interface VerifyReportChecker {
-    fun assertKoverResult(expected: String)
-    fun assertJaCoCoResult(expected: String)
+    fun assertResult(expected: String)
 }
 
 internal interface TextMatcher {

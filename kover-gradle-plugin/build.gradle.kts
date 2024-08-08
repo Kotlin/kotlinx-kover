@@ -46,6 +46,7 @@ dependencies {
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
     compileOnly(libs.gradlePlugin.kotlin)
+    compileOnly(libs.jacoco.reporter)
 
     functionalTestImplementation(kotlin("test"))
     functionalTestImplementation(libs.junit.jupiter)

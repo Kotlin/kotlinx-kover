@@ -13,6 +13,7 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
 import org.gradle.kotlin.dsl.*
+import org.gradle.workers.WorkerExecutor
 import java.io.File
 import javax.inject.Inject
 
@@ -69,10 +70,13 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     @get:Inject
     protected abstract val obj: ObjectFactory
 
+    @get:Inject
+    protected abstract val workerExecutor: WorkerExecutor
+
     private val rootDir: File = project.rootDir
 
     protected fun context(): ReportContext {
-        val services = GradleReportServices(ant, obj)
+        val services = GradleReportServices(ant, obj, workerExecutor)
         return ReportContext(collectAllFiles(), filters.get(), reportClasspath, temporaryDir, projectPath, services)
     }
 

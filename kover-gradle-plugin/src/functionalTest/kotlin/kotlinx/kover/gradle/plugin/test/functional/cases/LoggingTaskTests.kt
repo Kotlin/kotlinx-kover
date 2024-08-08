@@ -148,9 +148,9 @@ internal class LoggingTaskTests {
             taskOutput("koverPrintCoverage") {
                 assertEquals(
                     "Coverage for classes:\n" +
-                            "Class org.jetbrains.ExampleClass covered instructions=7\n" +
+                            "Class org.jetbrains.Unused covered instructions=0\n" +
                             "Class org.jetbrains.SecondClass covered instructions=7\n" +
-                            "Class org.jetbrains.Unused covered instructions=0\n\n",
+                            "Class org.jetbrains.ExampleClass covered instructions=7\n\n",
                     this
                 )
             }

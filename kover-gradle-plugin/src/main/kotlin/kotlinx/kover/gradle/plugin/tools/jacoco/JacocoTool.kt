@@ -4,8 +4,6 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
-import kotlinx.kover.features.jvm.KoverLegacyFeatures
-import kotlinx.kover.features.jvm.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.tools.CoverageRequest
@@ -20,8 +18,8 @@ import java.io.File
 internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageTool {
     override val jvmAgentDependency: String = "org.jacoco:org.jacoco.agent:${variant.version}"
 
-    override val jvmReporterDependency: String = "org.jacoco:org.jacoco.agent:${variant.version}"
-    override val jvmReporterExtraDependency: String = "org.jacoco:org.jacoco.ant:${variant.version}"
+    override val jvmReporterDependency: String = "org.jacoco:org.jacoco.report:${variant.version}"
+    override val jvmReporterExtraDependency: String = "org.jacoco:org.jacoco.report:${variant.version}"
 
     override fun findJvmAgentJar(classpath: FileCollection, archiveOperations: ArchiveOperations): File {
         val fatJar = classpath.filter { it.name.startsWith("org.jacoco.agent") }.singleFile
@@ -49,8 +47,8 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
         throw GradleException("It is not possible to generate an Kover binary report for JaCoCo. Please use Kover toolset")
     }
 
-    override fun verify(rules: List<VerificationRule>, context: ReportContext): List<RuleViolations> {
-        return context.doJacocoVerify(rules)
+    override fun verify(rules: List<VerificationRule>, output: File, context: ReportContext) {
+        return context.doJacocoVerify(rules, output)
     }
 
     override fun collectCoverage(

@@ -113,7 +113,7 @@ internal interface CoverageTool {
     /**
      * Perform verification.
      */
-    fun verify(rules: List<VerificationRule>, context: ReportContext): List<RuleViolations>
+    fun verify(rules: List<VerificationRule>, output: File, context: ReportContext)
 
     /**
      * Calculate coverage according to the specified parameters [request], for each grouped entity.
