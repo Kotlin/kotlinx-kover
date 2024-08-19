@@ -26,12 +26,12 @@ plugins {
 }
 
 koverPublication {
-    description.set("Implementation of calling the main features of Kover programmatically")
+    description = "Implementation of calling the main features of Kover programmatically"
 }
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
@@ -42,10 +42,10 @@ kotlin {
 afterEvaluate {
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            allWarningsAsErrors.set(true)
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            languageVersion.set(KotlinVersion.KOTLIN_1_5)
-            apiVersion.set(KotlinVersion.KOTLIN_1_5)
+            allWarningsAsErrors = true
+            jvmTarget = JvmTarget.JVM_1_8
+            languageVersion = KotlinVersion.KOTLIN_1_5
+            apiVersion = KotlinVersion.KOTLIN_1_5
             freeCompilerArgs.addAll("-Xsuppress-version-warnings")
         }
     }

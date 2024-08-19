@@ -23,17 +23,17 @@ plugins {
 }
 
 koverPublication {
-    description.set("Kover JVM instrumentation agent")
+    description = "Kover JVM instrumentation agent"
 }
 
 koverDocs {
-    docsDirectory.set("jvm-agent")
-    description.set("Kover JVM instrumentation agent")
+    docsDirectory = "jvm-agent"
+    description = "Kover JVM instrumentation agent"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_6
-    targetCompatibility = JavaVersion.VERSION_1_6
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {

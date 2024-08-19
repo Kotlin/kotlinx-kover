@@ -23,12 +23,12 @@ plugins {
 }
 
 koverPublication {
-    description.set("Compiled dependency to ensure the operation of the code that has been instrumented offline")
+    description = "Compiled dependency to ensure the operation of the code that has been instrumented offline"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_7
-    targetCompatibility = JavaVersion.VERSION_1_7
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {
@@ -41,7 +41,7 @@ dependencies {
 }
 
 koverDocs {
-    docsDirectory.set("offline-instrumentation")
-    description.set("Kover offline instrumentation")
-    callDokkaHtml.set(true)
+    docsDirectory = "offline-instrumentation"
+    description = "Kover offline instrumentation"
+    callDokkaHtml = true
 }
