@@ -199,9 +199,9 @@ public object KoverLegacyFeatures {
                 messageBuilder.appendLine("$namedRule violated:")
                 rule.violations.map { bound -> bound.format(rule) }
                     .toSortedSet()
-                    .forEach { bound ->
+                    .forEach { boundString ->
                         messageBuilder.append("  ")
-                        messageBuilder.appendLine(bound.format(rule))
+                        messageBuilder.appendLine(boundString)
                     }
             }
         }
