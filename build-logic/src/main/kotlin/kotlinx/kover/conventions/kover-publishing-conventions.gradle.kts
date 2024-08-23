@@ -62,13 +62,13 @@ configurations.register("localPublication") {
     }
 }
 
-val snapshotRelease = configurations.create("snapshotRelease") {
+val snapshotRelease: Configuration = configurations.create("snapshotRelease") {
     isVisible = true
     isCanBeResolved = false
     isCanBeConsumed = false
 }
 
-val externalSnapshots = configurations.create("snapshots") {
+val externalSnapshots: Configuration = configurations.create("snapshots") {
     isVisible = false
     isCanBeResolved = true
     // this config consumes modules from OTHER projects, and cannot be consumed by other projects
@@ -168,31 +168,31 @@ fun MavenPublication.signPublicationIfKeyPresent() {
 fun MavenPublication.addMetadata() {
     pom {
         if (!name.isPresent) {
-            name.set(artifactId)
+            name = artifactId
         }
         groupId = "org.jetbrains.kotlinx"
-        description.set(extension.description)
+        description = extension.description
 
-        url.set("https://github.com/Kotlin/kotlinx-kover")
+        url = "https://github.com/Kotlin/kotlinx-kover"
         licenses {
             license {
-                name.set("The Apache Software License, Version 2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("repo")
+                name = "The Apache Software License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "repo"
             }
         }
         developers {
             developer {
-                id.set("JetBrains")
-                name.set("JetBrains Team")
-                organization.set("JetBrains")
-                organizationUrl.set("https://www.jetbrains.com")
+                id = "JetBrains"
+                name = "JetBrains Team"
+                organization = "JetBrains"
+                organizationUrl = "https://www.jetbrains.com"
             }
         }
         scm {
-            connection.set("scm:git:git@github.com:Kotlin/kotlinx-kover.git")
-            developerConnection.set("scm:git:git@github.com:Kotlin/kotlinx-kover.git")
-            url.set("https://github.com/Kotlin/kotlinx-kover")
+            connection = "scm:git:git@github.com:Kotlin/kotlinx-kover.git"
+            developerConnection = "scm:git:git@github.com:Kotlin/kotlinx-kover.git"
+            url = "https://github.com/Kotlin/kotlinx-kover"
         }
     }
 }

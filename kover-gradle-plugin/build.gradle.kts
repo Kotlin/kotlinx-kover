@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.*
+import java.net.URL
 
 plugins {
     kotlin("jvm")
@@ -41,8 +41,8 @@ kotlin.target.compilations.run {
 val functionalTestImplementation = "functionalTestImplementation"
 
 dependencies {
-    implementation(project(":kover-features-jvm"))
-    implementation(project(":kover-jvm-agent"))
+    implementation(projects.koverFeaturesJvm)
+    implementation(projects.koverJvmAgent)
     // exclude transitive dependency on stdlib, the Gradle version should be used
     compileOnly(kotlin("stdlib"))
     compileOnly(libs.gradlePlugin.kotlin)
@@ -51,8 +51,8 @@ dependencies {
     functionalTestImplementation(libs.junit.jupiter)
     functionalTestImplementation(libs.junit.params)
 
-    snapshotRelease(project(":kover-features-jvm"))
-    snapshotRelease(project(":kover-jvm-agent"))
+    snapshotRelease(projects.koverFeaturesJvm)
+    snapshotRelease(projects.koverJvmAgent)
 
     functionalTestImplementation(gradleTestKit())
     // dependencies only for plugin's classpath to work with Kotlin Multi-Platform and Android plugins
@@ -64,7 +64,7 @@ dependencies {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
@@ -99,7 +99,7 @@ val functionalTest by tasks.registering(Test::class) {
         systemProperties["gradleVersion"] = gradle.gradleVersion
         systemProperties["koverVersion"] = version
         systemProperties["snapshotRepositories"] = tasks.collectRepository.get()
-            .repositories.joinToString("\n") { file -> file.absolutePath }
+            .repositories.joinToString("\n") { newFile -> newFile.absolutePath }
 
         // parallel execution
         systemProperties["junit.jupiter.execution.parallel.mode.default"] = "concurrent"
@@ -160,10 +160,10 @@ afterEvaluate {
     // The easiest way to do this now is to specify the version in the `afterEvaluate` block
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions {
-            allWarningsAsErrors.set(true)
-            jvmTarget.set(JvmTarget.JVM_1_8)
-            languageVersion.set(KotlinVersion.KOTLIN_1_5)
-            apiVersion.set(KotlinVersion.KOTLIN_1_5)
+            allWarningsAsErrors = true
+            jvmTarget = JvmTarget.JVM_1_8
+            languageVersion = KotlinVersion.KOTLIN_1_5
+            apiVersion = KotlinVersion.KOTLIN_1_5
             freeCompilerArgs.add("-Xsuppress-version-warnings")
         }
     }
@@ -171,39 +171,39 @@ afterEvaluate {
 
 
 tasks.dokkaHtml {
-    moduleName.set("Kover Gradle Plugin")
-    outputDirectory.set(projectDir.resolve("docs/dokka"))
+    moduleName = "Kover Gradle Plugin"
+    outputDirectory = projectDir.resolve("docs/dokka")
 
-    moduleVersion.set(project.property("kover.release.version").toString())
+    moduleVersion = project.property("kover.release.version").toString()
 
     dokkaSourceSets.configureEach {
         // source set configuration section
         perPackageOption {
-            skipDeprecated.set(true)
+            skipDeprecated = true
         }
         sourceLink {
-            localDirectory.set(rootDir)
-            remoteUrl.set(URL("https://github.com/kotlin/kotlinx-kover/tree/main"))
-            remoteLineSuffix.set("#L")
+            localDirectory = rootDir
+            remoteUrl = URL("https://github.com/kotlin/kotlinx-kover/tree/main")
+            remoteLineSuffix = "#L"
         }
     }
 }
 
 koverDocs {
-    docsDirectory.set("gradle-plugin")
-    description.set("Kover Gradle Plugin")
-    callDokkaHtml.set(true)
+    docsDirectory = "gradle-plugin"
+    description = "Kover Gradle Plugin"
+    callDokkaHtml = true
 }
 
 koverPublication {
-    description.set("Kover Gradle Plugin - Kotlin code coverage")
+    description = "Kover Gradle Plugin - Kotlin code coverage"
     //`java-gradle-plugin` plugin already creates publication with name `pluginMaven`
-    addPublication.set(false)
+    addPublication = false
 }
 
 gradlePlugin {
-    website.set("https://github.com/Kotlin/kotlinx-kover")
-    vcsUrl.set("https://github.com/Kotlin/kotlinx-kover.git")
+    website = "https://github.com/Kotlin/kotlinx-kover"
+    vcsUrl = "https://github.com/Kotlin/kotlinx-kover.git"
 
     plugins {
         create("Kover") {
@@ -217,8 +217,8 @@ gradlePlugin {
 }
 
 gradlePlugin {
-    website.set("https://github.com/Kotlin/kotlinx-kover")
-    vcsUrl.set("https://github.com/Kotlin/kotlinx-kover.git")
+    website = "https://github.com/Kotlin/kotlinx-kover"
+    vcsUrl = "https://github.com/Kotlin/kotlinx-kover.git"
 
     plugins {
         create("KoverSettingsPlugin") {

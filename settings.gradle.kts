@@ -13,7 +13,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "kover"
-
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":kover-jvm-agent")
 include(":kover-features-jvm")
 include(":kover-gradle-plugin")

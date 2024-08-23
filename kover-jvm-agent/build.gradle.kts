@@ -23,12 +23,12 @@ plugins {
 }
 
 koverPublication {
-    description.set("Kover JVM instrumentation agent")
+    description = "Kover JVM instrumentation agent"
 }
 
 koverDocs {
-    docsDirectory.set("jvm-agent")
-    description.set("Kover JVM instrumentation agent")
+    docsDirectory = "jvm-agent"
+    description = "Kover JVM instrumentation agent"
 }
 
 java {

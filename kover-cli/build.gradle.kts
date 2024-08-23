@@ -25,12 +25,12 @@ plugins {
 }
 
 koverPublication {
-    description.set("Command Line Interface for Kotlin Coverage Toolchain")
+    description = "Command Line Interface for Kotlin Coverage Toolchain"
 }
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
@@ -38,9 +38,9 @@ dependencies {
     compileOnly(kotlin("stdlib"))
     fatJar(kotlin("stdlib"))
 
-    fatJar(project(":kover-features-jvm"))
-    compileOnly(project(":kover-features-jvm"))
-    testImplementation(project(":kover-features-jvm"))
+    fatJar(projects.koverFeaturesJvm)
+    compileOnly(projects.koverFeaturesJvm)
+    testImplementation(projects.koverFeaturesJvm)
 
     fatJar(libs.args4j)
     compileOnly(libs.args4j)
@@ -66,6 +66,6 @@ repositories {
 }
 
 koverDocs {
-    docsDirectory.set("cli")
-    description.set("Kover Command Line Interface")
+    docsDirectory = "cli"
+    description = "Kover Command Line Interface"
 }

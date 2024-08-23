@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
-
 /*
  * Copyright 2017-2024 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license.
  */
@@ -26,15 +24,15 @@ sourceSets {
 val functionalTestImplementation = "functionalTestImplementation"
 
 koverPublication {
-    description.set("Kover Maven Plugin - Kotlin code coverage tool")
+    description = "Kover Maven Plugin - Kotlin code coverage tool"
 }
 
 dependencies {
-    implementation(project(":kover-features-jvm"))
-    implementation(project(":kover-jvm-agent"))
+    implementation(projects.koverFeaturesJvm)
+    implementation(projects.koverJvmAgent)
 
-    snapshotRelease(project(":kover-features-jvm"))
-    snapshotRelease(project(":kover-jvm-agent"))
+    snapshotRelease(projects.koverFeaturesJvm)
+    snapshotRelease(projects.koverJvmAgent)
 
     compileOnly(libs.maven.plugin.annotations)
     compileOnly(libs.maven.core)
@@ -62,7 +60,7 @@ mavenPlugin {
 
 kotlin {
     jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 
@@ -98,7 +96,7 @@ tasks.check {
 }
 
 koverDocs {
-    docsDirectory.set("maven-plugin")
-    description.set("Kover Maven Plugin")
-    callDokkaHtml.set(false)
+    docsDirectory = "maven-plugin"
+    description = "Kover Maven Plugin"
+    callDokkaHtml = false
 }
