@@ -4,12 +4,14 @@
 
 package kotlinx.kover.gradle.plugin.appliers
 
+import kotlinx.kover.gradle.aggregation.commons.artifacts.KoverUsageAttr
 import kotlinx.kover.gradle.plugin.appliers.tasks.VariantReportsSet
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tasks.services.KoverAgentJarTask
 import kotlinx.kover.gradle.plugin.tools.CoverageToolFactory
 import org.gradle.api.Project
+import org.gradle.api.attributes.Usage
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
@@ -21,6 +23,9 @@ import org.gradle.kotlin.dsl.register
 internal fun prepare(project: Project): KoverContext {
     val koverBucketConfiguration = project.configurations.create(KOVER_DEPENDENCY_NAME) {
         asBucket()
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(KoverUsageAttr.VALUE))
+        }
     }
 
     // Project always consumes its own artifacts
@@ -48,6 +53,7 @@ internal fun prepare(project: Project): KoverContext {
         attributes {
             // common Kover artifact attributes
             attribute(VariantNameAttr.ATTRIBUTE, project.objects.named("!kover##__empty__##"))
+            attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(KoverUsageAttr.VALUE))
             attribute(ProjectPathAttr.ATTRIBUTE, project.objects.named(project.path))
         }
     }

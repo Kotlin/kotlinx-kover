@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.plugin.appliers.artifacts
 
+import kotlinx.kover.gradle.aggregation.commons.artifacts.KoverUsageAttr
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantConfigImpl
 import kotlinx.kover.gradle.plugin.appliers.origin.VariantOrigin
@@ -13,6 +14,7 @@ import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.attributes.Usage
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.named
@@ -49,6 +51,7 @@ internal sealed class AbstractVariantArtifacts(
             asProducer()
             attributes {
                 // common Kover artifact attributes
+                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(KoverUsageAttr.VALUE))
                 attribute(VariantNameAttr.ATTRIBUTE, project.objects.named(variantName))
                 attribute(ProjectPathAttr.ATTRIBUTE, project.objects.named(project.path))
             }
@@ -61,6 +64,9 @@ internal sealed class AbstractVariantArtifacts(
 
         consumerConfiguration = project.configurations.register(externalArtifactConfigurationName(variantName)) {
             asConsumer()
+            attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(KoverUsageAttr.VALUE))
+            }
             if (koverBucketConfiguration != null) {
                 extendsFrom(koverBucketConfiguration)
             }
