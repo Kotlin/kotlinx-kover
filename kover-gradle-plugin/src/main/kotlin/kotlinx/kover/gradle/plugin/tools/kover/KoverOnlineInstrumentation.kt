@@ -10,15 +10,16 @@ internal fun buildJvmAgentArgs(
     jarFile: File,
     tempDir: File,
     binReportFile: File,
-    excludedClasses: Set<String>
+    excludedClasses: Set<String>,
+    includedClasses: Set<String>
 ): List<String> {
     val argsFile = tempDir.resolve("kover-agent.args")
-    argsFile.writeAgentArgs(binReportFile, excludedClasses)
+    argsFile.writeAgentArgs(binReportFile, excludedClasses, includedClasses)
 
     return mutableListOf("-javaagent:${jarFile.canonicalPath}=file:${argsFile.canonicalPath}")
 }
 
-private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String>) {
+private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String>, includedClasses: Set<String>) {
     binReportFile.parentFile.mkdirs()
     val binReportPath = binReportFile.canonicalPath
 
@@ -26,6 +27,9 @@ private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String
         pw.append("report.file=").appendLine(binReportPath)
         excludedClasses.forEach { e ->
             pw.append("exclude=").appendLine(e)
+        }
+        includedClasses.forEach { e ->
+            pw.append("include=").appendLine(e)
         }
     }
 }

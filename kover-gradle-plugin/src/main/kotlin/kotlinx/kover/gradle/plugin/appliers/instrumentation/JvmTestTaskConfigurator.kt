@@ -64,6 +64,7 @@ internal fun TaskCollection<Test>.instrument(
             koverContext.findAgentJarTask.map { it.agentJar.get().asFile },
             taskInstrumentationDisabled,
             excludedClassesWithAndroid,
+            current.instrumentation.includedClasses,
             binReportProvider
         )
     }
@@ -87,6 +88,9 @@ private class JvmTestTaskArgumentProvider(
     @get:Input
     val excludedClasses: Provider<Set<String>>,
 
+    @get:Input
+    val includedClasses: Provider<Set<String>>,
+
     @get:OutputFile
     val reportProvider: Provider<RegularFile>
 ) : CommandLineArgumentProvider, Named {
@@ -103,8 +107,13 @@ private class JvmTestTaskArgumentProvider(
     override fun asArguments(): MutableIterable<String> {
         return if (!instrumentationDisabled.get()) {
             toolProvider.get()
-                .jvmAgentArgs(agentJar.get(), tempDir, reportProvider.get().asFile, excludedClasses.get())
-                .toMutableList()
+                .jvmAgentArgs(
+                    agentJar.get(),
+                    tempDir,
+                    reportProvider.get().asFile,
+                    excludedClasses.get(),
+                    includedClasses.get()
+                ).toMutableList()
         } else {
             mutableListOf()
         }

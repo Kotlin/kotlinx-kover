@@ -106,6 +106,7 @@ private fun KoverProjectInstrumentation.wrap(project: Project): KoverMergingInst
         override val disabledForAll: Property<Boolean> = this@wrap.disabledForAll
         override val disabledForTestTasks: SetProperty<String> = this@wrap.disabledForTestTasks
         override val excludedClasses: SetProperty<String> = this@wrap.excludedClasses
+        override val includedClasses: SetProperty<String> = this@wrap.includedClasses
         override val project: Project = project
     }
 }
