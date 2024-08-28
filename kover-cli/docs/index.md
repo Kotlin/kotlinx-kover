@@ -41,3 +41,20 @@ Allows you to generate HTML and XML reports from the existing binary report.
 | --src <sources-path>                           | location of the source files root                                                                                                             |    +     |    +     |
 | --title <html-title>                           | title in the HTML report                                                                                                                      |          |          |
 | --xml <xml-file-path>                          | generate a XML report in the specified path                                                                                                   |          |          |
+
+## Merging binary reports
+
+Allows you to merge multiple files into single binary report.
+
+If the target file does not exist, a new one is created. Otherwise, the existing file will be overwritten.
+
+`java -jar kover-cli.jar merge [<binary-report-path> ...] --target <merged-report-path>`
+
+| Option                        | Description                  | Required | Multiple |
+|-------------------------------|------------------------------|:--------:|:--------:|
+| <binary-report-path>          | list of binary reports files |          |    +     |
+| --target <merged-report-path> | merged binary report file    |    +     |          |
+
+Example:
+
+`java -jar kover-cli.jar merge build/reports/report1.ic build/reports/report2.ic --target build/reports/merged.ic`

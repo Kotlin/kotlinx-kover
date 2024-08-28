@@ -105,6 +105,7 @@ public final class kotlinx/kover/features/jvm/KoverLegacyFeatures {
 	public final fun generateHtmlReport (Ljava/io/File;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lkotlinx/kover/features/jvm/ClassFilters;)V
 	public final fun generateXmlReport (Ljava/io/File;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Lkotlinx/kover/features/jvm/ClassFilters;)V
 	public final fun instrument (Ljava/io/File;Ljava/util/List;Lkotlinx/kover/features/jvm/ClassFilters;Z)V
+	public final fun mergeIc (Ljava/io/File;Ljava/util/List;)V
 	public final fun verify (Ljava/util/List;Ljava/io/File;Lkotlinx/kover/features/jvm/ClassFilters;Ljava/util/List;Ljava/util/List;)Ljava/util/List;
 	public final fun violationMessage (Ljava/util/List;)Ljava/lang/String;
 }

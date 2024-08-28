@@ -149,6 +149,16 @@ public object KoverLegacyFeatures {
     }
 
     /**
+     * Merge several IC binaryReports into one file without extra filtering.
+     *
+     * @param icFile        Target IC report file
+     * @param binaryReports List of coverage binary reports in IC format
+     */
+    public fun mergeIc(icFile: File, binaryReports: List<File>) {
+        AggregatorApi.merge(binaryReports, icFile)
+    }
+
+    /**
      * Get coverage values from binary reports.
      *
      * @param groupBy             Code unit for which coverage will be aggregated

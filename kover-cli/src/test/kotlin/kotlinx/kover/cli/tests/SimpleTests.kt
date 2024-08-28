@@ -20,6 +20,7 @@ import kotlinx.kover.cli.invokeCli
 import java.io.File
 import kotlin.io.path.createTempDirectory
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 private const val RESOURCES_PATH = "src/test/resources"
@@ -68,5 +69,30 @@ class SimpleTests {
         println("Generate report with args: " + args.joinToString(" "))
         println("Output HTML path file://$targetPath")
         assertEquals(0, invokeCli(args.toTypedArray()))
+    }
+
+    @Test
+    fun merge() {
+        // class `com.example.A` is present only in test1.ic and `com.example.B` only in test2.ic
+        val ic1 = File("$RESOURCES_PATH/merge/test1.ic")
+        val ic2 = File("$RESOURCES_PATH/merge/test2.ic")
+
+        val target = kotlin.io.path.createTempFile("kover-merge-test", ".ic").toFile()
+
+        val args = buildList {
+            add("merge")
+            add(ic1.canonicalPath)
+            add(ic2.canonicalPath)
+            add("--target")
+            add(target.canonicalPath)
+        }
+
+        println("Merge reports, args: " + args.joinToString(" "))
+        assertEquals(0, invokeCli(args.toTypedArray()))
+
+        val contentAsUtf8 = target.readText()
+        // check both classes are present in merged report
+        assertContains(contentAsUtf8, "com.example.A")
+        assertContains(contentAsUtf8, "com.example.B")
     }
 }
