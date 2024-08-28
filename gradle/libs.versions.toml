@@ -11,6 +11,7 @@ maven-embedder = "3.9.8"
 maven-api = "3.0"
 maven-resolver = "1.9.21"
 maven-slf4j = "1.7.36"
+jacoco = "0.8.12"
 
 [libraries]
 
@@ -40,7 +41,7 @@ maven-resolver-file = { module = "org.apache.maven.resolver:maven-resolver-trans
 maven-resolver-http = { module = "org.apache.maven.resolver:maven-resolver-transport-http", version.ref = "maven-resolver" }
 
 maven-slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "maven-slf4j" }
-
+jacoco-reporter = {module = "org.jacoco:org.jacoco.report", version.ref = "jacoco" }
 
 [plugins]
 gradle-pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }

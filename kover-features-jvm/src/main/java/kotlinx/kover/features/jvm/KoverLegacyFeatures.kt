@@ -197,11 +197,12 @@ public object KoverLegacyFeatures {
                 messageBuilder.appendLine("$namedRule violated: ${rule.violations[0].format(rule)}")
             } else {
                 messageBuilder.appendLine("$namedRule violated:")
-
-                rule.violations.forEach { bound ->
-                    messageBuilder.append("  ")
-                    messageBuilder.appendLine(bound.format(rule))
-                }
+                rule.violations.map { bound -> bound.format(rule) }
+                    .toSortedSet()
+                    .forEach { boundString ->
+                        messageBuilder.append("  ")
+                        messageBuilder.appendLine(boundString)
+                    }
             }
         }
 
@@ -300,5 +301,5 @@ private fun BoundViolation.format(rule: RuleViolations): String {
 
     val expectedValue = if (isMax) bound.maxValue else bound.minValue
 
-    return "$metricText $valueTypeText$entityText is $value, but expected $directionText is $expectedValue"
+    return "$metricText $valueTypeText$entityText is $value, but expected $directionText is ${expectedValue?.toPlainString()}"
 }

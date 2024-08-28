@@ -64,7 +64,8 @@ internal class ReportContext(
 
 internal class GradleReportServices(
     val antBuilder: AntBuilder,
-    val objects: ObjectFactory
+    val objects: ObjectFactory,
+    val workerExecutor: WorkerExecutor
 )
 
 internal data class ReportFilters(

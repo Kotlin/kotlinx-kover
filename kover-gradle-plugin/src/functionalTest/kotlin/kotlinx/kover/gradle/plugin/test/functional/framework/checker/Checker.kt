@@ -403,19 +403,10 @@ private class XmlReportCheckerImpl(val context: CheckerContextImpl, file: File) 
 }
 
 private class VerifyReportCheckerImpl(val context: CheckerContextImpl, val content: String) : VerifyReportChecker {
-    override fun assertKoverResult(expected: String) {
-        if (context.project.toolVariant.vendor != CoverageToolVendor.KOVER) return
+    override fun assertResult(expected: String) {
         val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
         if (!content.matches(regex)) {
-            throw AssertionError("Unexpected verification result for Kover Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
-        }
-    }
-
-    override fun assertJaCoCoResult(expected: String) {
-        if (context.project.toolVariant.vendor != CoverageToolVendor.JACOCO) return
-        val regex = KoverFeatures.koverWildcardToRegex(expected).toRegex()
-        if (!content.matches(regex)) {
-            throw AssertionError("Unexpected verification result for JaCoCo Tool.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
+            throw AssertionError("Unexpected verification result.\n\tActual\n[\n$content\n]\nExpected regex\n[\n$expected\n]")
         }
     }
 }
