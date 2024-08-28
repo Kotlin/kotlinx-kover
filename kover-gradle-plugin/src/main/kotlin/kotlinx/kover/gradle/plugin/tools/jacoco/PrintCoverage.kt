@@ -22,6 +22,7 @@ import java.math.BigDecimal
 
 internal fun ReportContext.printJacocoCoverage(request: CoverageRequest, outputFile: File) {
     val bound = VerificationBound(ONE_HUNDRED, BigDecimal.ZERO, request.metric, request.aggregation)
+    // Since JaCoCo doesn't have an API for explicitly obtaining coverage values, we get them indirectly through verification
     val failRule = VerificationRule(true, "", request.entity, listOf(bound))
 
     val workQueue: WorkQueue = services.workerExecutor.classLoaderIsolation {
