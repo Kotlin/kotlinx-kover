@@ -46,7 +46,7 @@ Allows you to generate HTML and XML reports from the existing binary report.
 
 Allows you to merge multiple files into single binary report.
 
-If the target file did not exist, a new one is created, otherwise if the file already exists, it will be overwritten.
+If the target file does not exist, a new one is created. Otherwise, the existing file will be overwritten.
 
 `java -jar kover-cli.jar merge [<binary-report-path> ...] --target <merged-report-path>`
 
