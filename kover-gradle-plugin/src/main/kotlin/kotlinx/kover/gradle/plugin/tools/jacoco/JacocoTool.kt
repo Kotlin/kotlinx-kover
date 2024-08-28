@@ -32,9 +32,10 @@ internal class JacocoTool(override val variant: CoverageToolVariant) : CoverageT
         jarFile: File,
         tempDir: File,
         binReportFile: File,
-        excludedClasses: Set<String>
+        excludedClasses: Set<String>,
+        includedClasses: Set<String>
     ): List<String> {
-        return buildJvmAgentArgs(jarFile, binReportFile, excludedClasses)
+        return buildJvmAgentArgs(jarFile, binReportFile, excludedClasses, includedClasses)
     }
 
     override fun xmlReport(xmlFile: File, title: String, context: ReportContext) {

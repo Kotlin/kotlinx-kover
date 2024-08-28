@@ -3,7 +3,6 @@
  */
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
-import kotlinx.kover.gradle.plugin.test.functional.framework.checker.defaultTestTaskName
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 
@@ -27,6 +26,44 @@ internal class InstrumentationFilteringTests {
             xmlReport {
                 classCounter("org.jetbrains.ExampleClass").assertFullyMissed()
                 classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(all = true)
+    fun BuildConfigurator.testInclude() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            kover {
+                currentProject {
+                    instrumentation {
+                        includedClasses.add("*.ExampleClass")
+                    }
+                }
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(all = true)
+    fun BuildConfigurator.testMixed() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+
+            kover {
+                currentProject {
+                    instrumentation {
+                        includedClasses.add("*Class")
+                        excludedClasses.add("*.SecondClass")
+                    }
+                }
+            }
+        }
+
+        run("build", "koverXmlReport") {
+            xmlReport {
+                classCounter("org.jetbrains.ExampleClass").assertCovered()
+                classCounter("org.jetbrains.SecondClass").assertFullyMissed()
             }
         }
     }

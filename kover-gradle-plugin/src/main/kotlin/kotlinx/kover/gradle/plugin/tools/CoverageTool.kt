@@ -93,7 +93,13 @@ internal interface CoverageTool {
     /**
      * Generate additional JVM argument for test task.
      */
-    fun jvmAgentArgs(jarFile: File, tempDir: File, binReportFile: File, excludedClasses: Set<String>): List<String>
+    fun jvmAgentArgs(
+        jarFile: File,
+        tempDir: File,
+        binReportFile: File,
+        excludedClasses: Set<String>,
+        includedClasses: Set<String>
+    ): List<String>
 
     /**
      * Generate XML report.

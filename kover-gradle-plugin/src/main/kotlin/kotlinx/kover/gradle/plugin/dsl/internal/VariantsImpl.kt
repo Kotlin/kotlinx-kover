@@ -26,6 +26,7 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
 
         instrumentation.disabledForAll.convention(false)
         instrumentation.excludedClasses.convention(emptySet())
+        instrumentation.includedClasses.convention(emptySet())
         instrumentation.disabledForTestTasks.convention(emptySet())
     }
 

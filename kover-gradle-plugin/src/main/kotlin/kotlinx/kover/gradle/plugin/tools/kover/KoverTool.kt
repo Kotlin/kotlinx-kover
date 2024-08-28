@@ -36,9 +36,10 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
         jarFile: File,
         tempDir: File,
         binReportFile: File,
-        excludedClasses: Set<String>
+        excludedClasses: Set<String>,
+        includedClasses: Set<String>
     ): List<String> {
-        return buildJvmAgentArgs(jarFile, tempDir, binReportFile, excludedClasses)
+        return buildJvmAgentArgs(jarFile, tempDir, binReportFile, excludedClasses, includedClasses)
     }
 
     override fun xmlReport(xmlFile: File, title: String, context: ReportContext) {

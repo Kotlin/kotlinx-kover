@@ -207,8 +207,18 @@ public interface KoverProjectInstrumentation {
 
     /**
      * Disable instrumentation in test tasks of specified classes
+     *
+     * Classes in [excludedClasses] have priority over classes from [includedClasses].
      */
     public val excludedClasses: SetProperty<String>
+
+    /**
+     * Enable instrumentation in test tasks only of specified classes.
+     * All other classes will not be instrumented.
+     *
+     * Classes in [excludedClasses] have priority over classes from [includedClasses].
+     */
+    public val includedClasses: SetProperty<String>
 }
 
 /**
