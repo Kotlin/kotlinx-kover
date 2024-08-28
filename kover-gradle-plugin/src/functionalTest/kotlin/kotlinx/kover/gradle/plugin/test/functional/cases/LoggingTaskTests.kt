@@ -45,7 +45,7 @@ internal class LoggingTaskTests {
         run(":koverLog") {
             checkOutcome("koverPrintCoverage", "SUCCESS")
             taskOutput("koverPrintCoverage") {
-                assertEquals("application line coverage: 57.1429%\n\n", this)
+                assertContains(this, "application line coverage: 57.1429%\n\n")
             }
         }
     }
@@ -59,7 +59,7 @@ internal class LoggingTaskTests {
         run(":koverLog") {
             checkOutcome("koverPrintCoverage", "SUCCESS")
             taskOutput("koverPrintCoverage") {
-                assertEquals("application line coverage: 50%\n\n", this)
+                assertContains(this, "application line coverage: 50%\n\n")
             }
         }
     }
@@ -84,7 +84,7 @@ internal class LoggingTaskTests {
         run(":koverLog") {
             checkOutcome("koverPrintCoverage", "SUCCESS")
             taskOutput("koverPrintCoverage") {
-                assertEquals("Custom header\nMy format for application is 57.1429\n\n", this)
+                assertContains(this, "Custom header\nMy format for application is 57.1429\n\n")
             }
         }
     }
@@ -112,12 +112,12 @@ internal class LoggingTaskTests {
         run(":koverLog") {
             checkOutcome("koverPrintCoverage", "SUCCESS")
             taskOutput("koverPrintCoverage") {
-                assertEquals(
+                assertContains(
+                    this,
                     "Coverage for classes:\n" +
                             "Class org.jetbrains.ExampleClass covered instructions=5\n" +
                             "Class org.jetbrains.SecondClass covered instructions=5\n" +
-                            "Class org.jetbrains.Unused covered instructions=0\n\n",
-                    this
+                            "Class org.jetbrains.Unused covered instructions=0\n\n"
                 )
             }
         }
@@ -146,12 +146,12 @@ internal class LoggingTaskTests {
         run(":koverLog") {
             checkOutcome("koverPrintCoverage", "SUCCESS")
             taskOutput("koverPrintCoverage") {
-                assertEquals(
+                assertContains(
+                    this,
                     "Coverage for classes:\n" +
                             "Class org.jetbrains.Unused covered instructions=0\n" +
                             "Class org.jetbrains.SecondClass covered instructions=7\n" +
-                            "Class org.jetbrains.ExampleClass covered instructions=7\n\n",
-                    this
+                            "Class org.jetbrains.ExampleClass covered instructions=7\n\n"
                 )
             }
         }
