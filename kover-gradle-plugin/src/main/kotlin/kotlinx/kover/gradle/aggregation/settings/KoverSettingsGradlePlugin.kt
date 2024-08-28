@@ -24,7 +24,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.serviceOf
 
-internal class KoverSettingsGradlePlugin: Plugin<Settings> {
+public class KoverSettingsGradlePlugin: Plugin<Settings> {
 
     override fun apply(target: Settings) {
         val objects = target.serviceOf<ObjectFactory>()
