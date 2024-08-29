@@ -1,14 +1,14 @@
+public final class kotlinx/kover/gradle/aggregation/settings/KoverSettingsGradlePlugin : org/gradle/api/Plugin {
+	public fun <init> ()V
+	public synthetic fun apply (Ljava/lang/Object;)V
+	public fun apply (Lorg/gradle/api/initialization/Settings;)V
+}
+
 public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/BoundSettings {
 	public abstract fun getAggregationForGroup ()Lorg/gradle/api/provider/Property;
 	public abstract fun getCoverageUnits ()Lorg/gradle/api/provider/Property;
 	public abstract fun getMaxValue ()Lorg/gradle/api/provider/Property;
 	public abstract fun getMinValue ()Lorg/gradle/api/provider/Property;
-}
-
-public final class kotlinx/kover/gradle/aggregation/settings/KoverSettingsGradlePlugin : org/gradle/api/Plugin {
-	public fun <init> ()V
-	public synthetic fun apply (Ljava/lang/Object;)V
-	public fun apply (Lorg/gradle/api/initialization/Settings;)V
 }
 
 public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/KoverSettingsExtension {
