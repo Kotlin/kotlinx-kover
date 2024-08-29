@@ -84,9 +84,11 @@ kover {
                 }
 
                 bounds {
+                    // append minimal bound
                     // -Pkover.verify.min=1
                     minValue = 1
-                    
+
+                    // append maximal bound
                     // -Pkover.verify.max=90
                     maxValue = 90
                 }
