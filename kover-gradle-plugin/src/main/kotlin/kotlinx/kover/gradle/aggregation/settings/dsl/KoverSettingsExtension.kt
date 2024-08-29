@@ -103,12 +103,37 @@ public interface VerificationRuleSettings {
      */
     public val groupBy: Property<GroupingEntityType>
 
+    /**
+     * Instance to configuring of report filters for this rule.
+     *
+     * See details in [filters].
+     */
     public val filters: ReportFiltersSettings
 
+    /**
+     * Modify filters for this rule, these filters will are inherited from common report filters.
+     * ```
+     *  filters {
+     *      includedProjects.add(":a:*")
+     *      excludedProjects.add(":a:b")
+     *      excludedClasses.add("*Class")
+     *      includedClasses.add("*")
+     *      excludesAnnotatedBy.add("*Generated")
+     *      includesAnnotatedBy.add("*Covered")
+     *      includesInheritedFrom.add("*.AutoClosable")
+     *      excludesInheritedFrom.add("*.Any")
+     *  }
+     * ```
+     */
     public fun filters(action: Action<ReportFiltersSettings>) {
         action.execute(filters)
     }
 
+    /**
+     * Instance to configuring of bounds for this rule.
+     *
+     * See details in [bound].
+     */
     public val bounds: ListProperty<BoundSettings>
 
     /**
