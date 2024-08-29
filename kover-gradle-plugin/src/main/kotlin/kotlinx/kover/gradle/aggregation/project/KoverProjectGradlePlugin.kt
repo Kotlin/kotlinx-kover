@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.aggregation.project
 
 import kotlinx.kover.features.jvm.KoverFeatures
+import kotlinx.kover.gradle.aggregation.commons.artifacts.*
 import kotlinx.kover.gradle.aggregation.commons.artifacts.CompilationInfo
 import kotlinx.kover.gradle.aggregation.commons.artifacts.KoverContentAttr
 import kotlinx.kover.gradle.aggregation.commons.artifacts.asConsumer
@@ -25,10 +26,12 @@ import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.attributes.Usage
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import java.io.File
@@ -49,6 +52,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
         val jarConfig = configurations.create("agentJarSource") {
             asConsumer()
             attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
                 attribute(KoverContentAttr.ATTRIBUTE, KoverContentAttr.AGENT_JAR)
             }
             extendsFrom(koverJarDependency)
@@ -138,6 +142,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
         configurations.register("KoverArtifactProducer") {
             asProducer()
             attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
                 attribute(KoverContentAttr.ATTRIBUTE, KoverContentAttr.LOCAL_ARTIFACT)
             }
 
@@ -165,6 +170,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
         configurations.register("AgentJar") {
             asProducer()
             attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
                 attribute(KoverContentAttr.ATTRIBUTE, KoverContentAttr.AGENT_JAR)
             }
 

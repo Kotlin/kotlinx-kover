@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.aggregation.settings
 
 import kotlinx.kover.gradle.aggregation.commons.artifacts.KoverContentAttr
+import kotlinx.kover.gradle.aggregation.commons.artifacts.KoverUsageAttr
 import kotlinx.kover.gradle.aggregation.commons.artifacts.asConsumer
 import kotlinx.kover.gradle.aggregation.commons.artifacts.asDependency
 import kotlinx.kover.gradle.aggregation.commons.names.KoverPaths
@@ -16,11 +17,13 @@ import kotlinx.kover.gradle.aggregation.settings.tasks.KoverHtmlReportTask
 import kotlinx.kover.gradle.aggregation.settings.tasks.KoverXmlReportTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.attributes.Usage
 import org.gradle.api.initialization.ProjectDescriptor
 import org.gradle.api.initialization.Settings
 import org.gradle.api.model.ObjectFactory
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.serviceOf
 
@@ -42,6 +45,9 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
 
             val agentDependency = configurations.create(SettingsNames.DEPENDENCY_AGENT) {
                 asDependency()
+                attributes {
+                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
+                }
             }
             dependencies.add(agentDependency.name, rootProject)
 
@@ -58,6 +64,9 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
 
         val dependencyConfig = configurations.create(KOVER_DEPENDENCY_NAME) {
             asDependency()
+            attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
+            }
         }
         val rootDependencies = dependencies
         settings.rootProject.walkSubprojects { descriptor ->
@@ -67,6 +76,7 @@ internal class KoverSettingsGradlePlugin: Plugin<Settings> {
         val artifacts = configurations.create("koverArtifactsCollector") {
             asConsumer()
             attributes {
+                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
                 attribute(KoverContentAttr.ATTRIBUTE, KoverContentAttr.LOCAL_ARTIFACT)
             }
             extendsFrom(dependencyConfig)
