@@ -104,14 +104,14 @@ public interface VerificationRuleSettings {
     public val groupBy: Property<GroupingEntityType>
 
     /**
-     * Instance to configuring of report filters for this rule.
+     * Instance for configuring report filters for this rule.
      *
      * See details in [filters].
      */
     public val filters: ReportFiltersSettings
 
     /**
-     * Modify filters for this rule, these filters will are inherited from common report filters.
+     * Modify filters for this rule, these filters will be inherited from common report filters.
      * ```
      *  filters {
      *      includedProjects.add(":a:*")
@@ -130,7 +130,7 @@ public interface VerificationRuleSettings {
     }
 
     /**
-     * Instance to configuring of bounds for this rule.
+     * Instance for configuring bounds for this rule.
      *
      * See details in [bound].
      */
