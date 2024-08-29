@@ -22,7 +22,7 @@ internal abstract class KoverVerifyTask : AbstractKoverTask() {
     abstract val rules: ListProperty<VerificationRuleInput>
 
     init {
-        // disable caching if write error to the log
+        // disable caching if we emit only warnings
         outputs.upToDateWhen { !warningInsteadOfFailure.get() }
     }
 
