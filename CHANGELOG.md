@@ -1,3 +1,33 @@
+0.9.0-RC / 2024-09-03
+===================
+## Kover Gradle Plugin
+### Features
+* [`#645`](https://github.com/Kotlin/kotlinx-kover/issues/660) Added ability to supplement coverage values from external binary reports
+* [`#673`](https://github.com/Kotlin/kotlinx-kover/issues/673) Implemented ability to specify instrumentation include filter
+### Bugfixes
+* [`#678`](https://github.com/Kotlin/kotlinx-kover/issues/678) Added USAGE attribute to all Kover configurations
+* [`#666`](https://github.com/Kotlin/kotlinx-kover/issues/666) Replaced JaCoCo ant-calls with programmatic calls of JaCoCo's classes
+
+## Kover Aggregation Plugin
+### Features
+* Made class KoverSettingsGradlePlugin from aggregated plugin public
+* Implemented verification in Kover Aggregated Plugin
+
+## Kover CLI
+### Features
+* [`#677`](https://github.com/Kotlin/kotlinx-kover/issues/677) Implemented merging of binary reports in Kover CLI and Kover Features
+
+## Kover JVM Agent
+### Bugfixes
+* Fixed JVM agent arguments parsing to support include filter
+
+### Documentation
+* [`#660`](https://github.com/Kotlin/kotlinx-kover/issues/660) Fixed mistake in JVM agent docs
+
+## Kover Maven Plugin
+### Documentation
+* [`#658`](https://github.com/Kotlin/kotlinx-kover/issues/658) Fixed documentation about Maven plugin
+
 0.8.3 / 2024-07-18
 ===================
 ## Kover Aggregation Plugin
