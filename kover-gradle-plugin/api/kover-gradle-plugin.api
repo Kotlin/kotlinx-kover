@@ -4,19 +4,62 @@ public final class kotlinx/kover/gradle/aggregation/settings/KoverSettingsGradle
 	public fun apply (Lorg/gradle/api/initialization/Settings;)V
 }
 
+public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/BoundSettings {
+	public abstract fun getAggregationForGroup ()Lorg/gradle/api/provider/Property;
+	public abstract fun getCoverageUnits ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMaxValue ()Lorg/gradle/api/provider/Property;
+	public abstract fun getMinValue ()Lorg/gradle/api/provider/Property;
+}
+
 public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/KoverSettingsExtension {
 	public abstract fun enableCoverage ()V
 	public abstract fun getReports ()Lkotlinx/kover/gradle/aggregation/settings/dsl/ReportsSettings;
 	public abstract fun reports (Lorg/gradle/api/Action;)V
 }
 
-public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/ReportsSettings {
+public final class kotlinx/kover/gradle/aggregation/settings/dsl/KoverSettingsExtensionKt {
+	public static final fun maxBound (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;I)V
+	public static final fun maxBound (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public static final fun maxBound (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;Lorg/gradle/api/provider/Provider;)V
+	public static synthetic fun maxBound$default (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+	public static final fun minBound (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;I)V
+	public static final fun minBound (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;)V
+	public static final fun minBound (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;Lorg/gradle/api/provider/Provider;)V
+	public static synthetic fun minBound$default (Lkotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings;ILkotlinx/kover/gradle/plugin/dsl/CoverageUnit;Lkotlinx/kover/gradle/plugin/dsl/AggregationType;ILjava/lang/Object;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/ReportFiltersSettings {
+	public fun clearFilters ()V
 	public abstract fun getExcludedClasses ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getExcludedProjects ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getExcludesAnnotatedBy ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getExcludesInheritedFrom ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getIncludedClasses ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getIncludedProjects ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getIncludesAnnotatedBy ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getIncludesInheritedFrom ()Lorg/gradle/api/provider/SetProperty;
+}
+
+public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/ReportsSettings : kotlinx/kover/gradle/aggregation/settings/dsl/ReportFiltersSettings {
+	public abstract fun getVerify ()Lkotlinx/kover/gradle/aggregation/settings/dsl/VerifySettings;
+	public fun verify (Lorg/gradle/api/Action;)V
+}
+
+public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/VerificationRuleSettings {
+	public abstract fun bound (Lorg/gradle/api/Action;)V
+	public fun filters (Lorg/gradle/api/Action;)V
+	public abstract fun getBounds ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getDisabled ()Lorg/gradle/api/provider/Property;
+	public abstract fun getFilters ()Lkotlinx/kover/gradle/aggregation/settings/dsl/ReportFiltersSettings;
+	public abstract fun getGroupBy ()Lorg/gradle/api/provider/Property;
+	public abstract fun getName ()Lorg/gradle/api/provider/Property;
+}
+
+public abstract interface class kotlinx/kover/gradle/aggregation/settings/dsl/VerifySettings {
+	public abstract fun getRules ()Lorg/gradle/api/provider/ListProperty;
+	public abstract fun getWarningInsteadOfFailure ()Lorg/gradle/api/provider/Property;
+	public abstract fun rule (Ljava/lang/String;Lorg/gradle/api/Action;)V
+	public abstract fun rule (Lorg/gradle/api/Action;)V
 }
 
 public final class kotlinx/kover/gradle/plugin/KoverGradlePlugin : org/gradle/api/Plugin {

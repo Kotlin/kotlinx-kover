@@ -54,6 +54,46 @@ kover {
         
         // -Pkover.classes.includesAnnotated=*Included*
         includesAnnotatedBy.add("*Included*")
+
+        // -Pkover.classes.includesHeir=*ParentIncluded
+        includesInheritedFrom.add("*ParentIncluded")
+        
+        // -Pkover.classes.excludesHeir=*ParentExcluded
+        excludesInheritedFrom.add("*ParentExcluded")
+        
+        verify {
+            // -Pkover.verify.warn=true
+            warningInsteadOfFailure = true
+            
+            rule {
+                name = "custom name"
+                disabled = false
+                groupBy = GroupingEntityType.APPLICATION
+                
+                // specify filters for given rule, common filters will be inherited
+                // call `clearFilters()` to avoid common filters inheritance
+                filters {
+                    includedProjects.add(":a2")
+                    excludedProjects.add(":b2")
+                    includedClasses.add("classes.to.include2.*")
+                    excludedClasses.add("classes.to.exclude2.*")
+                    excludesAnnotatedBy.add("*.Generated2*")
+                    includesAnnotatedBy.add("*Included2*")
+                    includesInheritedFrom.add("*ParentIncluded2")
+                    excludesInheritedFrom.add("*ParentExcluded2")
+                }
+
+                bounds {
+                    // append minimal bound
+                    // -Pkover.verify.min=1
+                    minValue = 1
+
+                    // append maximal bound
+                    // -Pkover.verify.max=90
+                    maxValue = 90
+                }
+            }
+        }
     }
 }
 ```
