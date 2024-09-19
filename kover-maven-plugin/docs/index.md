@@ -175,44 +175,42 @@ All available configuration options are shown below:
         <!-- Used in goals: report-xml, report-html, verify, report-ic, log -->
         <!-- Complex type, default: no filters -->
         <filters>
-            <filters>
-                <!-- Specify classes and methods that should be excluded from reports -->
-                <!-- Excludes have priority over includes. -->
-                <excludes>
-                    <!-- Exclude specified classes from report -->
-                    <!-- Using fully-qualified JVM class names, wildcards `*` and `?` are acceptable. -->
-                    <!-- List of String values, default: empty list -->
-                    <classes>com.example.*.ExcludedByName,com.example.*.serializables.*$Companion</classes>
+            <!-- Specify classes and methods that should be excluded from reports -->
+            <!-- Excludes have priority over includes. -->
+            <excludes>
+                <!-- Exclude specified classes from report -->
+                <!-- Using fully-qualified JVM class names, wildcards `*` and `?` are acceptable. -->
+                <!-- List of String values, default: empty list -->
+                <classes>com.example.*.ExcludedByName,com.example.*.serializables.*$Companion</classes>
 
-                    <!-- Exclude classes marked by specified annotations -->
-                    <!-- Using fully-qualified JVM class names, wildcards `*` and `?` are acceptable. -->
-                    <!-- List of String values, default: empty list -->
-                    <annotatedBy>*.Generated</annotatedBy>
+                <!-- Exclude classes marked by specified annotations -->
+                <!-- Using fully-qualified JVM class names, wildcards `*` and `?` are acceptable. -->
+                <!-- List of String values, default: empty list -->
+                <annotatedBy>*.Generated</annotatedBy>
 
 
-                    
-                    <!-- Exclude classes inherited from the specified classes, or implementing the specified interfaces. -->
-                    <!-- Using fully-qualified JVM class names, wildcards `*` and `?` are acceptable. -->
-                    <!--  The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).-->
-                    <!--  The following classes and interfaces can be specified in arguments:-->
-                    <!--    *  classes and interfaces declared in the application-->
-                    <!--    *  classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application-->
-                    <!--  Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.-->
-                    <!-- List of String values, default: empty list -->  
-                    <inheritedFrom>java.lang.AutoCloseable</inheritedFrom>
-
-                    <!-- Exclude classes of specified projects by project names. -->
-                    <!-- Wildcards `*` and `?` are acceptable. -->
-                    <!-- List of String values, default: empty list -->
-                    <projects>test-utils</projects>
-                </excludes>
                 
-                <!-- Specify classes that should be included to reports, all other classes are not included in the report. -->
-                <!-- Excludes have priority over includes. -->
-                <includes>
-                    <!-- content is the same as in excludes block -->
-                </includes>
-            </filters>
+                <!-- Exclude classes inherited from the specified classes, or implementing the specified interfaces. -->
+                <!-- Using fully-qualified JVM class names, wildcards `*` and `?` are acceptable. -->
+                <!--  The entire inheritance tree is analyzed; a class may inherit the specified class/interface indirectly and still be included in the report, unless the specified class/interface is located outside of the application (see below).-->
+                <!--  The following classes and interfaces can be specified in arguments:-->
+                <!--    *  classes and interfaces declared in the application-->
+                <!--    *  classes and interfaces declared outside the application, however they are directly inherited or implemented by any type from the application-->
+                <!--  Due to technical limitations, if a specified class or interface is not declared in the application and not extended/implemented directly by one of the application types, such a filter will have no effect.-->
+                <!-- List of String values, default: empty list -->  
+                <inheritedFrom>java.lang.AutoCloseable</inheritedFrom>
+
+                <!-- Exclude classes of specified projects by project names. -->
+                <!-- Wildcards `*` and `?` are acceptable. -->
+                <!-- List of String values, default: empty list -->
+                <projects>test-utils</projects>
+            </excludes>
+            
+            <!-- Specify classes that should be included to reports, all other classes are not included in the report. -->
+            <!-- Excludes have priority over includes. -->
+            <includes>
+                <!-- content is the same as in excludes block -->
+            </includes>
         </filters>
 
         <!-- Specify to collect coverage from project dependencies. -->
