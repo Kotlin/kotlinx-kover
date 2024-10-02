@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.aggregation.project.instrumentation
 
 import kotlinx.kover.gradle.aggregation.commons.names.KoverPaths
+import kotlinx.kover.gradle.aggregation.settings.dsl.ProjectInstrumentationSettings
 import org.gradle.api.Named
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.file.ConfigurableFileCollection
@@ -24,9 +25,14 @@ internal object JvmOnFlyInstrumenter {
     fun instrument(
         tasks: TaskCollection<Test>,
         jarConfiguration: Configuration,
-        filter: InstrumentationFilter
+        instrumentation: ProjectInstrumentationSettings
     ) {
         tasks.configureEach {
+            val taskName = name
+            val enabledProvider = instrumentation.disabledForTestTasks.map { taskName !in it }
+            val included = instrumentation.includedClasses
+            val excluded = instrumentation.excludedClasses
+
             val binReportProvider =
                 project.layout.buildDirectory.map { dir ->
                     dir.file(KoverPaths.binReportPath(name))
@@ -46,25 +52,20 @@ internal object JvmOnFlyInstrumenter {
                 "jdk.internal.*"
             )
 
-            val excludedClassesWithAndroid = filter.copy(excludes = filter.excludes + androidClasses)
+            val excludedWithAndroid = excluded.map { it + androidClasses }
 
             dependsOn(jarConfiguration)
             jvmArgumentProviders += JvmTestTaskArgumentProvider(
                 temporaryDir,
                 project.objects.fileCollection().from(jarConfiguration),
-                excludedClassesWithAndroid,
+                enabledProvider,
+                included,
+                excludedWithAndroid,
                 binReportProvider
             )
         }
     }
 }
-
-internal data class InstrumentationFilter(
-    @get:Input
-    val includes: Set<String>,
-    @get:Input
-    val excludes: Set<String>
-)
 
 /**
  * Provider of additional JVM string arguments for running a test task.
@@ -77,8 +78,12 @@ private class JvmTestTaskArgumentProvider(
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val jarFiles: ConfigurableFileCollection,
 
-    @get:Nested
-    val filter: InstrumentationFilter,
+    @get:Input
+    val enabled: Provider<Boolean>,
+    @get:Input
+    val includedClasses: Provider<Set<String>>,
+    @get:Input
+    val excludedClasses: Provider<Set<String>>,
 
     @get:OutputFile
     val reportProvider: Provider<RegularFile>
@@ -91,13 +96,18 @@ private class JvmTestTaskArgumentProvider(
 
     override fun asArguments(): MutableIterable<String> {
         val files = jarFiles.files
-        if (files.size != 1) {
+        if (!enabled.get() || files.size != 1) {
             return mutableSetOf()
         }
         val jarFile = files.single()
 
-        return buildKoverJvmAgentArgs(jarFile, tempDir, reportProvider.get().asFile, filter.excludes)
-            .toMutableList()
+        return buildKoverJvmAgentArgs(
+            jarFile,
+            tempDir,
+            reportProvider.get().asFile,
+            includedClasses.orNull ?: emptySet(),
+            excludedClasses.orNull ?: emptySet()
+        ).toMutableList()
     }
 }
 
@@ -106,15 +116,16 @@ private fun buildKoverJvmAgentArgs(
     jarFile: File,
     tempDir: File,
     binReportFile: File,
+    includedClasses: Set<String>,
     excludedClasses: Set<String>
 ): List<String> {
     val argsFile = tempDir.resolve("kover-agent.args")
-    argsFile.writeAgentArgs(binReportFile, excludedClasses)
+    argsFile.writeAgentArgs(binReportFile, includedClasses, excludedClasses)
 
     return mutableListOf("-javaagent:${jarFile.canonicalPath}=file:${argsFile.canonicalPath}")
 }
 
-private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String>) {
+private fun File.writeAgentArgs(binReportFile: File, includedClasses: Set<String>, excludedClasses: Set<String>) {
     binReportFile.parentFile.mkdirs()
     val binReportPath = binReportFile.canonicalPath
 
@@ -122,6 +133,9 @@ private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String
         pw.append("report.file=").appendLine(binReportPath)
         excludedClasses.forEach { e ->
             pw.append("exclude=").appendLine(e)
+        }
+        includedClasses.forEach { i ->
+            pw.append("include=").appendLine(i)
         }
     }
 }

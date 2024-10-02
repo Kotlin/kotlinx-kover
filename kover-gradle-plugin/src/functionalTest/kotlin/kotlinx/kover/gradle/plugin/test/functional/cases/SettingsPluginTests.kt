@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerContext
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.TemplateTest
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -132,8 +133,35 @@ Rule violated: lines covered percentage is 50.000000, but expected maximum is 10
     fun CheckerContext.testVerifyMin() {
         taskOutput("koverVerify") {
             assertTrue(contains("Rule 'CLI parameters' violated:\n" +
-                    "  lines covered percentage is 7.407400, but expected minimum is 100\n" +
-                    "  lines covered percentage is 7.407400, but expected maximum is 5"))
+                    "  lines covered percentage is 7.407400, but expected maximum is 5\n" +
+                    "  lines covered percentage is 7.407400, but expected minimum is 100"))
+        }
+    }
+
+    @TemplateTest("settings-plugin-verify-each", ["check", "-Dorg.gradle.unsafe.isolated-projects=true", "--configuration-cache", "--build-cache"])
+    fun CheckerContext.testVerifyEach() {
+        taskOutput("koverProjectVerify") {
+            assertContains(this, "Kover Verification Error\n" +
+                    "Rule 'Coverage for project 'subproject'' violated: lines covered percentage is 50.000000, but expected minimum is 100\n" +
+                    "\n" +
+                    "Rule 'Coverage for project 'subproject2'' violated: lines covered percentage is 66.666700, but expected minimum is 100")
+        }
+    }
+
+    @TemplateTest("settings-plugin-instrumentation", ["check", "koverXmlReport", "-Dorg.gradle.unsafe.isolated-projects=true", "--configuration-cache", "--build-cache"])
+    fun CheckerContext.testInstrumentationConfiguring() {
+        xmlReport {
+            // all classes matches to pattern '*Class' should be excluded from instrumentation
+            classCounter("tests.settings.root.RootClass").assertFullyMissed()
+            classCounter("tests.settings.subproject.SubprojectClass").assertFullyMissed()
+
+            // all classes from subproject2 should be uncovered as 'test' task isn't instrumented
+            classCounter("tests.settings.subproject2.Subproject2Class").assertFullyMissed()
+            classCounter("tests.settings.subproject2.Tested").assertFullyMissed()
+
+            // other classes should be covered
+            classCounter("tests.settings.root.Tested").assertFullyCovered()
+            classCounter("tests.settings.subproject.Tested").assertFullyCovered()
         }
     }
 }

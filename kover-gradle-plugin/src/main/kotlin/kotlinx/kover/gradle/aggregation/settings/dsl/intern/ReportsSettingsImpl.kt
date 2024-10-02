@@ -5,9 +5,7 @@
 package kotlinx.kover.gradle.aggregation.settings.dsl.intern
 
 import kotlinx.kover.gradle.aggregation.settings.dsl.ReportsSettings
-import kotlinx.kover.gradle.aggregation.settings.dsl.VerifySettings
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
@@ -16,5 +14,5 @@ internal abstract class ReportsSettingsImpl: ReportsSettings {
     abstract val objects: ObjectFactory
 
     @Suppress("LeakingThis")
-    override val verify: VerifySettings = objects.newInstance<VerifySettingsImpl>(this)
+    override val verify: VerifySettingsImpl = objects.newInstance<VerifySettingsImpl>(this)
 }

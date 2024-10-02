@@ -73,8 +73,8 @@ internal object ArtifactSerializer {
             }
         }
 
-        val map = all.associate { it.name!! to CompilationInfo(it.sourceDirs.toList(), it.outputDirs.toSet()) }
-        return ProjectArtifactInfo(projectPath!!, reports, map)
+        val map = all.associate { it.name!! to CompilationInfo(it.sourceDirs.filter { f -> f.exists() }, it.outputDirs.filter { f -> f.exists() }) }
+        return ProjectArtifactInfo(projectPath!!, reports.filter { f -> f.exists() }, map)
     }
 }
 

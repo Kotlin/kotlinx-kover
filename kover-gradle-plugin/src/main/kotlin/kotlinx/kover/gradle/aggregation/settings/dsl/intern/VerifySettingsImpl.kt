@@ -4,18 +4,18 @@
 
 package kotlinx.kover.gradle.aggregation.settings.dsl.intern
 
-import kotlinx.kover.gradle.aggregation.settings.dsl.ReportFiltersSettings
-import kotlinx.kover.gradle.aggregation.settings.dsl.VerificationRuleSettings
-import kotlinx.kover.gradle.aggregation.settings.dsl.VerifySettings
+import kotlinx.kover.gradle.aggregation.settings.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
 import org.gradle.api.Action
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.kotlin.dsl.newInstance
 import javax.inject.Inject
 
 internal abstract class VerifySettingsImpl @Inject constructor(
     private val commonFilters: ReportFiltersSettings,
 ) : VerifySettings {
+    abstract val eachProjectRule: ListProperty<Action<ProjectVerificationRuleSettings>>
 
     @get:Inject
     abstract val objects: ObjectFactory
@@ -38,6 +38,10 @@ internal abstract class VerifySettingsImpl @Inject constructor(
         rules.add(rule)
     }
 
+    override fun eachProjectRule(action: Action<ProjectVerificationRuleSettings>) {
+        eachProjectRule.add(action)
+    }
+
     private fun newRule(): VerificationRuleSettings {
         val rule: VerificationRuleSettings = objects.newInstance<VerificationRuleSettingsImpl>()
         rule.filters.inheritFrom(commonFilters)
@@ -45,15 +49,15 @@ internal abstract class VerifySettingsImpl @Inject constructor(
         rule.groupBy.convention(GroupingEntityType.APPLICATION)
         return rule
     }
+}
 
-    private fun ReportFiltersSettings.inheritFrom(other: ReportFiltersSettings) {
-        includedProjects.convention(other.includedProjects)
-        excludedProjects.convention(other.excludedProjects)
-        includedClasses.convention(other.includedClasses)
-        excludedClasses.convention(other.excludedClasses)
-        includesAnnotatedBy.convention(other.includesAnnotatedBy)
-        excludesAnnotatedBy.convention(other.excludesAnnotatedBy)
-        includesInheritedFrom.convention(other.includesInheritedFrom)
-        excludesInheritedFrom.convention(other.excludesInheritedFrom)
-    }
+internal fun ReportFiltersSettings.inheritFrom(other: ReportFiltersSettings) {
+    includedProjects.convention(other.includedProjects)
+    excludedProjects.convention(other.excludedProjects)
+    includedClasses.convention(other.includedClasses)
+    excludedClasses.convention(other.excludedClasses)
+    includesAnnotatedBy.convention(other.includesAnnotatedBy)
+    excludesAnnotatedBy.convention(other.excludesAnnotatedBy)
+    includesInheritedFrom.convention(other.includesInheritedFrom)
+    excludesInheritedFrom.convention(other.excludesInheritedFrom)
 }

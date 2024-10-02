@@ -4,12 +4,7 @@
 
 package kotlinx.kover.gradle.aggregation.project
 
-import kotlinx.kover.features.jvm.KoverFeatures
 import kotlinx.kover.gradle.aggregation.commons.artifacts.*
-import kotlinx.kover.gradle.aggregation.commons.artifacts.CompilationInfo
-import kotlinx.kover.gradle.aggregation.commons.artifacts.KoverContentAttr
-import kotlinx.kover.gradle.aggregation.commons.artifacts.asConsumer
-import kotlinx.kover.gradle.aggregation.commons.artifacts.asProducer
 import kotlinx.kover.gradle.aggregation.commons.names.KoverPaths.binReportName
 import kotlinx.kover.gradle.aggregation.commons.names.KoverPaths.binReportsRootPath
 import kotlinx.kover.gradle.aggregation.commons.names.PluginId.KOTLIN_JVM_PLUGIN_ID
@@ -17,10 +12,9 @@ import kotlinx.kover.gradle.aggregation.commons.names.PluginId.KOTLIN_MULTIPLATF
 import kotlinx.kover.gradle.aggregation.commons.names.SettingsNames
 import kotlinx.kover.gradle.aggregation.commons.utils.bean
 import kotlinx.kover.gradle.aggregation.commons.utils.hasSuper
-import kotlinx.kover.gradle.aggregation.project.instrumentation.InstrumentationFilter
 import kotlinx.kover.gradle.aggregation.project.instrumentation.JvmOnFlyInstrumenter
 import kotlinx.kover.gradle.aggregation.project.tasks.ArtifactGenerationTask
-import kotlinx.kover.gradle.aggregation.project.tasks.KoverAgentSearchTask
+import kotlinx.kover.gradle.aggregation.settings.dsl.intern.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.commons.KOTLIN_ANDROID_PLUGIN_ID
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import org.gradle.api.Plugin
@@ -32,22 +26,25 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
 internal class KoverProjectGradlePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
-        if (target.path == Project.PATH_SEPARATOR) {
-            target.configureAgentSearch()
-        }
-
-        target.configureInstrumentation()
+        val projectExtension = target.configureExtension()
+        target.configureInstrumentation(projectExtension)
         target.configureArtifactGeneration()
     }
 
-    private fun Project.configureInstrumentation() {
+    private fun Project.configureExtension(): KoverProjectExtensionImpl {
+        val projectExtension = extensions.create<KoverProjectExtensionImpl>("kover")
+        projectExtension.instrumentation.excludedClasses.convention(emptySet())
+        projectExtension.instrumentation.includedClasses.convention(emptySet())
+        return projectExtension
+    }
+
+    private fun Project.configureInstrumentation(projectExtension: KoverProjectExtensionImpl) {
         val koverJarDependency = configurations.getByName(SettingsNames.DEPENDENCY_AGENT)
         val jarConfig = configurations.create("agentJarSource") {
             asConsumer()
@@ -57,7 +54,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
             }
             extendsFrom(koverJarDependency)
         }
-        JvmOnFlyInstrumenter.instrument(tasks.withType<Test>(), jarConfig, InstrumentationFilter(setOf(), setOf()))
+        JvmOnFlyInstrumenter.instrument(tasks.withType<Test>(), jarConfig, projectExtension.instrumentation)
     }
 
     private fun Project.configureArtifactGeneration() {
@@ -149,34 +146,6 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
             outgoing.artifact(artifactFile) {
                 // Before resolving this configuration, it is necessary to execute the task of generating an artifact
                 builtBy(generateArtifactTask)
-            }
-        }
-    }
-
-
-    private fun Project.configureAgentSearch() {
-        val agentConfiguration = configurations.create("AgentConfiguration")
-        dependencies.add(agentConfiguration.name, "org.jetbrains.kotlinx:kover-jvm-agent:${KoverFeatures.version}")
-
-        val agentJar = layout.buildDirectory.file("kover/kover-jvm-agent-${KoverFeatures.version}.jar")
-
-        val findAgentTask = tasks.register<KoverAgentSearchTask>("koverAgentSearch")
-        findAgentTask.configure {
-            this@configure.agentJar.set(agentJar)
-            dependsOn(agentConfiguration)
-            agentClasspath.from(agentConfiguration)
-        }
-
-        configurations.register("AgentJar") {
-            asProducer()
-            attributes {
-                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
-                attribute(KoverContentAttr.ATTRIBUTE, KoverContentAttr.AGENT_JAR)
-            }
-
-            outgoing.artifact(agentJar) {
-                // Before resolving this configuration, it is necessary to execute the task of generating an artifact
-                builtBy(findAgentTask)
             }
         }
     }

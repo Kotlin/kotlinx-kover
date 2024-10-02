@@ -14,6 +14,8 @@ import kotlinx.kover.gradle.aggregation.settings.dsl.VerificationRuleSettings
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.Optional
@@ -21,21 +23,21 @@ import java.io.Serializable
 
 internal data class FiltersInput(
     @get:Input
-    val includedProjects: Set<String>,
+    val includedProjects: Set<String> = emptySet(),
     @get:Input
-    val excludedProjects: Set<String>,
+    val excludedProjects: Set<String> = emptySet(),
     @get:Input
-    val includedClasses: Set<String>,
+    val includedClasses: Set<String> = emptySet(),
     @get:Input
-    val excludedClasses: Set<String>,
+    val excludedClasses: Set<String> = emptySet(),
     @get:Input
-    val includesAnnotatedBy: Set<String>,
+    val includesAnnotatedBy: Set<String> = emptySet(),
     @get:Input
-    val excludesAnnotatedBy: Set<String>,
+    val excludesAnnotatedBy: Set<String> = emptySet(),
     @get:Input
-    val includesInheritedFrom: Set<String>,
+    val includesInheritedFrom: Set<String> = emptySet(),
     @get:Input
-    val excludesInheritedFrom: Set<String>
+    val excludesInheritedFrom: Set<String> = emptySet()
 ): Serializable
 
 
