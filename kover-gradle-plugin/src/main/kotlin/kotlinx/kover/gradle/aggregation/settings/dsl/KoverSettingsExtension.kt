@@ -31,7 +31,7 @@ public interface KoverSettingsExtension {
      * This means that all classes declared in these projects will be excluded from the report,
      * as well as all test tasks will not be instrumented - accordingly, coverage of them will not be taken into account.
      *
-     * Several project writing syntaxes are supported:
+     * Several project name syntaxes are supported:
      *  - project name
      *  - full path (starts with the symbol `:`)
      *  - abbreviated path (does not start with `:`, but contains the path separator `:`)
@@ -52,7 +52,7 @@ public interface KoverSettingsExtension {
     val instrumentation: InstrumentationSettings
 
     /**
-     * Instrumentation settings for the all non-skipped Gradle project.
+     * Instrumentation settings for the all non-skipped Gradle projects.
      *
      * Instrumentation is the modification of classes when they are loaded into the JVM, which helps to determine which code was called and which was not.
      * Instrumentation changes the bytecode of the class, so it may disable some JVM optimizations, slow down performance and concurrency tests, and may also be incompatible with other instrumentation libraries.
@@ -194,7 +194,7 @@ public interface VerifySettings {
      *
      * When checking the rule, only the classes declared in the corresponding project will be analyzed.
      *
-     * The `projectName` and `projectPath` properties are used to identify the project.
+     * The `projectName` and `projectPath` properties can be used to identify the project.
      *
      * The specified action will be called for each non-skipped Gradle project,
      * that is, it must be taken into account that it is performed several times.
