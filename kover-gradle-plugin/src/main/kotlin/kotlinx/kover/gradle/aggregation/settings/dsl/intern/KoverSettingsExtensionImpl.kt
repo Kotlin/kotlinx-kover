@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.aggregation.settings.dsl.intern
 
+import kotlinx.kover.gradle.aggregation.settings.dsl.InstrumentationSettings
 import kotlinx.kover.gradle.aggregation.settings.dsl.KoverSettingsExtension
 import kotlinx.kover.gradle.aggregation.settings.dsl.ReportsSettings
 import org.gradle.api.Action
@@ -18,7 +19,8 @@ internal abstract class KoverSettingsExtensionImpl @Inject constructor(
 ) : KoverSettingsExtension {
     abstract val coverageIsEnabled: Property<Boolean>
 
-    override val reports: ReportsSettings = objects.newInstance<ReportsSettingsImpl>()
+    override val reports: ReportsSettingsImpl = objects.newInstance<ReportsSettingsImpl>()
+    override val instrumentation: InstrumentationSettings = objects.newInstance<InstrumentationSettings>()
 
     init {
         coverageIsEnabled.convention(false)
@@ -26,6 +28,10 @@ internal abstract class KoverSettingsExtensionImpl @Inject constructor(
 
     override fun enableCoverage() {
         coverageIsEnabled.set(true)
+    }
+
+    override fun instrumentation(action: Action<InstrumentationSettings>) {
+        action.execute(instrumentation)
     }
 
     override fun reports(action: Action<ReportsSettings>) {

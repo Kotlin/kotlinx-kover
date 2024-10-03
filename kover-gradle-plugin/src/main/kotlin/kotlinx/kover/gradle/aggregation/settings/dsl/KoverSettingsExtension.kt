@@ -18,8 +18,126 @@ import org.gradle.api.provider.SetProperty
 public interface KoverSettingsExtension {
     fun enableCoverage()
 
+    /**
+     * Set of projects, classes and tests from which will not be included in the reports.
+     *
+     * See details in [skipProjects].
+     */
+    val skipProjects: SetProperty<String>
+
+    /**
+     * Specify projects, classes and tests from which will not be included in the reports.
+     *
+     * This means that all classes declared in these projects will be excluded from the report,
+     * as well as all test tasks will not be instrumented - accordingly, coverage of them will not be taken into account.
+     *
+     * Several project name syntaxes are supported:
+     *  - project name
+     *  - full path (starts with the symbol `:`)
+     *  - abbreviated path (does not start with `:`, but contains the path separator `:`)
+     *
+     * ```
+     * skipProjects(":project1", "project2", "nested:subproject")
+     * ```
+     */
+    fun skipProjects(vararg projects: String) {
+        skipProjects.addAll(projects.toList())
+    }
+
+    /**
+     * Instance for configuring instrumentation in all non-skipped Gradle projects.
+     *
+     * See details in [instrumentation].
+     */
+    val instrumentation: InstrumentationSettings
+
+    /**
+     * Instrumentation settings for the all non-skipped Gradle projects.
+     *
+     * Instrumentation is the modification of classes when they are loaded into the JVM, which helps to determine which code was called and which was not.
+     * Instrumentation changes the bytecode of the class, so it may disable some JVM optimizations, slow down performance and concurrency tests, and may also be incompatible with other instrumentation libraries.
+     *
+     * For this reason, it may be necessary to fine-tune the instrumentation, for example, disabling instrumentation for problematic classes. Note that such classes would be marked as uncovered because of that.
+     *
+     * Example:
+     * ```
+     *  instrumentation {
+     *      // disable instrumentation of specified classes in test tasks
+     *      excludedClasses.addAll("foo.bar.*Biz", "*\$Generated")
+     *
+     *      // enable instrumentation only for specified classes. Classes in excludedClasses have priority over classes from includedClasses.
+     *      includedClasses.addAll("foo.bar.*")
+     *  }
+     * ```
+     */
+    fun instrumentation(action: Action<InstrumentationSettings>)
+
+    /**
+     * Instance for configuring merged reports.
+     *
+     * See details in [reports].
+     */
     val reports: ReportsSettings
+
+    /**
+     * Configure Kover merged reports
+     * ```
+     * reports {
+     *     verify.warningInsteadOfFailure = false
+     *     verify.rule("First rule") { minBound(50) }
+     *
+     *     verify {
+     *          warningInsteadOfFailure = false
+     *          rule("Second rule") {
+     *              minBound(75)
+     *          }
+     *     }
+     * }
+     * ```
+     */
     fun reports(action: Action<ReportsSettings>)
+}
+
+@KoverGradlePluginDsl
+public interface InstrumentationSettings {
+    /**
+     * Disable instrumentation in test tasks of specified classes in all Gradle projects.
+     *
+     * Classes in [excludedClasses] have priority over classes from [includedClasses].
+     */
+    public val excludedClasses: SetProperty<String>
+
+    /**
+     * Enable instrumentation in test tasks only of specified classes in all Gradle projects.
+     * All other classes will not be instrumented.
+     *
+     * Classes in [excludedClasses] have priority over classes from [includedClasses].
+     */
+    public val includedClasses: SetProperty<String>
+}
+
+@KoverGradlePluginDsl
+public interface ProjectInstrumentationSettings {
+    /**
+     * Specifies not to use test task with passed names to measure coverage.
+     * These tasks will also not be called when generating Kover reports and these tasks will not be instrumented even if you explicitly run them.
+     */
+    public val disabledForTestTasks: SetProperty<String>
+
+    /**
+     * Disable instrumentation in test tasks of specified classes
+     *
+     * Classes in [excludedClasses] have priority over classes from [includedClasses].
+     */
+    public val excludedClasses: SetProperty<String>
+
+    /**
+     * Enable instrumentation in test tasks only of specified classes.
+     * All other classes will not be instrumented.
+     *
+     * Classes in [excludedClasses] have priority over classes from [includedClasses].
+     */
+    public val includedClasses: SetProperty<String>
 }
 
 @KoverGradlePluginDsl
@@ -72,6 +190,30 @@ public interface VerifySettings {
     public fun rule(name: String, action: Action<VerificationRuleSettings>)
 
     /**
+     * Add new coverage verification rule to check in each non-skipped project.
+     *
+     * When checking the rule, only the classes declared in the corresponding project will be analyzed.
+     *
+     * The `projectName` and `projectPath` properties can be used to identify the project.
+     *
+     * The specified action will be called for each non-skipped Gradle project,
+     * that is, it must be taken into account that it is performed several times.
+     *
+     * ```
+     * eachProjectRule {
+     *     if (projectPath != ":badly-covered-project") {
+     *         // all other projects should be covered with 80%
+     *         minBound(80)
+     *     } else {
+     *         // :badly-covered-project should be covered with 50%
+     *         minBound(50)
+     *     }
+     * }
+     * ```
+     */
+    public fun eachProjectRule(action: Action<ProjectVerificationRuleSettings>)
+
+    /**
      * In case of a verification error, print a message to the log with the warn level instead of the Gradle task execution error.
      *
      * Gradle task error if `false`, warn message if `true`.
@@ -79,6 +221,20 @@ public interface VerifySettings {
      * `false` by default.
      */
     public val warningInsteadOfFailure: Property<Boolean>
+}
+
+
+@KoverGradlePluginDsl
+public interface ProjectVerificationRuleSettings: VerificationRuleSettings {
+    /**
+     * Get the name of the project for which classes coverage is being checked.
+     */
+    val projectName: String
+
+    /**
+     * Get the path of the project for which classes coverage is being checked
+     */
+    val projectPath: String
 }
 
 @KoverGradlePluginDsl
@@ -312,4 +468,28 @@ public fun VerificationRuleSettings.maxBound(
         this.coverageUnits.set(coverageUnits)
         this.aggregationForGroup.set(aggregationForGroup)
     }
+}
+
+
+@KoverGradlePluginDsl
+public interface KoverProjectExtension {
+    /**
+     * Instance for configuring instrumentation.
+     *
+     * See details in [instrumentation].
+     */
+    val instrumentation: ProjectInstrumentationSettings
+
+    /**
+     * Configure instrumentation for current project.
+     *
+     * ```
+     * instrumentation {
+     *     disabledForTestTasks.add("test")
+     *     excludedClasses.add("*.excluded.*")
+     *     includedClasses.add("my.project.*")
+     * }
+     * ```
+     */
+    fun instrumentation(action: Action<ProjectInstrumentationSettings>)
 }

@@ -5,6 +5,7 @@
 package kotlinx.kover.gradle.aggregation.settings.dsl.intern
 
 import kotlinx.kover.gradle.aggregation.settings.dsl.BoundSettings
+import kotlinx.kover.gradle.aggregation.settings.dsl.ProjectVerificationRuleSettings
 import kotlinx.kover.gradle.aggregation.settings.dsl.ReportFiltersSettings
 import kotlinx.kover.gradle.aggregation.settings.dsl.VerificationRuleSettings
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
@@ -30,4 +31,12 @@ internal abstract class VerificationRuleSettingsImpl: VerificationRuleSettings {
         action.execute(bound)
         bounds.add(bound)
     }
+}
+
+internal abstract class ProjectVerificationRuleSettingsImpl @Inject constructor(
+    override val projectName: String,
+    override val projectPath: String
+): VerificationRuleSettingsImpl(), ProjectVerificationRuleSettings {
+
+
 }
