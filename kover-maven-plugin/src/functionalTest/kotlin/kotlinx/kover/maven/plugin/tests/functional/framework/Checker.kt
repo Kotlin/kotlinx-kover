@@ -8,14 +8,22 @@ import java.io.File
 import java.nio.file.Files
 
 private const val EXAMPLES_DIR = "examples"
+private const val TESTS_DIR = "src/functionalTest/templates/tests"
 
 fun runAndCheckExample(name: String, vararg args: String, checker: CheckerContext.() -> Unit) {
     val exampleDir = File(EXAMPLES_DIR).resolve(name)
     if (!exampleDir.exists()) {
         throw MavenAssertionException("Example '$exampleDir' not found in directory '$EXAMPLES_DIR'")
     }
-
     exampleDir.runAndCheck(args.toList(), checker)
+}
+
+fun runAndCheckTest(name: String, vararg args: String, checker: CheckerContext.() -> Unit) {
+    val testDir = File(TESTS_DIR).resolve(name)
+    if (!testDir.exists()) {
+        throw MavenAssertionException("Test '$testDir' not found in directory '$TESTS_DIR'")
+    }
+    testDir.runAndCheck(args.toList(), checker)
 }
 
 private fun File.runAndCheck(commands: List<String>, checker: CheckerContext.() -> Unit) {
