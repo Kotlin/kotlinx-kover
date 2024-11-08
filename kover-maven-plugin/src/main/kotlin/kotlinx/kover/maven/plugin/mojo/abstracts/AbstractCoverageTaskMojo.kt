@@ -226,7 +226,9 @@ abstract class AbstractCoverageTaskMojo : AbstractKoverMojo() {
                 .filter { "compile" in it.goals }
                 .filter { execution -> execution.configuration != null && execution.configuration is Xpp3Dom }
                 .flatMap { execution ->
-                    (execution.configuration as Xpp3Dom).getChild("sourceDirs").children.map { toAbsoluteFile(it.value) }
+                    val config = execution.configuration as Xpp3Dom
+                    val sourceDirs = config.getChild("sourceDirs") ?: return@flatMap emptyList()
+                    sourceDirs.children.map { toAbsoluteFile(it.value) }
                 }
         } catch (e: Exception) {
             // in future versions configuration may be changed

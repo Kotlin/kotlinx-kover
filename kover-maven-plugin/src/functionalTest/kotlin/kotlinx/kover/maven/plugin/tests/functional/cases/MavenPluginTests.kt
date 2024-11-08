@@ -14,6 +14,8 @@ import kotlinx.kover.maven.plugin.tests.functional.framework.CounterAssert.*
 import kotlinx.kover.maven.plugin.tests.functional.framework.CounterType.LINE
 import org.junit.jupiter.api.Test
 import java.io.File
+import kotlin.test.assertContains
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class MavenPluginTests {
@@ -262,6 +264,12 @@ Rule violated:
     fun testHtmlCharset() = runAndCheckExample("charset", "verify") {
         assertBuildIsSuccessful()
         assertDefaultHtmlTitle("charset", "UTF-16BE")
+    }
+
+    @Test
+    fun testEmptyKotlinConfig() = runAndCheckTest("kotlin-empty-config", "verify") {
+        assertBuildIsSuccessful()
+        assertFalse("java.lang.NullPointerException" in log, "NPE should not be thrown")
     }
 
 }
