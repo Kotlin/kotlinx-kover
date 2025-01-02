@@ -23,9 +23,6 @@ import org.gradle.kotlin.dsl.register
 internal fun prepare(project: Project): KoverContext {
     val koverBucketConfiguration = project.configurations.create(KOVER_DEPENDENCY_NAME) {
         asBucket()
-        attributes {
-            attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(KoverUsageAttr.VALUE))
-        }
     }
 
     // Project always consumes its own artifacts
