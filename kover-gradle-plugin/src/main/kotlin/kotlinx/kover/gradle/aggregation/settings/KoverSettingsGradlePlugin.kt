@@ -52,9 +52,6 @@ public class KoverSettingsGradlePlugin: Plugin<Settings> {
 
             val agentDependency = configurations.create(SettingsNames.DEPENDENCY_AGENT) {
                 asDependency()
-                attributes {
-                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
-                }
             }
             dependencies.add(agentDependency.name, rootProject)
 
@@ -78,9 +75,6 @@ public class KoverSettingsGradlePlugin: Plugin<Settings> {
 
         val dependencyConfig = configurations.create(KOVER_DEPENDENCY_NAME) {
             asDependency()
-            attributes {
-                attribute(Usage.USAGE_ATTRIBUTE, objects.named(KoverUsageAttr.VALUE))
-            }
         }
 
         val eachProjectRules = mutableMapOf<String, List<ProjectVerificationRuleSettingsImpl>>()
