@@ -16,7 +16,7 @@ internal class CompatibilityTests {
             sourcesFrom("simple")
         }
 
-        run("test") {
+        run("test", "--warning-mode", "all") {
             assertFalse(output.contains("Deprecated Gradle features were used in this build"), "There should be no deprecated Gradle features")
         }
 
