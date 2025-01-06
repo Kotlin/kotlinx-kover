@@ -126,7 +126,7 @@ private fun buildKoverJvmAgentArgs(
 }
 
 private fun File.writeAgentArgs(binReportFile: File, includedClasses: Set<String>, excludedClasses: Set<String>) {
-    binReportFile.parentFile.mkdirs()
+    parentFile.mkdirs()
     val binReportPath = binReportFile.canonicalPath
 
     printWriter().use { pw ->

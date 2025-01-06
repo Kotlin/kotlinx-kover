@@ -19,4 +19,15 @@ internal class DefaultConfigTests {
             checkDefaultReports()
         }
     }
+
+    @GeneratedTest()
+    fun BuildConfigurator.testCleanCheck() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+        }
+
+        run("clean", "check") {
+            checkDefaultBinReport()
+        }
+    }
 }
