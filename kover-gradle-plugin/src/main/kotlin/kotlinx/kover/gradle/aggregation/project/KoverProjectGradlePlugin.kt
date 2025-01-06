@@ -26,6 +26,7 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
 import java.io.File
 
@@ -63,7 +64,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
         val artifactFile = layout.buildDirectory.file("kover/kover.artifact")
 
         // we create task immediately because of mustRunAfter
-        val generateArtifactTask = tasks.create<ArtifactGenerationTask>("koverGenerateArtifact")
+        val generateArtifactTask = tasks.register<ArtifactGenerationTask>("koverGenerateArtifact").get()
         generateArtifactTask.outputFile.set(artifactFile)
 
         // add tests

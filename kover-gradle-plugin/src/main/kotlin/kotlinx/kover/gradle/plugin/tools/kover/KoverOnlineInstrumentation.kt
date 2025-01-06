@@ -20,7 +20,7 @@ internal fun buildJvmAgentArgs(
 }
 
 private fun File.writeAgentArgs(binReportFile: File, excludedClasses: Set<String>, includedClasses: Set<String>) {
-    binReportFile.parentFile.mkdirs()
+    parentFile.mkdirs()
     val binReportPath = binReportFile.canonicalPath
 
     printWriter().use { pw ->
