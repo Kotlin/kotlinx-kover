@@ -23,6 +23,7 @@ internal abstract class KoverCurrentProjectVariantsConfigImpl @Inject constructo
     init {
         sources.excludeJava.convention(false)
         sources.excludedSourceSets.convention(emptySet())
+        sources.excludedOtherSourceSets.convention(emptySet())
 
         instrumentation.disabledForAll.convention(false)
         instrumentation.excludedClasses.convention(emptySet())
@@ -91,6 +92,7 @@ internal abstract class KoverVariantConfigImpl @Inject constructor(objects: Obje
     internal fun deriveFrom(other: KoverVariantConfigImpl) {
         sources.excludeJava.set(other.sources.excludeJava)
         sources.excludedSourceSets.addAll(other.sources.excludedSourceSets)
+        sources.excludedOtherSourceSets.addAll(other.sources.excludedOtherSourceSets)
     }
 }
 

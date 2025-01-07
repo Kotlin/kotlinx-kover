@@ -183,3 +183,17 @@ internal fun File.patchKoverDependency(koverVersion: String) {
         }
     }
 }
+
+internal fun File.addKoverBlocks(koverBlocks: MutableList<(ScriptLanguage, String) -> String>) {
+    if (koverBlocks.isEmpty()) return
+
+    val language = if (name.endsWith(".kts")) ScriptLanguage.KTS else ScriptLanguage.GROOVY
+
+    val builder = StringBuilder()
+    koverBlocks.forEach { block ->
+        builder.appendLine()
+        builder.append(block(language, "8.12"))
+        builder.appendLine()
+    }
+    appendText(builder.toString())
+}

@@ -4,9 +4,14 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.framework.runner
 
+import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.BuildSlice
+import kotlinx.kover.gradle.plugin.test.functional.framework.common.ScriptLanguage
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.isDebugEnabled
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.logInfo
 import kotlinx.kover.gradle.plugin.test.functional.framework.common.uri
+import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.ProjectScope
+import kotlinx.kover.gradle.plugin.test.functional.framework.mirroring.printGradleDsl
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.buildSrc
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.patchSettingsFile
@@ -31,6 +36,8 @@ internal interface BuildSource {
 
     fun from(rootProjectDir: File)
 
+    fun kover(config: KoverProjectExtension.(ProjectScope) -> Unit)
+
     fun generate(): GradleBuild
 }
 
@@ -54,6 +61,8 @@ private class BuildSourceImpl(val snapshotRepos: List<String>, val koverVersion:
 
     private var copy: Boolean = false
 
+    private val koverBlocks: MutableList<(ScriptLanguage, String) -> String> = mutableListOf()
+
     override var buildName: String = "default"
 
     override var buildType: String = "default"
@@ -68,6 +77,12 @@ private class BuildSourceImpl(val snapshotRepos: List<String>, val koverVersion:
     override fun from(rootProjectDir: File) {
         dir = rootProjectDir
         copy = false
+    }
+
+    override fun kover(config: KoverProjectExtension.(ProjectScope) -> Unit) {
+        koverBlocks += { language, gradle ->
+            printGradleDsl<KoverProjectExtension, ProjectScope>(language, gradle, "kover", config)
+        }
     }
 
     override fun generate(): GradleBuild {
@@ -87,6 +102,9 @@ private class BuildSourceImpl(val snapshotRepos: List<String>, val koverVersion:
 
         val buildSrcScript = targetDir.buildSrc?.build
         buildSrcScript?.patchKoverDependency(koverVersion)
+
+        val buildScript = targetDir.build
+        buildScript.addKoverBlocks(koverBlocks)
 
         return GradleBuildImpl(targetDir, copy, buildName, buildType)
     }

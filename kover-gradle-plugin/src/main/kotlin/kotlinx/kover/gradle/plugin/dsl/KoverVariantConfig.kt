@@ -125,6 +125,9 @@ public interface KoverVariantConfig {
      *
      *     // exclude source classes of specified source sets from all reports
      *     excludedSourceSets.addAll(excludedSourceSet)
+     *
+     *     // exclude classes of all non-specified source sets from all reports.
+     *     excludedOtherSourceSets.addAll(includedSourceSet)
      * ```
      */
     public fun sources(block: Action<KoverVariantSources>)
@@ -152,6 +155,9 @@ public interface KoverVariantConfig {
  *
  *     // exclude source classes of specified source sets from all reports
  *     excludedSourceSets.addAll(excludedSourceSet)
+ *
+ *     // exclude classes of all non-specified source sets from all reports.
+ *     excludedOtherSourceSets.addAll(includedSourceSet)
  * ```
  */
 @KoverGradlePluginDsl
@@ -165,6 +171,13 @@ public interface KoverVariantSources {
      * Exclude source classes of specified source sets from all reports
      */
     public val excludedSourceSets: SetProperty<String>
+
+    /**
+     * Exclude classes of all non-specified source sets from all reports.
+     *
+     * Classes from source sets that are not listed here will not be included in the report.
+     */
+    public val excludedOtherSourceSets: SetProperty<String>
 }
 
 /**

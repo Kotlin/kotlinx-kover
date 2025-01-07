@@ -1122,8 +1122,6 @@ By specifying an empty filter `filters { }`, you can completely disable report f
 
 It is possible to exclude from all reports the code declared in certain source sets.
 
-As a side effect, the generation of Kover reports ceases to depend on the compilation tasks of these source sets.
-
 ```kotlin
 kover {
     currentProject {
@@ -1133,6 +1131,35 @@ kover {
     }
 }
 ```
+
+In addition, it is possible to exclude classes from all source sets that are not specified.
+
+```kotlin
+kover {
+    currentProject {
+        sources {
+            excludedOtherSourceSets.addAll("main")
+        }
+    }
+}
+```
+
+This way, only classes from the `main` source set will be included in the report, but not from others.
+
+These filters can be combined, the `excludedSourceSets` filter has priority.
+```kotlin
+kover {
+    currentProject {
+        sources {
+            excludedOtherSourceSets.addAll("main", "extra")
+            excludedSourceSets.addAll("main")
+        }
+    }
+}
+```
+In this case, only classes from the `extra` source set will be included in the report.
+
+As a side effect of the source set exclusion, the generation of Kover reports ceases to depend on the compilation tasks of excluded source sets.
 
 ### Exclusion of test tasks
 If some task does not test the coverage of application classes, 
