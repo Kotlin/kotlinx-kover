@@ -167,7 +167,9 @@ public interface KoverVariantSources {
     public val excludeJava: Property<Boolean>
 
     /**
-     * Exclude source classes of specified source sets from all reports
+     * Exclude source classes of specified source sets from all reports.
+     *
+     * `test` source set is excluded by default.
      */
     public val excludedSourceSets: SetProperty<String>
 
@@ -175,6 +177,8 @@ public interface KoverVariantSources {
      * Exclude classes of all non-specified source sets from all reports.
      *
      * Classes from source sets that are not listed here will not be included in the report.
+     *
+     * `test` source set can be specified here.
      */
     public val includedSourceSets: SetProperty<String>
 }

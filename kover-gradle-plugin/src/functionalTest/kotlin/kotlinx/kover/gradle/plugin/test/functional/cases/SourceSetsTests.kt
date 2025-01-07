@@ -30,6 +30,7 @@ internal class SourceSetsTests {
             classCounter("kotlinx.kover.examples.sourcesets.MainClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.FooClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.ExtraClass").assertPresent()
+            classCounter("kotlinx.kover.examples.sourcesets.TestClasses").assertAbsent()
         }
     }
 
@@ -51,6 +52,7 @@ internal class SourceSetsTests {
             classCounter("kotlinx.kover.examples.sourcesets.MainClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.FooClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.ExtraClass").assertPresent()
+            classCounter("kotlinx.kover.examples.sourcesets.TestClasses").assertAbsent()
         }
     }
 
@@ -72,6 +74,7 @@ internal class SourceSetsTests {
             classCounter("kotlinx.kover.examples.sourcesets.MainClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.FooClass").assertPresent()
             classCounter("kotlinx.kover.examples.sourcesets.ExtraClass").assertPresent()
+            classCounter("kotlinx.kover.examples.sourcesets.TestClasses").assertAbsent()
         }
     }
 
@@ -96,6 +99,7 @@ internal class SourceSetsTests {
             classCounter("kotlinx.kover.examples.sourcesets.MainClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.FooClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.ExtraClass").assertPresent()
+            classCounter("kotlinx.kover.examples.sourcesets.TestClasses").assertAbsent()
         }
     }
 

@@ -1120,6 +1120,8 @@ By specifying an empty filter `filters { }`, you can completely disable report f
 
 ### Exclusion of JVM source sets
 
+Code declarations from `test` source set are excluded by default.
+
 It is possible to exclude from all reports the code declared in certain source sets.
 
 ```kotlin
