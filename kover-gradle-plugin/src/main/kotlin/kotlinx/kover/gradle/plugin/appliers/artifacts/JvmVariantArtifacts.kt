@@ -60,6 +60,9 @@ internal class JvmVariantArtifacts(
 
         val included = variant.includedSourceSets.get()
 
+        if (included.isEmpty() && compilationName == "test") {
+            return false
+        }
         if (included.isNotEmpty() && compilationName !in included) {
             return false
         }
