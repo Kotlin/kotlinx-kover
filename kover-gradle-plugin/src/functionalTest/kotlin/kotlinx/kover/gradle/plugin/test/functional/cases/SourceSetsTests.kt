@@ -39,7 +39,7 @@ internal class SourceSetsTests {
 
         template.kover {
             currentProject {
-                sources.excludedOtherSourceSets.addAll("extra")
+                sources.includedSourceSets.addAll("extra")
             }
         }
 
@@ -60,7 +60,7 @@ internal class SourceSetsTests {
 
         template.kover {
             currentProject {
-                sources.excludedOtherSourceSets.addAll("extra", "foo")
+                sources.includedSourceSets.addAll("extra", "foo")
             }
         }
 
@@ -82,7 +82,7 @@ internal class SourceSetsTests {
         template.kover {
             currentProject {
                 sources {
-                    excludedOtherSourceSets.addAll("extra", "foo")
+                    includedSourceSets.addAll("extra", "foo")
                     excludedSourceSets.add("foo")
                 }
             }
@@ -96,6 +96,30 @@ internal class SourceSetsTests {
             classCounter("kotlinx.kover.examples.sourcesets.MainClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.FooClass").assertAbsent()
             classCounter("kotlinx.kover.examples.sourcesets.ExtraClass").assertPresent()
+        }
+    }
+
+    @Test
+    fun testTestSourceSet() {
+        val template = buildFromTemplate("sourcesets-multi")
+
+        template.kover {
+            currentProject {
+                sources {
+                    includedSourceSets.addAll("test")
+                }
+            }
+        }
+
+        val gradleBuild = template.generate()
+        val buildResult = gradleBuild.runWithParams(":koverXmlReport")
+
+        gradleBuild.createCheckerContext(buildResult).xmlReport {
+            assertTrue(buildResult.isSuccessful, "Build should be successful")
+            classCounter("kotlinx.kover.examples.sourcesets.MainClass").assertAbsent()
+            classCounter("kotlinx.kover.examples.sourcesets.FooClass").assertAbsent()
+            classCounter("kotlinx.kover.examples.sourcesets.ExtraClass").assertAbsent()
+            classCounter("kotlinx.kover.examples.sourcesets.TestClasses").assertPresent()
         }
     }
 

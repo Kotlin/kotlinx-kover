@@ -6,7 +6,6 @@ package kotlinx.kover.gradle.plugin.dsl
 
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import org.gradle.api.Action
-import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 
@@ -127,7 +126,7 @@ public interface KoverVariantConfig {
      *     excludedSourceSets.addAll(excludedSourceSet)
      *
      *     // exclude classes of all non-specified source sets from all reports.
-     *     excludedOtherSourceSets.addAll(includedSourceSet)
+     *     includedSourceSets.addAll(includedSourceSet)
      * ```
      */
     public fun sources(block: Action<KoverVariantSources>)
@@ -157,7 +156,7 @@ public interface KoverVariantConfig {
  *     excludedSourceSets.addAll(excludedSourceSet)
  *
  *     // exclude classes of all non-specified source sets from all reports.
- *     excludedOtherSourceSets.addAll(includedSourceSet)
+ *     includedSourceSets.addAll(includedSourceSet)
  * ```
  */
 @KoverGradlePluginDsl
@@ -177,7 +176,7 @@ public interface KoverVariantSources {
      *
      * Classes from source sets that are not listed here will not be included in the report.
      */
-    public val excludedOtherSourceSets: SetProperty<String>
+    public val includedSourceSets: SetProperty<String>
 }
 
 /**

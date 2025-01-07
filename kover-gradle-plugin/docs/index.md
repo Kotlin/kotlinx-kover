@@ -1138,7 +1138,7 @@ In addition, it is possible to exclude classes from all source sets that are not
 kover {
     currentProject {
         sources {
-            excludedOtherSourceSets.addAll("main")
+            includedSourceSets.addAll("main")
         }
     }
 }
@@ -1151,7 +1151,7 @@ These filters can be combined, the `excludedSourceSets` filter has priority.
 kover {
     currentProject {
         sources {
-            excludedOtherSourceSets.addAll("main", "extra")
+            includedSourceSets.addAll("main", "extra")
             excludedSourceSets.addAll("main")
         }
     }

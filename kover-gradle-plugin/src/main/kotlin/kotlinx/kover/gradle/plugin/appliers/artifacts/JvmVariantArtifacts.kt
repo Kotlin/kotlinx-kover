@@ -58,11 +58,7 @@ internal class JvmVariantArtifacts(
             return false
         }
 
-        val included = variant.excludedOtherSourceSets.get()
-        // if `test` is not included so we need to check it
-        if (compilationName == "test" && "test" !in included) {
-            return false
-        }
+        val included = variant.includedSourceSets.get()
 
         if (included.isNotEmpty() && compilationName !in included) {
             return false

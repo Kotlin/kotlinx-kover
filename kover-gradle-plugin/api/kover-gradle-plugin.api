@@ -294,8 +294,8 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVariantCrea
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVariantSources {
 	public abstract fun getExcludeJava ()Lorg/gradle/api/provider/Property;
-	public abstract fun getExcludedOtherSourceSets ()Lorg/gradle/api/provider/SetProperty;
 	public abstract fun getExcludedSourceSets ()Lorg/gradle/api/provider/SetProperty;
+	public abstract fun getIncludedSourceSets ()Lorg/gradle/api/provider/SetProperty;
 }
 
 public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerificationRulesConfig {
