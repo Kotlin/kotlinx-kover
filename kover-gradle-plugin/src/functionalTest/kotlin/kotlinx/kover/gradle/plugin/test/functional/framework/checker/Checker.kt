@@ -460,6 +460,10 @@ private class CounterImpl(
         assertNull(values, "Counter '$symbol' with type '$type' isn't absent")
     }
 
+    override fun assertPresent() {
+        assertNotNull(values, "Counter for '$symbol' with type '$type' isn't present in report")
+    }
+
     override fun assertFullyMissed() {
         assertNotNull(values, "Counter '$symbol' with type '$type' isn't fully missed because it absent")
         assertTrue(values.missed > 0, "Counter '$symbol' with type '$type' isn't fully missed")

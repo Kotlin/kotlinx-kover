@@ -73,6 +73,8 @@ internal interface ProjectAnalysisData {
 internal interface Counter {
     fun assertAbsent()
 
+    fun assertPresent()
+
     fun assertFullyMissed()
 
     fun assertCovered()

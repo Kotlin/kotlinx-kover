@@ -10,6 +10,7 @@ import kotlinx.kover.gradle.plugin.commons.VariantOriginAttr
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantConfigImpl
 import kotlinx.kover.gradle.plugin.appliers.origin.JvmVariantOrigin
 import kotlinx.kover.gradle.plugin.commons.JVM_VARIANT_NAME
+import kotlinx.kover.gradle.plugin.dsl.KoverVariantSources
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
 import org.gradle.api.Project
@@ -48,9 +49,25 @@ internal class JvmVariantArtifacts(
         }
 
         fromOrigin(variantOrigin) { compilationName ->
-            compilationName !in variantConfig.sources.excludedSourceSets.get()
-                    && compilationName != "test"
+            !compilationIsExcluded(compilationName, variantConfig.sources)
         }
+    }
+
+    private fun compilationIsExcluded(compilationName: String, variant: KoverVariantSources): Boolean {
+        if (compilationName in variant.excludedSourceSets.get()) {
+            return true
+        }
+
+        val included = variant.includedSourceSets.get()
+
+        if (included.isEmpty() && compilationName == "test") {
+            return true
+        }
+        if (included.isNotEmpty() && compilationName !in included) {
+            return true
+        }
+
+        return false
     }
 
 }

@@ -97,6 +97,7 @@ private fun KoverVariantSources.wrap(project: Project): KoverMergingVariantSourc
     return object : KoverMergingVariantSources {
         override val excludeJava: Property<Boolean> = this@wrap.excludeJava
         override val excludedSourceSets: SetProperty<String> = this@wrap.excludedSourceSets
+        override val includedSourceSets: SetProperty<String> = this@wrap.includedSourceSets
         override val project: Project = project
     }
 }

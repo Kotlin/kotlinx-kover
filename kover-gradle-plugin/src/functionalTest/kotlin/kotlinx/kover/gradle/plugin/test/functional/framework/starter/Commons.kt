@@ -20,6 +20,7 @@ import java.lang.reflect.Method
 
 private const val DIR_PARAM = "build-directory"
 private const val CHECKER_PARAM = "checker-context"
+private const val GRADLE_WITH_ASSIGN_OPERATOR_VERSION = "8.12"
 
 internal class RunCommand(val buildSource: BuildSource, val gradleArgs: List<String>)
 
@@ -182,4 +183,18 @@ internal fun File.patchKoverDependency(koverVersion: String) {
             writer.appendLine(lineToWrite)
         }
     }
+}
+
+internal fun File.addKoverBlocks(koverBlocks: MutableList<(ScriptLanguage, String) -> String>) {
+    if (koverBlocks.isEmpty()) return
+
+    val language = if (name.endsWith(".kts")) ScriptLanguage.KTS else ScriptLanguage.GROOVY
+
+    val builder = StringBuilder()
+    koverBlocks.forEach { block ->
+        builder.appendLine()
+        builder.append(block(language, GRADLE_WITH_ASSIGN_OPERATOR_VERSION))
+        builder.appendLine()
+    }
+    appendText(builder.toString())
 }
