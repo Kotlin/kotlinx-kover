@@ -20,6 +20,7 @@ import java.lang.reflect.Method
 
 private const val DIR_PARAM = "build-directory"
 private const val CHECKER_PARAM = "checker-context"
+private const val GRADLE_WITH_ASSIGN_OPERATOR_VERSION = "8.12"
 
 internal class RunCommand(val buildSource: BuildSource, val gradleArgs: List<String>)
 
@@ -192,7 +193,7 @@ internal fun File.addKoverBlocks(koverBlocks: MutableList<(ScriptLanguage, Strin
     val builder = StringBuilder()
     koverBlocks.forEach { block ->
         builder.appendLine()
-        builder.append(block(language, "8.12"))
+        builder.append(block(language, GRADLE_WITH_ASSIGN_OPERATOR_VERSION))
         builder.appendLine()
     }
     appendText(builder.toString())
