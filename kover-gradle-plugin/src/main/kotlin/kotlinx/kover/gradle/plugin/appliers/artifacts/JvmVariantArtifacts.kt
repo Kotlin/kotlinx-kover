@@ -49,25 +49,25 @@ internal class JvmVariantArtifacts(
         }
 
         fromOrigin(variantOrigin) { compilationName ->
-            compilationIsExcluded(compilationName, variantConfig.sources)
+            !compilationIsExcluded(compilationName, variantConfig.sources)
         }
     }
 
     private fun compilationIsExcluded(compilationName: String, variant: KoverVariantSources): Boolean {
         if (compilationName in variant.excludedSourceSets.get()) {
-            return false
+            return true
         }
 
         val included = variant.includedSourceSets.get()
 
         if (included.isEmpty() && compilationName == "test") {
-            return false
+            return true
         }
         if (included.isNotEmpty() && compilationName !in included) {
-            return false
+            return true
         }
 
-        return true
+        return false
     }
 
 }
