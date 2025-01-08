@@ -1,3 +1,12 @@
+0.9.1 / 2025-01-08
+===================
+## Kover Gradle Plugin
+### Features
+* [`#714`](https://github.com/Kotlin/kotlinx-kover/issues/714) Added ability to specify inclusion filter for source sets
+### Bugfixes
+* [`#716`](https://github.com/Kotlin/kotlinx-kover/issues/716) Fixed Gradle 9.0 migration issue
+* [`#721`](https://github.com/Kotlin/kotlinx-kover/issues/721) Fixed creation of Kover Agent arguments file
+
 0.9.0 / 2024-12-12
 ===================
 ## Kover Gradle Plugin
