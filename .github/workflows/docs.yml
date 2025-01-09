@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: 8
           cache: 'gradle'
       - name: Install Gradle
         uses: gradle/gradle-build-action@v2
