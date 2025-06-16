@@ -113,7 +113,7 @@ abstract class CollectTask: DefaultTask() {
 
 publishing {
     repositories {
-        addSonatypeRepository()
+        addPublishingRepository()
 
         /**
          * Maven repository in build directory to store artifacts for using in functional tests.
@@ -142,12 +142,14 @@ afterEvaluate {
     }
 }
 
-fun RepositoryHandler.addSonatypeRepository() {
+// Artifacts are published to an intermediate repo (libs.repo.url) first,
+// and then deployed to the central portal.
+fun RepositoryHandler.addPublishingRepository() {
     maven {
-        url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+        url = uri(acquireProperty("libs.repo.url") ?: error("libs.repo.url is not set"))
         credentials {
-            username = acquireProperty("libs.sonatype.user")
-            password = acquireProperty("libs.sonatype.password")
+            username = acquireProperty("libs.repo.user")
+            password = acquireProperty("libs.repo.password")
         }
     }
 }
