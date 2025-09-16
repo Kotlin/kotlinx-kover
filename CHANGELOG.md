@@ -1,3 +1,11 @@
+0.9.2 / 2025-09-16
+===================
+## Kover Gradle Plugin
+### Features
+* [`#748`](https://github.com/Kotlin/kotlinx-kover/issues/748) Disable caching for KoverAgentJarTask
+### Bugfixes
+* [`#747`](https://github.com/Kotlin/kotlinx-kover/issues/747) Added support for KMP Android library plugin
+
 0.9.1 / 2025-01-08
 ===================
 ## Kover Gradle Plugin
