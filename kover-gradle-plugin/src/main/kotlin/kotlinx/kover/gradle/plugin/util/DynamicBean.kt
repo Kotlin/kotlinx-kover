@@ -9,7 +9,7 @@ import org.gradle.internal.metaobject.*
 
 internal fun Any.bean(): DynamicBean = DynamicBean(this)
 
-internal class DynamicBean(origin: Any) {
+internal class DynamicBean(val origin: Any) {
     private val wrappedOrigin = BeanDynamicObject(origin)
 
     operator fun get(name: String): DynamicBean = bean(name)
