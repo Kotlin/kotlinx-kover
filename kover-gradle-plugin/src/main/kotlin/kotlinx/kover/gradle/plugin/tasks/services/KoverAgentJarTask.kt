@@ -4,22 +4,23 @@
 
 package kotlinx.kover.gradle.plugin.tasks.services
 
-import kotlinx.kover.gradle.plugin.dsl.*
-import kotlinx.kover.gradle.plugin.tools.*
+import kotlinx.kover.gradle.plugin.tools.CoverageTool
+import kotlinx.kover.gradle.plugin.tools.CoverageToolVariant
 import org.gradle.api.DefaultTask
-import org.gradle.api.artifacts.*
-import org.gradle.api.file.*
+import org.gradle.api.file.ArchiveOperations
+import org.gradle.api.file.ConfigurableFileCollection
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.*
-import org.gradle.kotlin.dsl.support.*
-import javax.inject.*
+import org.gradle.work.DisableCachingByDefault
+import javax.inject.Inject
 
 /**
  * Task to get online instrumentation agent jar file by specified coverage tool.
  *
  * The task is cached, so in general there should not be a performance issue on large projects.
  */
-@CacheableTask
+@DisableCachingByDefault(because = "Local file operations are faster then using build cache")
 internal abstract class KoverAgentJarTask : DefaultTask() {
     // relative sensitivity for file collections which are not FileTree is a comparison by file name and its contents
     @get:InputFiles
