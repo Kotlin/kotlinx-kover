@@ -3,7 +3,7 @@
  */
 
 plugins {
-    kotlin("jvm") version ("2.0.0")
+    kotlin("jvm") version ("2.2.0")
 }
 
 dependencies {

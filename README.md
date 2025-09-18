@@ -15,22 +15,23 @@ Kover Toolset:
 - [Kover features artifact](#kover-features-artifact)
 
 ## Kover Gradle Plugin
-For full information about latest stable release of Kover Gradle Plugin, please refer to the [documentation](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
+For full information about the latest stable release of Kover Gradle Plugin, please refer to the [documentation](https://kotlin.github.io/kotlinx-kover/gradle-plugin).
 
 ### Features
 
-* Collection of code coverage through `JVM` tests (JS and native targets are not supported yet).
+* Collection of code coverage for jvm and Android host tests (JS and native targets are not supported yet).
 * Generating `HTML` and `XML` reports.
-* Support for `Kotlin JVM`, `Kotlin Multiplatform` projects.
-* Support for `Kotlin Android` projects with build variants (instrumentation tests executing on the Android device are not supported yet).
-* Support mixed `Kotlin` and `Java` sources
+* Works with `kotlin("jvm")`, `kotlin("android")`, `kotlin("multiplatform")` and `com.android.kotlin.multiplatform.library` plugins.
+* Support build variants in `kotlin("android")` projects.
+* Support mixed `Kotlin` and `Java` sources.
 * Verification rules with bounds in the Gradle plugin to keep track of coverage.
 * Using JaCoCo library in Gradle plugin as an alternative for coverage measuring and report generation.
 
 The recommended way of applying Kover is with the
 [plugins DSL](https://docs.gradle.org/current/userguide/plugins.html#sec:plugins_block).
 
-Minimum supported version of `Gradle` is `6.8`.
+Minimum supported version of `Gradle` is `6.8.3`. 
+Minimum version of JVM for running tests is `1.7`.
 
 Add the following to your top-level build file:
 
@@ -121,6 +122,8 @@ It is in its infancy, it is recommended to use it only for test or pet projects.
 Refer to the [documentation](https://kotlin.github.io/kotlinx-kover/gradle-plugin/aggregated.html) for details. 
 
 ## Kover Maven Plugin
+Minimum Maven version for Maven plugin is `3.0`
+
 The Kover Maven Plugin can be applied by specifying build plugin
 ```xml
 <plugin>
@@ -132,10 +135,12 @@ The Kover Maven Plugin can be applied by specifying build plugin
 
 The list of Kover goals is specified in [this document section](https://kotlin.github.io/kotlinx-kover/maven-plugin#goals).
 
-For full information about latest stable release of Kover Maven Plugin, please refer to the [documentation](https://kotlin.github.io/kotlinx-kover/maven-plugin).
+For full information about the latest stable release of Kover Maven Plugin, please refer to the [documentation](https://kotlin.github.io/kotlinx-kover/maven-plugin).
 
 
 ## Kover CLI
+Minimum version of JVM is `8`.
+
 Standalone JVM application used for offline instrumentation and generation of human-readable reports.
 
 [Documentation of the Kover CLI](https://kotlin.github.io/kotlinx-kover/cli).
@@ -146,11 +151,16 @@ Offline instrumentation is the modification of class-files stored on disk to mea
 The ways of offline instrumentation and running of the instrumented applications are described in the [documentation](https://kotlin.github.io/kotlinx-kover/offline-instrumentation).
 
 ## Kover JVM agent
+Minimum version of JVM is `1.7`.
+
 JVM agent is a jar file that modifies the bytecode of loaded into the JVM classes in order to measure coverage.
 [Documentations](https://kotlin.github.io/kotlinx-kover/jvm-agent).
 
 ## Kover features artifact
-A JVM dependency that allows to programmatically instrument class-files on a disk.
+Minimum version of JVM is `8`.
+Minimum version of Kotlin is `1.8.0`.
+
+A JVM dependency that allows programmatically instrument class-files on a disk.
 
 [Documentation of Kover features artifact](https://kotlin.github.io/kotlinx-kover/offline-instrumentation/#instrumentation-by-kover-features)
 

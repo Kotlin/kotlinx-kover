@@ -23,7 +23,7 @@ internal class TaskInterfacesTests {
                 import kotlinx.kover.gradle.plugin.dsl.tasks.KoverHtmlReport
                 
                 plugins {
-                    kotlin("jvm") version "1.9.22"
+                    kotlin("jvm") version ("2.2.0")
                     id("org.jetbrains.kotlinx.kover")
                 }
                 
@@ -53,7 +53,7 @@ internal class TaskInterfacesTests {
                 import kotlinx.kover.gradle.plugin.dsl.tasks.KoverHtmlReport
                 
                 plugins {
-                    kotlin("jvm") version "1.9.22"
+                    kotlin("jvm") version ("2.2.0")
                     id("org.jetbrains.kotlinx.kover")
                 }
                 

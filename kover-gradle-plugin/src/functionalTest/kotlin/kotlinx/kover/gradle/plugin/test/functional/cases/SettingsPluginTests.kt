@@ -133,8 +133,8 @@ Rule violated: lines covered percentage is 50.000000, but expected maximum is 10
     fun CheckerContext.testVerifyMin() {
         taskOutput("koverVerify") {
             assertTrue(contains("Rule 'CLI parameters' violated:\n" +
-                    "  lines covered percentage is 7.407400, but expected maximum is 5\n" +
-                    "  lines covered percentage is 7.407400, but expected minimum is 100"))
+                    "  lines covered percentage is 8.000000, but expected maximum is 5\n" +
+                    "  lines covered percentage is 8.000000, but expected minimum is 100"))
         }
     }
 

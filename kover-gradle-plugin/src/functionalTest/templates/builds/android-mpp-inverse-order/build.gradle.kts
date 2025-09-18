@@ -1,7 +1,7 @@
 plugins {
     id ("org.jetbrains.kotlinx.kover") version "0.7.1"
-    id ("com.android.application") version "7.4.0"
-    kotlin("multiplatform") version ("1.8.20")
+    id ("com.android.application") version "8.12.0"
+    kotlin("multiplatform") version ("2.2.0")
 }
 
 android {
@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "kotlinx.kover.test.android"
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -41,7 +41,7 @@ dependencies {
 }
 
 kotlin {
-    android()
+    androidTarget()
 
     jvm() {
         testRuns["test"].executionTask.configure {

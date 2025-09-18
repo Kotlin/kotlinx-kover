@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.7.10"
+    kotlin("multiplatform") version ("2.2.0")
     id("org.jetbrains.kotlinx.kover") version "0.7.0"
 }
 
@@ -9,7 +9,6 @@ sourceSets.create("extra")
 
 kotlin {
     jvm {
-        withJava()
     }
 
     sourceSets {

@@ -47,6 +47,8 @@ internal sealed class AbstractVariantArtifacts(
         val artifactProperty = artifactGenTask.flatMap { task -> task.artifactFile }
         producerConfiguration = project.configurations.register(artifactConfigurationName(variantName)) {
             // disable generation of Kover artifacts on `assemble`, fix of https://github.com/Kotlin/kotlinx-kover/issues/353
+            // leave this for compatibility with older versions
+            @Suppress("DEPRECATION")
             isVisible = false
             asProducer()
             attributes {

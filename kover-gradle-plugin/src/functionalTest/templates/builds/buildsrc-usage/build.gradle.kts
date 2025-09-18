@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.4.20"
+    kotlin("jvm") version ("2.2.0")
 }
 
 apply(plugin = "org.jetbrains.kotlinx.kover")

@@ -44,8 +44,8 @@ afterEvaluate {
         compilerOptions {
             allWarningsAsErrors = true
             jvmTarget = JvmTarget.JVM_1_8
-            languageVersion = KotlinVersion.KOTLIN_1_5
-            apiVersion = KotlinVersion.KOTLIN_1_5
+            languageVersion = KotlinVersion.KOTLIN_1_8
+            apiVersion = KotlinVersion.KOTLIN_1_8
             freeCompilerArgs.addAll("-Xsuppress-version-warnings")
         }
     }

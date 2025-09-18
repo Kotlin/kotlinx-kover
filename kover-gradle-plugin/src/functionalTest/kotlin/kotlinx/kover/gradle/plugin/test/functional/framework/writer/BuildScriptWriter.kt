@@ -102,7 +102,6 @@ dependencies {
 private const val KOTLIN_MPP_DEPS = """
 kotlin {
     jvm() {
-        withJava()
     }
     dependencies {
         commonTestImplementation(kotlin("test"))
@@ -127,7 +126,6 @@ dependencies {
 private const val GROOVY_MPP_DEPS = """
 kotlin {
     jvm() {
-        withJava()
     }
     dependencies {
         commonTestImplementation 'org.jetbrains.kotlin:kotlin-test'
