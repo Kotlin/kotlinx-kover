@@ -19,7 +19,7 @@ internal class AccessorsTests {
             dir.resolve("build.gradle.kts").writeText(
                 """
                 plugins {
-                    kotlin("jvm") version ("2.2.0")
+                    kotlin("jvm") version ("2.2.20")
                     id("org.jetbrains.kotlinx.kover")
                 }
 

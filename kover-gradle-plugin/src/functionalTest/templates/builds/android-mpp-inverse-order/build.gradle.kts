@@ -1,7 +1,7 @@
 plugins {
     id ("org.jetbrains.kotlinx.kover") version "0.7.1"
     id ("com.android.application") version "8.12.0"
-    kotlin("multiplatform") version ("2.2.0")
+    kotlin("multiplatform") version ("2.2.20")
 }
 
 android {

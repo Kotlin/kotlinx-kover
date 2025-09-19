@@ -1,4 +1,4 @@
-package android
+package kotlinx.kover.test.android
 
 import kotlinx.kover.test.android.Maths
 import org.junit.Test
