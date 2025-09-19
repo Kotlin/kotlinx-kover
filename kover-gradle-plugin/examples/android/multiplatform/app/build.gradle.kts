@@ -23,6 +23,7 @@ android {
             isMinifyEnabled = true
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -37,11 +38,11 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.5.0")
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    testImplementation("junit:junit:4.13.2")
+    commonTestImplementation("junit:junit:4.13.2")
 }
 
 kotlin {
-    android()
+    androidTarget()
 
     jvm() {
         testRuns["test"].executionTask.configure {
@@ -78,13 +79,12 @@ kover {
 
     currentProject {
         createVariant("custom") {
-
-            add("jvm")
             /**
-             * Tests, sources, classes, and compilation tasks of the 'debug' build variant will be included in the report variant `custom`.
-             * Thus, information from the 'debug' variant will be included in the `custom` report for this project and any project that specifies this project as a dependency.
+             * Take coverage from this project and any project specified by `kover(project("..."))` dependency
              */
-            addWithDependencies("debug")
+            addWithDependencies("jvm")
+
+            add("debug")
         }
     }
 

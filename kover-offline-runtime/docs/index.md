@@ -97,7 +97,7 @@ It is also possible to save all log messages to a file, to do this, you need to 
 Example of a custom binary report production using Kover tool CLI in Gradle
 ```kotlin
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version ("2.2.20")
     application
 }
 

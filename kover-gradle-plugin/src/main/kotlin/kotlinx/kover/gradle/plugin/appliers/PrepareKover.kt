@@ -45,6 +45,8 @@ internal fun prepare(project: Project): KoverContext {
 
     project.configurations.register("koverEmptyArtifact") {
         // disable generation of Kover artifacts on `assemble`, fix of https://github.com/Kotlin/kotlinx-kover/issues/353
+        // leave this for compatibility with older versions
+        @Suppress("DEPRECATION")
         isVisible = false
         asProducer()
         attributes {

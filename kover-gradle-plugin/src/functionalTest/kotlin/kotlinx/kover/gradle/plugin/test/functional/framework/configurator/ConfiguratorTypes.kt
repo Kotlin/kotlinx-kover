@@ -126,7 +126,7 @@ private class FilePropertyFromBuildDir(private val relativePath: String): Regula
         throw KoverCriticalException("Operation not supported in functional test")
     }
 
-    override fun <S : Any?> map(transformer: Transformer<out S?, in RegularFile>): Provider<S> {
+    override fun <S : Any> map(transformer: Transformer<out S?, in RegularFile>): Provider<S> {
         throw KoverCriticalException("Operation not supported in functional test")
     }
 
@@ -134,7 +134,7 @@ private class FilePropertyFromBuildDir(private val relativePath: String): Regula
         throw KoverCriticalException("Operation not supported in functional test")
     }
 
-    override fun <S : Any?> flatMap(transformer: Transformer<out Provider<out S>?, in RegularFile>): Provider<S> {
+    override fun <S : Any> flatMap(transformer: Transformer<out Provider<out S>?, in RegularFile>): Provider<S> {
         throw KoverCriticalException("Operation not supported in functional test")
     }
 
@@ -150,11 +150,7 @@ private class FilePropertyFromBuildDir(private val relativePath: String): Regula
         throw KoverCriticalException("Operation not supported in functional test")
     }
 
-    override fun forUseAtConfigurationTime(): Provider<RegularFile> {
-        throw KoverCriticalException("Operation not supported in functional test")
-    }
-
-    override fun <U : Any?, R : Any?> zip(
+    override fun <U : Any, R : Any> zip(
         right: Provider<U>,
         combiner: BiFunction<in RegularFile, in U, out R?>
     ): Provider<R> {

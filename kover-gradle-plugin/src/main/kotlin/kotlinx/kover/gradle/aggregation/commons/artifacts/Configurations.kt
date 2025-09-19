@@ -14,6 +14,8 @@ import org.gradle.api.artifacts.Configuration
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html
  */
 internal fun Configuration.asTransitiveDependencies() {
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = false
     isCanBeConsumed = false
     isTransitive = true
@@ -29,6 +31,8 @@ internal fun Configuration.asTransitiveDependencies() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asDependency() {
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = true
     isCanBeResolved = false
     isCanBeConsumed = false
@@ -42,6 +46,8 @@ internal fun Configuration.asDependency() {
  */
 internal fun Configuration.asProducer() {
     // disable generation of Kover artifacts on `assemble`, fix of https://github.com/Kotlin/kotlinx-kover/issues/353
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = false
     isCanBeResolved = false
     // this configuration produces modules that can be consumed by other projects
@@ -55,6 +61,8 @@ internal fun Configuration.asProducer() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asConsumer() {
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = false
     isCanBeResolved = true
     // this config consumes modules from OTHER projects, and cannot be consumed by other projects

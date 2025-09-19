@@ -52,10 +52,16 @@ dependencies {
     functionalTestImplementation(kotlin("test"))
     functionalTestImplementation(libs.junit.jupiter)
     functionalTestImplementation(libs.junit.params)
+    "functionalTestRuntimeOnly"("org.junit.platform:junit-platform-launcher")
 }
 
 mavenPlugin {
     goalPrefix = "kover"
+}
+
+tasks.generateMavenPluginDescriptor {
+    sourcesDirs.from(sourceSets.main.map { it.kotlin.srcDirs })
+    classesDirs.from(sourceSets.main.map { it.kotlin.classesDirectory })
 }
 
 kotlin {

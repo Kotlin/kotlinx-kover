@@ -90,6 +90,8 @@ internal interface ProductFlavorAttr : Named {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html
  */
 internal fun Configuration.asTransitiveDependencies() {
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = false
     isCanBeConsumed = false
     isTransitive = true
@@ -105,6 +107,8 @@ internal fun Configuration.asTransitiveDependencies() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asBucket() {
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = true
     isCanBeResolved = false
     isCanBeConsumed = false
@@ -117,6 +121,8 @@ internal fun Configuration.asBucket() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asProducer() {
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = false
     isCanBeResolved = false
     // this configuration produces modules that can be consumed by other projects
@@ -130,6 +136,8 @@ internal fun Configuration.asProducer() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asConsumer() {
+    // leave this for compatibility with older versions
+    @Suppress("DEPRECATION")
     isVisible = false
     isCanBeResolved = true
     // this config consumes modules from OTHER projects, and cannot be consumed by other projects

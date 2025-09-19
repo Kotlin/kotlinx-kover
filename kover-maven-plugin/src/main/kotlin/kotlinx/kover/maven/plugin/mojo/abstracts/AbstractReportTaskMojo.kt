@@ -26,6 +26,7 @@ abstract class AbstractReportTaskMojo : AbstractCoverageTaskMojo(), MavenMultiPa
     @Parameter(defaultValue = "\${project.reporting.outputDirectory}/$KOVER_REPORTS_PATH")
     protected var outputDirectory: File = File(".")
 
+    @Suppress("DEPRECATION")
     final override fun generate(sink: org.codehaus.doxia.sink.Sink?, locale: Locale?) {
         generate(sink, null, locale)
     }

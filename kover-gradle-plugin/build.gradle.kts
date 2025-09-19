@@ -51,6 +51,7 @@ dependencies {
     functionalTestImplementation(kotlin("test"))
     functionalTestImplementation(libs.junit.jupiter)
     functionalTestImplementation(libs.junit.params)
+    "functionalTestRuntimeOnly"("org.junit.platform:junit-platform-launcher")
 
     snapshotRelease(projects.koverFeaturesJvm)
     snapshotRelease(projects.koverJvmAgent)
@@ -60,7 +61,6 @@ dependencies {
     functionalTestImplementation("org.jetbrains.kotlin:kotlin-gradle-plugin:$embeddedKotlinVersion")
     functionalTestImplementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:$embeddedKotlinVersion")
     functionalTestImplementation("org.jetbrains.kotlin:kotlin-compiler-runner:$embeddedKotlinVersion")
-
 }
 
 kotlin {
@@ -163,8 +163,8 @@ afterEvaluate {
         compilerOptions {
             allWarningsAsErrors = true
             jvmTarget = JvmTarget.JVM_1_8
-            languageVersion = KotlinVersion.KOTLIN_1_5
-            apiVersion = KotlinVersion.KOTLIN_1_5
+            languageVersion = KotlinVersion.KOTLIN_1_8
+            apiVersion = KotlinVersion.KOTLIN_1_8
             freeCompilerArgs.add("-Xsuppress-version-warnings")
         }
     }
@@ -183,8 +183,8 @@ tasks.dokkaHtml {
             skipDeprecated = true
         }
         sourceLink {
-            localDirectory = rootDir
-            remoteUrl = URL("https://github.com/kotlin/kotlinx-kover/tree/main")
+            localDirectory.set(file(rootDir))
+            remoteUrl.set(URL("https://github.com/kotlin/kotlinx-kover/tree/main"))
             remoteLineSuffix = "#L"
         }
     }
