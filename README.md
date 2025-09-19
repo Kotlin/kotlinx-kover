@@ -19,7 +19,7 @@ For full information about the latest stable release of Kover Gradle Plugin, ple
 
 ### Features
 
-* Collection of code coverage for jvm and Android host tests (JS and native targets are not supported yet).
+* Collection of code coverage for JVM and Android host tests (JS and native targets are not supported yet).
 * Generating `HTML` and `XML` reports.
 * Works with `kotlin("jvm")`, `kotlin("android")`, `kotlin("multiplatform")` and `com.android.kotlin.multiplatform.library` plugins.
 * Support build variants in `kotlin("android")` projects.
