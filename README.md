@@ -139,7 +139,7 @@ For full information about the latest stable release of Kover Maven Plugin, plea
 
 
 ## Kover CLI
-Minimum version of JVM is `8`.
+Minimum version of JVM is `1.8`.
 
 Standalone JVM application used for offline instrumentation and generation of human-readable reports.
 
@@ -157,7 +157,7 @@ JVM agent is a jar file that modifies the bytecode of loaded into the JVM classe
 [Documentations](https://kotlin.github.io/kotlinx-kover/jvm-agent).
 
 ## Kover features artifact
-Minimum version of JVM is `8`.
+Minimum version of JVM is `1.8`.
 Minimum version of Kotlin is `1.8.0`.
 
 A JVM dependency that allows programmatically instrument class-files on a disk.
