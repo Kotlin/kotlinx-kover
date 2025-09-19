@@ -7,6 +7,7 @@ plugins {
 
 dependencies {
     kover(project(":app"))
+    kover(project(":lib"))
 }
 
 kover {

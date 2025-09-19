@@ -24,11 +24,10 @@ dependencies {
     commonTestImplementation("junit:junit:4.13.2")
 }
 
-
 kover {
     currentProject {
         createVariant("custom") {
-            add("jvm")
+            add("android")
         }
     }
 }

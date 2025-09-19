@@ -19,6 +19,7 @@ import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.named
 
 internal class JvmVariantArtifacts(
+    variantName: String,
     project: Project,
     toolProvider: Provider<CoverageTool>,
     koverBucketConfiguration: Configuration,
@@ -27,7 +28,7 @@ internal class JvmVariantArtifacts(
     projectExtension: KoverProjectExtensionImpl
 ) : AbstractVariantArtifacts(
     project,
-    JVM_VARIANT_NAME,
+    variantName,
     toolProvider,
     koverBucketConfiguration,
     variantConfig,

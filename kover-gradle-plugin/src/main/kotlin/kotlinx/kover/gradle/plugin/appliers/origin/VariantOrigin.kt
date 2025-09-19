@@ -67,6 +67,7 @@ internal class LanguageCompilation(
 internal class JvmVariantOrigin(
     override val tests: TaskCollection<Test>,
     override val compilations: Provider<Map<String, CompilationDetails>>,
+    val targetName: String
 ) : VariantOrigin
 
 internal class AndroidVariantOrigin(
@@ -75,4 +76,4 @@ internal class AndroidVariantOrigin(
     val buildVariant: AndroidBuildVariant
 ) : VariantOrigin
 
-internal class AllVariantOrigins(val jvm: JvmVariantOrigin?, val android: List<AndroidVariantOrigin>)
+internal class AllVariantOrigins(val jvm: List<JvmVariantOrigin>, val android: List<AndroidVariantOrigin>)

@@ -13,6 +13,7 @@ internal class AndroidKmpLibTests {
        xmlReport {
            classCounter("org.jetbrains.ExampleClass").assertPresent()
            classCounter("org.jetbrains.AndroidClass").assertPresent()
+           methodCounter("org.jetbrains.AndroidClass", "covered").assertFullyCovered()
        }
     }
 }
