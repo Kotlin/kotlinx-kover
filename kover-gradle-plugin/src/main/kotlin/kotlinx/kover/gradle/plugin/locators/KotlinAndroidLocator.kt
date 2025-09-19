@@ -19,7 +19,7 @@ To work around this limitation, working with objects is done through reflection,
 internal fun Project.locateKotlinAndroidVariants(): AllVariantOrigins {
     val kotlinExtension = project.getKotlinExtension()
     val android = locateAndroidVariants(kotlinExtension)
-    return AllVariantOrigins(null, android)
+    return AllVariantOrigins(emptyList(), android)
 }
 
 private fun Project.locateAndroidVariants(kotlinExtension: DynamicBean): List<AndroidVariantOrigin> {

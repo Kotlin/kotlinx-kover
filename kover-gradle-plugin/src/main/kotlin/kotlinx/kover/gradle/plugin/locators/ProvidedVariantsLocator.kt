@@ -95,7 +95,7 @@ internal class ProvidedVariantsLocator(
         } else if (project.pluginManager.hasPlugin(KOTLIN_MULTIPLATFORM_PLUGIN_ID)) {
             project.locateKotlinMultiplatformVariants()
         } else {
-            AllVariantOrigins(null, emptyList())
+            AllVariantOrigins(emptyList(), emptyList())
         }
 
         callback(variants)

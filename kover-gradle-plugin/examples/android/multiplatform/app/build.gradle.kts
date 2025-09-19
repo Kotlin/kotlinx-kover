@@ -68,22 +68,10 @@ kotlin {
  * Kover configs
  */
 
-dependencies {
-    /**
-     * Use artifacts from 'lib' project.
-     */
-    kover(project(":lib"))
-}
-
 kover {
-
     currentProject {
         createVariant("custom") {
-            /**
-             * Take coverage from this project and any project specified by `kover(project("..."))` dependency
-             */
-            addWithDependencies("jvm")
-
+            add("jvm")
             add("debug")
         }
     }

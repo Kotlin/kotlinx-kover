@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.locators
 
 import kotlinx.kover.gradle.plugin.appliers.origin.JvmVariantOrigin
 import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
+import kotlinx.kover.gradle.plugin.commons.JVM_VARIANT_NAME
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
@@ -29,5 +30,5 @@ internal fun Project.locateKotlinJvmVariants(): AllVariantOrigins {
         }
     }
 
-    return AllVariantOrigins(JvmVariantOrigin(tests, compilations), emptyList())
+    return AllVariantOrigins(listOf(JvmVariantOrigin(tests, compilations, JVM_VARIANT_NAME)), emptyList())
 }
