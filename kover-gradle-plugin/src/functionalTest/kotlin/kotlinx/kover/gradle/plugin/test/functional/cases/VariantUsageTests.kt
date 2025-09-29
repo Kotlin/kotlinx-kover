@@ -34,17 +34,15 @@ internal class VariantUsageTests {
         xmlReport("custom") {
             // check test tasks
             checkOutcome(":app:testDebugUnitTest", "SUCCESS")
-            // fixme: fix support for android multiplatform library
-//            checkOutcome(":lib:testAndroidHostTest", "SUCCESS")
+            checkOutcome(":lib:testAndroidHostTest", "SUCCESS")
 
             // check artifact generation tasks
-            checkOutcome(":lib:koverGenerateArtifactJvm", "SUCCESS")
+            checkOutcome(":lib:koverGenerateArtifactAndroid", "SUCCESS")
             checkOutcome(":app:koverGenerateArtifactDebug", "SUCCESS")
             checkOutcome(":app:koverGenerateArtifactCustom", "SUCCESS")
 
             // check android classes from :lib
-            // fixme: fix support for android multiplatform library
-//            classCounter("kotlinx.kover.test.android.lib.DebugUtil").assertFullyCovered()
+            classCounter("kotlinx.kover.test.android.lib.DebugUtil").assertFullyCovered()
             // check android classes from :app
             classCounter("kotlinx.kover.test.android.DebugUtil").assertFullyCovered()
             classCounter("kotlinx.kover.test.android.DebugAppClass").assertFullyMissed()

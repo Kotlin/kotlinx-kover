@@ -35,19 +35,20 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
         }
     }
 
-    val jvmVariant =
-        origins.jvm?.createVariant(this, variantConfig(JVM_VARIANT_NAME))
+    val jvmVariants = origins.jvm.map { providedDetails ->
+        providedDetails.createVariant(providedDetails.targetName, this, variantConfig(providedDetails.targetName))
+    }
 
-    if (jvmVariant != null) {
+    jvmVariants.forEach { variant ->
         VariantReportsSet(
             project,
-            JVM_VARIANT_NAME,
+            variant.variantName,
             ReportVariantType.JVM,
             toolProvider,
-            reportsConfig(JVM_VARIANT_NAME, project.path),
+            reportsConfig(variant.variantName, project.path),
             reporterClasspath,
             projectExtension.koverDisabled
-        ).assign(jvmVariant)
+        ).assign(variant)
     }
 
     val androidVariants = origins.android.map { providedDetails ->
@@ -55,7 +56,7 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     }
 
     val variantArtifacts = mutableMapOf<String, AbstractVariantArtifacts>()
-    jvmVariant?.let { variantArtifacts[JVM_VARIANT_NAME] = it }
+    jvmVariants.forEach { variantArtifacts[it.variantName] = it }
     androidVariants.forEach { variantArtifacts[it.variantName] = it }
 
     val totalVariant =
@@ -157,11 +158,13 @@ private fun KoverContext.reportsConfig(variantName: String, projectPath: String)
 }
 
 private fun JvmVariantOrigin.createVariant(
+    variantName: String,
     koverContext: KoverContext,
     config: KoverVariantCreateConfigImpl,
 ): JvmVariantArtifacts {
     tests.instrument(koverContext, koverContext.projectExtension.koverDisabled, koverContext.projectExtension.currentProject)
     return JvmVariantArtifacts(
+        variantName,
         koverContext.project,
         koverContext.toolProvider,
         koverContext.koverBucketConfiguration,

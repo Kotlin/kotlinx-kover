@@ -18,7 +18,12 @@ kotlin {
             sourceSetTreeName = "test"
         }
 
+        withHostTest { }
     }
 
     jvm()
+}
+
+dependencies {
+    commonTestImplementation("junit:junit:4.13.2")
 }
