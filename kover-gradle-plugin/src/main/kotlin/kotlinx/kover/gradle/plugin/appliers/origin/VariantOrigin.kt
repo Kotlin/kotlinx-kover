@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.appliers.origin
 
 import kotlinx.kover.gradle.plugin.commons.AndroidBuildVariant
 import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.TaskCollection
 import org.gradle.api.tasks.testing.Test
@@ -53,7 +54,7 @@ internal class LanguageCompilation(
     /**
      * Directories with compiled classes, outputs of [compileTasks].
      */
-    val outputs: Set<File>,
+    val outputs: FileCollection,
 
     /**
      * In case when no one compile tasks will be triggered,

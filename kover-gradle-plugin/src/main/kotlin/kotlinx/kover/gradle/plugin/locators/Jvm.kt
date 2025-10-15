@@ -29,13 +29,13 @@ private fun extractJvmCompilation(
         it["kotlin"].valueCollection("srcDirs")
     }.toSet()
 
-    val kotlinOutputs = compilation["output"].value<ConfigurableFileCollection>("classesDirs").files.filterNot<File> {
-        isJavaOutput(it)
-    }.toSet()
+    val kotlinOutputs = compilation["output"]
+        .value<ConfigurableFileCollection>("classesDirs")
+        .filter { file -> !isJavaOutput(file) }
 
-    val javaOutputs = compilation["output"].value<ConfigurableFileCollection>("classesDirs").files.filter<File> {
-        isJavaOutput(it)
-    }.toSet()
+    val javaOutputs = compilation["output"]
+        .value<ConfigurableFileCollection>("classesDirs")
+        .filter { file -> isJavaOutput(file) }
 
     val kotlinCompileTask = compilation.value<Task>("compileKotlinTask")
     val javaCompileTask = compilation.valueOrNull<TaskProvider<Task>?>("compileJavaTaskProvider")?.orNull
