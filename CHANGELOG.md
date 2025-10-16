@@ -1,3 +1,12 @@
+0.9.3 / 2025-10-16
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#759`](https://github.com/Kotlin/kotlinx-kover/issues/759) Fixed locating of host tests for the multiplatform Android library
+* [`#766`](https://github.com/Kotlin/kotlinx-kover/issues/766) Fixed support of KSP plugin
+### Build features
+* Upgraded Gradle version to `9.1.0`
+
 0.9.2 / 2025-09-16
 ===================
 ## Kover Gradle Plugin
