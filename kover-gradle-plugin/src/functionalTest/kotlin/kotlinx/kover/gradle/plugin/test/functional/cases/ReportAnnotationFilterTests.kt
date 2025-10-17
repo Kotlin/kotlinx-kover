@@ -8,12 +8,10 @@ import kotlinx.kover.gradle.plugin.dsl.*
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit.LINE
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.*
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.*
-import java.io.Closeable
-
 
 internal class ReportAnnotationFilterTests {
 
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testExclusions() {
         addProjectWithKover {
             sourcesFrom("annotations-main")
@@ -40,7 +38,7 @@ internal class ReportAnnotationFilterTests {
         }
     }
 
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testInclusions() {
         addProjectWithKover {
             sourcesFrom("annotations-mix")
@@ -74,7 +72,7 @@ internal class ReportAnnotationFilterTests {
         }
     }
 
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testOverride() {
         addProjectWithKover {
             sourcesFrom("annotations-main")
@@ -91,7 +89,7 @@ internal class ReportAnnotationFilterTests {
                                 coverageUnits.set(LINE)
                                 aggregationForGroup.set(AggregationType.COVERED_COUNT)
                                 minValue.set(15)
-                                maxValue.set(15)
+                                maxValue.set(16)
                             }
                         }
                     }

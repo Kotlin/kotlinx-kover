@@ -729,8 +729,6 @@ public interface KoverReportFilter {
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
      *
-     * **_Does not work for JaCoCo_**
-     *
      * Example:
      * ```
      *  annotatedBy("*Generated*", "com.example.KoverExclude")
@@ -750,8 +748,6 @@ public interface KoverReportFilter {
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
      *
-     * **_Does not work for JaCoCo_**
-     *
      * Example:
      * ```
      *  val annotation: Provider<String> = ...
@@ -769,8 +765,6 @@ public interface KoverReportFilter {
      *
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
-     *
-     * **_Does not work for JaCoCo_**
      *
      * Example:
      * ```
@@ -809,8 +803,6 @@ public interface KoverReportFilter {
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
      *
-     * **_Does not work for JaCoCo_**
-     *
      * Example:
      * ```
      *  inheritedFrom("*Repository")
@@ -836,8 +828,6 @@ public interface KoverReportFilter {
      *
      * It is acceptable to use `*` and `?` wildcards,
      * `*` means any number of arbitrary characters (including no chars), `?` means one arbitrary character.
-     *
-     * **_Does not work for JaCoCo_**
      *
      * Example:
      * ```
