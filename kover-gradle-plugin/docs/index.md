@@ -1227,7 +1227,7 @@ kover {
 for the custom version
 ```kotlin
 kover {
-    useJacoco("0.8.10")
+    useJacoco("0.8.13")
 }
 ```
 

@@ -5,13 +5,14 @@
 package kotlinx.kover.gradle.plugin.tools
 
 import kotlinx.kover.features.jvm.KoverFeatures
-import kotlinx.kover.features.jvm.RuleViolations
 import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.commons.VerificationRule
 import kotlinx.kover.gradle.plugin.dsl.*
+import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_MINIMAL_VERSION
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tools.jacoco.JacocoTool
 import kotlinx.kover.gradle.plugin.tools.kover.KoverTool
+import kotlinx.kover.gradle.plugin.util.SemVer
 import org.gradle.api.file.*
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.*
@@ -134,7 +135,13 @@ internal object CoverageToolFactory {
     fun get(projectExtension: KoverProjectExtensionImpl): Provider<CoverageTool> {
         return projectExtension.useJacoco.map {
             if (it) {
-                JacocoTool(JacocoToolVariant(projectExtension.jacocoVersion.get()))
+                val version = projectExtension.jacocoVersion.get()
+                SemVer.ofThreePartOrNull(version)?.also { semver ->
+                    if (semver < SemVer.ofThreePartOrNull(JACOCO_TOOL_MINIMAL_VERSION)!!) {
+                        throw KoverIllegalConfigException("Jacoco version $version is not supported. The minimum supported version is '$JACOCO_TOOL_MINIMAL_VERSION'")
+                    }
+                }
+                JacocoTool(JacocoToolVariant(version))
             } else {
                 KoverTool(KoverToolBuiltin)
             }

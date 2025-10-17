@@ -334,6 +334,7 @@ public abstract interface class kotlinx/kover/gradle/plugin/dsl/KoverVerifyTaskC
 public final class kotlinx/kover/gradle/plugin/dsl/KoverVersions {
 	public static final field INSTANCE Lkotlinx/kover/gradle/plugin/dsl/KoverVersions;
 	public static final field JACOCO_TOOL_DEFAULT_VERSION Ljava/lang/String;
+	public static final field JACOCO_TOOL_MINIMAL_VERSION Ljava/lang/String;
 	public static final field MINIMUM_GRADLE_VERSION Ljava/lang/String;
 	public final fun getVersion ()Ljava/lang/String;
 }
