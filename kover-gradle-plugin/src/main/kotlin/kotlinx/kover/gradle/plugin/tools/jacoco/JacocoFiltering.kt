@@ -72,9 +72,6 @@ internal fun CoverageBuilder.filter(filters: ReportFilters, classfiles: Collecti
         newClassCoverage.setInterfaces(classCoverage.interfaceNames)
         newClassCoverage.superName = classCoverage.superName
         newClassCoverage.sourceFileName = classCoverage.sourceFileName
-        if (classCoverage is ClassCoverageImpl) {
-            newClassCoverage.fragments = classCoverage.fragments
-        }
 
         if (classFiltered == ClassFilteringResult.DEPENDS_ON_MEMBERS && newClassCoverage.methods.isEmpty()) {
             // if any include filter is specified, but neither class nor method included - exclude it from the report
@@ -297,4 +294,6 @@ private fun buildAncestors(classes: Collection<IClassCoverage>): Map<String, Set
     return allAncestors
 }
 
-
+private fun String.toBinaryName(): String {
+    return removePrefix("L").removeSuffix(";").replace('/', '.')
+}

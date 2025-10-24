@@ -4,20 +4,12 @@
 
 package kotlinx.kover.gradle.plugin.tools.jacoco
 
-import kotlinx.kover.features.jvm.KoverFeatures.koverWildcardToRegex
 import kotlinx.kover.gradle.plugin.commons.ArtifactContent
 import kotlinx.kover.gradle.plugin.commons.ReportContext
 import kotlinx.kover.gradle.plugin.commons.ReportFilters
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.workers.WorkParameters
-import org.jacoco.core.analysis.Analyzer
-import org.jacoco.core.analysis.CoverageBuilder
-import org.jacoco.core.tools.ExecFileLoader
-import org.jacoco.report.DirectorySourceFileLocator
-import org.jacoco.report.IReportVisitor
-import org.jacoco.report.MultiSourceFileLocator
-import java.io.File
 
 internal interface CommonJacocoParameters: WorkParameters {
     val filters: Property<ReportFilters>
@@ -34,6 +26,3 @@ internal fun <T : CommonJacocoParameters> T.fillCommonParameters(context: Report
     projectPath.convention(context.projectPath)
 }
 
-internal fun String.toBinaryName(): String {
-    return removePrefix("L").removeSuffix(";").replace('/', '.')
-}
