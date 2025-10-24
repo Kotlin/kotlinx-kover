@@ -4,11 +4,14 @@
 
 package kotlinx.kover.gradle.plugin.dsl.internal
 
+import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
 import kotlinx.kover.gradle.plugin.dsl.KoverCurrentProjectVariantsConfig
 import kotlinx.kover.gradle.plugin.dsl.KoverMergingConfig
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverReportsConfig
 import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_DEFAULT_VERSION
+import kotlinx.kover.gradle.plugin.dsl.KoverVersions.JACOCO_TOOL_MINIMAL_VERSION
+import kotlinx.kover.gradle.plugin.util.SemVer
 import org.gradle.api.Action
 import org.gradle.api.file.ProjectLayout
 import org.gradle.api.model.ObjectFactory
@@ -47,6 +50,11 @@ internal abstract class KoverProjectExtensionImpl @Inject constructor(
     }
 
     override fun useJacoco(version: String) {
+        SemVer.ofThreePartOrNull(version)?.also { semver ->
+            if (semver < SemVer.ofThreePartOrNull(JACOCO_TOOL_MINIMAL_VERSION)!!) {
+                throw KoverIllegalConfigException("Jacoco version $version is not supported. The minimum supported version is '$JACOCO_TOOL_MINIMAL_VERSION'")
+            }
+        }
         useJacoco.set(true)
         jacocoVersion.set(version)
     }

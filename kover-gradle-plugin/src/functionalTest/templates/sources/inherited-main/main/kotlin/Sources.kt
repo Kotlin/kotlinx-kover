@@ -48,6 +48,7 @@ class AChild: A() {
     }
 }
 
+@MyAnnotation
 // indirect inheritance of project class
 class BChild: B() {
     fun functionBB() {
@@ -79,3 +80,5 @@ class CloseableClass : Closeable {
         println("foo")
     }
 }
+
+annotation class MyAnnotation
