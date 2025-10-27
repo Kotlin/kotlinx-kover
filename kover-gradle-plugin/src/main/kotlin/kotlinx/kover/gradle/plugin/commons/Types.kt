@@ -85,7 +85,16 @@ internal data class ReportFilters(
     val excludeInheritedFrom: Set<String> = emptySet(),
     @get:Input
     val excludeProjects: Set<String> = emptySet()
-): Serializable
+) : Serializable {
+    @get:Internal
+    val isEmpty: Boolean
+        get() = excludesClasses.isEmpty()
+                && excludesAnnotations.isEmpty()
+                && excludeInheritedFrom.isEmpty()
+                && includesClasses.isEmpty()
+                && includesAnnotations.isEmpty()
+                && includeInheritedFrom.isEmpty()
+}
 
 internal open class VerificationRule @Inject constructor(
     @get:Input

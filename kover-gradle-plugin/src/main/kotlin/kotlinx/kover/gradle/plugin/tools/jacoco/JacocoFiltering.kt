@@ -20,13 +20,7 @@ import java.io.File
  */
 internal fun CoverageBuilder.filter(filters: ReportFilters, classfiles: Collection<File>): CoverageBuilder {
     // No filters - return original builder
-    if (filters.excludesClasses.isEmpty()
-        && filters.excludesAnnotations.isEmpty()
-        && filters.excludeInheritedFrom.isEmpty()
-        && filters.includesClasses.isEmpty()
-        && filters.includesAnnotations.isEmpty()
-        && filters.includeInheritedFrom.isEmpty()
-    ) {
+    if (filters.isEmpty) {
         return this
     }
 
