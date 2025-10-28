@@ -5,10 +5,10 @@
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
 import kotlinx.kover.gradle.plugin.test.functional.framework.configurator.BuildConfigurator
-import kotlinx.kover.gradle.plugin.test.functional.framework.starter.GeneratedTest
+import kotlinx.kover.gradle.plugin.test.functional.framework.starter.SlicedGeneratedTest
 
 internal class ReportInheritedFromFilterTests {
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testExclusions() {
         addProjectWithKover {
             sourcesFrom("inherited-main")
@@ -40,7 +40,7 @@ internal class ReportInheritedFromFilterTests {
         }
     }
 
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testInclusions() {
         addProjectWithKover {
             sourcesFrom("inherited-main")
@@ -72,7 +72,7 @@ internal class ReportInheritedFromFilterTests {
         }
     }
 
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testIncludeAndExclude() {
         addProjectWithKover {
             sourcesFrom("inherited-main")
@@ -108,7 +108,7 @@ internal class ReportInheritedFromFilterTests {
         }
     }
 
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testDifferentIncludeFilters() {
         addProjectWithKover {
             sourcesFrom("inherited-main")
@@ -119,6 +119,7 @@ internal class ReportInheritedFromFilterTests {
                             // for includes 'AND' rule should work
                             inheritedFrom("org.jetbrains.A")
                             classes("*.*Child")
+                            annotatedBy("*.MyAnnotation")
                         }
                     }
                 }
@@ -129,13 +130,13 @@ internal class ReportInheritedFromFilterTests {
             xmlReport {
                 classCounter("org.jetbrains.A").assertAbsent()
                 classCounter("org.jetbrains.B").assertAbsent()
+                classCounter("org.jetbrains.AChild").assertAbsent()
 
                 classCounter("org.jetbrains.BChild").assertFullyMissed()
-                classCounter("org.jetbrains.AChild").assertFullyMissed()
             }
         }
     }
-    @GeneratedTest
+    @SlicedGeneratedTest(allTools = true)
     fun BuildConfigurator.testDifferentExcludeFilters() {
         addProjectWithKover {
             sourcesFrom("inherited-main")
