@@ -8,6 +8,15 @@ import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerCont
 import kotlinx.kover.gradle.plugin.test.functional.framework.starter.TemplateTest
 
 internal class AndroidKmpLibTests {
+    @TemplateTest("android-kmp-library-8", ["koverXmlReport"])
+    fun CheckerContext.testPresenceAgp8() {
+       xmlReport {
+           classCounter("org.jetbrains.ExampleClass").assertPresent()
+           classCounter("org.jetbrains.AndroidClass").assertPresent()
+           methodCounter("org.jetbrains.AndroidClass", "covered").assertFullyCovered()
+       }
+    }
+
     @TemplateTest("android-kmp-library", ["koverXmlReport"])
     fun CheckerContext.testPresence() {
        xmlReport {

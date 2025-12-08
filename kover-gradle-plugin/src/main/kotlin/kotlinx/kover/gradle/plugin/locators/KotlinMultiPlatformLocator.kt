@@ -9,7 +9,6 @@ import kotlinx.kover.gradle.plugin.appliers.origin.JvmVariantOrigin
 import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
 import kotlinx.kover.gradle.plugin.appliers.origin.CompilationDetails
 import kotlinx.kover.gradle.plugin.appliers.origin.LanguageCompilation
-import kotlinx.kover.gradle.plugin.commons.*
 import kotlinx.kover.gradle.plugin.util.*
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -39,35 +38,35 @@ internal fun Project.locateKotlinMultiplatformVariants(): AllVariantOrigins {
     return AllVariantOrigins(jvms, androids)
 }
 
+// Used only for the old AGP implementation for KMP libraries (AGP < 8.x.x)
 private fun Project.locateAndroidVariants(kotlinExtension: DynamicBean): List<AndroidVariantOrigin> {
     // only one Android target is allowed, so we can take the first one
     val androidTarget = kotlinExtension.beanCollection("targets").firstOrNull {
         it["platformType"].value<String>("name") == "androidJvm"
     } ?: return emptyList()
 
+    // since AGP 9.0.0 there is no `android` extension
     val androidExtension = project.extensions.findByName("android")?.bean()
-        ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
+        ?: return emptyList()
 
     return project.androidCompilationKits(androidExtension, androidTarget)
 }
 
 private fun Project.locateAllJvmVariants(kotlinExtension: DynamicBean): List<JvmVariantOrigin> {
-    val jvmTargets = kotlinExtension.beanCollection("targets").filter {
-        it["platformType"].value<String>("name") == "jvm"
-    }
-    if (jvmTargets.isEmpty()) {
-        return emptyList()
-    }
+    val jvmTargets = kotlinExtension.beanCollection("targets").toList()
 
     val result = mutableListOf<JvmVariantOrigin>()
     locateJvmVariant(jvmTargets)?.let { result += it }
-    locateAndroidLibrary(jvmTargets)?.let { result += it }
+    locateAndroidMultiplatformLibrary(jvmTargets)?.let { result += it }
+
     return result
 }
 
 private fun Project.locateJvmVariant(jvmTargets: List<DynamicBean>): JvmVariantOrigin? {
     val strictJvmTarget = jvmTargets.singleOrNull {
-        !it.origin.hasSuperclass("KotlinMultiplatformAndroidLibraryTargetImpl")
+        it["platformType"].value<String>("name") == "jvm" &&
+                // exclude Android targets since in AGP 8.x.x it has the type 'jvm'
+                !it.origin.hasSuperclass("KotlinMultiplatformAndroidLibraryTargetImpl")
     } ?: return null
 
     val targetName = strictJvmTarget.value<String>("targetName")
@@ -83,12 +82,16 @@ private fun Project.locateJvmVariant(jvmTargets: List<DynamicBean>): JvmVariantO
     return JvmVariantOrigin(tests, compilations, targetName)
 }
 
-private fun Project.locateAndroidLibrary(jvmTargets: List<DynamicBean>): JvmVariantOrigin? {
+// Locate Android multiplatform library target in AGP > 8.x.x
+private fun Project.locateAndroidMultiplatformLibrary(jvmTargets: List<DynamicBean>): JvmVariantOrigin? {
     val androidLibrary = jvmTargets.singleOrNull {
-        it.origin.hasSuperclass("KotlinMultiplatformAndroidLibraryTargetImpl")
+        it.origin.hasSuperclass("KotlinMultiplatformAndroidLibraryTargetImpl") && (
+                // in AGP 8.x.x Android multiplatform library has the type 'jvm'
+                it["platformType"].value<String>("name") == "jvm"
+                        // in AGP 9.0.0 Android multiplatform library has type 'androidJvm'
+                        || it["platformType"].value<String>("name") == "androidJvm"
+                )
     } ?: return null
-
-
     val targetName = androidLibrary.value<String>("targetName")
     val tests = tasks.withType<Test>().matching {
         it.hasSuperclass("AndroidUnitTest") && it.bean().value<String>("variantName") == "${targetName}HostTest"
