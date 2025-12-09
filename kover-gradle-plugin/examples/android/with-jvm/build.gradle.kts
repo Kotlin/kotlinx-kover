@@ -3,7 +3,7 @@ plugins {
     id("com.android.library") version "8.12.0" apply false
     kotlin("android") version ("2.2.20") apply false
     kotlin("jvm") version ("2.2.20") apply false
-    id("org.jetbrains.kotlinx.kover") version "0.9.3"
+    id("org.jetbrains.kotlinx.kover") version "0.9.4"
 }
 
 dependencies {
