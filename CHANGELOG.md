@@ -1,3 +1,9 @@
+0.9.4 / 2025-12-09
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#776`](https://github.com/Kotlin/kotlinx-kover/issues/776) Added support for Android Gradle Plugin 9.0.0
+
 0.9.3 / 2025-10-16
 ===================
 ## Kover Gradle Plugin
