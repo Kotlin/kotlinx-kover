@@ -144,12 +144,12 @@ internal fun DynamicBean.convertVariant(): AndroidVariantInfo {
     val buildTypeName = buildType as? String ?: buildType.bean().value("name")
 
     val productFlavors = valueCollection<Pair<String, String>>("productFlavors").map { flavor ->
-        // second flavor name
-        val flavorName = flavor.second
         // first dimension name
         val dimension = flavor.first
+        // second flavor name
+        val flavorName = flavor.second
 
-        AndroidFlavor(flavorName, dimension)
+        AndroidFlavor(dimension, flavorName)
     }
 
     // since AGP 9.0.0 doesn't fill allKotlinSourceSets.srcDirs we get source directories from Android build variant

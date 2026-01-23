@@ -53,7 +53,7 @@ internal class ProvidedVariantsLocator(
             ?: throw KoverCriticalException("Kover requires extension with name 'androidComponents' for project '${project.path}'. The minimum supported AGP version is 7.0.0")
 
         val selector = androidComponents("selector")?.bean()?.invoke("all") ?:
-            throw KoverCriticalException("Return value for selector().all() is null for project'${project.path}'")
+            throw KoverCriticalException("Return value for selector().all() is null for project '${project.path}'")
 
         /*
          * Here's a little trick:

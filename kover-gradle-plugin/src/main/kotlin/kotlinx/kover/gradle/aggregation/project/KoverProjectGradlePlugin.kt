@@ -100,7 +100,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
                 generateArtifactTask.android9Variants.add(variant)
             }
 
-            val selector = androidComponents("selector").bean().invoke("all") ?: throw KoverCriticalException("Return value for selector().all() is null for project'${project.path}'")
+            val selector = androidComponents("selector").bean().invoke("all") ?: throw KoverCriticalException("Return value for selector().all() is null for project '${project.path}'")
 
             androidComponents("onVariants",  selector, action)
         }
