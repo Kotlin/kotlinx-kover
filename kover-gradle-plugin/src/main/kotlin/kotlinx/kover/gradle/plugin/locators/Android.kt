@@ -4,24 +4,31 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
+import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
+import kotlinx.kover.gradle.plugin.appliers.origin.CompilationDetails
+import kotlinx.kover.gradle.plugin.appliers.origin.LanguageCompilation
 import kotlinx.kover.gradle.plugin.commons.AndroidBuildVariant
 import kotlinx.kover.gradle.plugin.commons.AndroidFallbacks
 import kotlinx.kover.gradle.plugin.commons.AndroidFlavor
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
-import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
-import kotlinx.kover.gradle.plugin.appliers.origin.CompilationDetails
 import kotlinx.kover.gradle.plugin.util.DynamicBean
 import kotlinx.kover.gradle.plugin.util.bean
 import kotlinx.kover.gradle.plugin.util.hasSuperclass
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.withType
-
+import java.io.File
 
 /**
  * Locate Android compilation kits for the given Kotlin Target.
+ *
+ * Works for the AGP version < 9.0.0
  */
-internal fun Project.androidCompilationKits(
+internal fun Project.androidCompilationKitsBefore9(
     androidExtension: DynamicBean,
     kotlinTarget: DynamicBean
 ): List<AndroidVariantOrigin> {
@@ -34,11 +41,11 @@ internal fun Project.androidCompilationKits(
     val fallbacks = findFallbacks(androidExtension)
 
     return variants.map {
-        extractAndroidKit(androidExtension, kotlinTarget, fallbacks, it)
+        extractAndroidKitBefore9(androidExtension, kotlinTarget, fallbacks, it)
     }
 }
 
-private fun Project.extractAndroidKit(
+private fun Project.extractAndroidKitBefore9(
     androidExtension: DynamicBean,
     kotlinTarget: DynamicBean,
     fallbacks: AndroidFallbacks,
@@ -46,7 +53,7 @@ private fun Project.extractAndroidKit(
 ): AndroidVariantOrigin {
     val variantName = variant.value<String>("name")
     val compilations = provider {
-       extractCompilation(kotlinTarget, variantName)
+        extractCompilationBefore9(kotlinTarget, variantName)
     }
 
     // if `unitTestVariant` not specified for application/library variant (is null) then unit tests are disabled for it
@@ -68,13 +75,13 @@ private fun Project.extractAndroidKit(
     }
 
     // merge flavors to get missing dimensions for variant
-    val missingDimensions = findMissingDimensions(androidExtension, variant)
+    val missingDimensions = findMissingDimensionsBefore9(androidExtension, variant)
 
     val details = AndroidBuildVariant(variantName, buildTypeName, flavors, fallbacks, missingDimensions)
     return AndroidVariantOrigin(tests, compilations, details)
 }
 
-private fun findMissingDimensions(androidExtension: DynamicBean, variant: DynamicBean): Map<String, String> {
+private fun findMissingDimensionsBefore9(androidExtension: DynamicBean, variant: DynamicBean): Map<String, String> {
     val missingDimensionsForVariant = mutableMapOf<String, Any>()
     // default config has the lowest priority
     missingDimensionsForVariant +=
@@ -89,7 +96,104 @@ private fun findMissingDimensions(androidExtension: DynamicBean, variant: Dynami
     }
 }
 
+
+/**
+ * Locate Android compilation kits for the given Kotlin Target.
+ */
+internal fun Project.androidCompilationKits(
+    androidExtension: DynamicBean,
+    variants: List<AndroidVariantInfo>,
+    kotlinTarget: DynamicBean,
+): List<AndroidVariantOrigin> {
+    val fallbacks = findFallbacks(androidExtension)
+    // get missing dimensions from the default config
+    val missingDimensions = findMissingDimensions(androidExtension)
+
+    return variants.map {
+        extractAndroidKit(missingDimensions, kotlinTarget, fallbacks, it)
+    }
+}
+
+private fun Project.extractAndroidKit(
+    missingDimensions: Map<String, String>,
+    kotlinTarget: DynamicBean,
+    fallbacks: AndroidFallbacks,
+    variant: AndroidVariantInfo
+): AndroidVariantOrigin {
+    val compilations = provider {
+        extractCompilation(kotlinTarget, variant)
+    }
+
+    val tests = tasks.withType<Test>().matching { test ->
+        // use only Android unit tests (local tests)
+        test.hasSuperclass("AndroidUnitTest")
+                // An assumption: Android unit test always called <variantName>UnitTest
+                && test.bean().value<String>("variantName") == "${variant.name}UnitTest"
+    }
+
+    val details =
+        AndroidBuildVariant(variant.name, variant.buildTypeName, variant.flavors, fallbacks, missingDimensions)
+    return AndroidVariantOrigin(tests, compilations, details)
+}
+
+
+internal fun DynamicBean.convertVariant(): AndroidVariantInfo {
+    val variantName = value<String>("name")
+
+    val buildType = value<Any>("buildType")
+    val buildTypeName = buildType as? String ?: buildType.bean().value("name")
+
+    val productFlavors = valueCollection<Pair<String, String>>("productFlavors").map { flavor ->
+        // second flavor name
+        val flavorName = flavor.second
+        // first dimension name
+        val dimension = flavor.first
+
+        AndroidFlavor(flavorName, dimension)
+    }
+
+    // since AGP 9.0.0 doesn't fill allKotlinSourceSets.srcDirs we get source directories from Android build variant
+    // it's ok to take sources not from a compilation but from build variant because each build variant corresponds to only one Kotlin compilation
+    val sourceDirs = bean("sources").beanOrNull("kotlin")?.value<Provider<Collection<Directory>>>("all")?.get()?.map { it.asFile }?.toSet() ?: emptySet()
+
+    return AndroidVariantInfo(variantName, buildTypeName, productFlavors, sourceDirs)
+}
+
+internal data class AndroidVariantInfo(
+    val name: String,
+    val buildTypeName: String,
+    val flavors: List<AndroidFlavor>,
+    val sourceDirs: Set<File>
+)
+
+private fun findMissingDimensions(androidExtension: DynamicBean): Map<String, String> {
+    val missingDimensionsForVariant = mutableMapOf<String, String>()
+    missingDimensionsForVariant +=
+        androidExtension["defaultConfig"].value<Map<String, Any>>("missingDimensionStrategies")
+            .mapValues { (_, request) ->
+                request.bean().value("requested")
+            }
+    // no missingDimensionStrategies on product flavors in Variant API since 9.0.0
+
+    return missingDimensionsForVariant
+}
+
 private fun extractCompilation(
+    kotlinTarget: DynamicBean,
+    variant: AndroidVariantInfo
+): Map<String, CompilationDetails> {
+    val compilations = kotlinTarget.beanCollection("compilations").filter {
+        it.value<String>("name") == variant.name
+    }
+
+    // since AGP 9.0.0 doesn't fill allKotlinSourceSets.srcDirs and output.classesDirs in Kotlin compilations we use different logic
+    return compilations.associate { compilation ->
+        val name = compilation.value<String>("name")
+        name to extractAndroidCompilation(compilation, variant)
+    }
+}
+
+private fun extractCompilationBefore9(
     kotlinTarget: DynamicBean,
     variantName: String
 ): Map<String, CompilationDetails> {
@@ -103,6 +207,25 @@ private fun extractCompilation(
         it.parentFile.parentFile.name == "javac"
     }
 }
+
+
+private fun extractAndroidCompilation(
+    compilation: DynamicBean,
+    variant: AndroidVariantInfo
+): CompilationDetails {
+    val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider").get()
+    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider").get()
+
+    // assumption: compilers place class-files in directories named 'classes'
+    val kotlinOutputs = kotlinCompileTask.outputs.files.filter { file -> file.name == "classes" }
+    val javaOutputs = javaCompileTask.outputs.files.filter { file -> file.name == "classes" }
+
+    val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
+    val java = LanguageCompilation(javaOutputs, javaCompileTask)
+
+    return CompilationDetails(variant.sourceDirs, kotlin, java)
+}
+
 
 
 /// COPY FROM AGP

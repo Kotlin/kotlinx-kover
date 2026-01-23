@@ -1,16 +1,15 @@
 plugins {
-    id ("org.jetbrains.kotlin.android")
     id ("com.android.application")
 }
 
 android {
     namespace = "kotlinx.kover.test.android"
-    compileSdk = 32
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "kotlinx.kover.test.android"
         minSdk = 21
-        targetSdk = 31
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -25,9 +24,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
     buildFeatures {
         viewBinding = true

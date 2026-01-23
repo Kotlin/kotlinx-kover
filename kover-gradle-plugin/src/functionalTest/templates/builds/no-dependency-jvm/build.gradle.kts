@@ -6,3 +6,7 @@ plugins {
 dependencies {
     kover(project(":subproject"))
 }
+
+repositories {
+    mavenCentral()
+}

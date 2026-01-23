@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "android_kts"
+rootProject.name = "android_multiproject"
 include(":app", ":lib")

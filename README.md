@@ -22,7 +22,7 @@ For full information about the latest stable release of Kover Gradle Plugin, ple
 * Collection of code coverage for JVM and Android host tests (JS and native targets are not supported yet).
 * Generating `HTML` and `XML` reports.
 * Works with `kotlin("jvm")`, `kotlin("android")`, `kotlin("multiplatform")` and `com.android.kotlin.multiplatform.library` plugins.
-* Support build variants in `kotlin("android")` projects.
+* Support build variants in Android projects.
 * Support mixed `Kotlin` and `Java` sources.
 * Verification rules with bounds in the Gradle plugin to keep track of coverage.
 * Using JaCoCo library in Gradle plugin as an alternative for coverage measuring and report generation.
@@ -32,6 +32,7 @@ The recommended way of applying Kover is with the
 
 Minimum supported version of `Gradle` is `6.8.3`. 
 Minimum version of JVM for running tests is `1.7`.
+Minimum supported version of `Android Gradle plugin` is `7.0.0`.
 
 Add the following to your top-level build file:
 

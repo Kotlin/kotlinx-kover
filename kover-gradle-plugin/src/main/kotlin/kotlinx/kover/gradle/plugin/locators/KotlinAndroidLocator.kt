@@ -4,11 +4,10 @@
 
 package kotlinx.kover.gradle.plugin.locators
 
-import kotlinx.kover.gradle.plugin.appliers.origin.AndroidVariantOrigin
 import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
-import kotlinx.kover.gradle.plugin.commons.*
-import kotlinx.kover.gradle.plugin.util.*
-import org.gradle.api.*
+import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
+import kotlinx.kover.gradle.plugin.util.bean
+import org.gradle.api.Project
 
 /*
 Since the Kover and Android plug-ins can be in different class loaders (declared in different projects), the plug-ins are stored in a single instance in the loader of the project where the plug-in was used for the first time.
@@ -16,17 +15,22 @@ Because of this, Kover may not have direct access to the Android plugin classes,
 
 To work around this limitation, working with objects is done through reflection, using a dynamic Gradle wrapper.
  */
-internal fun Project.locateKotlinAndroidVariants(): AllVariantOrigins {
+internal fun Project.locateKotlinAndroidVariants(variants: List<AndroidVariantInfo>): AllVariantOrigins {
     val kotlinExtension = project.getKotlinExtension()
-    val android = locateAndroidVariants(kotlinExtension)
-    return AllVariantOrigins(emptyList(), android)
-}
 
-private fun Project.locateAndroidVariants(kotlinExtension: DynamicBean): List<AndroidVariantOrigin> {
     val androidExtension = project.extensions.findByName("android")?.bean()
         ?: throw KoverCriticalException("Kover requires extension with name 'android' for project '${project.path}' since it is recognized as Kotlin/Android project")
 
     val kotlinTarget = kotlinExtension["target"]
 
-    return project.androidCompilationKits(androidExtension, kotlinTarget)
+    val androidComponents = project.extensions.findByName("androidComponents")?.bean()
+        ?: throw KoverCriticalException("Kover requires extension with name 'androidComponents' for project '${project.path}'. The minimum supported AGP version is 7.0.0")
+
+    val majorVersion = androidComponents.beanOrNull("pluginVersion")?.valueOrNull<Int>("major") ?: 0
+    val origins = if (majorVersion < 9) {
+        project.androidCompilationKitsBefore9(androidExtension, kotlinTarget)
+    } else {
+        project.androidCompilationKits(androidExtension, variants, kotlinTarget)
+    }
+    return AllVariantOrigins(emptyList(), origins)
 }

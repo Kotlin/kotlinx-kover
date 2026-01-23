@@ -51,7 +51,7 @@ internal class VariantUsageTests {
         }
     }
 
-    @ExamplesTest("android/flavors", [":app:koverXmlReportCustom"])
+    @ExamplesTest("android/flavors-8", [":app:koverXmlReportCustom"])
     fun CheckerContext.testFlavoursFallbacksAndMissingDimensions() {
         // check test tasks
         checkOutcome(":app:testApp1AppDebugUnitTest", "SUCCESS")
