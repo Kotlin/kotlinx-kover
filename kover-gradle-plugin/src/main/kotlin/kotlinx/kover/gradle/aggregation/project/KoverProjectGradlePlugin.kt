@@ -146,11 +146,16 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
                 if (outputDirs.isEmpty()) {
                     // since AGP 9.0.0 classesDirs are empty, so we should get the compilation tasks output
                     val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider").get()
-                    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider").get()
+                    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider").orNull
                     val kotlinOutputs = kotlinCompileTask.outputs.files.filter { file -> file.name == "classes" }.files
-                    val javaOutputs = javaCompileTask.outputs.files.filter { file -> file.name == "classes" }.files
 
-                    outputDirs = kotlinOutputs + javaOutputs
+                    outputDirs = if (javaCompileTask != null) {
+                        val javaOutputs = javaCompileTask.outputs.files.filter { file -> file.name == "classes" }.files
+                        kotlinOutputs + javaOutputs
+                    } else {
+                        kotlinOutputs
+                    }
+
                 }
 
                 compilation["name"].value<String>() to CompilationInfo(sourceDirs, outputDirs)
