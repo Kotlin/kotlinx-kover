@@ -93,9 +93,9 @@ internal sealed class AbstractVariantArtifacts(
         val kotlinOutputs = compilations.map { compilation -> compilation.map { it.kotlin.outputs } }
 
         val javaCompileTasks =
-            compilations.map { compilation -> if (variantConfig.sources.excludeJava.get()) emptyList() else compilation.mapNotNull { it.java.compileTask } }
+            compilations.map { compilation -> if (variantConfig.sources.excludeJava.get()) emptyList() else compilation.mapNotNull { it.java?.compileTask } }
         val javaOutputs =
-            compilations.map { compilation -> if (variantConfig.sources.excludeJava.get()) emptyList() else compilation.map { it.java.outputs } }
+            compilations.map { compilation -> if (variantConfig.sources.excludeJava.get()) emptyList() else compilation.mapNotNull { it.java?.outputs } }
 
 
         val sources = compilations.map { unit -> unit.flatMap { it.sources } }

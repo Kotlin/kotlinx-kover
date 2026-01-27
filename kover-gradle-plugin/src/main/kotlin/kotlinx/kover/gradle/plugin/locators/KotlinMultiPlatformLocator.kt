@@ -128,10 +128,10 @@ private fun DynamicBean.extractKmpAndroidLibraryVariant(): Map<String, Compilati
             }.toSet()
 
             val kotlinOutputs = compilation["output"].value<ConfigurableFileCollection>("classesDirs")
-            val kotlinCompileTask = compilation.valueOrNull<TaskProvider<Task>?>("compileTaskProvider")?.orNull
-            val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
+            val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
+            val kotlin = LanguageCompilation(kotlinCompileTask.map { kotlinOutputs }, kotlinCompileTask)
             // at the moment, there is no way to get a task and directives for javac from the compilation
-            val java = kotlin
+            val java = null
 
             // since we place compilations from different targets in one map, we should separate it because the original names may overlap (like `main`)
             name to CompilationDetails(sources, kotlin, java)

@@ -37,11 +37,16 @@ private fun extractJvmCompilation(
         .value<ConfigurableFileCollection>("classesDirs")
         .filter { file -> isJavaOutput(file) }
 
-    val kotlinCompileTask = compilation.value<Task>("compileKotlinTask")
-    val javaCompileTask = compilation.valueOrNull<TaskProvider<Task>?>("compileJavaTaskProvider")?.orNull
+    val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
+    val javaCompileTask = compilation.valueOrNull<TaskProvider<Task>>("compileJavaTaskProvider")
 
-    val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
-    val java = LanguageCompilation(javaOutputs, javaCompileTask)
+    val kotlin = LanguageCompilation(kotlinCompileTask.map { kotlinOutputs }, kotlinCompileTask)
+
+    val java = if (javaCompileTask != null) {
+        LanguageCompilation(javaCompileTask.map { javaOutputs }, javaCompileTask)
+    } else {
+        null
+    }
 
     return CompilationDetails(sources, kotlin, java)
 }

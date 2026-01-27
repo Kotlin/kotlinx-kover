@@ -213,12 +213,12 @@ private fun extractAndroidCompilation(
     compilation: DynamicBean,
     variant: AndroidVariantInfo
 ): CompilationDetails {
-    val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider").get()
-    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider").orNull
+    val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
+    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider")
 
     // assumption: compilers place class-files in directories named 'classes'
-    val kotlinOutputs = kotlinCompileTask.outputs.files.filter { file -> file.name == "classes" }
-    val javaOutputs = javaCompileTask?.outputs?.files?.filter { file -> file.name == "classes" } ?: kotlinOutputs
+    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.name == "classes" } }
+    val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.name == "classes" } }
 
     val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
     val java = LanguageCompilation(javaOutputs, javaCompileTask)
