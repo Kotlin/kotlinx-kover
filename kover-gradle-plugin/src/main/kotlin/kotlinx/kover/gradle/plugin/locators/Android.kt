@@ -214,11 +214,11 @@ private fun extractAndroidCompilation(
     variant: AndroidVariantInfo
 ): CompilationDetails {
     val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider").get()
-    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider").get()
+    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider").orNull
 
     // assumption: compilers place class-files in directories named 'classes'
     val kotlinOutputs = kotlinCompileTask.outputs.files.filter { file -> file.name == "classes" }
-    val javaOutputs = javaCompileTask.outputs.files.filter { file -> file.name == "classes" }
+    val javaOutputs = javaCompileTask?.outputs?.files?.filter { file -> file.name == "classes" } ?: kotlinOutputs
 
     val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
     val java = LanguageCompilation(javaOutputs, javaCompileTask)
