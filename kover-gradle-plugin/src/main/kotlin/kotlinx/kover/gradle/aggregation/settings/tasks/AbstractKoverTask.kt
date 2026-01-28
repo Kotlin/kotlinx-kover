@@ -6,7 +6,7 @@ package kotlinx.kover.gradle.aggregation.settings.tasks
 
 import kotlinx.kover.features.jvm.KoverFeatures
 import kotlinx.kover.gradle.aggregation.commons.artifacts.ArtifactSerializer
-import kotlinx.kover.gradle.aggregation.commons.artifacts.ProjectArtifactInfo
+import kotlinx.kover.gradle.aggregation.commons.artifacts.ProjectArtifactInfoDeserialized
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.FileSystemLocation
@@ -28,13 +28,13 @@ internal abstract class AbstractKoverTask : DefaultTask() {
     @get:Internal
     protected val projectPath: String = project.path
 
-    protected fun Set<FileSystemLocation>.data(): Map<String, ProjectArtifactInfo> {
+    protected fun Set<FileSystemLocation>.data(): Map<String, ProjectArtifactInfoDeserialized> {
         return map { location -> location.asFile }
             .map { file -> ArtifactSerializer.deserialize(file.bufferedReader(), rootDir) }
             .associateBy { it.path }
     }
 
-    protected fun ProjectArtifactInfo.filterProjectSources(filters: FiltersInput): ProjectArtifactInfo {
+    protected fun ProjectArtifactInfoDeserialized.filterProjectSources(filters: FiltersInput): ProjectArtifactInfoDeserialized {
         val included = filters.includedProjects
         val excluded = filters.excludedProjects
 
@@ -43,7 +43,7 @@ internal abstract class AbstractKoverTask : DefaultTask() {
                 KoverFeatures.koverWildcardToRegex(filter).toRegex().matches(path)
             }
             if (notIncluded) {
-                return ProjectArtifactInfo(path, reports, emptyMap())
+                return ProjectArtifactInfoDeserialized(path, reports, emptyMap())
             }
         }
 
@@ -52,7 +52,7 @@ internal abstract class AbstractKoverTask : DefaultTask() {
                 KoverFeatures.koverWildcardToRegex(filter).toRegex().matches(path)
             }
             if (excl) {
-                return ProjectArtifactInfo(path, reports, emptyMap())
+                return ProjectArtifactInfoDeserialized(path, reports, emptyMap())
             }
         }
         return this

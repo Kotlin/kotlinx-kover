@@ -216,9 +216,10 @@ private fun extractAndroidCompilation(
     val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
     val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider")
 
-    // assumption: compilers place class-files in directories named 'classes'
-    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.name == "classes" } }
-    val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.name == "classes" } }
+    // assumption: Kotlin class-files are not placed in directories named 'classpath-snapshot' and 'cacheable'
+    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.name.let { name -> name != "classpath-snapshot" && name != "cacheable" } } }
+    // assumption: Java compiler places class-files in directories named 'classes'
+    val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.name.endsWith("classes") } }
 
     val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
     val java = LanguageCompilation(javaOutputs, javaCompileTask)

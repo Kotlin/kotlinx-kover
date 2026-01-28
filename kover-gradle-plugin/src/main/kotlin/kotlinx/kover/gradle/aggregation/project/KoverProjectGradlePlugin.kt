@@ -136,26 +136,33 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
             }
         }
 
+        val objects = project.objects
+        val providers = providers
+
+
         val compilationMap = compilations.map { allCompilations ->
             allCompilations.associate { compilation ->
                 // since AGP 9.0.0 srcDirs and classesDirs are empty
                 val sourceDirs = compilation["allKotlinSourceSets"].sequence()
                     .flatMap { sourceSet -> sourceSet["kotlin"]["srcDirs"].sequence().map { it.value<File>() } }
                     .toSet()
-                var outputDirs = compilation["output"]["classesDirs"].value<ConfigurableFileCollection>().files
-                if (outputDirs.isEmpty()) {
+                val outputDirsFromSourceSet = compilation["output"]["classesDirs"].value<ConfigurableFileCollection>().files
+                val outputDirs = if (outputDirsFromSourceSet.isEmpty()) {
                     // since AGP 9.0.0 classesDirs are empty, so we should get the compilation tasks output
-                    val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider").get()
-                    val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider").orNull
-                    val kotlinOutputs = kotlinCompileTask.outputs.files.filter { file -> file.name == "classes" }.files
+                    val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
+                    val javaCompileTask = compilation.valueOrNull<TaskProvider<Task>>("compileJavaTaskProvider")
+                    // assumption: Kotlin class-files are not placed in directories named 'classpath-snapshot' and 'cacheable'
+                    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.name.let { name -> name != "classpath-snapshot" && name != "cacheable" } } }
 
-                    outputDirs = if (javaCompileTask != null) {
-                        val javaOutputs = javaCompileTask.outputs.files.filter { file -> file.name == "classes" }.files
-                        kotlinOutputs + javaOutputs
+                    if (javaCompileTask != null) {
+                        // assumption: Java compiler places class-files in directories named 'classes'
+                        val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.name.endsWith("classes") } }
+                        providers.provider { objects.fileCollection().from(kotlinOutputs, javaOutputs) }
                     } else {
                         kotlinOutputs
                     }
-
+                } else {
+                    providers.provider { objects.fileCollection().from(outputDirsFromSourceSet) }
                 }
 
                 compilation["name"].value<String>() to CompilationInfo(sourceDirs, outputDirs)
