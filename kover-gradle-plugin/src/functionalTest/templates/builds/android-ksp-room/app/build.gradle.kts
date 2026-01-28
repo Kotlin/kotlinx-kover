@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
     id("com.google.devtools.ksp")
     id("androidx.room")
-    id("org.jetbrains.kotlinx.kover") version "0.9.6-SNAPSHOT"
+    id("org.jetbrains.kotlinx.kover")
 }
 
 configure<ApplicationExtension> {
