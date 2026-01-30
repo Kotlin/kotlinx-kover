@@ -251,6 +251,14 @@ Rule 'missed packages' violated:
      * Verification of the Android build variant should use these rules and failed.
      */
     @Test
+    fun testAndroidInverseOrderBefore9() {
+        val buildSource = buildFromTemplate("android-common-verify-8")
+        val build = buildSource.generate()
+        val buildResult = build.runWithParams(":app:koverVerifyRelease")
+        assertFalse(buildResult.isSuccessful)
+    }
+
+    @Test
     fun testAndroidInverseOrder() {
         val buildSource = buildFromTemplate("android-common-verify")
         val build = buildSource.generate()

@@ -46,3 +46,14 @@ internal fun coverageLogPath(variant: String): String {
 internal fun artifactFilePath(variant: String): String = "kover${separator}$variant.artifact"
 
 private val separator = File.separatorChar
+
+// assumption: Kotlin class-files are not placed in directories named 'classpath-snapshot' and 'cacheable'
+internal fun File.isKotlinCompilerOutputDirectory(): Boolean {
+    val fileName = name
+    return fileName != "classpath-snapshot" && fileName != "cacheable"
+}
+
+// assumption: Java compiler places class-files in directories named 'classes'
+internal fun File.isJavaCompilerOutputDirectory(): Boolean {
+    return name == "classes"
+}

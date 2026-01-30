@@ -30,6 +30,16 @@ internal class ConfigurationOrderTests {
         }
     }
 
+    @TemplateTest("android-inverse-order-8", [":app:koverXmlReportCustom", ":app:koverXmlReportRelease"])
+    fun CheckerContext.testAndroidInverseOrderBefore9() {
+        subproject(":app") {
+            checkXmlReport("custom")
+            checkXmlReport("release")
+            checkOutcome(":app:koverXmlReportCustom", "SUCCESS")
+            checkOutcome(":app:koverXmlReportRelease", "SUCCESS")
+        }
+    }
+
     /**
      * A test to verify that the order of application of the Kover plugin does not affect the correct operation.
      * Kover + Kotlin Multiplatform Plugin with Android target
@@ -54,8 +64,30 @@ internal class ConfigurationOrderTests {
     }
 
     @Test
+    fun testIllegalVariantNameInConfigBefore9() {
+        val buildSource = buildFromTemplate("android-no-variant-for-config-8")
+        val build = buildSource.generate()
+        val buildResult = build.runWithParams("clean")
+
+        buildResult.checkNoAndroidSdk()
+        assertFalse(buildResult.isSuccessful, "Build must fall")
+        assertContains(buildResult.output, "variant because it does not exist")
+    }
+
+    @Test
     fun testIllegalVariantNameInMerge() {
         val buildSource = buildFromTemplate("android-no-variant-for-merge")
+        val build = buildSource.generate()
+        val buildResult = build.runWithParams("clean")
+
+        buildResult.checkNoAndroidSdk()
+        assertFalse(buildResult.isSuccessful, "Build must fall")
+        assertContains(buildResult.output, "Could not find the provided variant")
+    }
+
+    @Test
+    fun testIllegalVariantNameInMergeBefore9() {
+        val buildSource = buildFromTemplate("android-no-variant-for-merge-8")
         val build = buildSource.generate()
         val buildResult = build.runWithParams("clean")
 

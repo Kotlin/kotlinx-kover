@@ -4,6 +4,8 @@
 
 package kotlinx.kover.gradle.plugin.commons
 
+import org.gradle.api.Project
+
 /**
  * The ID of the Kotlin JVM Gradle plugin.
  */
@@ -20,6 +22,11 @@ internal const val KOTLIN_MULTIPLATFORM_PLUGIN_ID = "kotlin-multiplatform"
 internal const val KOTLIN_ANDROID_PLUGIN_ID = "kotlin-android"
 
 /**
+ * The ID of the Kotlin Android Gradle plugin.
+ */
+internal const val ANDROID_BASE_PLUGIN_ID = "com.android.base"
+
+/**
  * The plugin ID for the Android application Gradle plugin.
  */
 internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
@@ -33,3 +40,9 @@ internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
  * The plugin ID for the Android dynamic feature Gradle plugin.
  */
 internal const val ANDROID_DYNAMIC_PLUGIN_ID = "com.android.dynamic-feature"
+
+internal fun Project.hasAndroid9WithKotlin() = pluginManager.hasPlugin(ANDROID_BASE_PLUGIN_ID) && !hasAnyKotlinPlugin() && hasKotlinExtension()
+
+internal fun Project.hasAnyKotlinPlugin() = pluginManager.hasPlugin(KOTLIN_JVM_PLUGIN_ID) || pluginManager.hasPlugin(KOTLIN_ANDROID_PLUGIN_ID) || pluginManager.hasPlugin(KOTLIN_MULTIPLATFORM_PLUGIN_ID)
+
+internal fun Project.hasKotlinExtension() = extensions.findByName("kotlin") != null

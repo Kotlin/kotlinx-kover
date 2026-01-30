@@ -23,4 +23,20 @@ internal class ComposeTests {
             }
         }
     }
+
+    @TemplateTest("android-compose-8", [":app:koverXmlReportDebug", ":app:koverHtmlReportDebug"])
+    fun CheckerContext.testComposeBefore9() {
+        subproject("app") {
+            xmlReport("debug") {
+                methodCounter("org.jetbrains.composetests.ComposeFunctionsKt", "Simple").assertFullyCovered()
+                methodCounter("org.jetbrains.composetests.ComposeFunctionsKt", "Simple", "BRANCH").assertFullyCovered()
+
+                methodCounter("org.jetbrains.composetests.ComposeFunctionsKt", "WithParam").assertFullyCovered()
+                methodCounter("org.jetbrains.composetests.ComposeFunctionsKt", "WithParam", "BRANCH").assertFullyCovered()
+
+                methodCounter("org.jetbrains.composetests.ComposeFunctionsKt", "WithDefParam").assertFullyCovered()
+                methodCounter("org.jetbrains.composetests.ComposeFunctionsKt", "WithDefParam", "BRANCH").assertFullyCovered()
+            }
+        }
+    }
 }

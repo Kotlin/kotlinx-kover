@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "android-kmp-library"
+rootProject.name = "android-kmp-library-8"
 

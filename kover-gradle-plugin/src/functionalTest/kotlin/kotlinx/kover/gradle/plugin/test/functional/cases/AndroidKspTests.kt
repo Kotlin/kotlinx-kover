@@ -8,4 +8,14 @@ internal class AndroidKspTests {
     fun CheckerContext.testUnitTestsAreDisabledInAgp() {
 
     }
+
+    @TemplateTest("android-ksp-room", ["koverXmlReport"])
+    fun CheckerContext.testRoomInKsp() {
+        subproject(":app") {
+            xmlReport {
+                classCounter("kotlinx.kover.test.android.DebugUtil").assertPresent()
+                classCounter("kotlinx.kover.test.android.Maths").assertCovered()
+            }
+        }
+    }
 }

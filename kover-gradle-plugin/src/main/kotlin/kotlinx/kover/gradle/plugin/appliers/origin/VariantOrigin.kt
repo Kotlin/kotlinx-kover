@@ -44,7 +44,7 @@ internal class CompilationDetails(
     /**
      * Compilation details specific to Java code.
      */
-    val java: LanguageCompilation
+    val java: LanguageCompilation?
 )
 
 /**
@@ -54,7 +54,7 @@ internal class LanguageCompilation(
     /**
      * Directories with compiled classes, outputs of [compileTasks].
      */
-    val outputs: FileCollection,
+    val outputs: Provider<out FileCollection>,
 
     /**
      * In case when no one compile tasks will be triggered,
@@ -62,7 +62,7 @@ internal class LanguageCompilation(
      *
      * So compile tasks must be triggered anyway.
      */
-    val compileTask: Task?
+    val compileTask: Provider<Task>?
 )
 
 internal class JvmVariantOrigin(

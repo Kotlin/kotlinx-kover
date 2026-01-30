@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.aggregation.commons.utils
 
+import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import org.gradle.internal.metaobject.*
 
 internal fun Any?.bean(): DynamicBean = DynamicBean(this)
@@ -15,9 +16,32 @@ internal class DynamicBean(private val origin: Any?) {
 
     operator fun contains(name: String): Boolean = getNotNull("check for a property '$name'").hasProperty(name)
 
+    operator fun invoke(functionName: String, vararg args: Any?): Any? {
+        return wrappedOrigin?.invokeMethod(functionName, *args)
+    }
+
     inline fun <reified T> value(): T {
         val notNull = origin ?: throw IllegalStateException("Value is null, failed to get value")
         return notNull as? T ?: throw IllegalStateException("Invalid property value type, expected ${T::class.qualifiedName}, found ${notNull::class.qualifiedName}")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> value(name: String): T {
+        return wrappedOrigin?.getProperty(name) as? T
+            ?: throw KoverCriticalException("Non-nullable '$name' property has `null` value in dynamic bean over '${wrappedOrigin?.displayName}'")
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> valueOrNull(name: String): T? {
+        return wrappedOrigin?.getProperty(name) as T?
+    }
+
+    fun bean(name: String): DynamicBean {
+        return value<Any>(name).bean()
+    }
+
+    fun beanOrNull(name: String): DynamicBean? {
+        return valueOrNull<Any>(name)?.bean()
     }
 
     fun sequence(): Sequence<DynamicBean> {

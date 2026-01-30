@@ -15,7 +15,8 @@ internal class ProvidedVariantsLocator(
     private val callback: (sources: AllVariantOrigins) -> Unit
 ) {
     private val reasons: MutableSet<String> = mutableSetOf()
-    private var finilized: Boolean = false
+    private val androidVariants: MutableList<AndroidVariantInfo> = mutableListOf()
+    private var finalized: Boolean = false
 
     init {
         simpleEnqueue("no-plugin")
@@ -47,26 +48,38 @@ internal class ProvidedVariantsLocator(
 
     private fun androidEnqueue(reason: String) {
         enqueue(reason)
-        val dequeueAction = Action<Any> {
-            scheduleDequeue(reason)
-        }
 
         val androidComponents = project.extensions.findByName("androidComponents")?.bean()
-        if (androidComponents != null && androidComponents.hasFunction("finalizeDsl", callback)) {
-            /*
-            Assumption: `finalizeDsl` is called in the `afterEvaluate` action, in which build variants are created.
-            Therefore,  if an action is added to the queue inside it, it will be executed only after variants are created
-             */
-            androidComponents("finalizeDsl", dequeueAction)
-        } else {
-            // for old versions < 7.0 an action is added to the AAA queue.
-            // Since this code is executed after the applying of AGP, there is a high probability that the action will fall into the `afterEvaluate` queue after the actions of the AGP
-            dequeueAction.execute(Unit)
+            ?: throw KoverCriticalException("Kover requires extension with name 'androidComponents' for project '${project.path}'. The minimum supported AGP version is 7.0.0")
+
+        val selector = androidComponents("selector")?.bean()?.invoke("all") ?:
+            throw KoverCriticalException("Return value for selector().all() is null for project '${project.path}'")
+
+        /*
+         * Here's a little trick:
+         * when we process a variant, we don't know if it's the last one and whether these variants are created in one action or different ones.
+         * Therefore, we are postponing the finalizing using `afterEvaluate`.
+         * Since we have a queue, we fill this queue with each variant, so we can only finalize our configuration in the afterEvaluate created for the most recent variant.
+         *
+         * Important: In the current implementation of AGP, all `onVariants` are called one after the other in the same thread, however, it's an implementation details and we cannot rely on this.
+         */
+        val dequeueAction = Action<Any> {
+            val variant = bean().convertVariant()
+
+            androidVariants += variant
+
+            val variantReason = "android variant: " + variant.name
+            enqueue(variantReason)
+            scheduleDequeue(variantReason)
         }
+
+        androidComponents("onVariants",  selector, dequeueAction)
+
+        scheduleDequeue(reason)
     }
 
     private fun enqueue(reason: String) {
-        if (finilized) {
+        if (finalized) {
             throw KoverCriticalException("Attempt to queue after finalizing.")
         }
         reasons += reason
@@ -86,12 +99,12 @@ internal class ProvidedVariantsLocator(
     }
 
     private fun finalize() {
-        finilized = true
+        finalized = true
 
         val variants = if (project.pluginManager.hasPlugin(KOTLIN_JVM_PLUGIN_ID)) {
             project.locateKotlinJvmVariants()
-        } else if (project.pluginManager.hasPlugin(KOTLIN_ANDROID_PLUGIN_ID)) {
-            project.locateKotlinAndroidVariants()
+        } else if (project.pluginManager.hasPlugin(KOTLIN_ANDROID_PLUGIN_ID) || project.hasAndroid9WithKotlin()) {
+            project.locateKotlinAndroidVariants(androidVariants)
         } else if (project.pluginManager.hasPlugin(KOTLIN_MULTIPLATFORM_PLUGIN_ID)) {
             project.locateKotlinMultiplatformVariants()
         } else {
@@ -102,7 +115,6 @@ internal class ProvidedVariantsLocator(
     }
 
 }
-
 
 internal fun Project.getKotlinExtension(): DynamicBean {
     return extensions.findByName("kotlin")?.bean()

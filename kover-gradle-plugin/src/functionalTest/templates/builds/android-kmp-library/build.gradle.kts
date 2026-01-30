@@ -4,7 +4,7 @@
 
 plugins {
     kotlin("multiplatform") version ("2.2.20")
-    id("com.android.kotlin.multiplatform.library") version "9.0.0-alpha14"
+    id("com.android.kotlin.multiplatform.library") version "9.0.0"
     id ("org.jetbrains.kotlinx.kover") version "0.9.1"
 }
 

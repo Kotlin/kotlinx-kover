@@ -4,7 +4,7 @@
 
 package kotlinx.kover.gradle.aggregation.settings.tasks
 
-import kotlinx.kover.gradle.aggregation.commons.artifacts.ProjectArtifactInfo
+import kotlinx.kover.gradle.aggregation.commons.artifacts.ProjectArtifactInfoDeserialized
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Internal
@@ -15,7 +15,7 @@ internal abstract class AbstractKoverReportTask : AbstractKoverTask() {
     abstract val filters: Property<FiltersInput>
 
     @get:Nested
-    val data: Provider<Map<String, ProjectArtifactInfo>> = artifacts.elements.map { elements ->
+    val data: Provider<Map<String, ProjectArtifactInfoDeserialized>> = artifacts.elements.map { elements ->
         elements.data().mapValues { entry ->
             entry.value.filterProjectSources(filters.get())
         }

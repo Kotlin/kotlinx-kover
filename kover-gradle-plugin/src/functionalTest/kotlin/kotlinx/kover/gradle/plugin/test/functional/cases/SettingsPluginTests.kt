@@ -106,8 +106,18 @@ internal class SettingsPluginTests {
         }
     }
 
-    @TemplateTest("settings-plugin-android", ["-Pkover", ":app:testDebugUnitTest", "koverXmlReport"])
+    @TemplateTest("settings-plugin-android", ["-Pkover", ":app:testDebugUnitTest", "koverXmlReport", "-Dorg.gradle.unsafe.isolated-projects=true", "--configuration-cache"])
     fun CheckerContext.testAndroid() {
+        xmlReport {
+            classCounter("kotlinx.kover.test.android.MainClass").assertCovered()
+            classCounter("kotlinx.kover.test.android.DebugClass").assertFullyMissed()
+            classCounter("kotlinx.kover.test.android.ReleaseClass").assertAbsent()
+            classCounter("kotlinx.kover.test.android.LocalTests").assertAbsent()
+        }
+    }
+
+    @TemplateTest("settings-plugin-android8", ["-Pkover", ":app:testDebugUnitTest", "koverXmlReport", "-Dorg.gradle.unsafe.isolated-projects=true", "--configuration-cache"])
+    fun CheckerContext.testAndroidBefore9() {
         xmlReport {
             classCounter("kotlinx.kover.test.android.MainClass").assertCovered()
             classCounter("kotlinx.kover.test.android.DebugClass").assertFullyMissed()
@@ -131,6 +141,15 @@ Rule violated: lines covered percentage is 50.000000, but expected maximum is 10
 
     @TemplateTest("settings-plugin-android", ["-Pkover", ":app:testDebugUnitTest", "koverVerify", "-Pkover.verify.warn=true", "-Pkover.verify.min=100", "-Pkover.verify.max=5"])
     fun CheckerContext.testVerifyMin() {
+        taskOutput("koverVerify") {
+            assertTrue(contains("Rule 'CLI parameters' violated:\n" +
+                    "  lines covered percentage is 8.000000, but expected maximum is 5\n" +
+                    "  lines covered percentage is 8.000000, but expected minimum is 100"))
+        }
+    }
+
+    @TemplateTest("settings-plugin-android8", ["-Pkover", ":app:testDebugUnitTest", "koverVerify", "-Pkover.verify.warn=true", "-Pkover.verify.min=100", "-Pkover.verify.max=5"])
+    fun CheckerContext.testVerifyMinBefore9() {
         taskOutput("koverVerify") {
             assertTrue(contains("Rule 'CLI parameters' violated:\n" +
                     "  lines covered percentage is 8.000000, but expected maximum is 5\n" +
@@ -162,6 +181,15 @@ Rule violated: lines covered percentage is 50.000000, but expected maximum is 10
             // other classes should be covered
             classCounter("tests.settings.root.Tested").assertFullyCovered()
             classCounter("tests.settings.subproject.Tested").assertFullyCovered()
+        }
+    }
+
+    // Important: KSP plugin doesn't support project isolation cache
+    @TemplateTest("settings-android-ksp-room", ["-Pkover", ":app:testDebugUnitTest", "koverXmlReport"])
+    fun CheckerContext.testKspRoom() {
+        xmlReport {
+            classCounter("kotlinx.kover.test.android.DebugUtil").assertPresent()
+            classCounter("kotlinx.kover.test.android.Maths").assertCovered()
         }
     }
 }

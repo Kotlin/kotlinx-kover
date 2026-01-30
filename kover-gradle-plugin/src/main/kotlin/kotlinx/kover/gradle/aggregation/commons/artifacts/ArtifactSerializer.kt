@@ -4,6 +4,8 @@
 
 package kotlinx.kover.gradle.aggregation.commons.artifacts
 
+import org.gradle.api.file.FileCollection
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.Nested
@@ -25,14 +27,14 @@ internal object ArtifactSerializer {
             info.sourceDirs.forEach { sourceDir ->
                 appender.appendLine("SOURCE=${sourceDir.toRelativeString(rootDir)}")
             }
-            info.outputDirs.forEach { outputDir ->
+            info.outputDirs.get().files.forEach { outputDir ->
                 appender.appendLine("OUTPUT=${outputDir.toRelativeString(rootDir)}")
             }
             appender.appendLine("[END]")
         }
     }
 
-    fun deserialize(reader: Reader, rootDir: File): ProjectArtifactInfo {
+    fun deserialize(reader: Reader, rootDir: File): ProjectArtifactInfoDeserialized {
         class Comp(
             var name: String? = null,
             val sourceDirs: MutableSet<File> = mutableSetOf(),
@@ -73,8 +75,8 @@ internal object ArtifactSerializer {
             }
         }
 
-        val map = all.associate { it.name!! to CompilationInfo(it.sourceDirs.filter { f -> f.exists() }, it.outputDirs.filter { f -> f.exists() }) }
-        return ProjectArtifactInfo(projectPath!!, reports.filter { f -> f.exists() }, map)
+        val map = all.associate { it.name!! to CompilationInfoDeserialized(it.sourceDirs.filter { f -> f.exists() }, it.outputDirs.filter { f -> f.exists() }) }
+        return ProjectArtifactInfoDeserialized(projectPath!!, reports.filter { f -> f.exists() }, map)
     }
 }
 
@@ -91,6 +93,28 @@ internal class ProjectArtifactInfo(
 )
 
 internal class CompilationInfo(
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val sourceDirs: Collection<File>,
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val outputDirs: Provider<out FileCollection>
+)
+
+internal class ProjectArtifactInfoDeserialized(
+    @get:Input
+    val path: String,
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    val reports: Collection<File>,
+
+    @get:Nested
+    val compilations: Map<String, CompilationInfoDeserialized>
+)
+
+internal class CompilationInfoDeserialized(
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     val sourceDirs: Collection<File>,
