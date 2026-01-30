@@ -28,9 +28,9 @@ internal fun Project.locateKotlinAndroidVariants(variants: List<AndroidVariantIn
 
     val majorVersion = androidComponents.beanOrNull("pluginVersion")?.valueOrNull<Int>("major") ?: 0
     val origins = if (majorVersion < 9) {
-        project.androidCompilationKitsBefore9(androidExtension, kotlinTarget)
+        project.androidVariantsBefore9(androidExtension, kotlinTarget)
     } else {
-        project.androidCompilationKits(androidExtension, variants, kotlinTarget)
+        project.androidVariants(androidExtension, variants, kotlinTarget)
     }
     return AllVariantOrigins(emptyList(), origins)
 }

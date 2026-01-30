@@ -20,6 +20,8 @@ import kotlinx.kover.gradle.plugin.commons.ANDROID_BASE_PLUGIN_ID
 import kotlinx.kover.gradle.plugin.commons.KOTLIN_ANDROID_PLUGIN_ID
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.commons.hasAndroid9WithKotlin
+import kotlinx.kover.gradle.plugin.commons.isJavaCompilerOutputDirectory
+import kotlinx.kover.gradle.plugin.commons.isKotlinCompilerOutputDirectory
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -151,12 +153,10 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
                     // since AGP 9.0.0 classesDirs are empty, so we should get the compilation tasks output
                     val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
                     val javaCompileTask = compilation.valueOrNull<TaskProvider<Task>>("compileJavaTaskProvider")
-                    // assumption: Kotlin class-files are not placed in directories named 'classpath-snapshot' and 'cacheable'
-                    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.name.let { name -> name != "classpath-snapshot" && name != "cacheable" } } }
+                    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.isKotlinCompilerOutputDirectory() } }
 
                     if (javaCompileTask != null) {
-                        // assumption: Java compiler places class-files in directories named 'classes'
-                        val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.name.endsWith("classes") } }
+                        val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.isJavaCompilerOutputDirectory() } }
                         providers.provider { objects.fileCollection().from(kotlinOutputs, javaOutputs) }
                     } else {
                         kotlinOutputs

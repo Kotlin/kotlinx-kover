@@ -49,7 +49,7 @@ private fun Project.locateAndroidVariants(kotlinExtension: DynamicBean): List<An
     val androidExtension = project.extensions.findByName("android")?.bean()
         ?: return emptyList()
 
-    return project.androidCompilationKitsBefore9(androidExtension, androidTarget)
+    return project.androidVariantsBefore9(androidExtension, androidTarget)
 }
 
 private fun Project.locateAllJvmVariants(kotlinExtension: DynamicBean): List<JvmVariantOrigin> {

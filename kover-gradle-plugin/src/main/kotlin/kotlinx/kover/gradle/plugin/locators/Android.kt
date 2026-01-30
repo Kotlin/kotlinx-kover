@@ -11,6 +11,8 @@ import kotlinx.kover.gradle.plugin.commons.AndroidBuildVariant
 import kotlinx.kover.gradle.plugin.commons.AndroidFallbacks
 import kotlinx.kover.gradle.plugin.commons.AndroidFlavor
 import kotlinx.kover.gradle.plugin.commons.KoverIllegalConfigException
+import kotlinx.kover.gradle.plugin.commons.isJavaCompilerOutputDirectory
+import kotlinx.kover.gradle.plugin.commons.isKotlinCompilerOutputDirectory
 import kotlinx.kover.gradle.plugin.util.DynamicBean
 import kotlinx.kover.gradle.plugin.util.bean
 import kotlinx.kover.gradle.plugin.util.hasSuperclass
@@ -28,7 +30,7 @@ import java.io.File
  *
  * Works for the AGP version < 9.0.0
  */
-internal fun Project.androidCompilationKitsBefore9(
+internal fun Project.androidVariantsBefore9(
     androidExtension: DynamicBean,
     kotlinTarget: DynamicBean
 ): List<AndroidVariantOrigin> {
@@ -41,11 +43,11 @@ internal fun Project.androidCompilationKitsBefore9(
     val fallbacks = findFallbacks(androidExtension)
 
     return variants.map {
-        extractAndroidKitBefore9(androidExtension, kotlinTarget, fallbacks, it)
+        extractAndroidVariantBefore9(androidExtension, kotlinTarget, fallbacks, it)
     }
 }
 
-private fun Project.extractAndroidKitBefore9(
+private fun Project.extractAndroidVariantBefore9(
     androidExtension: DynamicBean,
     kotlinTarget: DynamicBean,
     fallbacks: AndroidFallbacks,
@@ -100,7 +102,7 @@ private fun findMissingDimensionsBefore9(androidExtension: DynamicBean, variant:
 /**
  * Locate Android compilation kits for the given Kotlin Target.
  */
-internal fun Project.androidCompilationKits(
+internal fun Project.androidVariants(
     androidExtension: DynamicBean,
     variants: List<AndroidVariantInfo>,
     kotlinTarget: DynamicBean,
@@ -110,11 +112,11 @@ internal fun Project.androidCompilationKits(
     val missingDimensions = findMissingDimensions(androidExtension)
 
     return variants.map {
-        extractAndroidKit(missingDimensions, kotlinTarget, fallbacks, it)
+        extractAndroidVariant(missingDimensions, kotlinTarget, fallbacks, it)
     }
 }
 
-private fun Project.extractAndroidKit(
+private fun Project.extractAndroidVariant(
     missingDimensions: Map<String, String>,
     kotlinTarget: DynamicBean,
     fallbacks: AndroidFallbacks,
@@ -216,10 +218,8 @@ private fun extractAndroidCompilation(
     val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
     val javaCompileTask = compilation.value<TaskProvider<Task>>("compileJavaTaskProvider")
 
-    // assumption: Kotlin class-files are not placed in directories named 'classpath-snapshot' and 'cacheable'
-    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.name.let { name -> name != "classpath-snapshot" && name != "cacheable" } } }
-    // assumption: Java compiler places class-files in directories named 'classes'
-    val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.name.endsWith("classes") } }
+    val kotlinOutputs = kotlinCompileTask.map { it.outputs.files.filter { file -> file.isKotlinCompilerOutputDirectory() } }
+    val javaOutputs = javaCompileTask.map { it.outputs.files.filter { file -> file.isJavaCompilerOutputDirectory() } }
 
     val kotlin = LanguageCompilation(kotlinOutputs, kotlinCompileTask)
     val java = LanguageCompilation(javaOutputs, javaCompileTask)
