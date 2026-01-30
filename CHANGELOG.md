@@ -1,3 +1,10 @@
+0.9.5 / 2026-01-30
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#784`](https://github.com/Kotlin/kotlinx-kover/issues/784) Fixed support of build variants in Android Gradle Plugin 9.0.0
+* [`#785`](https://github.com/Kotlin/kotlinx-kover/issues/785) Fixed support of test task dependencies in Android Gradle Plugin 9.0.0
+
 0.9.4 / 2025-12-09
 ===================
 ## Kover Gradle Plugin
