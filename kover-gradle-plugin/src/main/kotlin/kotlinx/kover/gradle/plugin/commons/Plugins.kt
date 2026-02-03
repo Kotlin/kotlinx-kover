@@ -4,7 +4,9 @@
 
 package kotlinx.kover.gradle.plugin.commons
 
+import kotlinx.kover.gradle.plugin.util.bean
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionContainer
 
 /**
  * The ID of the Kotlin JVM Gradle plugin.
@@ -46,3 +48,13 @@ internal fun Project.hasAndroid9WithKotlin() = pluginManager.hasPlugin(ANDROID_B
 internal fun Project.hasAnyKotlinPlugin() = pluginManager.hasPlugin(KOTLIN_JVM_PLUGIN_ID) || pluginManager.hasPlugin(KOTLIN_ANDROID_PLUGIN_ID) || pluginManager.hasPlugin(KOTLIN_MULTIPLATFORM_PLUGIN_ID)
 
 internal fun Project.hasKotlinExtension() = extensions.findByName("kotlin") != null
+
+/**
+ * Returns the major version of the Android Gradle plugin.
+ *
+ * @return the major version of the Android Gradle plugin or 0 if the version can't be read.
+ */
+internal fun ExtensionContainer.androidMajorVersion(): Int {
+    val androidComponents = findByName("androidComponents")?.bean()?: return 0
+    return androidComponents.beanOrNull("pluginVersion")?.valueOrNull<Int>("major") ?: 0
+}

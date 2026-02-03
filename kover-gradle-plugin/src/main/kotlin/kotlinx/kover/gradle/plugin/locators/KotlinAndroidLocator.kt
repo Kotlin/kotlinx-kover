@@ -6,6 +6,7 @@ package kotlinx.kover.gradle.plugin.locators
 
 import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
+import kotlinx.kover.gradle.plugin.commons.androidMajorVersion
 import kotlinx.kover.gradle.plugin.util.bean
 import org.gradle.api.Project
 
@@ -23,10 +24,7 @@ internal fun Project.locateKotlinAndroidVariants(variants: List<AndroidVariantIn
 
     val kotlinTarget = kotlinExtension["target"]
 
-    val androidComponents = project.extensions.findByName("androidComponents")?.bean()
-        ?: throw KoverCriticalException("Kover requires extension with name 'androidComponents' for project '${project.path}'. The minimum supported AGP version is 7.0.0")
-
-    val majorVersion = androidComponents.beanOrNull("pluginVersion")?.valueOrNull<Int>("major") ?: 0
+    val majorVersion = project.extensions.androidMajorVersion()
     val origins = if (majorVersion < 9) {
         project.androidVariantsBefore9(androidExtension, kotlinTarget)
     } else {
