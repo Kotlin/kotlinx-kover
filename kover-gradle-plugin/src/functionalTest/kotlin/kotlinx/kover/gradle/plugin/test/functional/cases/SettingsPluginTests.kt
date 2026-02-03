@@ -192,4 +192,13 @@ Rule violated: lines covered percentage is 50.000000, but expected maximum is 10
             classCounter("kotlinx.kover.test.android.Maths").assertCovered()
         }
     }
+
+    // Important: KSP plugin doesn't support project isolation cache
+    @TemplateTest("settings-plugin-android-ksp-hilt", ["-Pkover", ":app:testDebugUnitTest", "koverXmlReport"])
+    fun CheckerContext.testKspHilt() {
+        xmlReport {
+            classCounter("kotlinx.kover.test.android.DebugUtil").assertPresent()
+            classCounter("kotlinx.kover.test.android.Maths").assertCovered()
+        }
+    }
 }

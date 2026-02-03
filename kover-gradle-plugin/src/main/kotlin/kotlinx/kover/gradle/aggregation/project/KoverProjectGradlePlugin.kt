@@ -19,6 +19,7 @@ import kotlinx.kover.gradle.aggregation.settings.dsl.intern.KoverProjectExtensio
 import kotlinx.kover.gradle.plugin.commons.ANDROID_BASE_PLUGIN_ID
 import kotlinx.kover.gradle.plugin.commons.KOTLIN_ANDROID_PLUGIN_ID
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
+import kotlinx.kover.gradle.plugin.commons.androidMajorVersion
 import kotlinx.kover.gradle.plugin.commons.hasAndroid9WithKotlin
 import kotlinx.kover.gradle.plugin.commons.isJavaCompilerOutputDirectory
 import kotlinx.kover.gradle.plugin.commons.isKotlinCompilerOutputDirectory
@@ -92,7 +93,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
             // a very old AGP (< 7.0.0)
                 ?: return@withPlugin
 
-            val majorVersion = androidComponents.beanOrNull("pluginVersion")?.valueOrNull<Int>("major") ?: 0
+            val majorVersion = project.extensions.androidMajorVersion()
             // add onVariants callback only for new Variant API (since AGP 9.0.0)
             if (majorVersion < 9) return@withPlugin
 
@@ -142,6 +143,7 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
         val providers = providers
 
 
+        val ext = project.extensions
         val compilationMap = compilations.map { allCompilations ->
             allCompilations.associate { compilation ->
                 // since AGP 9.0.0 srcDirs and classesDirs are empty
@@ -149,7 +151,8 @@ internal class KoverProjectGradlePlugin : Plugin<Project> {
                     .flatMap { sourceSet -> sourceSet["kotlin"]["srcDirs"].sequence().map { it.value<File>() } }
                     .toSet()
                 val outputDirsFromSourceSet = compilation["output"]["classesDirs"].value<ConfigurableFileCollection>().files
-                val outputDirs = if (outputDirsFromSourceSet.isEmpty()) {
+                val androidMajorVersion = ext.androidMajorVersion()
+                val outputDirs = if (androidMajorVersion >= 9) {
                     // since AGP 9.0.0 classesDirs are empty, so we should get the compilation tasks output
                     val kotlinCompileTask = compilation.value<TaskProvider<Task>>("compileTaskProvider")
                     val javaCompileTask = compilation.valueOrNull<TaskProvider<Task>>("compileJavaTaskProvider")
