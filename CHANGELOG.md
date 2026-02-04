@@ -1,3 +1,9 @@
+0.9.6 / 2026-02-04
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#792`](https://github.com/Kotlin/kotlinx-kover/issues/792) Fixed support of Android 9 with hilt
+
 0.9.5 / 2026-01-30
 ===================
 ## Kover Gradle Plugin
