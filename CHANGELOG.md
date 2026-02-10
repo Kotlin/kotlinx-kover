@@ -1,3 +1,9 @@
+0.9.7 / 2026-02-10
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#747`](https://github.com/Kotlin/kotlinx-kover/issues/747) Fixed a recurring issue in support of Android KMP libraries
+
 0.9.6 / 2026-02-04
 ===================
 ## Kover Gradle Plugin

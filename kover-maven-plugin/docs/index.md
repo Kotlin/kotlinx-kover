@@ -22,7 +22,7 @@ Maven plugin to measure test coverage and generate human-readable reports with c
 - simultaneous use of several instrumentation agents can lead to unpredictable consequences and unstable operation
 
 ## Quickstart
-To use Kover coverage measurement it is necessary to add plugin `org.jetbrains.kotlinx:kover-maven-plugin:0.9.6` to build configuration in `pom.xml` and create executions for used goals.
+To use Kover coverage measurement it is necessary to add plugin `org.jetbrains.kotlinx:kover-maven-plugin:0.9.7` to build configuration in `pom.xml` and create executions for used goals.
 
 With the following configuration HTML and XML reports will be generated, and verification rules will be checked on `verify` phase:
 ```xml
@@ -35,7 +35,7 @@ With the following configuration HTML and XML reports will be generated, and ver
             <plugin>
                 <groupId>org.jetbrains.kotlinx</groupId>
                 <artifactId>kover-maven-plugin</artifactId>
-                <version>0.9.6</version>
+                <version>0.9.7</version>
                 <executions>
                     <!-- instrument test tasks -->
                     <execution>
@@ -104,7 +104,7 @@ All available configuration options are shown below:
 <plugin>
     <groupId>org.jetbrains.kotlinx</groupId>
     <artifactId>kover-maven-plugin</artifactId>
-    <version>0.9.6</version>
+    <version>0.9.7</version>
     <executions>
         <!-- instrument test tasks -->
         <execution>
