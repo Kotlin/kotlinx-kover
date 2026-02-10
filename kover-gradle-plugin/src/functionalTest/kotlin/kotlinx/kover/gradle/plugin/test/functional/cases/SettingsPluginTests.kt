@@ -184,6 +184,13 @@ Rule violated: lines covered percentage is 50.000000, but expected maximum is 10
         }
     }
 
+    @TemplateTest("settings-android-kmp", ["-Pkover", "testAndroidHostTest", "koverXmlReport", "-Dorg.gradle.unsafe.isolated-projects=true", "--configuration-cache", "--build-cache"])
+    fun CheckerContext.testAndroidKmp() {
+        xmlReport {
+            classCounter("com.example.shared.Platform_androidKt").assertPresent()
+        }
+    }
+
     // Important: KSP plugin doesn't support project isolation cache
     @TemplateTest("settings-android-ksp-room", ["-Pkover", ":app:testDebugUnitTest", "koverXmlReport"])
     fun CheckerContext.testKspRoom() {

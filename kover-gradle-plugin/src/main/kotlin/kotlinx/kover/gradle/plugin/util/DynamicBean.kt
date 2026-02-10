@@ -40,6 +40,7 @@ internal class DynamicBean(val origin: Any) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T> valueOrNull(name: String): T? {
+        if (!wrappedOrigin.hasProperty(name)) return null
         return wrappedOrigin.getProperty(name) as T?
     }
 
