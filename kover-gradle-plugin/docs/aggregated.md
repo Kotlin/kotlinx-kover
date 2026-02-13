@@ -83,7 +83,7 @@ kover {
                     excludesInheritedFrom.add("*ParentExcluded2")
                 }
 
-                bounds {
+                bound {
                     // append minimal bound
                     // -Pkover.verify.min=1
                     minValue = 1
