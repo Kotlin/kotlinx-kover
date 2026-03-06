@@ -1,9 +1,18 @@
 pluginManagement {
     includeBuild("build-logic")
 
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+    }
+
     plugins {
         kotlin("jvm") version embeddedKotlinVersion
     }
+}
+
+plugins {
+    id("org.jetbrains.kotlinx.artifacts-validator-plugin") version "0.0.1-SNAPSHOT"
 }
 
 dependencyResolutionManagement {
