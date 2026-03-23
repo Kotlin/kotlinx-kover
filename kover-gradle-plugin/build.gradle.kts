@@ -1,3 +1,4 @@
+import org.gradle.plugin.compatibility.compatibility
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -217,6 +218,12 @@ gradlePlugin {
             displayName = "Gradle Plugin for Kotlin Code Coverage Tools"
             description = "Evaluate code coverage for projects written in Kotlin"
             tags.addAll("kover", "kotlin", "coverage")
+
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }
@@ -232,6 +239,12 @@ gradlePlugin {
             displayName = "Gradle Settings Plugin for Kotlin Code Coverage Tools"
             description = "Evaluate code coverage for projects written in Kotlin, applied only inside settings.gradle[.kts] files"
             tags.addAll("kover", "kotlin", "coverage", "settings plugin")
+
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }
