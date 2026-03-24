@@ -30,6 +30,9 @@ internal class ProvidedVariantsLocator(
         project.pluginManager.withPlugin(KOTLIN_ANDROID_PLUGIN_ID) {
             simpleEnqueue(KOTLIN_ANDROID_PLUGIN_ID)
         }
+        project.pluginManager.withPlugin(ANDROID_MULTIPLATFORM_LIBRARY_PLUGIN_ID) {
+            simpleEnqueue(ANDROID_MULTIPLATFORM_LIBRARY_PLUGIN_ID)
+        }
         project.pluginManager.withPlugin(ANDROID_APP_PLUGIN_ID) {
             androidEnqueue(ANDROID_APP_PLUGIN_ID)
         }
