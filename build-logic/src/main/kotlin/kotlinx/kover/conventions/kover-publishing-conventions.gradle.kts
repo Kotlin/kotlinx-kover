@@ -1,5 +1,3 @@
-import gradle.kotlin.dsl.accessors._d7c1cb8291fcf7e869bfba85a0dc6ae2.jar
-
 /*
  * Copyright 2000-2023 JetBrains s.r.o.
  *
@@ -226,7 +224,6 @@ signing {
 tasks.jar {
     manifest {
         attributes(
-            "Multi-Release" to true,
             "Implementation-Vendor" to "JetBrains",
             "Implementation-Title" to project.name,
             "Implementation-Version" to project.version,
