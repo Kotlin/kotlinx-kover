@@ -25,4 +25,9 @@ internal class AndroidKmpLibTests {
            methodCounter("org.jetbrains.AndroidClass", "covered").assertFullyCovered()
        }
     }
+
+
+    @TemplateTest("android-library-order", ["koverXmlReport"])
+    fun CheckerContext.testAndroidMultiplatformLibOrdered() {
+    }
 }

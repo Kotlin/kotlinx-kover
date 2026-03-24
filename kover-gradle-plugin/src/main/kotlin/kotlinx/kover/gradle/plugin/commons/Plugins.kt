@@ -34,6 +34,11 @@ internal const val ANDROID_BASE_PLUGIN_ID = "com.android.base"
 internal const val ANDROID_APP_PLUGIN_ID = "com.android.application"
 
 /**
+ * The plugin ID for the Android multiplatform library Gradle plugin.
+ */
+internal const val ANDROID_MULTIPLATFORM_LIBRARY_PLUGIN_ID = "com.android.kotlin.multiplatform.library"
+
+/**
  * The plugin ID for the Android library Gradle plugin.
  */
 internal const val ANDROID_LIB_PLUGIN_ID = "com.android.library"
