@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform") version ("2.2.20")
-    id("org.jetbrains.kotlinx.kover") version "0.9.7"
+    id("org.jetbrains.kotlinx.kover") version "0.9.8"
 }
 
 kotlin {

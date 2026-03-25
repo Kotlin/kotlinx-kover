@@ -1,3 +1,12 @@
+0.9.8 / 2026-03-25
+===================
+## Kover Gradle Plugin
+### Internal features
+* Updated publish plugin and declare configuration cache compatibility
+* [`#782`](https://github.com/Kotlin/kotlinx-kover/issues/782) Filled Implementation fields Vendor/Title/Version in MANIFEST.MF
+### Bugfixes
+* [`#799`](https://github.com/Kotlin/kotlinx-kover/issues/799) [`#772`](https://github.com/Kotlin/kotlinx-kover/issues/772) Fixed Android multiplatform library support in case of the violation of the project isolation
+
 0.9.7 / 2026-02-10
 ===================
 ## Kover Gradle Plugin
