@@ -113,7 +113,7 @@ abstract class CollectTask: DefaultTask() {
 
 publishing {
     repositories {
-        addPublishingRepositoryIfPresent()
+        addPublishingRepository()
 
         /**
          * Maven repository in build directory to store artifacts for using in functional tests.
@@ -142,17 +142,11 @@ afterEvaluate {
     }
 }
 
-// Artifacts are published to an intermediate repo (libs.repo.url) first,
-// and then deployed to the central portal.
-fun RepositoryHandler.addPublishingRepositoryIfPresent() {
-    val repositoryUrl = acquireProperty("libs.repo.url")
-    if (!repositoryUrl.isNullOrBlank()) {
-        maven {
-            url = uri(repositoryUrl)
-            credentials {
-                username = acquireProperty("libs.repo.user")
-                password = acquireProperty("libs.repo.password")
-            }
+// Artifacts are published to a local repo, then all combined into a deployment bundle elsewhere
+fun RepositoryHandler.addPublishingRepository() {
+    maven {
+        maven(project.rootProject.layout.buildDirectory.dir("repo")) {
+            name = "buildRepo"
         }
     }
 }
