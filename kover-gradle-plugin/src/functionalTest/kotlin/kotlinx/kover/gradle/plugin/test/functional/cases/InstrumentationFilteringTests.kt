@@ -108,4 +108,33 @@ internal class InstrumentationFilteringTests {
         }
     }
 
+    /**
+     * Regression test for https://github.com/Kotlin/kotlinx-kover/issues/810:
+     * classes whose package starts with `com.android.*` (AOSP-style system apps) must be
+     * instrumented when the user explicitly includes them via [includedClasses].
+     *
+     * Without the fix, Kover unconditionally added `exclude=com.android.*` to the agent args
+     * which silently suppressed instrumentation even when the user opted in via [includedClasses].
+     */
+    @SlicedGeneratedTest(allLanguages = true)
+    fun BuildConfigurator.testAndroidPackageInstrumentedWhenExplicitlyIncluded() {
+        addProjectWithKover {
+            sourcesFrom("android-package")
+
+            kover {
+                currentProject {
+                    instrumentation {
+                        includedClasses.add("com.android.provision.*")
+                    }
+                }
+            }
+        }
+
+        run("build", "koverXmlReport") {
+            xmlReport {
+                classCounter("com.android.provision.ProvisionClass").assertCovered()
+            }
+        }
+    }
+
 }

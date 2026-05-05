@@ -44,15 +44,24 @@ internal object JvmOnFlyInstrumenter {
                 binReportProvider.get().asFile.delete()
             }
 
-            // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
+            // Excludes Android SDK stub classes by default to prevent instrumentation errors,
+            // see https://github.com/Kotlin/kotlinx-kover/issues/89.
+            // However, if the user explicitly includes a sub-pattern of a default Android exclusion
+            // (e.g. "com.android.provision.*" inside "com.android.*"), that default exclusion is
+            // dropped so the agent's include-whitelist can take effect for the user's own package.
             val androidClasses = setOf(
-                // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
                 "android.*", "com.android.*",
-                // excludes JVM internal classes, in some cases, errors occur when trying to instrument these classes, for example, when using JaCoCo + Robolectric. There is also no point in instrumenting them in Kover.
+                // Excluded to prevent errors when instrumenting JVM internals (e.g. JaCoCo + Robolectric).
                 "jdk.internal.*"
             )
 
-            val excludedWithAndroid = excluded.map { it + androidClasses }
+            val excludedWithAndroid = excluded.zip(included) { excludedSet, includedSet ->
+                val effectiveAndroid = androidClasses.filter { androidPattern ->
+                    val prefix = androidPattern.removeSuffix(".*") + "."
+                    includedSet.none { includePattern -> includePattern.startsWith(prefix) }
+                }.toSet()
+                excludedSet + effectiveAndroid
+            }
 
             dependsOn(jarConfiguration)
             jvmArgumentProviders += JvmTestTaskArgumentProvider(
