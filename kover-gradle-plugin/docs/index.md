@@ -995,6 +995,26 @@ kover {
 
 [Wildcards](#class-name-with-wildcards) `*` and `?` are allowed in class names.
 
+#### AOSP-style package namespaces (`com.android.*`)
+
+Kover automatically excludes classes matching `android.*` and `com.android.*` from instrumentation
+to prevent errors when running JVM unit tests against Android SDK stub classes.
+
+This default exclusion also affects application code whose package namespace follows AOSP conventions,
+such as system apps using `com.android.provision`, `com.android.systemui`, etc.
+If your project uses such a namespace, add your package to `includedClasses` — Kover will
+automatically lift the conflicting default exclusion so that only your own classes are instrumented:
+
+```kotlin
+kover {
+    currentProject {
+        instrumentation {
+            includedClasses.add("com.android.provision.*")
+        }
+    }
+}
+```
+
 Typical error messages encountered with instrumentation problems:
 ```
 No instrumentation registered! Must run under a registering instrumentation.
