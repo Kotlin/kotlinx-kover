@@ -46,21 +46,24 @@ internal object JvmOnFlyInstrumenter {
 
             // Excludes Android SDK stub classes by default to prevent instrumentation errors,
             // see https://github.com/Kotlin/kotlinx-kover/issues/89.
-            // However, if the user explicitly includes a sub-pattern of a default Android exclusion
-            // (e.g. "com.android.provision.*" inside "com.android.*"), that default exclusion is
-            // dropped so the agent's include-whitelist can take effect for the user's own package.
-            val androidClasses = setOf(
-                "android.*", "com.android.*",
-                // Excluded to prevent errors when instrumenting JVM internals (e.g. JaCoCo + Robolectric).
-                "jdk.internal.*"
-            )
+            // Set the Gradle property 'kover.android.excludes.disable' to opt out of the
+            // android.* / com.android.* exclusions (e.g. for AOSP system apps).
+            val androidExcludesDisabled = project.providers
+                .gradleProperty("kover.android.excludes.disable")
+                .map { true }
+                .orElse(false)
 
-            val excludedWithAndroid = excluded.zip(included) { excludedSet, includedSet ->
-                val effectiveAndroid = androidClasses.filter { androidPattern ->
-                    val prefix = androidPattern.removeSuffix(".*") + "."
-                    includedSet.none { includePattern -> includePattern.startsWith(prefix) }
-                }.toSet()
-                excludedSet + effectiveAndroid
+            val excludedWithAndroid = excluded.zip(androidExcludesDisabled) { excludedSet, disableAndroid ->
+                val defaultExclusions = if (disableAndroid) {
+                    setOf("jdk.internal.*")
+                } else {
+                    setOf(
+                        "android.*", "com.android.*",
+                        // Excluded to prevent errors when instrumenting JVM internals (e.g. JaCoCo + Robolectric).
+                        "jdk.internal.*"
+                    )
+                }
+                excludedSet + defaultExclusions
             }
 
             dependsOn(jarConfiguration)

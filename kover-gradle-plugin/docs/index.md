@@ -1002,17 +1002,17 @@ to prevent errors when running JVM unit tests against Android SDK stub classes.
 
 This default exclusion also affects application code whose package namespace follows AOSP conventions,
 such as system apps using `com.android.provision`, `com.android.systemui`, etc.
-If your project uses such a namespace, add your package to `includedClasses` — Kover will
-automatically lift the conflicting default exclusion so that only your own classes are instrumented:
+To disable these two exclusions, set the Gradle property `kover.android.excludes.disable` in your
+`gradle.properties`:
 
-```kotlin
-kover {
-    currentProject {
-        instrumentation {
-            includedClasses.add("com.android.provision.*")
-        }
-    }
-}
+```properties
+kover.android.excludes.disable=true
+```
+
+Or pass it on the command line:
+
+```bash
+./gradlew koverXmlReport -Pkover.android.excludes.disable
 ```
 
 Typical error messages encountered with instrumentation problems:
