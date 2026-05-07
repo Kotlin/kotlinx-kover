@@ -37,14 +37,26 @@ internal fun TaskCollection<Test>.instrument(
             binReportProvider.get().asFile.delete()
         }
 
-        // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
-        val excludedClassesWithAndroid = current.instrumentation.excludedClasses.map { it +
+        // Excludes Android SDK stub classes by default to prevent instrumentation errors,
+        // see https://github.com/Kotlin/kotlinx-kover/issues/89.
+        // Set the Gradle property 'kover.android.excludes.disable' to opt out of the
+        // android.* / com.android.* exclusions (e.g. for AOSP system apps).
+        val androidExcludesDisabled = project.providers
+            .gradleProperty("kover.android.excludes.disable")
+            .map { true }
+            .orElse(false)
+
+        val excludedClassesWithAndroid = current.instrumentation.excludedClasses.zip(androidExcludesDisabled) { excludedSet, disableAndroid ->
+            val defaultExclusions = if (disableAndroid) {
+                setOf("jdk.internal.*")
+            } else {
                 setOf(
-                    // Always excludes android classes, see https://github.com/Kotlin/kotlinx-kover/issues/89
                     "android.*", "com.android.*",
-                    // excludes JVM internal classes, in some cases, errors occur when trying to instrument these classes, for example, when using JaCoCo + Robolectric. There is also no point in instrumenting them in Kover.
+                    // Excluded to prevent errors when instrumenting JVM internals (e.g. JaCoCo + Robolectric).
                     "jdk.internal.*"
                 )
+            }
+            excludedSet + defaultExclusions
         }
 
         val taskInstrumentationDisabled = koverDisabled.map {
