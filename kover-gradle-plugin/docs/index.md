@@ -995,6 +995,26 @@ kover {
 
 [Wildcards](#class-name-with-wildcards) `*` and `?` are allowed in class names.
 
+#### AOSP-style package namespaces (`com.android.*`)
+
+Kover automatically excludes classes matching `android.*` and `com.android.*` from instrumentation
+to prevent errors when running JVM unit tests against Android SDK stub classes.
+
+This default exclusion also affects application code whose package namespace follows AOSP conventions,
+such as system apps using `com.android.provision`, `com.android.systemui`, etc.
+To disable these two exclusions, set the Gradle property `kover.android.excludes.disable` in your
+`gradle.properties`:
+
+```properties
+kover.android.excludes.disable=true
+```
+
+Or pass it on the command line:
+
+```bash
+./gradlew koverXmlReport -Pkover.android.excludes.disable
+```
+
 Typical error messages encountered with instrumentation problems:
 ```
 No instrumentation registered! Must run under a registering instrumentation.
