@@ -60,6 +60,10 @@ internal fun Project.hasKotlinExtension() = extensions.findByName("kotlin") != n
  * @return the major version of the Android Gradle plugin or 0 if the version can't be read.
  */
 internal fun ExtensionContainer.androidMajorVersion(): Int {
+    println("androidMajorVersion: START")
     val androidComponents = findByName("androidComponents")?.bean()?: return 0
-    return androidComponents.beanOrNull("pluginVersion")?.valueOrNull<Int>("major") ?: 0
+    println("androidMajorVersion: androidComponents found")
+    val version = androidComponents.beanOrNull("pluginVersion")?.valueOrNull<Int>("major") ?: 0
+    println("androidMajorVersion: major version = $version")
+    return version
 }

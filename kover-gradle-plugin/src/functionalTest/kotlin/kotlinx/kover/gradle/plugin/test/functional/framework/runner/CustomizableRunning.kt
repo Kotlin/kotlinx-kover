@@ -59,24 +59,28 @@ internal fun generateBuild(generator: (File) -> Unit): BuildSource {
 }
 
 
-internal fun GradleBuild.runWithParams(vararg args: String): BuildResult {
-    return runWithParams(args.toList())
+internal fun GradleBuild.runWithParams(vararg args: String, options: BuildOptions = BuildOptions()): BuildResult {
+    return runWithParams(args.toList(), options)
 }
 
-internal fun GradleBuild.runWithParams(args: List<String>): BuildResult {
+internal fun GradleBuild.runWithParams(args: List<String>, options: BuildOptions = BuildOptions()): BuildResult {
+    val gradleVersionString = options.gradleVersion ?: overriddenGradleVersion ?: defaultGradleVersion
+    val gradleVersion = SemVer.ofVariableOrNull(gradleVersionString) ?: throw IllegalArgumentException("Can not parse Gradle version '$gradleVersionString'")
+
+    val wrapperDir = if (gradleVersionString == defaultGradleVersion) {
+        defaultGradleWrapperDir
+    } else {
+        getWrapper(gradleVersionString)
+    }
+
+    val androidSdkDir = options.androidSdkDir ?: androidSdkDir
+
     val buildEnv = BuildEnv(gradleVersion, wrapperDir, androidSdkDir)
 
     return run(args, buildEnv)
 }
 
-private val gradleVersion: SemVer by lazy {
-    val version = overriddenGradleVersion ?: defaultGradleVersion
-    SemVer.ofVariableOrNull(version) ?: throw IllegalArgumentException("Can not parse Gradle version '$version'")
-}
-
-
-private val wrapperDir =
-    if (overriddenGradleVersion == null) defaultGradleWrapperDir else getWrapper(overriddenGradleVersion)
+internal class BuildOptions(val gradleVersion: String? = null, val androidSdkDir: String? = null)
 
 private fun getWrapper(gradleVersion: String): File {
     val wrapperDir = gradleWrappersRoot.resolve(gradleVersion)

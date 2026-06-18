@@ -248,3 +248,10 @@ gradlePlugin {
         }
     }
 }
+
+
+tasks.compileKotlin {
+    compilerOptions {
+        verbose.set(true)
+    }
+}
