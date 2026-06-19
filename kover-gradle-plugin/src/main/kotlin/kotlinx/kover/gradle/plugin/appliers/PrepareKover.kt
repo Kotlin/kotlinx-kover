@@ -26,7 +26,7 @@ internal fun prepare(project: Project): KoverContext {
     }
 
     // Project always consumes its own artifacts
-    project.dependencies.add(KOVER_DEPENDENCY_NAME, project)
+    project.dependencies.add(KOVER_DEPENDENCY_NAME, project.dependencies.project(mapOf("path" to project.path)))
 
     val projectExtension = project.extensions.create<KoverProjectExtensionImpl>(
         KOVER_PROJECT_EXTENSION_NAME,
