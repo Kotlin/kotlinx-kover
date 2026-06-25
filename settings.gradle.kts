@@ -12,6 +12,10 @@ dependencyResolutionManagement {
     }
 }
 
+plugins {
+    id("org.jetbrains.kotlinx.artifacts-validator-plugin") version "0.0.2"
+}
+
 rootProject.name = "kover"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":kover-jvm-agent")
