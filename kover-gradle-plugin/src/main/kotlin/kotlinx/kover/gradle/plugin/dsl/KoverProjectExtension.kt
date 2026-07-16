@@ -153,7 +153,7 @@ public interface KoverProjectExtension {
      *  val thisProject = project
      *  subprojects {
      *      apply("org.jetbrains.kotlinx.kover")
-     *      thisProject.dependencies.add("kover", this)
+     *      thisProject.dependencies.add("kover", thisProject.dependencies.project(this.path))
      *
      *      // apply values from `useJacoco` and `jacocoVersion`
      *  }

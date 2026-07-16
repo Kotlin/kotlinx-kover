@@ -13,6 +13,7 @@ import org.gradle.api.Project
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.specs.Spec
+import org.gradle.kotlin.dsl.project
 
 internal fun KoverContext.prepareMerging() {
     if (!projectExtension.merge.configured) return
@@ -63,7 +64,7 @@ private fun KoverContext.configSelectedProjects(targetProjects: List<Project>) {
             // apply plugin in dependency
             targetProject.pluginManager.apply(KOVER_PLUGIN_ID)
             // add dependency to kover configuration
-            project.dependencies.add(koverBucketConfiguration.name, targetProject)
+            project.dependencies.add(koverBucketConfiguration.name, project.dependencies.project(targetProject.path))
             // apply configs
             koverExtension.configBeforeFinalize(targetProject)
         } else {

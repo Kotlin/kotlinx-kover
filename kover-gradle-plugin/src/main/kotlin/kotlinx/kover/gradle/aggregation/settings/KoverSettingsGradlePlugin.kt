@@ -53,7 +53,7 @@ public class KoverSettingsGradlePlugin: Plugin<Settings> {
             val agentDependency = configurations.create(SettingsNames.DEPENDENCY_AGENT) {
                 asDependency()
             }
-            dependencies.add(agentDependency.name, rootProject)
+            dependencies.add(agentDependency.name, dependencies.project(rootProject.path))
 
             if (path == Project.PATH_SEPARATOR) {
                 configureRootProject(target, settingsExtension)
@@ -82,7 +82,7 @@ public class KoverSettingsGradlePlugin: Plugin<Settings> {
         val rootDependencies = dependencies
         settings.rootProject.walkSubprojects { descriptor ->
             if (settingsExtension.skipProjects.get().none { excluded -> excluded.match(descriptor.name, descriptor.path) }) {
-                rootDependencies.add(KOVER_DEPENDENCY_NAME, project(descriptor.path))
+                rootDependencies.add(KOVER_DEPENDENCY_NAME, rootDependencies.project(descriptor.path))
 
                 val rules = settingsExtension.reports.verify.eachProjectRule.get().map { action ->
                     val eachProjectRule = objects.newInstance<ProjectVerificationRuleSettingsImpl>(
