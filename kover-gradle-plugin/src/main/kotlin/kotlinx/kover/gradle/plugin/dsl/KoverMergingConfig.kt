@@ -27,7 +27,7 @@ import org.gradle.api.specs.Spec
  *  val thisProject = project
  *  subprojects {
  *      apply("org.jetbrains.kotlinx.kover")
- *      thisProject.dependencies.add("kover", this)
+ *      thisProject.dependencies.add("kover", thisProject.dependencies.project(this.path))
  *      extensions.getByType(KoverExtension::class.java).useJacoco.set(thisProject.extensions.getByType(KoverExtension::class.java).useJacoco)
  *      extensions.getByType(KoverExtension::class.java).jacocoVersion.set(thisProject.extensions.getByType(KoverExtension::class.java).jacocoVersion)
  *  }

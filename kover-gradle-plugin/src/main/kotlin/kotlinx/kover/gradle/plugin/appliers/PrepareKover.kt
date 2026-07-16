@@ -14,6 +14,7 @@ import org.gradle.api.Project
 import org.gradle.api.attributes.Usage
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.register
 
 /**
@@ -26,7 +27,7 @@ internal fun prepare(project: Project): KoverContext {
     }
 
     // Project always consumes its own artifacts
-    project.dependencies.add(KOVER_DEPENDENCY_NAME, project)
+    project.dependencies.add(KOVER_DEPENDENCY_NAME, project.dependencies.project(project.path))
 
     val projectExtension = project.extensions.create<KoverProjectExtensionImpl>(
         KOVER_PROJECT_EXTENSION_NAME,
