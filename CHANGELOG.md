@@ -1,3 +1,10 @@
+0.9.9 / 2026-07-17
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#818`](https://github.com/Kotlin/kotlinx-kover/issues/818) Fixed Gradle 9.6.0 deprecation warning
+* [`#810`](https://github.com/Kotlin/kotlinx-kover/issues/810) Fix 0% coverage for classes in com.android.* packages
+
 0.9.8 / 2026-03-25
 ===================
 ## Kover Gradle Plugin
