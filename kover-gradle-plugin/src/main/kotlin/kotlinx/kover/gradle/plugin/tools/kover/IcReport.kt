@@ -6,12 +6,14 @@ import java.io.File
 
 
 internal fun ReportContext.koverBinaryReport(binaryFile: File) {
-    KoverLegacyFeatures.aggregateIc(
-        binaryFile,
-        filters.toKoverFeatures(),
-        tempDir,
-        files.reports.toList(),
-        files.outputs.toList()
-    )
+    synchronized(KoverAggregationLock) {
+        KoverLegacyFeatures.aggregateIc(
+            binaryFile,
+            filters.toKoverFeatures(),
+            tempDir,
+            files.reports.toList(),
+            files.outputs.toList()
+        )
+    }
 }
 

@@ -13,15 +13,17 @@ import java.io.File
 
 internal fun ReportContext.printCoverage(request: CoverageRequest, outputFile: File) {
     // change API after https://youtrack.jetbrains.com/issue/IDEA-323463 will be implemented
-    val coverage = KoverLegacyFeatures.evalCoverage(
-        request.entity.convert(),
-        request.metric.convert(),
-        request.aggregation.convert(),
-        tempDir,
-        filters.toKoverFeatures(),
-        files.reports.toList(),
-        files.outputs.toList()
-    )
+    val coverage = synchronized(KoverAggregationLock) {
+        KoverLegacyFeatures.evalCoverage(
+            request.entity.convert(),
+            request.metric.convert(),
+            request.aggregation.convert(),
+            tempDir,
+            filters.toKoverFeatures(),
+            files.reports.toList(),
+            files.outputs.toList()
+        )
+    }
 
     if (coverage.isEmpty()) {
         outputFile.writeNoSources(request.header)

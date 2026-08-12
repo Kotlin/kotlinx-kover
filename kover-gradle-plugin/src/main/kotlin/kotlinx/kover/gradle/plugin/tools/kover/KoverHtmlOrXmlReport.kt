@@ -12,24 +12,28 @@ import java.io.File
 internal fun ReportContext.koverHtmlReport(htmlReportDir: File, htmlTitle: String, charsetName: String?) {
     htmlReportDir.mkdirs()
 
-    KoverLegacyFeatures.generateHtmlReport(
-        htmlReportDir,
-        charsetName,
-        files.reports.toList(),
-        files.outputs.toList(),
-        files.sources.toList(),
-        htmlTitle,
-        filters.toKoverFeatures()
-    )
+    synchronized(KoverAggregationLock) {
+        KoverLegacyFeatures.generateHtmlReport(
+            htmlReportDir,
+            charsetName,
+            files.reports.toList(),
+            files.outputs.toList(),
+            files.sources.toList(),
+            htmlTitle,
+            filters.toKoverFeatures()
+        )
+    }
 }
 
 internal fun ReportContext.koverXmlReport(xmlReportFile: File, xmlTitle: String) {
-    KoverLegacyFeatures.generateXmlReport(
-        xmlReportFile,
-        files.reports.toList(),
-        files.outputs.toList(),
-        files.sources.toList(),
-        xmlTitle,
-        filters.toKoverFeatures()
-    )
+    synchronized(KoverAggregationLock) {
+        KoverLegacyFeatures.generateXmlReport(
+            xmlReportFile,
+            files.reports.toList(),
+            files.outputs.toList(),
+            files.sources.toList(),
+            xmlTitle,
+            filters.toKoverFeatures()
+        )
+    }
 }

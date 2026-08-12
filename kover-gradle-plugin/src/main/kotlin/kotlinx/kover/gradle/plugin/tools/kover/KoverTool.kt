@@ -55,13 +55,15 @@ internal class KoverTool(override val variant: CoverageToolVariant) : CoverageTo
     }
 
     override fun verify(rules: List<VerificationRule>, output: File, context: ReportContext) {
-        val violations = KoverLegacyFeatures.verify(
-            rules.map { it.convert() },
-            context.tempDir,
-            context.filters.toKoverFeatures(),
-            context.files.reports.toList(),
-            context.files.outputs.toList()
-        )
+        val violations = synchronized(KoverAggregationLock) {
+            KoverLegacyFeatures.verify(
+                rules.map { it.convert() },
+                context.tempDir,
+                context.filters.toKoverFeatures(),
+                context.files.reports.toList(),
+                context.files.outputs.toList()
+            )
+        }
 
         val errorMessage = KoverLegacyFeatures.violationMessage(violations)
         output.writeText(errorMessage)
