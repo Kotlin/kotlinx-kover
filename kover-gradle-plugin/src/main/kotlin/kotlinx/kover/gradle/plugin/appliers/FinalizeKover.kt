@@ -17,6 +17,8 @@ import kotlinx.kover.gradle.plugin.commons.ReportVariantType
 import kotlinx.kover.gradle.plugin.commons.TOTAL_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportSetConfigImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantCreateConfigImpl
+import kotlinx.kover.gradle.plugin.util.bean
+import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.kotlin.dsl.newInstance
 
 
@@ -27,6 +29,8 @@ import org.gradle.kotlin.dsl.newInstance
  * the availability and settings of the Android plugin, the user settings of the Kover plugin itself.
  */
 internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
+    validateKoverDependencies()
+
     projectExtension.finalizeActions.forEach { action ->
         try {
             action()
@@ -141,6 +145,36 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
             throw KoverIllegalConfigException("It is not possible to configure the '$requestedVariant' variant because it does not exist")
         }
     }
+}
+
+private fun KoverContext.validateKoverDependencies() {
+    val duplicateComponents = koverBucketConfiguration.dependencies
+        .filterIsInstance<ProjectDependency>()
+        .groupBy { dependency -> dependency.group to dependency.name }
+        .mapValues { (_, dependencies) -> dependencies.map { dependency -> dependency.projectPath() }.distinct() }
+        .filterValues { projectPaths -> projectPaths.size > 1 }
+
+    if (duplicateComponents.isEmpty()) return
+
+    val components = duplicateComponents.entries.joinToString("; ") { (identity, paths) ->
+        val (group, name) = identity
+        "'${group.orEmpty()}:$name' is used by ${paths.joinToString { path -> "'$path'" }}"
+    }
+    throw KoverIllegalConfigException(
+        "Kover cannot resolve project dependencies with duplicate component identities: $components. " +
+                "Assign a unique group or project name to each project."
+    )
+}
+
+/**
+ * Gets a project path dynamically, depending on a Gradle version
+ */
+private fun ProjectDependency.projectPath(): String {
+    val dependency = bean()
+    // Gradle since 8.11 has path property
+    return dependency.valueOrNull<String>("path")
+        // for Gradle < 8.11 dependencyProject was used
+        ?: dependency.bean("dependencyProject").value("path")
 }
 
 private fun KoverContext.variantConfig(variantName: String): KoverVariantCreateConfigImpl {
