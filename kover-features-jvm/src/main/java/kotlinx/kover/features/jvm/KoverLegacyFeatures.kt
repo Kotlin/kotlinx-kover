@@ -18,6 +18,13 @@ import java.math.BigDecimal
 
 /**
  * Kover Features for support Kover capabilities in Kover CLI via outdated API.
+ *
+ * # Synchronization
+ * The IntelliJ coverage APIs maintain a mutable state shared within a classloader and are not
+ * safe to invoke concurrently. Concurrent calls can therefore interfere with one another.
+ *
+ * Report generation, verification, aggregation, and merging are synchronized on this
+ * singleton to serialize access to these APIs.
  */
 public object KoverLegacyFeatures {
     private const val FREE_MARKER_LOGGER_PROPERTY_NAME = "org.freemarker.loggerLibrary"
@@ -58,6 +65,7 @@ public object KoverLegacyFeatures {
      * @throws IOException In case of a report generation error
      */
     @Throws(IOException::class)
+    @Synchronized
     public fun generateXmlReport(
         xmlFile: File,
         binaryReports: List<File>,
@@ -82,6 +90,7 @@ public object KoverLegacyFeatures {
      * @throws IOException In case of a report generation error
      */
     @Throws(IOException::class)
+    @Synchronized
     public fun generateHtmlReport(
         htmlDir: File,
         charsetName: String?,
@@ -120,6 +129,7 @@ public object KoverLegacyFeatures {
      * @param classfileDirs List of root directories for compiled class-files
      * @return List of rule violation errors, empty list if there is no verification errors.
      */
+    @Synchronized
     public fun verify(
         rules: List<Rule>, tempDir: File, filters: ClassFilters, binaryReports: List<File>, classfileDirs: List<File>
     ): List<RuleViolations> {
@@ -139,6 +149,7 @@ public object KoverLegacyFeatures {
      * @param binaryReports List of coverage binary reports in IC format
      * @param classfileDirs List of root directories for compiled class-files
      */
+    @Synchronized
     public fun aggregateIc(
         icFile: File, filters: ClassFilters, tempDir: File, binaryReports: List<File>, classfileDirs: List<File>
     ) {
@@ -154,6 +165,7 @@ public object KoverLegacyFeatures {
      * @param icFile        Target IC report file
      * @param binaryReports List of coverage binary reports in IC format
      */
+    @Synchronized
     public fun mergeIc(icFile: File, binaryReports: List<File>) {
         AggregatorApi.merge(binaryReports, icFile)
     }
