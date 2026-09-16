@@ -10,10 +10,17 @@ import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.*
 import org.gradle.api.tasks.*
-import org.gradle.kotlin.dsl.*
 import org.gradle.work.DisableCachingByDefault
 import java.io.*
-import javax.inject.*
+
+internal enum class TestTaskOutcome {
+    FAILED,
+    NOT_EXECUTED,
+    NO_SOURCE,
+    SKIPPED,
+    EXECUTED,
+    UP_TO_DATE
+}
 
 /**
  * A task that writes a Kover artifact - named lists of sources directories, directories with class-files, binary reports.
@@ -34,6 +41,9 @@ internal abstract class KoverArtifactGenerationTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val reports: ConfigurableFileCollection
 
+    @get:Input
+    abstract val testTaskOutcomes: MapProperty<String, TestTaskOutcome>
+
     @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val additionalArtifacts: ConfigurableFileCollection
@@ -48,8 +58,14 @@ internal abstract class KoverArtifactGenerationTask : DefaultTask() {
 
     @TaskAction
     fun generate() {
-        val mainContent = ArtifactContent(projectPath, sources.toSet(), outputDirs.toSet(), reports.toSet())
+        val validReports = testTaskOutcomes.get()
+            .filterValues { it == TestTaskOutcome.EXECUTED || it == TestTaskOutcome.UP_TO_DATE }
+            .keys
+        val actualReports = reports.filter { it.name in validReports }.toSet()
+
+        val mainContent = ArtifactContent(projectPath, sources.toSet(), outputDirs.toSet(), actualReports)
         val additional = additionalArtifacts.files.map { it.parseArtifactFile(rootDir) }
         mainContent.joinWith(additional).write(artifactFile.get().asFile, rootDir)
     }
+
 }
