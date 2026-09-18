@@ -37,4 +37,74 @@ internal class TaskFilteringTests {
             checkDefaultBinReport(false)
         }
     }
+
+    @SlicedGeneratedTest(allTools = true)
+    fun SlicedBuildConfigurator.testDisableTestTask() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+        }
+
+        run(":koverXmlReport") {
+            xmlReport {
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+
+        run(":koverXmlReport", "-x", defaultTestTaskName(slice.type)) {
+            taskNotCalled(defaultTestTaskName(slice.type))
+            checkOutcome("koverGenerateArtifactJvm", "SUCCESS")
+            xmlReport {
+                classCounter("org.jetbrains.SecondClass").assertFullyMissed()
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(allTools = true)
+    fun SlicedBuildConfigurator.testSkipTestTask() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+        }
+
+        run(":koverXmlReport") {
+            xmlReport {
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+
+        edit("build.gradle.kts") {
+            "$it\n\ntasks.test { onlyIf { false } }"
+        }
+        run(":koverXmlReport") {
+            checkOutcome(defaultTestTaskName(slice.type), "SKIPPED")
+            checkOutcome("koverGenerateArtifactJvm", "SUCCESS")
+            xmlReport {
+                classCounter("org.jetbrains.SecondClass").assertFullyMissed()
+            }
+        }
+    }
+
+    @SlicedGeneratedTest(allTools = true)
+    fun SlicedBuildConfigurator.testExcludeAllTests() {
+        addProjectWithKover {
+            sourcesFrom("simple")
+        }
+
+        run(":koverXmlReport") {
+            xmlReport {
+                classCounter("org.jetbrains.SecondClass").assertCovered()
+            }
+        }
+
+        edit("build.gradle.kts") {
+            "$it\n\ntasks.test { filter { isFailOnNoMatchingTests = false; excludeTestsMatching(\"*\") } }"
+        }
+        run(":koverXmlReport") {
+            checkOutcome(defaultTestTaskName(slice.type), "SUCCESS")
+            checkOutcome("koverGenerateArtifactJvm", "SUCCESS")
+            xmlReport {
+                classCounter("org.jetbrains.SecondClass").assertFullyMissed()
+            }
+        }
+    }
+
 }
