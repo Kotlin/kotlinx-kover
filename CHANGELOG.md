@@ -1,3 +1,11 @@
+0.9.10 / 2026-09-28
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#822`](https://github.com/Kotlin/kotlinx-kover/issues/822) Fixed concurrency problem with Kover reporter
+* [`#825`](https://github.com/Kotlin/kotlinx-kover/issues/825) Added check on duplicate project dependencies
+* [`#827`](https://github.com/Kotlin/kotlinx-kover/issues/827) Added skip of test tasks without binary report
+
 0.9.9 / 2026-07-17
 ===================
 ## Kover Gradle Plugin
