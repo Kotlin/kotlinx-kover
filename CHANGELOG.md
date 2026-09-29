@@ -1,3 +1,9 @@
+0.9.11 / 2026-09-29
+===================
+## Kover Gradle Plugin
+### Bugfixes
+* [`#831`](https://github.com/Kotlin/kotlinx-kover/issues/831) Reverted the fix of #827
+
 0.9.10 / 2026-09-28
 ===================
 ## Kover Gradle Plugin
