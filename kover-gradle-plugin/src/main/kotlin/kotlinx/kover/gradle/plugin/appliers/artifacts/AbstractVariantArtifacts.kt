@@ -10,9 +10,7 @@ import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantConfigImpl
 import kotlinx.kover.gradle.plugin.appliers.origin.VariantOrigin
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverProjectExtensionImpl
 import kotlinx.kover.gradle.plugin.tasks.services.KoverArtifactGenerationTask
-import kotlinx.kover.gradle.plugin.tasks.services.TestTaskOutcome
 import kotlinx.kover.gradle.plugin.tools.CoverageTool
-import org.gradle.api.Task
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -85,6 +83,7 @@ internal sealed class AbstractVariantArtifacts(
             !disabledInstrumentation.get()
                     // skip this test if it disabled by name
                     && it.name !in excludedTasks.get()
+                    && it.enabled
         }
 
         // filter some compilation, e.g. JVM source sets
@@ -103,11 +102,6 @@ internal sealed class AbstractVariantArtifacts(
         val sources = compilations.map { unit -> unit.flatMap { it.sources } }
         val binReportFiles = project.layout.buildDirectory.dir(binReportsRootPath())
             .map { dir -> tests.map { dir.file(binReportName(it.name, toolProvider.get().variant.vendor)) } }
-        val testTaskOutcomes = project.provider {
-            tests.associate { test ->
-                binReportName(test.name, toolProvider.get().variant.vendor) to test.outcome()
-            }
-        }
 
         artifactGenTask.configure {
             // to generate an artifact, need to compile the entire project and perform all test tasks
@@ -119,19 +113,8 @@ internal sealed class AbstractVariantArtifacts(
             this.outputDirs.from(kotlinOutputs)
             this.outputDirs.from(javaOutputs)
             this.reports.from(binReportFiles)
-            this.testTaskOutcomes.putAll(testTaskOutcomes)
         }
 
     }
-}
 
-private fun Task.outcome(): TestTaskOutcome {
-    return when {
-        !state.executed -> TestTaskOutcome.NOT_EXECUTED
-        state.failure != null -> TestTaskOutcome.FAILED
-        state.noSource -> TestTaskOutcome.NO_SOURCE
-        state.upToDate -> TestTaskOutcome.UP_TO_DATE
-        state.skipped -> TestTaskOutcome.SKIPPED
-        else -> TestTaskOutcome.EXECUTED
-    }
 }
