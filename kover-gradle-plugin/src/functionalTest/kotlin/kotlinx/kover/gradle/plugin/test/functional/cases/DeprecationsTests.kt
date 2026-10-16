@@ -41,4 +41,34 @@ internal class DeprecationsTests {
         assertFalse(result.output.contains("Using a Project object as a dependency notation has been deprecated"), "Project instance should not be used as a dependency")
     }
 
+    @Test
+    fun testConfigurationVisibility() {
+        val buildSource = buildFromTemplate("counters")
+        buildSource.overriddenKotlinVersion = "2.4.10"
+
+        val theBuild = buildSource.generate()
+        val buildOptions = BuildOptions(
+            gradleVersion = "9.8.1",
+            )
+
+        val result = theBuild.runWithParams(listOf(":koverXmlReport", "--warning-mode",  "all"), buildOptions)
+        assertTrue(result.isSuccessful, "Build should be successful")
+        assertFalse(result.output.contains("The Configuration.setVisible(boolean) method has been deprecated"), "Configuration visibility should not be set")
+    }
+
+    @Test
+    fun testConfigurationVisibilityAggregation() {
+        val buildSource = buildFromTemplate("settings-plugin")
+        buildSource.overriddenKotlinVersion = "2.4.10"
+
+        val theBuild = buildSource.generate()
+        val buildOptions = BuildOptions(
+            gradleVersion = "9.8.1",
+            )
+
+        val result = theBuild.runWithParams(listOf("koverXmlReport", "-Pkover", "--warning-mode",  "all"), buildOptions)
+        assertTrue(result.isSuccessful, "Build should be successful")
+        assertFalse(result.output.contains("The Configuration.setVisible(boolean) method has been deprecated"), "Configuration visibility should not be set")
+    }
+
 }

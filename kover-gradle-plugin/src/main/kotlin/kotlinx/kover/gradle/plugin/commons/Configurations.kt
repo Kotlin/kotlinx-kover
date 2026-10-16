@@ -7,6 +7,7 @@ package kotlinx.kover.gradle.plugin.commons
 import org.gradle.api.*
 import org.gradle.api.artifacts.*
 import org.gradle.api.attributes.*
+import org.gradle.util.GradleVersion
 
 /**
  * Attribute to mark any Kover artifact.
@@ -90,9 +91,7 @@ internal interface ProductFlavorAttr : Named {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html
  */
 internal fun Configuration.asTransitiveDependencies() {
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = false
+    setVisibility(false)
     isCanBeConsumed = false
     isTransitive = true
     isCanBeResolved = true
@@ -107,9 +106,7 @@ internal fun Configuration.asTransitiveDependencies() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asBucket() {
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = true
+    setVisibility(true)
     isCanBeResolved = false
     isCanBeConsumed = false
 }
@@ -121,9 +118,7 @@ internal fun Configuration.asBucket() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asProducer() {
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = false
+    setVisibility(false)
     isCanBeResolved = false
     // this configuration produces modules that can be consumed by other projects
     isCanBeConsumed = true
@@ -136,10 +131,24 @@ internal fun Configuration.asProducer() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asConsumer() {
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = false
+    setVisibility(false)
     isCanBeResolved = true
     // this config consumes modules from OTHER projects, and cannot be consumed by other projects
     isCanBeConsumed = false
+}
+
+
+/**
+ * Set [Configuration.isVisible] only on Gradle versions where it has an effect.
+ *
+ * Before Gradle 9.0, visible configurations implicitly trigger the creation of their artifacts on `assemble`.
+ * Since Gradle 9.0 the property has no effect, and since Gradle 9.8 it is deprecated and scheduled for removal in Gradle 11.
+ *
+ * See: https://docs.gradle.org/9.8.1/userguide/upgrading_version_9.html#deprecate-visible-property
+ */
+internal fun Configuration.setVisibility(visible: Boolean) {
+    if (GradleVersion.current() < GradleVersion.version("9.0")) {
+        @Suppress("DEPRECATION")
+        isVisible = visible
+    }
 }
