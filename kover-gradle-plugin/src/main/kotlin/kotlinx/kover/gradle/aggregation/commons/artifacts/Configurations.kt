@@ -4,6 +4,7 @@
 
 package kotlinx.kover.gradle.aggregation.commons.artifacts
 
+import kotlinx.kover.gradle.plugin.commons.setVisibility
 import org.gradle.api.artifacts.Configuration
 
 /**
@@ -14,9 +15,7 @@ import org.gradle.api.artifacts.Configuration
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html
  */
 internal fun Configuration.asTransitiveDependencies() {
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = false
+    setVisibility(false)
     isCanBeConsumed = false
     isTransitive = true
     isCanBeResolved = true
@@ -31,9 +30,7 @@ internal fun Configuration.asTransitiveDependencies() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asDependency() {
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = true
+    setVisibility(true)
     isCanBeResolved = false
     isCanBeConsumed = false
 }
@@ -45,10 +42,8 @@ internal fun Configuration.asDependency() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asProducer() {
-    // disable generation of Kover artifacts on `assemble`, fix of https://github.com/Kotlin/kotlinx-kover/issues/353
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = false
+    // disable generation of Kover artifacts on `assemble` in Gradle < 9.0, fix of https://github.com/Kotlin/kotlinx-kover/issues/353
+    setVisibility(false)
     isCanBeResolved = false
     // this configuration produces modules that can be consumed by other projects
     isCanBeConsumed = true
@@ -61,9 +56,7 @@ internal fun Configuration.asProducer() {
  * See: https://docs.gradle.org/7.5.1/userguide/declaring_dependencies.html#sec:resolvable-consumable-configs
  */
 internal fun Configuration.asConsumer() {
-    // leave this for compatibility with older versions
-    @Suppress("DEPRECATION")
-    isVisible = false
+    setVisibility(false)
     isCanBeResolved = true
     // this config consumes modules from OTHER projects, and cannot be consumed by other projects
     isCanBeConsumed = false
