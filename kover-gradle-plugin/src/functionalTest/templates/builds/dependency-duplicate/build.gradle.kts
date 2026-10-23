@@ -5,10 +5,6 @@ plugins {
 
 }
 
-allprojects {
-    group = "org.jetbrains"
-}
-
 dependencies {
     kover(project(":a:common"))
     kover(project(":b:common"))
