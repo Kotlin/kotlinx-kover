@@ -18,6 +18,7 @@ import kotlinx.kover.gradle.plugin.commons.TOTAL_VARIANT_NAME
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverReportSetConfigImpl
 import kotlinx.kover.gradle.plugin.dsl.internal.KoverVariantCreateConfigImpl
 import kotlinx.kover.gradle.plugin.util.bean
+import org.gradle.api.artifacts.DependencySet
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.kotlin.dsl.newInstance
 
@@ -29,7 +30,15 @@ import org.gradle.kotlin.dsl.newInstance
  * the availability and settings of the Android plugin, the user settings of the Kover plugin itself.
  */
 internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
-    validateKoverDependencies()
+    koverBucketConfiguration.withDependencies {
+        /*
+         * Check the dependencies right before using the configuration for the first time.
+         *
+         * In general, there is no guarantee that this check is called strictly after `afterEvaluate` in all projects.
+         * However, if you do not manually call `resolve()`, `configuration.files`, `configuration.incoming.dependencies` etc. for `koverBucketConfiguration`, then the check should be triggered only when the Kover task is called.
+         */
+        validateKoverDependencies()
+    }
 
     projectExtension.finalizeActions.forEach { action ->
         try {
@@ -147,9 +156,8 @@ internal fun KoverContext.finalizing(origins: AllVariantOrigins) {
     }
 }
 
-private fun KoverContext.validateKoverDependencies() {
-    val duplicateComponents = koverBucketConfiguration.dependencies
-        .filterIsInstance<ProjectDependency>()
+private fun DependencySet.validateKoverDependencies() {
+    val duplicateComponents = filterIsInstance<ProjectDependency>()
         .groupBy { dependency -> dependency.group to dependency.name }
         .mapValues { (_, dependencies) -> dependencies.map { dependency -> dependency.projectPath() }.distinct() }
         .filterValues { projectPaths -> projectPaths.size > 1 }

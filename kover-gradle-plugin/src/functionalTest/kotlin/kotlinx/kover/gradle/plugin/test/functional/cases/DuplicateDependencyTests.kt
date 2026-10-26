@@ -4,14 +4,25 @@
 
 package kotlinx.kover.gradle.plugin.test.functional.cases
 
+import kotlinx.kover.gradle.plugin.test.functional.framework.checker.CheckerContext
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.buildFromTemplate
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.BuildOptions
 import kotlinx.kover.gradle.plugin.test.functional.framework.runner.runWithParams
+import kotlinx.kover.gradle.plugin.test.functional.framework.starter.TemplateTest
 import org.junit.jupiter.api.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 internal class DuplicateDependencyTests {
+
+    @Test
+    fun testUnrelatedTask() {
+        val build = buildFromTemplate("dependency-duplicate").generate()
+        val result = build.runWithParams(":help")
+
+        assertTrue(result.isSuccessful)
+    }
 
     @Test
     fun testActual() {
@@ -40,4 +51,10 @@ internal class DuplicateDependencyTests {
                     "'org.jetbrains:common' is used by ':a:common', ':b:common'"
         )
     }
+
+    @TemplateTest("dependency-late-duplicate", [":koverXmlReport"])
+    @Test
+    fun CheckerContext.testLateGroupSpecify() {
+    }
+
 }
