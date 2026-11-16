@@ -63,7 +63,6 @@ internal class ReportContext(
 )
 
 internal class GradleReportServices(
-    val antBuilder: AntBuilder,
     val objects: ObjectFactory,
     val workerExecutor: WorkerExecutor
 )
