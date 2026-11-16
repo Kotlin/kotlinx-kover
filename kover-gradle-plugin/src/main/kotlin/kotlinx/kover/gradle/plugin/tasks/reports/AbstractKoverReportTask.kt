@@ -76,7 +76,7 @@ internal abstract class AbstractKoverReportTask : DefaultTask() {
     private val rootDir: File = project.rootDir
 
     protected fun context(): ReportContext {
-        val services = GradleReportServices(ant, obj, workerExecutor)
+        val services = GradleReportServices(obj, workerExecutor)
         return ReportContext(collectAllFiles(), filters.get(), reportClasspath, temporaryDir, projectPath, services)
     }
 
