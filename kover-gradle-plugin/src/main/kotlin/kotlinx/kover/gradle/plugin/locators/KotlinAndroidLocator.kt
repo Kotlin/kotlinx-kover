@@ -7,6 +7,7 @@ package kotlinx.kover.gradle.plugin.locators
 import kotlinx.kover.gradle.plugin.appliers.origin.AllVariantOrigins
 import kotlinx.kover.gradle.plugin.commons.KoverCriticalException
 import kotlinx.kover.gradle.plugin.commons.androidMajorVersion
+import kotlinx.kover.gradle.plugin.commons.hasAndroid9WithKotlin
 import kotlinx.kover.gradle.plugin.util.bean
 import org.gradle.api.Project
 
@@ -25,7 +26,9 @@ internal fun Project.locateKotlinAndroidVariants(variants: List<AndroidVariantIn
     val kotlinTarget = kotlinExtension["target"]
 
     val majorVersion = project.extensions.androidMajorVersion()
-    val origins = if (majorVersion < 9) {
+    // Built-in Kotlin implies AGP 9+, even when androidMajorVersion() can't read the version (#815).
+    val isAgp9OrNewer = majorVersion >= 9 || project.hasAndroid9WithKotlin()
+    val origins = if (!isAgp9OrNewer) {
         project.androidVariantsBefore9(androidExtension, kotlinTarget)
     } else {
         project.androidVariants(androidExtension, variants, kotlinTarget)
