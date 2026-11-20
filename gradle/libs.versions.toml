@@ -9,6 +9,7 @@ gradle-plugin-publish = "2.1.1"
 maven-plugin-development = "1.0.3"
 maven-embedder = "3.9.8"
 maven-api = "3.0"
+maven-reporting-api = "4.0.0"
 maven-resolver = "1.9.21"
 maven-slf4j = "1.7.36"
 jacoco = "0.8.14"
@@ -34,7 +35,7 @@ maven-slf4j-provider = { module = "org.apache.maven:maven-slf4j-provider", versi
 
 maven-plugin-annotations = { module = "org.apache.maven.plugin-tools:maven-plugin-annotations", version.ref = "maven-api" }
 maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven-api" }
-maven-reporting-api = { module = "org.apache.maven.reporting:maven-reporting-api", version.ref = "maven-api" }
+maven-reporting-api = { module = "org.apache.maven.reporting:maven-reporting-api", version.ref = "maven-reporting-api" }
 
 maven-resolver-basic = { module = "org.apache.maven.resolver:maven-resolver-connector-basic", version.ref = "maven-resolver" }
 maven-resolver-file = { module = "org.apache.maven.resolver:maven-resolver-transport-file", version.ref = "maven-resolver" }
